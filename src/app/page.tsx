@@ -1,17 +1,45 @@
+import { HomeHero } from "@/components/sections/HomeHero";
+import { CredentialsStrip } from "@/components/sections/CredentialsStrip";
+import { ComingSoonProof } from "@/components/sections/ComingSoonProof";
+import { ThreePrinciples } from "@/components/sections/ThreePrinciples";
+import { ServicesGrid } from "@/components/sections/ServicesGrid";
+import { FractionalCTA } from "@/components/sections/FractionalCTA";
+import { FounderModule } from "@/components/sections/FounderModule";
+import { LatestInsights } from "@/components/sections/LatestInsights";
+import { CTABlock } from "@/components/primitives/CTABlock";
 import { SectionShell } from "@/components/primitives/SectionShell";
-import { NumberedSection } from "@/components/primitives/NumberedSection";
+import { PulseQuestion } from "@/components/primitives/PulseQuestion";
+import { homeContent } from "@/content/home";
+import { getAllInsights } from "@/lib/mdx";
 
-export default function Home() {
+export default async function Home() {
+  const insights = await getAllInsights();
+  const topThree = insights.slice(0, 3);
   return (
-    <SectionShell variant="canvas" width="content" className="py-32">
-      <NumberedSection number="00" label="Build Status" />
-      <h1 className="text-display-lg text-ink mt-6 mb-6">
-        Bring clarity to complex people problems.
-      </h1>
-      <p className="text-body-lg text-ink-soft max-w-[640px]">
-        Phase 2 complete — layout, theming, and design primitives shipped. Full
-        home page ships in Phase 3.
-      </p>
-    </SectionShell>
+    <>
+      <HomeHero />
+      <CredentialsStrip />
+      <ComingSoonProof />
+      <ThreePrinciples />
+      <ServicesGrid />
+      <SectionShell variant="canvas" width="content" className="py-10 sm:py-14">
+        <div className="mx-auto max-w-[640px]">
+          <PulseQuestion
+            question={homeContent.pulse.question}
+            options={homeContent.pulse.options}
+          />
+        </div>
+      </SectionShell>
+      <FractionalCTA />
+      <FounderModule />
+      <LatestInsights articles={topThree} />
+      <CTABlock
+        headline={homeContent.finalCta.headline}
+        subhead={homeContent.finalCta.subhead}
+        ctaLabel={homeContent.finalCta.cta.label}
+        ctaHref={homeContent.finalCta.cta.href}
+        variant="ink"
+      />
+    </>
   );
 }

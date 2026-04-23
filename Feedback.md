@@ -52,6 +52,7 @@ The item will re-appear in the Inbox via a manual re-add if you still want it re
 | 2026-04-23 | Akshay | Monitor Claude session usage manually; when a working session approaches 80%, ask Claude to checkpoint and phase remaining work into Inbox items rather than push on. (Claude cannot introspect its own token usage.) | [P2][trivial][infra] | Planned |
 | 2026-04-23 | Akshay | Consider LLM-based triage upgrade — Action calls Claude API to auto-rank new Inbox rows by priority/complexity when manual tagging is skipped. Defer until tag-based triage feels insufficient. | [P3][medium][infra] | Planned |
 | 2026-04-23 | Phone | test from phone | test | New |
+| 2026-04-23 | Phone | test akshay |  | New |
 
 ## Phase 1 — Urgent
 

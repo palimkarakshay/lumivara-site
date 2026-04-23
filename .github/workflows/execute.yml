@@ -1,0 +1,53 @@
+name: Execute backlog item
+
+on:
+  schedule:
+    # Every 8 hours — 00:00, 08:00, 16:00 UTC. 3 runs/day.
+    # Tune down if this burns too much Pro budget; workflow_dispatch stays available.
+    - cron: '0 0,8,16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: claude-runtime
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git identity
+        run: |
+          git config user.name "claude-auto"
+          git config user.email "claude-auto@users.noreply.github.com"
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Read the file `scripts/execute-prompt.md` in the checked-out repo
+            and follow those instructions exactly. That file is the execute
+            playbook — it contains the issue selection rubric, scope guardrails,
+            commit/PR format, and failure handling. The `gh` CLI is available
+            and authenticated (check `gh auth status`). Node + dependencies are
+            already installed — you can run `npx tsc --noEmit` and `npm run
+            lint` directly. When done, print the summary and exit.
+          claude_args: '--max-turns 80'

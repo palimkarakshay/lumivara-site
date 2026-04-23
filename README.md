@@ -107,3 +107,41 @@ Not yet deployed. When ready, the project is Vercel-ready — zero config change
 ## Project status
 
 Built in phases. See git history for per-phase commits.
+
+---
+
+## Feedback loop
+
+Change requests are tracked in [Feedback.md](./Feedback.md). Anyone (or any phone) can add items to the Inbox; a manual triage workflow phases them by priority tag.
+
+- **Add from phone**: see [PHONE_SETUP.md](./PHONE_SETUP.md) — HTTP Shortcuts posts to GitHub's `repository_dispatch` endpoint, the **Append Feedback** action commits the row.
+- **Triage**: Actions tab → *Triage Feedback* → *Run workflow*. Rows route to Phase 1 / 2 / 3 by `[P1]/[P2]/[P3]` tags; `Done` / `Dropped` items move to Archive.
+- **Work items**: each feedback item is worked as its own commit with message `feedback(<short-id>): <item>` so it can be reverted individually.
+
+### Reverting a change
+
+Every feedback-driven change is a single commit. To undo one:
+
+```bash
+git log --grep '^feedback(' --oneline            # list feedback commits
+git revert <sha>                                 # reverse that commit only
+git push
+```
+
+If the change spanned multiple commits (flagged as `[complex]`), they're pushed as a contiguous block — revert the range:
+
+```bash
+git revert <first-sha>^..<last-sha>
+git push
+```
+
+---
+
+## Revision log
+
+High-level log of release-sized change bundles. Per-commit detail lives in `git log`.
+
+| Date | Revision | Summary |
+|------|----------|---------|
+| 2026-04-23 | r1 — Feedback automation | UTF-8 Feedback.md with phased schema; secure `append_feedback.yml` (env-var payload, pull-rebase push); `triage_feedback.yml` tag-based phasing; Android HTTP Shortcuts setup doc; README revision log + revert recipe. |
+| 2026-04-22 | r0 — Site build | Next.js 16 + Tailwind v4 scaffold; home, how-we-work, what-we-do hub + 6 service pages, MCQ diagnostic, fractional-hr, about, insights, contact (Cal.com + PIPEDA form); sitemap, robots, OG image, 404, privacy, career-coaching stub. |

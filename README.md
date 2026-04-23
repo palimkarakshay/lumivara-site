@@ -110,25 +110,26 @@ Built in phases. See git history for per-phase commits.
 
 ---
 
-## Feedback loop
+## Backlog
 
-Change requests are tracked in [Feedback.md](./Feedback.md). Anyone (or any phone) can add items to the Inbox; a manual triage workflow phases them by priority tag.
+Change requests live in **GitHub Issues**, organised on a **Project v2** Kanban board, and worked by two scheduled GitHub Actions running Claude Code. See [docs/BACKLOG.md](./docs/BACKLOG.md) for the full map.
 
-- **Add from phone**: see [PHONE_SETUP.md](./PHONE_SETUP.md) — HTTP Shortcuts posts to GitHub's `repository_dispatch` endpoint, the **Append Feedback** action commits the row.
-- **Triage**: Actions tab → *Triage Feedback* → *Run workflow*. Rows route to Phase 1 / 2 / 3 by `[P1]/[P2]/[P3]` tags; `Done` / `Dropped` items move to Archive.
-- **Work items**: each feedback item is worked as its own commit with message `feedback(<short-id>): <item>` so it can be reverted individually.
+- **Capture from phone**: [PHONE_SETUP.md](./PHONE_SETUP.md) — HTTP Shortcuts → `POST /repos/.../issues`.
+- **Triage**: [`.github/workflows/triage.yml`](.github/workflows/triage.yml) runs daily. Claude reads new issues, applies `priority/`, `complexity/`, `area/` labels using the rubric in [`scripts/triage-prompt.md`](./scripts/triage-prompt.md), and comments the rationale.
+- **Execute**: [`.github/workflows/execute.yml`](.github/workflows/execute.yml) runs every 8h. Claude picks the top `auto-routine` issue, implements on a branch `auto/issue-<n>`, opens a PR that never auto-merges. Playbook: [`scripts/execute-prompt.md`](./scripts/execute-prompt.md).
+- **Review**: you merge (or not) on phone via the GitHub Mobile app.
 
 ### Reverting a change
 
-Every feedback-driven change is a single commit. To undo one:
+Each PR is one commit (or a tight contiguous range). To undo after merge:
 
 ```bash
-git log --grep '^feedback(' --oneline            # list feedback commits
-git revert <sha>                                 # reverse that commit only
+git log --grep '^feedback(#' --oneline           # list auto-commits
+git revert <sha>                                 # reverse one
 git push
 ```
 
-If the change spanned multiple commits (flagged as `[complex]`), they're pushed as a contiguous block — revert the range:
+For multi-commit ranges:
 
 ```bash
 git revert <first-sha>^..<last-sha>
@@ -143,5 +144,6 @@ High-level log of release-sized change bundles. Per-commit detail lives in `git 
 
 | Date | Revision | Summary |
 |------|----------|---------|
-| 2026-04-23 | r1 — Feedback automation | UTF-8 Feedback.md with phased schema; secure `append_feedback.yml` (env-var payload, pull-rebase push); `triage_feedback.yml` tag-based phasing; Android HTTP Shortcuts setup doc; README revision log + revert recipe. |
+| 2026-04-23 | r2 — Issues + Projects + Claude auto-routine | Retired `Feedback.md` and the dispatch-based tag system. Moved backlog to GitHub Issues + Project v2. Added `triage.yml` (daily) and `execute.yml` (every 8h) GitHub Actions running Claude Code via Pro subscription OAuth token (no API billing). Phone shortcut now creates issues directly. Playbooks in `scripts/triage-prompt.md` / `execute-prompt.md`; bootstrap in `scripts/bootstrap-kanban.sh`. |
+| 2026-04-23 | r1 — Feedback automation *(superseded by r2)* | UTF-8 Feedback.md with phased schema; `append_feedback.yml` via `repository_dispatch`; `triage_feedback.yml` tag-based phasing; Android HTTP Shortcuts setup. |
 | 2026-04-22 | r0 — Site build | Next.js 16 + Tailwind v4 scaffold; home, how-we-work, what-we-do hub + 6 service pages, MCQ diagnostic, fractional-hr, about, insights, contact (Cal.com + PIPEDA form); sitemap, robots, OG image, 404, privacy, career-coaching stub. |

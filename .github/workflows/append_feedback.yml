@@ -1,0 +1,20 @@
+name: Append Feedback
+on:
+  repository_dispatch:
+    types: [append_feedback]
+jobs:
+  append:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Append Line
+        run: |
+          DATE=$(date +'%Y-%m-%d %H:%M')
+          echo "| $DATE | ${{ github.event.client_payload.text }} | Not Done |" >> Feedback.md
+      - name: Commit changes
+        run: |
+          git config --global user.name "Feedback Bot"
+          git config --global user.email "bot@feedback.com"
+          git add Feedback.md
+          git commit -m "New feedback entry via Phone"
+          git push

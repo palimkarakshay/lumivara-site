@@ -1,4 +1,4 @@
-# Lumivara Site — Local Working Demo - TEST AKSHAY
+# Lumivara Site — Local Working Demo - git update check
 
 A rebuilt Lumivara People Advisory site, running locally. Next.js 16 + TypeScript + Tailwind v4 + shadcn/ui + MDX.
 

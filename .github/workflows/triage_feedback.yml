@@ -1,0 +1,136 @@
+name: Triage Feedback
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: feedback-write
+  cancel-in-progress: false
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run triage
+        run: |
+          python3 <<'PY'
+          import pathlib, re
+
+          path = pathlib.Path("Feedback.md")
+          text = path.read_text(encoding="utf-8")
+
+          SECTIONS = ["## Inbox", "## Phase 1 — Urgent", "## Phase 2 — Soon", "## Phase 3 — Whenever"]
+          ARCHIVE_MARK = "<summary>Archive (Done / Dropped)</summary>"
+
+          def slice_section(body, header):
+              # Return (rows_list, start_of_table, end_of_table) for the table under `header`.
+              start = body.index(header)
+              hdr_match = re.search(r"\|[^\n]*\|\n\|[-| ]+\|\n", body[start:])
+              if not hdr_match:
+                  raise SystemExit(f"Table header missing under {header}")
+              table_start = start + hdr_match.end()
+              tail = body[table_start:]
+              rows = []
+              offset = 0
+              for line in tail.split("\n"):
+                  if line.startswith("|"):
+                      rows.append(line)
+                      offset += len(line) + 1
+                  else:
+                      break
+              return rows, table_start, table_start + offset
+
+          def parse(row):
+              # Strip leading/trailing pipes, split, trim cells.
+              cells = [c.strip() for c in row.strip().strip("|").split("|")]
+              # date, source, item, tags, status
+              while len(cells) < 5:
+                  cells.append("")
+              return cells[:5]
+
+          def fmt(cells):
+              return "| " + " | ".join(cells) + " |"
+
+          # Pull all rows from every managed section into one list, then re-route.
+          buckets = {h: [] for h in SECTIONS}
+          archive_rows = []
+
+          # Collect Archive rows first (we'll preserve them and add to them).
+          arch_start = text.index(ARCHIVE_MARK)
+          arch_hdr = re.search(r"\|[^\n]*\|\n\|[-| ]+\|\n", text[arch_start:])
+          arch_table_start = arch_start + arch_hdr.end()
+          arch_tail = text[arch_table_start:]
+          arch_offset = 0
+          for line in arch_tail.split("\n"):
+              if line.startswith("|"):
+                  archive_rows.append(line)
+                  arch_offset += len(line) + 1
+              else:
+                  break
+          arch_table_end = arch_table_start + arch_offset
+
+          # Collect rows from each active section (record ranges so we can rewrite).
+          section_ranges = {}
+          all_rows = []
+          for h in SECTIONS:
+              rows, s, e = slice_section(text, h)
+              section_ranges[h] = (s, e)
+              all_rows.extend(rows)
+
+          # Route each row.
+          for raw in all_rows:
+              cells = parse(raw)
+              _, _, _, tags, status = cells
+              tags_lower = tags.lower()
+              status_lower = status.lower()
+              if status_lower in {"done", "dropped"}:
+                  archive_rows.append(fmt(cells))
+                  continue
+              if "[p1]" in tags_lower:
+                  buckets["## Phase 1 — Urgent"].append(fmt(cells))
+              elif "[p2]" in tags_lower:
+                  buckets["## Phase 2 — Soon"].append(fmt(cells))
+              elif "[p3]" in tags_lower:
+                  buckets["## Phase 3 — Whenever"].append(fmt(cells))
+              else:
+                  buckets["## Inbox"].append(fmt(cells))
+
+          # Rewrite sections from bottom-up so earlier ranges stay valid.
+          ordered = sorted(SECTIONS, key=lambda h: section_ranges[h][0], reverse=True)
+          new_text = text
+          # Rewrite archive last (it's below all managed sections in the file).
+          archive_block = ("\n".join(archive_rows) + "\n") if archive_rows else ""
+          new_text = new_text[:arch_table_start] + archive_block + new_text[arch_table_end:]
+          # Recompute managed section ranges (archive edit is below them, so ranges unchanged).
+          for h in ordered:
+              s, e = section_ranges[h]
+              block = ("\n".join(buckets[h]) + "\n") if buckets[h] else ""
+              new_text = new_text[:s] + block + new_text[e:]
+
+          path.write_text(new_text, encoding="utf-8")
+
+          print("Triage complete.")
+          for h in SECTIONS:
+              print(f"  {h}: {len(buckets[h])} rows")
+          print(f"  Archive: {len(archive_rows)} rows")
+          PY
+
+      - name: Commit and push
+        run: |
+          git config user.name "feedback-bot"
+          git config user.email "feedback-bot@users.noreply.github.com"
+          git add Feedback.md
+          if git diff --cached --quiet; then
+            echo "No triage changes."
+            exit 0
+          fi
+          git commit -m "feedback(triage): reshuffle Inbox → phases / archive Done"
+          git pull --rebase origin main
+          git push origin HEAD:main

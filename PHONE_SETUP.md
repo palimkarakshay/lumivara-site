@@ -1,85 +1,88 @@
-# Phone → Feedback.md
+# Phone → GitHub Issue
 
-Send feedback from Android (or anywhere) straight into this repo's `Feedback.md` Inbox by POSTing to GitHub's `repository_dispatch` endpoint. The **Append Feedback** workflow catches the event and commits the row.
+Capture a backlog item from Android (or anywhere) by POSTing to the GitHub Issues API. The **Triage backlog** Action picks it up on its next run and classifies it; the **Execute backlog item** Action picks up the top-ranked result a few hours later and opens a PR.
+
+For the full lifecycle map, see [docs/BACKLOG.md](docs/BACKLOG.md).
 
 ## 1. Create a fine-grained PAT
 
-Broad `repo`-scope tokens are overkill and dangerous on a phone. Create a token that can only do what the workflow needs:
+Scope it narrowly so a stolen phone doesn't have keys to the kingdom.
 
 1. GitHub → Settings → Developer settings → **Personal access tokens** → **Fine-grained tokens** → *Generate new token*.
-2. **Resource owner**: `palimkarakshay` (your account).
+2. **Resource owner**: your account.
 3. **Repository access**: *Only select repositories* → `lumivara-site`.
 4. **Permissions** → Repository permissions:
-   - *Contents*: **Read and write** (required — the workflow commits Feedback.md)
-   - *Metadata*: Read-only (GitHub forces this on)
+   - *Issues*: **Read and write**
+   - *Metadata*: Read-only (required)
+   - *Contents*: No access (the token doesn't need to write code)
    - Everything else: No access.
-5. **Expiration**: 90 days. Set a calendar reminder to rotate.
-6. Copy the token once; you will not see it again.
+5. **Expiration**: 90 days. Calendar a rotation.
+6. Copy the token. You won't see it again.
 
-If a classic PAT is easier to manage, the minimum scope is `repo` — but note that classic PATs give access to **all** your repos, so only use one if you trust the device.
+Note: this is a *different* token from `CLAUDE_CODE_OAUTH_TOKEN`. That one is for GitHub Actions → Claude; this one is for your phone → GitHub.
 
 ## 2. Install HTTP Shortcuts (Android)
 
-[HTTP Shortcuts](https://play.google.com/store/apps/details?id=ch.rmy.android.http_shortcuts) is a small open-source app that makes authenticated HTTP requests and can be triggered from the home screen, share sheet, or Tasker.
-
-After install:
+[HTTP Shortcuts](https://play.google.com/store/apps/details?id=ch.rmy.android.http_shortcuts) is a small open-source app. Install it, then:
 
 1. **Variables** → *Add variable*:
-   - `GITHUB_TOKEN` — type *Constant*, value = the PAT you just created. Mark *Protected* so it hides in exports.
-   - `FEEDBACK_TEXT` — type *Text input*, label *"What's the feedback?"*, *Multi-line*.
-   - `FEEDBACK_TAGS` — type *Text input*, label *"Tags (optional)"*, prefill `[P2][medium]`.
+   - `GITHUB_TOKEN` — type *Constant*, value = the PAT above. Mark *Protected*.
+   - `ISSUE_TITLE` — type *Text input*, label *"Title"*, single-line.
+   - `ISSUE_BODY` — type *Text input*, label *"Detail"*, multi-line, optional.
+   - `ISSUE_PRIORITY` — type *Selection*, options: `P1`, `P2`, `P3`, `unsure`. Default `unsure`.
 
 2. **Create Shortcut** → *HTTP Request*:
    - **Name**: `Feedback → Lumivara`
    - **Method**: `POST`
-   - **URL**: `https://api.github.com/repos/palimkarakshay/lumivara-site/dispatches`
+   - **URL**: `https://api.github.com/repos/palimkarakshay/lumivara-site/issues`
    - **Request Body** → *Custom text*, content type `application/json`:
      ```json
      {
-       "event_type": "append_feedback",
-       "client_payload": {
-         "text": "{{FEEDBACK_TEXT}}",
-         "tags": "{{FEEDBACK_TAGS}}",
-         "source": "Phone"
-       }
+       "title": "{{ISSUE_PRIORITY}} — {{ISSUE_TITLE}}",
+       "body": "{{ISSUE_BODY}}\n\n_Captured from phone._",
+       "labels": ["status/needs-triage"]
      }
      ```
+     (If `ISSUE_PRIORITY` is `unsure`, the bot decides. If it's `P1`/`P2`/`P3`, the title carries the hint and triage usually respects it.)
    - **Request Headers**:
      - `Authorization`: `Bearer {{GITHUB_TOKEN}}`
      - `Accept`: `application/vnd.github+json`
      - `X-GitHub-Api-Version`: `2022-11-28`
-   - **Response Handling**: *Display response on failure*. Success returns HTTP 204 with empty body.
+   - **Response Handling**: *Display response on failure*. Success returns HTTP 201 with the issue JSON.
 
 3. **Trigger options**:
    - *Add to home screen* → one-tap launcher.
-   - *Share target* → pops the variable prompts with selected text pre-filled as `FEEDBACK_TEXT`. Now "Share → Feedback → Lumivara" works from any app (Gmail, Chrome, Notes).
+   - *Share target* → "Share → Feedback → Lumivara" works from any app (Gmail, Chrome, Notes). Shared text pre-fills `ISSUE_BODY`; fill in the title.
 
-## 3. Smoke test
+## 3. (Optional) A second shortcut to force-run the bot
 
-Tap the shortcut, type `test from phone`, leave tags blank, submit.
+If you want to trigger `triage.yml` or `execute.yml` from the phone without waiting for the cron:
 
-- Expected: HTTP 204.
-- GitHub Actions tab → **Append Feedback** run starts within ~5s.
-- Feedback.md picks up a new row in the Inbox table, committed by `feedback-bot`.
+- **URL**: `https://api.github.com/repos/palimkarakshay/lumivara-site/actions/workflows/triage.yml/dispatches`
+  (or `execute.yml` for the execute run)
+- **Method**: `POST`
+- **Body**: `{"ref": "main"}`
+- **Headers**: same as above.
+
+Useful right after capturing a batch of items — saves up to 24h waiting for the daily triage.
+
+## 4. Smoke test
+
+Tap the shortcut, fill in:
+- Priority: `P3`
+- Title: `test from phone`
+- Detail: leave blank
+
+Expected:
+- HTTP 201 response — the issue JSON.
+- A new issue appears in the GitHub web UI immediately.
+- Next triage run (manual `gh workflow run triage.yml` if you don't want to wait) labels it and comments.
+- Because it's `P3 trivial`, `execute.yml` will pick it up eventually — delete or close it before that if you want to avoid a noise PR.
 
 If the request comes back 401/403, the PAT scope is wrong. 404 means the repo slug in the URL is wrong. 422 usually means the JSON body is malformed (check escaping).
 
-## 4. Running triage
-
-Triage is manual — one button, any time:
-
-1. GitHub → Actions → **Triage Feedback** → *Run workflow* → *Run*.
-2. Rows tagged `[P1]/[P2]/[P3]` move to the matching Phase table. Rows marked `Done`/`Dropped` move to the Archive.
-3. If nothing has changed, the workflow commits nothing.
-
-You can also trigger it from the phone with a second HTTP Shortcuts entry:
-
-- **URL**: `https://api.github.com/repos/palimkarakshay/lumivara-site/actions/workflows/triage_feedback.yml/dispatches`
-- **Body**: `{"ref": "main"}`
-- Same headers.
-
 ## Security notes
 
-- The PAT lives on the phone. If the phone is lost, **revoke the token** from GitHub settings — don't just change device passwords.
-- The workflow runs on GitHub's runners with the repo's own `GITHUB_TOKEN`, not your PAT. Your PAT is only used to *trigger* the workflow. So even if the workflow file is edited maliciously later, your PAT blast radius is limited to "able to dispatch events."
-- The append step passes payload text via `env:` variables (not shell interpolation) so a crafted payload can't run commands on the runner.
+- The PAT lives on the phone. If the phone is lost, **revoke the token** from GitHub settings — don't just change device passwords. Because the token only has `issues:write`, the blast radius is "can create/edit issues in this one repo."
+- `CLAUDE_CODE_OAUTH_TOKEN` never touches the phone. It lives only in GitHub Actions Secrets.
+- Treat issue creation as *trusted* input to the triage/execute bots. If someone gets your phone PAT, they can create issues that eventually become PRs. PRs still need your merge — so the worst case is noise, not unauthorized deploys. Still, rotate on loss.

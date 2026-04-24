@@ -12,12 +12,15 @@ Scope it narrowly so a stolen phone doesn't have keys to the kingdom.
 2. **Resource owner**: your account.
 3. **Repository access**: *Only select repositories* → `lumivara-site`.
 4. **Permissions** → Repository permissions:
-   - *Issues*: **Read and write**
-   - *Metadata*: Read-only (required)
-   - *Contents*: No access (the token doesn't need to write code)
+   - *Issues*: **Read and write** — required for the capture shortcut (Section 2).
+   - *Actions*: **Read and write** — required only if you also want the optional manual triage/execute shortcuts (Section 3). If you only need capture and are fine letting cron handle the rest, leave this at *No access*.
+   - *Metadata*: Read-only (required by GitHub).
+   - *Contents*: No access — the token doesn't need to write code.
    - Everything else: No access.
 5. **Expiration**: 90 days. Calendar a rotation.
 6. Copy the token. You won't see it again.
+
+**Two-token alternative (smaller blast radius)**: mint two separate fine-grained PATs — one with *Issues:write only*, one with *Actions:write only*. Store as separate `GITHUB_TOKEN` and `GITHUB_ACTIONS_TOKEN` variables in HTTP Shortcuts. A leaked phone token can then only do one of the two things. Recommended if you carry the phone outside the house.
 
 Note: this is a *different* token from `CLAUDE_CODE_OAUTH_TOKEN`. That one is for GitHub Actions → Claude; this one is for your phone → GitHub.
 

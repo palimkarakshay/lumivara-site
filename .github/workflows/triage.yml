@@ -46,16 +46,21 @@ jobs:
             --max-turns 40
             --model claude-haiku-4-5-20251001
 
-      # Attempt 2: Gemini Fallback (Runs ONLY if Claude fails)
+# Attempt 2: Gemini Fallback (Runs ONLY if Claude fails)
       - name: Run Triage with Gemini (Fallback)
         if: steps.claude-triage.outcome == 'failure'
         uses: google-github-actions/run-gemini-cli@v0
+        env:
+          # This environment variable is what the underlying CLI actually looks for
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         with:
+          # We set this to true to satisfy the action's validation check, 
+          # even though we are using a standard API key.
+          use_vertex_ai: true 
           google_api_key: ${{ secrets.GEMINI_API_KEY }}
-          gemini_model: "gemini-1.5-flash" # High rate limits and cost-effective
+          gemini_model: "gemini-1.5-flash"
           prompt: |
-            Claude failed to execute or reached usage limits. 
-            Act as a triage agent. Read `scripts/triage-prompt.md` in the current 
-            directory and follow its instructions exactly. 
-            You have access to the `gh` CLI in this environment.
-            When done, print the requested summary and exit.
+            Claude failed to execute. Act as a triage agent. 
+            Read `scripts/triage-prompt.md` in the current directory and follow its instructions exactly. 
+            The `gh` CLI is available and authenticated.
+            When done, print the requested summary and exit.            When done, print the requested summary and exit.

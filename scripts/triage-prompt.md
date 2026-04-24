@@ -26,11 +26,14 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - `priority/P1` — customer-facing bug, broken flow, visible content error, accessibility blocker, security issue, blocks a named date (launch, demo, PIPEDA compliance).
    - `priority/P2` — visible improvement, polish, content addition that isn't time-critical, perf under target but not broken.
    - `priority/P3` — nice-to-have, experiment, speculative refactor, "consider X".
-3. Decide **complexity** AND attach the matching `model/*` and cron-eligibility labels:
+3. Decide **complexity** AND attach the matching `model/*` and cron-eligibility labels.
+   Model-tier rule: **Haiku identifies** (that's this triage step), **Opus plans** (planning pass
+   in execute-complex.yml), **Sonnet implements** (all execute runs). The `model/*` labels
+   below record complexity for routing purposes; execute.yml always implements with Sonnet.
    - `complexity/trivial` — typo, single-line, metadata tweak. → also add `model/haiku`. Cron-eligible.
    - `complexity/easy` — one file, obvious change, < 30 min. → also add `model/haiku`. Cron-eligible.
    - `complexity/medium` — a handful of files or non-trivial logic, 1–3h. → also add `model/sonnet`. Cron-eligible.
-   - `complexity/complex` — spans many files, architectural decision, or > 3h. → also add `model/opus` AND `manual-only` (so cron skips, but the bot can still work it when the operator manually fires `execute-complex.yml`).
+   - `complexity/complex` — spans many files, architectural decision, or > 3h. → also add `model/opus` AND `manual-only` (cron skips; execute-complex.yml runs Opus planning pass → Sonnet implementation).
 4. Decide **area** (choose 1–2, lean toward 1):
    - `area/site` — Next.js app code (components, routes, data fetching)
    - `area/content` — MDX, copy, content files

@@ -8,5 +8,10 @@
       "Glob",
       "Grep"
     ]
-  }
+  },
+  "thinking": {
+    "budget_tokens": 10000
+  },
+  "compactContextThreshold": 0.5,
+  "subagentModel": "claude-haiku-4-5-20251001"
 }

@@ -135,14 +135,65 @@ jobs:
 
       - name: No eligible issue — exiting
         if: steps.pick.outputs.issue == '0'
-        run: echo "No eligible manual-only issues. Exiting cleanly."
+        run: echo "No eligible complex/P1 issues. Exiting cleanly."
 
       - name: Export ISSUE_NUMBER to job env
         if: steps.pick.outputs.issue != '0'
         run: echo "ISSUE_NUMBER=${{ steps.pick.outputs.issue }}" >> "$GITHUB_ENV"
 
-      - uses: anthropics/claude-code-action@v1
+      # ── Phase 1: Opus plans ──────────────────────────────────────────────
+      # Opus reads the issue, the codebase, and writes a detailed implementation
+      # plan as a comment on the issue. Sonnet reads that plan in Phase 2.
+      - name: "Phase 1 — Opus: write implementation plan"
         if: steps.pick.outputs.issue != '0'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          settings: |
+            {
+              "permissions": {
+                "allow": ["Bash", "Read", "Glob", "Grep"]
+              }
+            }
+          prompt: |
+            You are the PLANNING agent for issue #${{ steps.pick.outputs.issue }}.
+            Your only job is to produce a detailed implementation plan — no code changes.
+
+            Steps:
+            1. Fetch the issue: gh issue view ${{ steps.pick.outputs.issue }} --repo palimkarakshay/lumivara-site --json number,title,body,labels
+            2. Read the relevant source files (src/, scripts/execute-prompt.md, AGENTS.md).
+            3. Write a comment on the issue with a plan in this exact format:
+
+            ## Implementation Plan (Opus)
+
+            ### Files to create or modify
+            - `path/to/file.ts` — what changes and why
+
+            ### Step-by-step
+            1. ...
+            2. ...
+
+            ### Risks / open questions
+            - ...
+
+            ### Definition of done
+            - [ ] type-check passes
+            - [ ] lint passes
+            - [ ] ...
+
+            Post the comment:
+            gh issue comment ${{ steps.pick.outputs.issue }} --repo palimkarakshay/lumivara-site --body "$(cat /tmp/plan.md)"
+
+            Save the plan to /tmp/plan.md before posting. Do NOT touch any source files.
+            Do NOT open a branch. Do NOT open a PR.
+          claude_args: |
+            --max-turns 30
+            --model claude-opus-4-7
+
+      # ── Phase 2: Sonnet implements ────────────────────────────────────────
+      - name: "Phase 2 — Sonnet: implement from plan"
+        if: steps.pick.outputs.issue != '0'
+        uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           settings: |
@@ -161,11 +212,15 @@ jobs:
           prompt: |
             Issue #${{ steps.pick.outputs.issue }} has been pre-selected for you.
             ISSUE_NUMBER=${{ steps.pick.outputs.issue }} is available in your env.
-            This is a MANUAL execution path (typically for complex/manual-only
-            issues). Read `scripts/execute-prompt.md` and follow it to implement
-            that specific issue. Skip selection logic. The `gh` CLI is
-            authenticated. Node + dependencies are installed. When done, print
-            the summary and exit.
+
+            A planning comment was just posted on this issue by the Opus planning agent.
+            Before starting, read that plan comment:
+              gh issue view ${{ steps.pick.outputs.issue }} --repo palimkarakshay/lumivara-site --comments --json comments
+
+            Find the comment that starts with "## Implementation Plan (Opus)" and follow it.
+            Then read scripts/execute-prompt.md for the full execution protocol.
+            Implement the issue. The gh CLI is authenticated. Node + dependencies installed.
+            When done, print the summary and exit.
           claude_args: |
             --max-turns 120
-            --model ${{ steps.pick.outputs.model }}
+            --model claude-sonnet-4-6

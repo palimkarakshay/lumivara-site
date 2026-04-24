@@ -100,9 +100,13 @@ jobs:
           if not model:
               model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-sonnet-4-6")
 
+          # Implementation always runs on Sonnet. Haiku is for triage/identification only.
+          # Opus is reserved for the planning pass in execute-complex.yml.
+          impl_model = "claude-sonnet-4-6"
+
           out.write(f"issue={num}\n")
-          out.write(f"model={model}\n")
-          print(f"Selected issue #{num} with model {model}")
+          out.write(f"model={impl_model}\n")
+          print(f"Selected issue #{num} — implementing with {impl_model}")
           PY
 
       - name: No eligible issue — exiting

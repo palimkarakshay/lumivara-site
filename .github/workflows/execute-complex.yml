@@ -88,7 +88,8 @@ jobs:
           import json, os, sys
           issues = json.load(open('/tmp/candidates.json'))
           EXCLUDE = {"human-only", "status/blocked",
-                     "status/in-progress", "status/needs-clarification"}
+                     "status/in-progress", "status/needs-clarification",
+                     "status/awaiting-review"}
           PRIO_RANK = {"priority/P1": 0, "priority/P2": 1, "priority/P3": 2}
           MODEL_FOR = {
               "model/haiku":  "claude-haiku-4-5-20251001",

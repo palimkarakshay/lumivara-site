@@ -2,8 +2,8 @@ name: Triage backlog
 
 on:
   schedule:
-    # Daily at 06:00 UTC (02:00 ET) — off-hours so interactive Pro usage isn't squeezed
-    - cron: '0 6 * * *'
+    # Every 4 hours (00, 04, 08, 12, 16, 20 UTC). Cheap on Haiku.
+    - cron: '0 */4 * * *'
   workflow_dispatch:
 
 permissions:
@@ -44,3 +44,4 @@ jobs:
             doubt). When done, print the summary it asks for and exit.
           claude_args: |
             --max-turns 40
+            --model claude-haiku-4-5-20251001

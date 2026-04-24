@@ -54,8 +54,10 @@ jobs:
           issues = json.load(open('/tmp/candidates.json'))
 
           # Cron path: skip manual-only. (manual path is execute-complex.yml)
+          # status/awaiting-review = bot already opened a PR for it; don't re-pick.
           EXCLUDE = {"human-only", "manual-only", "status/blocked",
-                     "status/in-progress", "status/needs-clarification"}
+                     "status/in-progress", "status/needs-clarification",
+                     "status/awaiting-review"}
           PRIO_RANK = {"priority/P1": 0, "priority/P2": 1, "priority/P3": 2}
           COMP_RANK = {"complexity/trivial": 0, "complexity/easy": 1, "complexity/medium": 2}
 

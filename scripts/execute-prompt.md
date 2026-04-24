@@ -65,9 +65,10 @@ For the issue at `$ISSUE_NUMBER`:
 
 7. **Update the issue**:
    ```
-   gh issue edit $ISSUE_NUMBER --remove-label "status/in-progress" --add-label "status/planned"
-   gh issue comment $ISSUE_NUMBER --body "Draft PR: #<pr-number>. Review and merge to close."
+   gh issue edit $ISSUE_NUMBER --remove-label "status/in-progress" --add-label "status/awaiting-review"
+   gh issue comment $ISSUE_NUMBER --body "PR: #<pr-number>. Review and merge to close."
    ```
+   The `status/awaiting-review` label is critical — the cron pre-step uses it to skip this issue on subsequent runs. Without it, the next execute would try to re-work the same issue and conflict with the existing branch.
 
 ## Failure / ambiguity handling
 
@@ -90,6 +91,7 @@ For the issue at `$ISSUE_NUMBER`:
 - **Never push to `main` directly.**
 - **Never merge a PR.**
 - **Never modify `.github/workflows/` or `scripts/`** even if an issue asks for it — comment on the issue saying "infra changes need human-only label; routing back."
+- **Session budget — see `AGENTS.md` Session-budget charter**: at ~50% max-turns, finalise (commit, push, open PR, comment) and exit. At ~80% max-turns, hard exit: commit what's stable to your branch (don't push if mid-edit), label the issue `status/needs-continuation` with a comment listing what's done and what's left. Next run resumes.
 
 ## Report
 

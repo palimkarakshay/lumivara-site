@@ -40,6 +40,19 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - `area/seo` — metadata, OG, sitemap, robots
    - `area/a11y` — accessibility
    - `area/perf` — performance, bundle size
+
+4b. Decide **work type** (choose 1, the dominant kind of decision the work requires):
+   - `type/claude-config` — Claude model selection, prompt tuning, automation budget, scheduling
+   - `type/github` — GitHub config, README, how-tos, GitHub Actions workflows themselves
+   - `type/project-mgmt` — Backlog organisation, label scheme, triage rules, project board
+   - `type/tech-site` — Next.js / TS / CSS / component changes — site code itself
+   - `type/tech-vercel` — Vercel hosting, deploys, env vars, redirects
+   - `type/business-lumivara` — Lumivara-specific positioning, copy decisions, tone
+   - `type/business-hr` — HR domain / legal / compliance specifics (PIPEDA, CHRL standards)
+   - `type/design-cosmetic` — Visual polish, color, typography, layout aesthetics
+   - `type/cleanup` — Refactors, deletions, dead code, deprecation
+   - `type/a11y` — Accessibility — WCAG, ARIA, keyboard nav (overlaps with `area/a11y`; both are fine)
+   If you genuinely cannot pick one, default to `type/tech-site` and note your uncertainty in the rationale comment.
 5. Decide **auto-routine eligibility**:
    - Add `auto-routine` label if: task is self-contained AND has all the info needed in the issue body. Any complexity is OK — `complex` issues are still bot-workable, they just get `manual-only` (step 3) so cron skips them.
    - Add `human-only` ONLY if a human truly must do it (e.g., requires design judgement, needs Vercel dashboard access, requests changes to `.github/workflows/`, requires reading a local file path that doesn't exist on the runner).
@@ -61,6 +74,7 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
 - **Do not close issues.**
 - **Do not touch issues labeled `human-only` or ones already triaged.**
 - **Cap yourself at 10 issues per run.** If the queue is longer, stop after 10 and post a single summary comment on the 10th issue saying "queue longer than 10; will continue next run."
+- **Session budget — see `AGENTS.md` Session-budget charter**: at ~50% max-turns, finish current issue and stop; at ~80% max-turns, hard exit. The next scheduled run resumes — incomplete triage is normal and not a failure.
 - **If you find no eligible issues, exit cleanly with a log line — do not commit anything.**
 - **This workflow commits nothing to the repo tree.** Everything is done via `gh` API calls that update issues/labels/comments.
 

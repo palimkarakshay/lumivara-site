@@ -54,12 +54,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_CLI_TRUST_WORKSPACE: true
         run: |
-          # Install the CLI
+          # 1. Install the CLI
           npm install -g @google/gemini-cli
           
-          # Run using the modern 3-flash preview model
-          # This model ID is compatible with the latest CLI and API versions
-          gemini run --model "gemini-3-flash-preview" --yolo
+          # 2. Dynamically find the latest Flash model
+          # This lists models and picks the first 'flash' model it finds (usually the latest)
+          LATEST_MODEL=$(gemini models | grep -o 'models/gemini-[0-9.]*-flash[^ ]*' | head -n 1)
+          
+          # Fallback to a hardcoded ID if the grep fails for any reason
+          if [ -z "$LATEST_MODEL" ]; then
+            LATEST_MODEL="models/gemini-2.5-flash"
+          fi
+          
+          echo "Selected Model: $LATEST_MODEL"
+          
+          # 3. Run the triage
+          gemini run --model "$LATEST_MODEL" --yolo <<EOF
           Read the file "scripts/triage-prompt.md" in the current directory and 
           follow those instructions exactly. That file is the triage playbook — 
           do not improvise beyond what it says. 

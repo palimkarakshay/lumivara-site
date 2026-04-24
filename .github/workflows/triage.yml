@@ -57,9 +57,9 @@ jobs:
           # Install the CLI
           npm install -g @google/gemini-cli
           
-          # Run using the modern 2.5-flash model
+          # Run using the modern 3-flash preview model
           # This model ID is compatible with the latest CLI and API versions
-          gemini run --model "gemini-2.5-flash" --yolo <<EOF
+          gemini run --model "gemini-3-flash-preview" --yolo
           Read the file "scripts/triage-prompt.md" in the current directory and 
           follow those instructions exactly. That file is the triage playbook — 
           do not improvise beyond what it says. 

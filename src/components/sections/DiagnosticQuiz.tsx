@@ -135,12 +135,15 @@ export function DiagnosticQuiz({ className }: DiagnosticQuizProps) {
         className
       )}
     >
-      <div className="mb-5 flex items-center justify-between">
-        <span className="text-label text-muted-strong">
-          Question {step + 1} of {total}
-        </span>
+      <div className="mb-8 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-label text-muted-strong">
+            Question {step + 1} of {total}
+          </span>
+          <span className="text-label text-muted-strong">{progress}%</span>
+        </div>
         <div
-          className="h-1 w-32 overflow-hidden rounded-full bg-border-subtle"
+          className="h-2 w-full overflow-hidden rounded-full bg-border-subtle"
           role="progressbar"
           aria-valuenow={progress}
           aria-valuemin={0}

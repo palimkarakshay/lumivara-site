@@ -1,6 +1,10 @@
 /**
  * Home page copy. Hero + section headings + principle bodies + founder intro.
  * Service cards pull from services.ts. Insights cards pull from MDX frontmatter.
+ *
+ * CONTENT RULES:
+ *   - hero, principles.items[].body, founder.bioParagraphs — treat as VERBATIM from lumivara.ca
+ *   - fractionalCta, finalCta, pulse, servicesGrid labels, comingSoonProof — authored for the rebuild
  */
 
 export const homeContent = {

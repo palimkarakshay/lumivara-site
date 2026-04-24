@@ -331,7 +331,7 @@ export const services: Service[] = [
       "You need help scoping what a real HR function should look like",
     ],
     approach:
-      "We start with structured diagnostics — stakeholder input, data, surrounding context — before proposing anything. Once the real problem is clear, we either design the solution with you or act as your embedded senior HR partner while you run it.",
+      "We start with structured diagnostics — stakeholder input, data, surrounding context — before proposing anything. Once the real challenge is clear, we either design the approach with you or act as your embedded senior HR partner while you run it.",
     subServices: [
       {
         title: "Diagnostics & Talent Needs Assessment",

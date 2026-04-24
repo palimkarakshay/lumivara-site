@@ -71,7 +71,7 @@ export const aboutContent = {
     monoLabel: "On AI & the Future of Work",
     heading: "AI is not the strategy. It's a lever.",
     paragraphs: [
-      "We think AI belongs in people strategy the same way any good system belongs — in the places where it solves a real problem for a real person. That's coaching-at-scale, personalized development plans, better talent signals, faster workforce decisions. It's not one-size-fits-all rollout of every new tool.",
+      "We think AI belongs in people strategy the same way any good system belongs — in the places where it addresses a real need for a real person. That's coaching-at-scale, personalized development plans, better talent signals, faster workforce decisions. It's not one-size-fits-all rollout of every new tool.",
       "The hard parts of people work — feedback, trust, values, inclusion, leadership presence — remain human. Our role is to keep those in the centre of the design, and use AI to remove friction from everything around them.",
     ],
   },

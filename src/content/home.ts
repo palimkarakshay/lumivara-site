@@ -10,9 +10,9 @@
 export const homeContent = {
   hero: {
     monoLabel: "Lumivara People Advisory",
-    headline: "Bring clarity to complex people problems.",
+    headline: "Bring clarity to complex people challenges.",
     subhead:
-      "At Lumivara, we bring the light of clarity, structure, and direction to complex people challenges. We design customized talent, leadership, and people systems that solve real business problems — and build the capability needed to deliver results.",
+      "At Lumivara, we bring the light of clarity, structure, and direction to complex people challenges. We design customized talent, leadership, and people systems that address real business challenges — and build the capability needed to deliver results.",
     primaryCta: { label: "Book a Discovery Call", href: "/contact" },
     secondaryCta: { label: "See how we work", href: "/how-we-work" },
   },
@@ -34,7 +34,7 @@ export const homeContent = {
       {
         number: "02",
         title: "Delivered through capability.",
-        body: "Solutions are designed specifically for the organization — aligned to strategy, culture, and maturity — rather than applying standard or pre-defined models.",
+        body: "Approaches are designed specifically for the organization — aligned to strategy, culture, and maturity — rather than applying standard or pre-defined models.",
       },
       {
         number: "03",
@@ -96,7 +96,7 @@ export const homeContent = {
   },
 
   finalCta: {
-    headline: "Let's find the real problem.",
+    headline: "Let's find the real challenge.",
     subhead:
       "Every engagement starts with a 30-minute discovery conversation — complimentary and focused on you.",
     cta: { label: "Book a Discovery Call", href: "/contact" },

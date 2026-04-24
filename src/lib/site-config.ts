@@ -10,7 +10,7 @@ export const siteConfig = {
   location: "Toronto, Canada",
   linkedin: "https://www.linkedin.com/company/lumivara-people-advisory/",
   founderLinkedin: "https://www.linkedin.com/in/beasbanerjee/",
-  calLink: process.env.NEXT_PUBLIC_CAL_LINK || "https://cal.com/lumivara/discovery",
+  calLink: process.env.NEXT_PUBLIC_CAL_LINK || "https://cal.com/akshaypalimkar",
   nav: [
     { label: "How We Work", href: "/how-we-work" },
     { label: "What We Do", href: "/what-we-do" },

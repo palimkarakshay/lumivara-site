@@ -16,7 +16,8 @@ The backlog lives in GitHub Issues, grouped in a Project v2 board called **Lumiv
 | Priority | `priority/P1` `priority/P2` `priority/P3` | P1 = urgent / blocking; P2 = within a week; P3 = whenever |
 | Complexity | `complexity/trivial` `easy` `medium` `complex` | Rough effort estimate. Drives model selection. |
 | Model | `model/haiku` `model/sonnet` `model/opus` | Which Claude model the bot uses. Triage assigns based on complexity (trivial/easy → haiku, medium → sonnet, complex → opus). |
-| Area | `area/site` `content` `infra` `copy` `design` `seo` `a11y` `perf` | Lets you filter the board |
+| Area | `area/site` `content` `infra` `copy` `design` `seo` `a11y` `perf` | Where in the codebase. Filter the board. |
+| Work type | `type/claude-config` `type/github` `type/project-mgmt` `type/tech-site` `type/tech-vercel` `type/business-lumivara` `type/business-hr` `type/design-cosmetic` `type/cleanup` `type/a11y` | What kind of decision the work involves (Claude tuning vs. business call vs. legal vs. polish). Triage assigns one. |
 | Status | `status/needs-triage` `planned` `in-progress` `blocked` `needs-clarification` | Lifecycle state |
 | Gating | `auto-routine` / `human-only` | `auto-routine` = bot is allowed to work it. `human-only` = strictly hands-off. |
 | Cron eligibility | `manual-only` (absent = cron-eligible) | If set, `execute.yml` (cron) skips. Operator must fire `execute-complex.yml` manually. Triage adds this for `complexity/complex`. |

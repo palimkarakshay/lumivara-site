@@ -192,6 +192,100 @@ Duplicate for `execute.yml` and `execute-complex.yml` if you want push-button ma
 
 ---
 
+---
+
+## Reference: every HTTP shortcut you can build
+
+Pick the ones you'll use; ignore the rest. All hit `https://api.github.com/...`. All need:
+
+- `Authorization: Bearer {{TOKEN}}`
+- `Accept: application/vnd.github+json`
+- `X-GitHub-Api-Version: 2022-11-28`
+- `Content-Type: application/json` (only for POST/PATCH/PUT)
+
+Replace `{{TOKEN}}` with your fine-grained PAT. The PAT scopes column lists what each shortcut needs.
+
+### Capture / write — issues
+
+| Shortcut | Method + Path | PAT scopes | Body |
+|---|---|---|---|
+| Create issue | `POST /repos/palimkarakshay/lumivara-site/issues` | Issues:Write | `{"title":"P2 — short title","body":"detail","labels":["status/needs-triage"]}` |
+| Comment on issue (e.g., to clarify a `needs-clarification` item) | `POST /repos/palimkarakshay/lumivara-site/issues/{n}/comments` | Issues:Write | `{"body":"clarification text here"}` |
+| Add label to issue | `POST /repos/palimkarakshay/lumivara-site/issues/{n}/labels` | Issues:Write | `{"labels":["priority/P1","auto-routine"]}` |
+| Remove a label | `DELETE /repos/palimkarakshay/lumivara-site/issues/{n}/labels/{label-name-url-encoded}` | Issues:Write | (none) |
+| Close issue | `PATCH /repos/palimkarakshay/lumivara-site/issues/{n}` | Issues:Write | `{"state":"closed","state_reason":"completed"}` (or `not_planned` to mark "wontfix") |
+| Reopen issue | `PATCH /repos/palimkarakshay/lumivara-site/issues/{n}` | Issues:Write | `{"state":"open"}` |
+
+### Triggers — fire workflows
+
+| Shortcut | Method + Path | PAT scopes | Body |
+|---|---|---|---|
+| Trigger triage (rerun bot triage now) | `POST /repos/palimkarakshay/lumivara-site/actions/workflows/triage.yml/dispatches` | Actions:Write | `{"ref":"main"}` |
+| Trigger execute (cron-eligible items, picks top auto-routine) | `POST /repos/palimkarakshay/lumivara-site/actions/workflows/execute.yml/dispatches` | Actions:Write | `{"ref":"main"}` |
+| Trigger execute-complex (manual-only / Opus / specific issue) | `POST /repos/palimkarakshay/lumivara-site/actions/workflows/execute-complex.yml/dispatches` | Actions:Write | `{"ref":"main","inputs":{"issue":"21"}}` (or omit `issue` to auto-pick) |
+
+### Read — quick views
+
+| Shortcut | Method + Path | PAT scopes | Notes |
+|---|---|---|---|
+| List my open P1 issues | `GET /repos/palimkarakshay/lumivara-site/issues?state=open&labels=priority/P1&per_page=20` | Issues:Read | Show in notification or pipe to *Show Result* |
+| List the triaged-and-ready queue | `GET /repos/palimkarakshay/lumivara-site/issues?state=open&labels=auto-routine&per_page=20` | Issues:Read | What the bot will work next |
+| List items needing your input | `GET /repos/palimkarakshay/lumivara-site/issues?state=open&labels=status/needs-clarification&per_page=20` | Issues:Read | Reply to these to unblock |
+| View one issue (with last 10 comments) | `GET /repos/palimkarakshay/lumivara-site/issues/{n}` then `GET /repos/.../issues/{n}/comments?per_page=10` | Issues:Read | Two-step shortcut |
+| List recent workflow runs (last 10) | `GET /repos/palimkarakshay/lumivara-site/actions/runs?per_page=10` | Actions:Read | Quick "is the bot OK?" check |
+| List my open PRs (review queue) | `GET /repos/palimkarakshay/lumivara-site/pulls?state=open&per_page=20` | PullRequests:Read | What's waiting for you to merge |
+
+### PR actions
+
+| Shortcut | Method + Path | PAT scopes | Body |
+|---|---|---|---|
+| Mark PR ready (un-draft) | `POST /graphql` | PullRequests:Write + GraphQL | GraphQL mutation `markPullRequestReadyForReview` — see snippet below |
+| Merge PR (squash) | `PUT /repos/palimkarakshay/lumivara-site/pulls/{n}/merge` | PullRequests:Write | `{"merge_method":"squash"}` |
+| Close PR without merge | `PATCH /repos/palimkarakshay/lumivara-site/pulls/{n}` | PullRequests:Write | `{"state":"closed"}` |
+| Comment on PR (PRs are issues for the comments API) | `POST /repos/palimkarakshay/lumivara-site/issues/{n}/comments` | PullRequests:Write | `{"body":"text"}` |
+
+The "mark PR ready" needs GraphQL because REST doesn't expose it. URL: `POST https://api.github.com/graphql`. Body:
+
+```json
+{
+  "query": "mutation($id: ID!) { markPullRequestReadyForReview(input: {pullRequestId: $id}) { pullRequest { number isDraft } } }",
+  "variables": { "id": "PR_NODE_ID_HERE" }
+}
+```
+
+The `PR_NODE_ID_HERE` (a base64-ish string starting with `PR_`) comes from a prior `GET /repos/.../pulls/{n}` call — look for the `node_id` field in the response. If you want a one-tap merge-from-phone for an auto-PR, simpler approach: run `gh pr ready {n}` from your laptop **once** as a setup ritual, then mark all auto-PRs ready by default in the workflow (see "Auto-ready PRs" suggestion below).
+
+### Vercel (separate API, separate token)
+
+These hit `https://api.vercel.com/...` and need a Vercel API token (Vercel dashboard → Settings → Tokens). Headers: `Authorization: Bearer {{VERCEL_TOKEN}}`.
+
+| Shortcut | Method + Path | Notes |
+|---|---|---|
+| List recent deployments | `GET /v6/deployments?projectId={projectId}&limit=10` | Find the latest production URL |
+| Trigger a redeploy of latest production | `POST /v13/deployments` with `{"name":"lumivara-site","gitSource":{"type":"github","ref":"main","repoId":1218015510}}` | Useful if Vercel got into a weird state |
+| Toggle deployment protection (advanced) | `PATCH /v9/projects/{projectId}` | Body sets `ssoProtection`/`passwordProtection`. Look up project ID first via `GET /v9/projects` |
+
+You only need the Vercel shortcuts if you want phone control over deploys. The default GitHub-integration auto-deploys cover the normal flow.
+
+### Suggested phone home-screen layout
+
+A 6-button home-screen folder:
+
+| Position | Shortcut | Why |
+|---|---|---|
+| Top-left | Capture issue | Most common action |
+| Top-mid | List P1 queue | "What's urgent?" |
+| Top-right | List PRs to review | "What needs my eyes?" |
+| Bot-left | Trigger triage | After capturing a batch |
+| Bot-mid | Trigger execute | Impatience |
+| Bot-right | View latest run | "Is the bot working?" |
+
+### "Auto-ready PRs" (proposed workflow tweak — not yet built)
+
+If you'd like all auto-routine PRs to skip the draft state and open directly as ready-for-review, the change is one line in `scripts/execute-prompt.md`: drop `--draft` from the default PR-create command. The trade-off: Vercel still posts the preview comment within ~60s either way, but Vercel's checks haven't run yet at PR-open time, so a "ready" PR briefly looks merge-able before Vercel confirms. Workable — just don't tap merge before the Vercel comment lands.
+
+---
+
 ## Security notes
 
 - The PAT lives on the phone. If the phone is lost, **revoke the token** from GitHub settings — don't just change device passwords. Because the token only has `issues:write`, the blast radius is "can create/edit issues in this one repo."

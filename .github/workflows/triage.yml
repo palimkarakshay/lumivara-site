@@ -31,4 +31,6 @@ jobs:
             do not improvise beyond what it says. The `gh` CLI is available and
             already authenticated via GITHUB_TOKEN (check `gh auth status` if in
             doubt). When done, print the summary it asks for and exit.
-          claude_args: '--max-turns 40'
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Bash,Read,Grep,Glob"

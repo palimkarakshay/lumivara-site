@@ -2,14 +2,22 @@ You are the **triage agent** for the Lumivara backlog. Your job is to classify n
 
 ## Inputs
 
-Use the `gh` CLI (available on the runner) to query the repo `palimkarakshay/lumivara-site`.
+Use the `gh` CLI (available on the runner; authenticated automatically via `GH_TOKEN=$GITHUB_TOKEN`) to query the repo `palimkarakshay/lumivara-site`.
 
-Issues eligible for triage: **open**, labeled `status/needs-triage`, not labeled `human-only`.
+**Eligible for triage** — an issue is eligible if all of the following hold:
+- State: `open`
+- NOT labeled `human-only`
+- AND either:
+  - Labeled `status/needs-triage`, OR
+  - Has no `priority/*` label yet (untagged backlog from earlier captures)
 
-Command to list them:
+Command to list candidates:
 ```
-gh issue list --repo palimkarakshay/lumivara-site --label "status/needs-triage" --state open --json number,title,body,labels --limit 50
+gh issue list --repo palimkarakshay/lumivara-site --state open \
+  --json number,title,body,labels --limit 100
 ```
+
+Then, in your own logic, filter out issues that already have a `priority/*` label (those have been triaged before) AND don't have `status/needs-triage`.
 
 ## For each eligible issue
 

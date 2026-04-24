@@ -51,4 +51,6 @@ jobs:
             and authenticated (check `gh auth status`). Node + dependencies are
             already installed — you can run `npx tsc --noEmit` and `npm run
             lint` directly. When done, print the summary and exit.
-          claude_args: '--max-turns 80'
+          claude_args: |
+            --max-turns 80
+            --allowedTools "Bash,Read,Write,Edit,Grep,Glob"

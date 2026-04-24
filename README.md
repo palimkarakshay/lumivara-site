@@ -1,8 +1,8 @@
-# Lumivara Site — Local Working Demo - git update check
+# Lumivara Site
 
-A rebuilt Lumivara People Advisory site, running locally. Next.js 16 + TypeScript + Tailwind v4 + shadcn/ui + MDX.
+A rebuilt Lumivara People Advisory site. Next.js 16 + TypeScript + Tailwind v4 + shadcn/ui + MDX.
 
-> **Status:** In active build. Local-only; not yet deployed.
+> **Status:** Live on Vercel (auto-deploys on every merge to `main`). Day-to-day backlog is operated by a Claude-powered GitHub Actions bot — see [How this project is run](#how-this-project-is-run) below.
 
 ---
 
@@ -20,6 +20,36 @@ npm run dev
 Open http://localhost:3000.
 
 No environment variables are required to run locally — the `.env.local` committed to your working tree has safe defaults. See [.env.local.example](./.env.local.example) for what each variable does.
+
+---
+
+## How this project is run
+
+Most days, **nobody touches this code directly**. The flow is:
+
+1. **You capture an idea** — from your phone via the HTTP Shortcuts app ([PHONE_SETUP.md](./PHONE_SETUP.md)) or from a terminal with `gh issue create`. The capture creates a GitHub Issue with `status/needs-triage`.
+2. **The triage bot classifies it** — runs daily at 06:00 UTC. Reads new issues, applies `priority/`, `complexity/`, `area/` labels using the rubric in [`scripts/triage-prompt.md`](./scripts/triage-prompt.md), comments its rationale, marks the issue `auto-routine` if it's well-scoped enough for autonomous work (or `human-only` / `status/needs-clarification` if not).
+3. **The execute bot ships it** — runs every 8 hours (00:00, 08:00, 16:00 UTC). Picks the top-ranked open `auto-routine` issue, implements on a branch `auto/issue-<n>`, opens a PR with `Fixes #<n>`. Never auto-merges.
+4. **Vercel previews it** — Vercel's GitHub integration deploys a preview URL and posts it as a comment on the PR within ~60s of the bot pushing.
+5. **You review on phone** — GitHub Mobile shows the diff and the preview URL. Tap merge if happy. Merge to `main` triggers Vercel's production deploy.
+6. **Bot updates the issue** — closes it via `Fixes #N`, archives it on the Project board.
+
+Your laptop can be off the entire time. The cron runs in GitHub's cloud; Vercel deploys in Vercel's cloud; you only need a phone with the GitHub app and HTTP Shortcuts.
+
+### When to bypass the bot
+
+Label any issue `human-only` to keep the bot away. Reasons:
+- Touches the [exclusion list](scripts/execute-prompt.md#guardrails) (workflows, env vars, contact API endpoint, dependency upgrades, page deletions)
+- Needs a design review or screen-share
+- You want to do it yourself
+
+### Cost
+
+Bot runs use **your Claude Pro/Max subscription** via the `CLAUDE_CODE_OAUTH_TOKEN` secret — no API billing. Usage shares the same 5-hour rolling window as your interactive Claude Code sessions, so heavy automation can squeeze your interactive budget. Tuning levers in [`docs/BACKLOG.md`](./docs/BACKLOG.md#cost--usage).
+
+For setup details, label taxonomy, and triage/execute rubrics, read [`docs/BACKLOG.md`](./docs/BACKLOG.md).
+
+---
 
 ## Scripts
 
@@ -100,7 +130,14 @@ See `src/app/globals.css` for the full token set.
 
 ## Deployment
 
-Not yet deployed. When ready, the project is Vercel-ready — zero config change required.
+Live on **Vercel**, auto-deployed from `main` via Vercel's native GitHub integration:
+
+- **Production**: every push to `main` triggers a production build. (Merging an auto-PR is a push to `main`.)
+- **Preview**: every open PR gets a unique preview URL, posted by the Vercel bot as a comment on the PR within ~60s of the push. The bot's auto-PRs get one too — that's how you visually verify the change from your phone before merging.
+- **Build settings**: zero config — Vercel autodetects Next.js 16, runs `npm install` then `next build`. No `vercel.json` needed.
+- **Environment variables**: keep `.env.local` for local dev only. Anything Vercel needs lives in *Vercel project → Settings → Environment Variables* (per-environment: Production / Preview / Development).
+
+If a Vercel build fails on an auto-PR (typecheck, lint, runtime), the PR comment will reflect that — leave the PR unmerged and either re-comment on the issue with hints or close + recreate with more context.
 
 ---
 
@@ -144,6 +181,7 @@ High-level log of release-sized change bundles. Per-commit detail lives in `git 
 
 | Date | Revision | Summary |
 |------|----------|---------|
+| 2026-04-23 | r3 — End-to-end pipeline live | Vercel GitHub integration enabled (production from `main`, previews per PR). README reframed around the auto-pilot loop ("How this project is run"). Workflows updated with `id-token: write` for the Claude GitHub App OIDC handshake. Initial migrated meta-issues replaced with concrete codable issues so the next scheduled triage/execute produces real PRs + Vercel previews. |
 | 2026-04-23 | r2 — Issues + Projects + Claude auto-routine | Retired `Feedback.md` and the dispatch-based tag system. Moved backlog to GitHub Issues + Project v2. Added `triage.yml` (daily) and `execute.yml` (every 8h) GitHub Actions running Claude Code via Pro subscription OAuth token (no API billing). Phone shortcut now creates issues directly. Playbooks in `scripts/triage-prompt.md` / `execute-prompt.md`; bootstrap in `scripts/bootstrap-kanban.sh`. |
 | 2026-04-23 | r1 — Feedback automation *(superseded by r2)* | UTF-8 Feedback.md with phased schema; `append_feedback.yml` via `repository_dispatch`; `triage_feedback.yml` tag-based phasing; Android HTTP Shortcuts setup. |
 | 2026-04-22 | r0 — Site build | Next.js 16 + Tailwind v4 scaffold; home, how-we-work, what-we-do hub + 6 service pages, MCQ diagnostic, fractional-hr, about, insights, contact (Cal.com + PIPEDA form); sitemap, robots, OG image, 404, privacy, career-coaching stub. |

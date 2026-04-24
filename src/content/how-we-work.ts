@@ -1,5 +1,9 @@
 /**
  * How We Work page copy. Expanded principle bodies + engagement models + KPI mapping.
+ *
+ * CONTENT RULES:
+ *   - hero.headline, principles[].title, principles[].bodyFirst — treat as VERBATIM from lumivara.ca
+ *   - hero.subhead, principles[].bodySecond, engagementModels, kpiMatrix, finalCta — authored
  */
 
 export const howWeWorkContent = {

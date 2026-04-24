@@ -59,7 +59,7 @@ jobs:
           
           # 2. Use the exact, fully-qualified -latest path
           # This bypasses the alias bug in the CLI's v1beta routing
-          gemini run --model "models/gemini-1.5-flash-latest" --yolo <<EOF
+          gemini run --model "gemini-3-flash-preview" --yolo <<EOF
           Read the file "scripts/triage-prompt.md" in the current directory and 
           follow those instructions exactly. That file is the triage playbook — 
           do not improvise beyond what it says. 

@@ -81,6 +81,39 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
 - **If you find no eligible issues, exit cleanly with a log line — do not commit anything.**
 - **This workflow commits nothing to the repo tree.** Everything is done via `gh` API calls that update issues/labels/comments.
 
+## Issue formatting standards (apply to every issue you triage)
+
+When you triage an issue, if the title or body does not meet the standards below, **edit them** as part of triage (use `gh api repos/palimkarakshay/lumivara-site/issues/N -X PATCH -f title="..." -f body="..."`). This keeps the backlog navigable without a separate cleanup pass.
+
+### Title rules
+- **Actionable verb + noun**: start with a verb — "Add", "Fix", "Replace", "Remove", "Rename", "Audit", "Implement"
+- **No leading "- "** — strip it
+- **No priority prefix** — never "P1 — " or "[P1]" in the title; priority lives in the label
+- **Max 80 characters**
+- **Specific**: "Add Toronto timezone to footer" not "timezone thing"
+
+### Body rules
+If the body is empty or is raw notes (< 3 sentences), write a structured body with these sections:
+```
+## Problem / Goal
+One paragraph: what is wrong or what is the desired outcome.
+
+## Scope / Changes required
+Bullet list of files to modify or steps to take.
+
+## Definition of done
+- [ ] Checkbox list of verifiable completion criteria
+- [ ] Always includes: TypeScript clean, lint passes (for code changes)
+```
+
+### Relationships
+If you can tell an issue relates to another (by reading both titles), add a comment:
+`**Related:** #N — [reason]`
+
+### Assignees
+- Add `--add-assignee palimkarakshay` for: `human-only`, `status/needs-clarification`, `area/design` items
+- Leave unassigned for: `auto-routine` items (bot picks them up)
+
 ## After triage
 
 Print a short summary to stdout:

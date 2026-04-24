@@ -1,37 +1,35 @@
-You are the **execute agent** for the Lumivara backlog. Your job is to pick ONE issue and implement it.
+You are the **execute agent** for the Lumivara backlog. Your job is to implement ONE specific issue that has been pre-selected for you.
 
-## Pre-flight (use `gh` CLI)
+## Which issue?
 
-Repo: `palimkarakshay/lumivara-site`.
+The workflow that invoked you has set `ISSUE_NUMBER` in your environment. Read it:
 
-1. Query candidate issues:
-   ```
-   gh issue list --repo palimkarakshay/lumivara-site \
-     --label "auto-routine" --state open \
-     --json number,title,body,labels,createdAt --limit 50
-   ```
+```
+echo "$ISSUE_NUMBER"
+```
 
-2. Filter out any issue with label: `human-only`, `status/blocked`, `status/in-progress`, `status/needs-clarification`.
+If `$ISSUE_NUMBER` is empty or `0`, exit cleanly: log "no eligible issues this run" and do nothing else.
 
-3. Rank the remaining:
-   - Primary: priority (P1 > P2 > P3).
-   - Secondary (within same priority): prefer `trivial` → `easy` → `medium`. Skip `complex` (should not have auto-routine, but defensive).
-   - Tertiary: oldest `createdAt` first.
+Otherwise, fetch the issue:
 
-4. If zero candidates, exit cleanly: log "no eligible issues" and do not commit anything.
+```
+gh issue view "$ISSUE_NUMBER" --repo palimkarakshay/lumivara-site --json number,title,body,labels
+```
+
+Repo: `palimkarakshay/lumivara-site`. The model you're running on (Haiku / Sonnet / Opus) was selected by the workflow based on this issue's `model/*` label. Don't second-guess the model assignment.
 
 ## Execute
 
-Take the top ranked issue. Then:
+For the issue at `$ISSUE_NUMBER`:
 
 1. **Mark in progress**:
    ```
-   gh issue edit <n> --add-label "status/in-progress" --remove-label "status/planned"
+   gh issue edit $ISSUE_NUMBER --add-label "status/in-progress" --remove-label "status/planned"
    ```
 
 2. **Create a branch**:
    ```
-   git switch -c auto/issue-<n>
+   git switch -c auto/issue-$ISSUE_NUMBER
    ```
 
 3. **Implement the issue.** Respect these project conventions:
@@ -52,31 +50,31 @@ Take the top ranked issue. Then:
 
 5. **Commit** with message format:
    ```
-   feedback(#<n>): <short summary>
+   feedback(#$ISSUE_NUMBER): <short summary>
    ```
    One commit per logical change. If the issue is genuinely multi-step and you made multiple commits, that's fine.
 
 6. **Push and open a PR**:
    ```
-   git push origin auto/issue-<n>
-   gh pr create --title "feedback(#<n>): <short summary>" \
-     --body "Fixes #<n>\n\n<what you changed>\n\n---\nAutomated by execute.yml." \
+   git push origin auto/issue-$ISSUE_NUMBER
+   gh pr create --title "feedback(#$ISSUE_NUMBER): <short summary>" \
+     --body "Fixes #$ISSUE_NUMBER\n\n<what you changed>\n\n---\nAutomated by execute.yml." \
      --label "auto-routine"
    ```
    Do NOT merge. Do NOT enable auto-merge.
 
 7. **Update the issue**:
    ```
-   gh issue edit <n> --remove-label "status/in-progress" --add-label "status/planned"
-   gh issue comment <n> --body "Draft PR: #<pr-number>. Review and merge to close."
+   gh issue edit $ISSUE_NUMBER --remove-label "status/in-progress" --add-label "status/planned"
+   gh issue comment $ISSUE_NUMBER --body "Draft PR: #<pr-number>. Review and merge to close."
    ```
 
 ## Failure / ambiguity handling
 
 - If you start implementing and discover the issue text is ambiguous or missing critical info:
   1. Do NOT push anything.
-  2. Reset: `git checkout main && git branch -D auto/issue-<n>` (if branch exists).
-  3. Label the issue: `gh issue edit <n> --add-label "status/needs-clarification" --remove-label "status/in-progress" --remove-label "auto-routine"`.
+  2. Reset: `git checkout main && git branch -D auto/issue-$ISSUE_NUMBER` (if branch exists).
+  3. Label the issue: `gh issue edit $ISSUE_NUMBER --add-label "status/needs-clarification" --remove-label "status/in-progress" --remove-label "auto-routine"`.
   4. Comment with a bulleted list of the exact questions blocking you.
 - If a type-check or lint fails after your implementation, **first baseline against `main`** to determine whether you caused it:
   1. Stash your branch: `git stash` (if any uncommitted) and `git checkout main`.
@@ -84,7 +82,7 @@ Take the top ranked issue. Then:
   3. Compare:
      - **Same errors on `main`** → pre-existing tech debt, not your regression. Open the PR **as ready (not draft)**. In the PR body, add a `**Pre-existing lint/type warnings:**` section listing the unchanged failures and noting "exists on main, unchanged by this PR."
      - **New errors only on your branch** → you caused a regression. Try fixing within ~3 attempts. If still failing, commit what you have, open the PR **as draft** with `gh pr create --draft`, lead the body with `⚠️ Regression in type-check/lint — see comments.` and list the new errors verbatim. Comment on the issue linking the draft PR.
-  4. Then `git checkout auto/issue-<n>` and `git stash pop` if you stashed.
+  4. Then `git checkout auto/issue-$ISSUE_NUMBER` and `git stash pop` if you stashed.
 
 ## Guardrails
 
@@ -97,8 +95,8 @@ Take the top ranked issue. Then:
 
 Print to stdout at the end:
 ```
-Executed issue #<n>: <title>
-Branch: auto/issue-<n>
+Executed issue #$ISSUE_NUMBER: <title>
+Branch: auto/issue-$ISSUE_NUMBER
 PR: <url>
 ```
 Or `No eligible issues this run.` if nothing to do.

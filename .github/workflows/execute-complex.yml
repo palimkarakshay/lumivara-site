@@ -1,0 +1,156 @@
+name: Execute backlog item — manual / complex
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number (leave blank to auto-pick top P1 manual-only)"
+        required: false
+        default: ""
+      model_override:
+        description: "Override model (leave blank to use the issue's model/* label)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "claude-haiku-4-5-20251001"
+          - "claude-sonnet-4-6"
+          - "claude-opus-4-7"
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: claude-runtime
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git identity
+        run: |
+          git config user.name "claude-auto"
+          git config user.email "claude-auto@users.noreply.github.com"
+
+      - name: Pick eligible issue and model
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_ISSUE: ${{ inputs.issue }}
+          INPUT_MODEL: ${{ inputs.model_override }}
+        run: |
+          # If user provided an issue number, fetch it directly. Else find top
+          # P1 auto-routine + manual-only.
+          if [ -n "$INPUT_ISSUE" ]; then
+            gh issue view "$INPUT_ISSUE" --repo palimkarakshay/lumivara-site \
+              --json number,title,labels > /tmp/single.json
+            python3 - <<'PY'
+          import json, os
+          i = json.load(open('/tmp/single.json'))
+          labels = {l['name'] for l in i['labels']}
+          MODEL_FOR = {
+              "model/haiku":  "claude-haiku-4-5-20251001",
+              "model/sonnet": "claude-sonnet-4-6",
+              "model/opus":   "claude-opus-4-7",
+          }
+          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), "claude-sonnet-4-6")
+          override = os.environ.get("INPUT_MODEL", "").strip()
+          if override:
+              model = override
+          out = open(os.environ["GITHUB_OUTPUT"], "a")
+          out.write(f"issue={i['number']}\nmodel={model}\n")
+          print(f"Manual run: working issue #{i['number']} with model {model}")
+          PY
+          else
+            gh issue list --repo palimkarakshay/lumivara-site \
+              --label auto-routine --label manual-only --state open \
+              --json number,title,labels,createdAt --limit 50 > /tmp/candidates.json
+            python3 - <<'PY'
+          import json, os, sys
+          issues = json.load(open('/tmp/candidates.json'))
+          EXCLUDE = {"human-only", "status/blocked",
+                     "status/in-progress", "status/needs-clarification"}
+          PRIO_RANK = {"priority/P1": 0, "priority/P2": 1, "priority/P3": 2}
+          MODEL_FOR = {
+              "model/haiku":  "claude-haiku-4-5-20251001",
+              "model/sonnet": "claude-sonnet-4-6",
+              "model/opus":   "claude-opus-4-7",
+          }
+          eligible = []
+          for i in issues:
+              labels = {l["name"] for l in i["labels"]}
+              if labels & EXCLUDE: continue
+              prio = min((PRIO_RANK.get(l, 99) for l in labels), default=99)
+              if prio == 99: continue
+              eligible.append((prio, i["createdAt"], i["number"], labels))
+          out = open(os.environ["GITHUB_OUTPUT"], "a")
+          if not eligible:
+              out.write("issue=0\nmodel=\n")
+              print("No eligible manual-only issues.")
+              sys.exit(0)
+          eligible.sort()
+          _, _, num, labels = eligible[0]
+          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), "claude-sonnet-4-6")
+          override = os.environ.get("INPUT_MODEL", "").strip()
+          if override:
+              model = override
+          out.write(f"issue={num}\nmodel={model}\n")
+          print(f"Auto-pick: working issue #{num} with model {model}")
+          PY
+          fi
+
+      - name: No eligible issue — exiting
+        if: steps.pick.outputs.issue == '0'
+        run: echo "No eligible manual-only issues. Exiting cleanly."
+
+      - name: Export ISSUE_NUMBER to job env
+        if: steps.pick.outputs.issue != '0'
+        run: echo "ISSUE_NUMBER=${{ steps.pick.outputs.issue }}" >> "$GITHUB_ENV"
+
+      - uses: anthropics/claude-code-action@v1
+        if: steps.pick.outputs.issue != '0'
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          settings: |
+            {
+              "permissions": {
+                "allow": [
+                  "Bash",
+                  "Read",
+                  "Write",
+                  "Edit",
+                  "Glob",
+                  "Grep"
+                ]
+              }
+            }
+          prompt: |
+            Issue #${{ steps.pick.outputs.issue }} has been pre-selected for you.
+            ISSUE_NUMBER=${{ steps.pick.outputs.issue }} is available in your env.
+            This is a MANUAL execution path (typically for complex/manual-only
+            issues). Read `scripts/execute-prompt.md` and follow it to implement
+            that specific issue. Skip selection logic. The `gh` CLI is
+            authenticated. Node + dependencies are installed. When done, print
+            the summary and exit.
+          claude_args: |
+            --max-turns 120
+            --model ${{ steps.pick.outputs.model }}

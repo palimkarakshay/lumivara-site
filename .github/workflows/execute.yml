@@ -3,7 +3,6 @@ name: Execute backlog item
 on:
   schedule:
     # Every 8 hours — 00:00, 08:00, 16:00 UTC. 3 runs/day.
-    # Tune down if this burns too much Pro budget; workflow_dispatch stays available.
     - cron: '0 0,8,16 * * *'
   workflow_dispatch:
 
@@ -40,7 +39,80 @@ jobs:
           git config user.name "claude-auto"
           git config user.email "claude-auto@users.noreply.github.com"
 
+      - name: Pick eligible issue and model
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue list --repo palimkarakshay/lumivara-site \
+            --label auto-routine --state open \
+            --json number,title,labels,createdAt --limit 50 > /tmp/candidates.json
+
+          python3 - <<'PY'
+          import json, os, sys
+
+          issues = json.load(open('/tmp/candidates.json'))
+
+          # Cron path: skip manual-only. (manual path is execute-complex.yml)
+          EXCLUDE = {"human-only", "manual-only", "status/blocked",
+                     "status/in-progress", "status/needs-clarification"}
+          PRIO_RANK = {"priority/P1": 0, "priority/P2": 1, "priority/P3": 2}
+          COMP_RANK = {"complexity/trivial": 0, "complexity/easy": 1, "complexity/medium": 2}
+
+          MODEL_FOR = {
+              "model/haiku":  "claude-haiku-4-5-20251001",
+              "model/sonnet": "claude-sonnet-4-6",
+              "model/opus":   "claude-opus-4-7",
+          }
+          # Fallback if model label missing: derive from complexity
+          MODEL_FROM_COMPLEXITY = {
+              "complexity/trivial": "claude-haiku-4-5-20251001",
+              "complexity/easy":    "claude-haiku-4-5-20251001",
+              "complexity/medium":  "claude-sonnet-4-6",
+              "complexity/complex": "claude-opus-4-7",
+          }
+
+          eligible = []
+          for i in issues:
+              labels = {l["name"] for l in i["labels"]}
+              if labels & EXCLUDE:
+                  continue
+              prio = min((PRIO_RANK.get(l, 99) for l in labels), default=99)
+              comp = min((COMP_RANK.get(l, 99) for l in labels), default=99)
+              if prio == 99 or comp == 99:
+                  # missing required triage labels — wait for next triage run
+                  continue
+              eligible.append((prio, comp, i["createdAt"], i["number"], labels))
+
+          out = open(os.environ["GITHUB_OUTPUT"], "a")
+          if not eligible:
+              out.write("issue=0\n")
+              out.write("model=\n")
+              print("No eligible issues this run.")
+              sys.exit(0)
+
+          eligible.sort()
+          _, _, _, num, labels = eligible[0]
+
+          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), None)
+          if not model:
+              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-sonnet-4-6")
+
+          out.write(f"issue={num}\n")
+          out.write(f"model={model}\n")
+          print(f"Selected issue #{num} with model {model}")
+          PY
+
+      - name: No eligible issue — exiting
+        if: steps.pick.outputs.issue == '0'
+        run: echo "No eligible issues this cron run. Exiting cleanly."
+
+      - name: Export ISSUE_NUMBER to job env
+        if: steps.pick.outputs.issue != '0'
+        run: echo "ISSUE_NUMBER=${{ steps.pick.outputs.issue }}" >> "$GITHUB_ENV"
+
       - uses: anthropics/claude-code-action@v1
+        if: steps.pick.outputs.issue != '0'
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           settings: |
@@ -57,12 +129,12 @@ jobs:
               }
             }
           prompt: |
-            Read the file `scripts/execute-prompt.md` in the checked-out repo
-            and follow those instructions exactly. That file is the execute
-            playbook — it contains the issue selection rubric, scope guardrails,
-            commit/PR format, and failure handling. The `gh` CLI is available
-            and authenticated (check `gh auth status`). Node + dependencies are
-            already installed — you can run `npx tsc --noEmit` and `npm run
-            lint` directly. When done, print the summary and exit.
+            Issue #${{ steps.pick.outputs.issue }} has been pre-selected for you.
+            ISSUE_NUMBER=${{ steps.pick.outputs.issue }} is available in your env.
+            Read `scripts/execute-prompt.md` and follow it to implement that
+            specific issue. Skip any issue-selection logic — it's already done.
+            The `gh` CLI is authenticated. Node + dependencies are installed.
+            When done, print the summary and exit.
           claude_args: |
             --max-turns 80
+            --model ${{ steps.pick.outputs.model }}

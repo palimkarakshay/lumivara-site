@@ -26,11 +26,11 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - `priority/P1` — customer-facing bug, broken flow, visible content error, accessibility blocker, security issue, blocks a named date (launch, demo, PIPEDA compliance).
    - `priority/P2` — visible improvement, polish, content addition that isn't time-critical, perf under target but not broken.
    - `priority/P3` — nice-to-have, experiment, speculative refactor, "consider X".
-3. Decide **complexity**:
-   - `complexity/trivial` — typo, single-line, metadata tweak.
-   - `complexity/easy` — one file, obvious change, < 30 min.
-   - `complexity/medium` — a handful of files or non-trivial logic, 1–3h.
-   - `complexity/complex` — spans many files, architectural decision, or > 3h. **If complex, do NOT mark `auto-routine`** — flag for human work.
+3. Decide **complexity** AND attach the matching `model/*` and cron-eligibility labels:
+   - `complexity/trivial` — typo, single-line, metadata tweak. → also add `model/haiku`. Cron-eligible.
+   - `complexity/easy` — one file, obvious change, < 30 min. → also add `model/haiku`. Cron-eligible.
+   - `complexity/medium` — a handful of files or non-trivial logic, 1–3h. → also add `model/sonnet`. Cron-eligible.
+   - `complexity/complex` — spans many files, architectural decision, or > 3h. → also add `model/opus` AND `manual-only` (so cron skips, but the bot can still work it when the operator manually fires `execute-complex.yml`).
 4. Decide **area** (choose 1–2, lean toward 1):
    - `area/site` — Next.js app code (components, routes, data fetching)
    - `area/content` — MDX, copy, content files
@@ -41,18 +41,19 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - `area/a11y` — accessibility
    - `area/perf` — performance, bundle size
 5. Decide **auto-routine eligibility**:
-   - Add `auto-routine` label if: task is self-contained, has all the info needed in the issue body, and complexity is `trivial`, `easy`, or `medium` *with* unambiguous scope.
-   - Otherwise add `human-only`.
-   - If the issue is ambiguous (you're guessing what it means), instead add `status/needs-clarification`, leave `status/needs-triage`, and post a comment listing the specific questions that block triage. Do NOT add priority/complexity/auto-routine in that case.
+   - Add `auto-routine` label if: task is self-contained AND has all the info needed in the issue body. Any complexity is OK — `complex` issues are still bot-workable, they just get `manual-only` (step 3) so cron skips them.
+   - Add `human-only` ONLY if a human truly must do it (e.g., requires design judgement, needs Vercel dashboard access, requests changes to `.github/workflows/`, requires reading a local file path that doesn't exist on the runner).
+   - If the issue is ambiguous (you're guessing what it means), instead add `status/needs-clarification`, leave `status/needs-triage`, and post a comment listing the specific questions that block triage. Do NOT add priority/complexity/model/auto-routine in that case.
 6. Apply labels with `gh issue edit <n> --add-label "..." --remove-label "status/needs-triage"` and set `status/planned` (unless asking for clarification).
 7. Post one comment per issue with your rationale, format:
    ```
    **Triaged automatically**
    - Priority: P2 — content polish, not blocking
-   - Complexity: easy — single MDX file
+   - Complexity: easy → model/haiku
    - Area: content
-   - Auto-routine: yes
+   - Auto-routine: yes (cron-eligible)
    ```
+   For complex / manual-only items, the last line reads `Auto-routine: yes (manual-only — fire execute-complex.yml to run)`.
 
 ## Guardrails
 

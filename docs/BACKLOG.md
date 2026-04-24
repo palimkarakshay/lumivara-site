@@ -14,10 +14,12 @@ The backlog lives in GitHub Issues, grouped in a Project v2 board called **Lumiv
 | Group | Labels | Meaning |
 |-------|--------|---------|
 | Priority | `priority/P1` `priority/P2` `priority/P3` | P1 = urgent / blocking; P2 = within a week; P3 = whenever |
-| Complexity | `complexity/trivial` `easy` `medium` `complex` | Rough effort estimate — bot refuses to auto-work `complex` |
+| Complexity | `complexity/trivial` `easy` `medium` `complex` | Rough effort estimate. Drives model selection. |
+| Model | `model/haiku` `model/sonnet` `model/opus` | Which Claude model the bot uses. Triage assigns based on complexity (trivial/easy → haiku, medium → sonnet, complex → opus). |
 | Area | `area/site` `content` `infra` `copy` `design` `seo` `a11y` `perf` | Lets you filter the board |
 | Status | `status/needs-triage` `planned` `in-progress` `blocked` `needs-clarification` | Lifecycle state |
-| Gating | `auto-routine` / `human-only` | Whether `execute.yml` is allowed to pick it up |
+| Gating | `auto-routine` / `human-only` | `auto-routine` = bot is allowed to work it. `human-only` = strictly hands-off. |
+| Cron eligibility | `manual-only` (absent = cron-eligible) | If set, `execute.yml` (cron) skips. Operator must fire `execute-complex.yml` manually. Triage adds this for `complexity/complex`. |
 
 New issues start with `status/needs-triage`. Triage removes that and adds `status/planned` + priority/complexity/area + one of `auto-routine`/`human-only`.
 
@@ -70,7 +72,8 @@ Any of these can be fired via the Actions tab, `gh workflow run`, or an HTTP Sho
 | Workflow | When you'd manually run it |
 |----------|-----------------------------|
 | `triage.yml` | Just captured a batch of items from phone, don't want to wait for the daily run |
-| `execute.yml` | You cleared the P1 queue and want the bot to start on P2 |
+| `execute.yml` | You cleared the P1 queue and want the bot to start on P2 (cron handles trivial/easy/medium issues with Haiku/Sonnet) |
+| `execute-complex.yml` | You're ready to spend a more expensive Opus run on a `complexity/complex` `manual-only` issue. Optionally takes an issue # input; otherwise auto-picks top P1 manual-only |
 
 ## When to bypass the bot
 

@@ -52,14 +52,15 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_CLI_TRUST_WORKSPACE: true # Automatically trust the repo directory
         run: |
-          # Install the official CLI
+          # 1. Install the CLI
           npm install -g @google/gemini-cli
           
-          # Run with --skip-trust and --yolo for fully automated execution
-          gemini run --model "gemini-1.5-flash" --skip-trust --yolo <<EOF
+          # 2. Run using the -latest suffix to ensure compatibility with v1beta
+          gemini run --model "gemini-1.5-flash-latest" --yolo <<EOF
           Read the file "scripts/triage-prompt.md" in the current directory and 
-          follow its instructions exactly. That file is the triage playbook — 
+          follow those instructions exactly. That file is the triage playbook — 
           do not improvise beyond what it says. 
           
           The "gh" CLI is available and already authenticated via GITHUB_TOKEN.

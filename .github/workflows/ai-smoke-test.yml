@@ -48,18 +48,19 @@ jobs:
               sys.exit(1)
           PY
 
-      - name: Test OpenAI API (REST) — Codex/gpt-5-codex
+      - name: Test OpenAI API (REST) — Codex/gpt-4o-mini
         id: openai
+        if: always()
+        continue-on-error: true
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          set +e
           python3 - <<'PY'
-          import json, os, sys, urllib.request
+          import json, os, sys, urllib.request, urllib.error
           key = os.environ.get("OPENAI_API_KEY","").strip()
           if not key:
-              print("::error::OPENAI_API_KEY not set")
-              sys.exit(1)
+              print("::warning::OPENAI_API_KEY not set — OpenAI/Codex fallback unavailable")
+              sys.exit(0)
           req = urllib.request.Request(
               "https://api.openai.com/v1/chat/completions",
               data=json.dumps({
@@ -76,6 +77,16 @@ jobs:
               ok = "pong" in text.lower()
               print(f"OpenAI gpt-4o-mini: {'OK' if ok else 'UNEXPECTED'} — response: {text[:80]}")
               sys.exit(0 if ok else 1)
+          except urllib.error.HTTPError as e:
+              body = e.read().decode()[:200]
+              if e.code == 429:
+                  # Free tier / no credit is common — flag as warning, not error.
+                  # Gemini is the primary free fallback; OpenAI is a nice-to-have.
+                  print(f"::warning::OpenAI quota/rate limit: {body}")
+                  print("OpenAI key is valid but lacks quota. Codex fallback will not work until credits are added at platform.openai.com/settings/billing. Gemini remains the primary free fallback.")
+                  sys.exit(0)
+              print(f"::error::OpenAI HTTP {e.code}: {body}")
+              sys.exit(1)
           except Exception as e:
               print(f"::error::OpenAI failed: {e}")
               sys.exit(1)
@@ -83,6 +94,8 @@ jobs:
 
       - name: Test Claude Code OAuth (lightweight issue list)
         id: claude
+        if: always()
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -100,8 +113,18 @@ jobs:
         run: |
           echo "### AI provider smoke test — $(date -u +%Y-%m-%d)" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Provider | Status |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|----------|--------|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Gemini 2.5 Flash (REST) | ${{ steps.gemini.outcome }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| OpenAI gpt-4o-mini (REST) | ${{ steps.openai.outcome }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Claude Code OAuth token | ${{ steps.claude.outcome }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Provider | Status | Role |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|--------|------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Gemini 2.5 Flash (REST) | ${{ steps.gemini.outcome }} | Primary free fallback for triage |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| OpenAI gpt-4o-mini (REST) | ${{ steps.openai.outcome }} | Optional Codex fallback (needs credits) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Claude Code OAuth token | ${{ steps.claude.outcome }} | Primary for triage + execute |" >> "$GITHUB_STEP_SUMMARY"
+
+          # Only fail the job if Gemini OR Claude OAuth is broken.
+          # OpenAI is optional — a warning in the step is enough.
+          if [ "${{ steps.gemini.outcome }}" != "success" ] || [ "${{ steps.claude.outcome }}" != "success" ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "❌ **Critical provider failed.** Gemini and Claude OAuth are required." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "✅ Primary providers healthy." >> "$GITHUB_STEP_SUMMARY"

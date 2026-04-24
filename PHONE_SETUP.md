@@ -1,8 +1,17 @@
 # Phone → GitHub Issue
 
-Capture a backlog item from Android (or anywhere) by POSTing to the GitHub Issues API. The **Triage backlog** Action picks it up on its next run and classifies it; the **Execute backlog item** Action picks up the top-ranked result a few hours later and opens a PR.
+Capture a backlog item from your phone by POSTing to the GitHub Issues API. The **Triage backlog** Action picks it up on its next run and classifies it; the **Execute backlog item** Action picks up the top-ranked result a few hours later and opens a PR.
+
+Two phones supported below — pick your section:
+
+- [Android (HTTP Shortcuts)](#section-android--http-shortcuts) — sections 1–4
+- [iPhone 16 Pro / any iOS (Apple Shortcuts)](#section-ios--apple-shortcuts) — section 5
 
 For the full lifecycle map, see [docs/BACKLOG.md](docs/BACKLOG.md).
+
+---
+
+## Section: Android — HTTP Shortcuts
 
 ## 1. Create a fine-grained PAT
 
@@ -83,6 +92,105 @@ Expected:
 - Because it's `P3 trivial`, `execute.yml` will pick it up eventually — delete or close it before that if you want to avoid a noise PR.
 
 If the request comes back 401/403, the PAT scope is wrong. 404 means the repo slug in the URL is wrong. 422 usually means the JSON body is malformed (check escaping).
+
+---
+
+## Section: iOS — Apple Shortcuts
+
+This uses the **Shortcuts** app that's pre-installed on iPhone (works on iPhone 16 Pro). Same PAT and JSON shape as Android.
+
+### Step A — One-time prep
+
+1. Mint a fine-grained PAT exactly as in [Section 1](#1-create-a-fine-grained-pat) above. Same scopes (`Issues: Read/Write` for capture; add `Actions: Read/Write` if you also want phone-triggered workflow runs).
+2. Open **Notes** (or a password manager). Paste the PAT into a note titled `lumivara-pat` so you can reach it from the Shortcut. (We won't use a separate variable store; the Shortcut itself will hold the token in a Text action.)
+
+### Step B — Create the "Capture" Shortcut
+
+1. Open **Shortcuts** app → tap **+** (top right) to create a new shortcut.
+2. Name it: tap the title at the top → "Lumivara — Capture issue".
+3. Add the following actions in this order. Search by name in the bottom search bar.
+
+   **Action 1 — Text** (this is the literal token):
+   - Search "Text" → tap *Text*.
+   - In the text box, paste your PAT (the long `github_pat_...` string).
+   - Tap the variable chip that appears → rename to `Token`.
+
+   **Action 2 — Ask for Input**:
+   - Search "Ask for Input" → add it.
+   - **Prompt**: `What's the issue title?`
+   - **Input Type**: Text.
+   - Tap the output variable → rename to `IssueTitle`.
+
+   **Action 3 — Ask for Input**:
+   - Add another *Ask for Input*.
+   - **Prompt**: `Detail (optional)`
+   - **Input Type**: Text.
+   - **Default Answer**: leave blank.
+   - Rename output to `IssueBody`.
+
+   **Action 4 — Choose from Menu**:
+   - Search "Choose from Menu" → add it.
+   - **Prompt**: `Priority?`
+   - **Items**: tap each and add: `P1`, `P2`, `P3`, `unsure`. (Four menu items.)
+
+   For each menu branch, drag in the same final HTTP step (or — easier — add a *Set Variable* inside each branch to set a `Priority` variable, then close the menu and continue with one HTTP action below).
+
+   Simpler: replace the menu with **Ask for Input** with input type *Text* and default answer `P3`. You type the priority manually (one or two characters). Less foolproof, fewer taps to set up.
+
+   **Action 5 — Get Contents of URL**:
+   - Search "Get Contents of URL" → add it.
+   - **URL**: `https://api.github.com/repos/palimkarakshay/lumivara-site/issues`
+   - Tap **Show More** to reveal options.
+   - **Method**: `POST`
+   - **Headers**: tap *Add new header* three times:
+     - `Authorization` → value: tap the `+` to insert variable → pick `Token`. Then in front of it, type `Bearer ` (with trailing space). End result reads "Bearer [Token variable chip]".
+     - `Accept` → value: `application/vnd.github+json`
+     - `X-GitHub-Api-Version` → value: `2022-11-28`
+   - **Request Body** → tap → choose **JSON**.
+   - Build the JSON tree:
+     - Add field `title` (Text) → tap `+` → insert variable → pick `Priority` → type ` — ` → insert variable `IssueTitle`.
+     - Add field `body` (Text) → insert `IssueBody` variable → newline → newline → `_Captured from iPhone._`
+     - Add field `labels` (Array) → add one item → set as Text → value: `status/needs-triage`.
+
+   **Action 6 — Show Notification** (so you see the result):
+   - Search "Show Notification" → add it.
+   - **Title**: `Lumivara`
+   - **Body**: `Issue captured.` (Or, more useful: tap `+` → "Get Dictionary Value" → paste the previous step's URL output to extract the issue number; this is fiddly — skip if you just want the basic version.)
+
+4. Tap **Done** (top right).
+
+### Step C — Add to home screen + share sheet
+
+1. In the Shortcuts list, long-press the shortcut → **Details**.
+2. **Add to Home Screen** → place the icon where you'll find it. Optionally set a custom icon/colour.
+3. Toggle **Show in Share Sheet** ON → set Accepted Types to *Text*. Now any text you select in Notes/Mail/Safari can be sent into this shortcut as the issue body.
+
+### Step D — Smoke test
+
+1. Tap the home-screen icon.
+2. Title: `test from iphone`. Detail: blank. Priority: `P3`.
+3. Expected: a notification "Issue captured" within ~1 second; a new issue in the GitHub repo with `status/needs-triage` label; bot comments on it within ~5 minutes if you trigger triage manually.
+
+### iOS gotchas
+
+- **Token storage**: iOS Shortcuts has no separate "Variables" panel. The PAT lives inside the Shortcut as plain text. If you ever AirDrop or iCloud-share the shortcut, the token goes with it. Keep the shortcut local.
+- **Errors aren't shown by default**: if the request fails, the *Show Notification* still says "captured". To see real errors, add a *Show Result* action after *Get Contents of URL* during testing — it'll display the GitHub API's error JSON.
+- **Updating the token**: when the PAT expires (90 days if you followed the recommendation), edit the *Text* action at the top of the shortcut and paste the new token.
+
+### Optional — phone trigger for triage / execute
+
+Same pattern, separate Shortcut named `Lumivara — Trigger triage`:
+
+- URL: `https://api.github.com/repos/palimkarakshay/lumivara-site/actions/workflows/triage.yml/dispatches`
+- Method: `POST`
+- Headers: same three as above.
+- Body (JSON): `{ "ref": "main" }` — one field.
+
+Duplicate for `execute.yml` and `execute-complex.yml` if you want push-button manual runs from your phone.
+
+> **Note**: workflow-trigger Shortcuts need the PAT to also have `Actions: Read/Write`. See "Two-token alternative" in [Section 1](#1-create-a-fine-grained-pat) for the safer split.
+
+---
 
 ## Security notes
 

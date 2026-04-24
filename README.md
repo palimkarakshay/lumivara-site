@@ -1,8 +1,28 @@
-# Lumivara Site
+# Lumivara
 
-A rebuilt Lumivara People Advisory site. Next.js 16 + TypeScript + Tailwind v4 + shadcn/ui + MDX.
+This is the website for **Lumivara People Advisory** — Beas Banerjee's HR & people-strategy consulting practice in Toronto. **Live site:** [lumivara-site.vercel.app](https://lumivara-site.vercel.app)
 
-> **Status:** Live on Vercel (auto-deploys on every merge to `main`). Day-to-day backlog is operated by a Claude-powered GitHub Actions bot — see [How this project is run](#how-this-project-is-run) below.
+## In plain English
+
+You don't need to know how to code to change this website. You text the site what you want — from your phone, by creating a GitHub Issue — and an AI assistant (Claude) writes the actual code change a few hours later, opens a draft for you to look at, and shows you a preview link. You tap "merge" on your phone if you like it. Within ~90 seconds the live site updates.
+
+That's it. Five steps, mostly happening while your laptop is closed:
+
+1. **Tell it what you want** — phone shortcut → creates a GitHub Issue.
+2. **Daily 06:00 UTC** — bot reads new issues, sorts them by urgency.
+3. **Every 8 hours** — bot picks the top one, writes the code, opens a pull request.
+4. **You review on phone** — the GitHub mobile app shows the diff and a working preview URL.
+5. **Tap merge** — the change goes live.
+
+The technical setup is in the next sections, but you can ignore them unless you're working on the bot itself or doing a manual fix.
+
+---
+
+## For developers
+
+**Tech**: Next.js 16 + TypeScript + Tailwind v4 + shadcn/ui + MDX. Hosted on Vercel.
+
+> **Status:** Live in production. Day-to-day backlog is operated by a Claude-powered GitHub Actions bot — see [How this project is run](#how-this-project-is-run) below.
 
 ---
 

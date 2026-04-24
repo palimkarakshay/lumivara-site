@@ -28,7 +28,7 @@ export default function WhatWeDoPage() {
         </h2>
         <p className="text-body-lg text-ink-soft mb-8 max-w-[640px]">
           Four short questions, no email required. We'll point you to the
-          practice that matches the problem you're actually solving.
+          practice that matches the challenge you're actually facing.
         </p>
         <DiagnosticQuiz />
       </SectionShell>

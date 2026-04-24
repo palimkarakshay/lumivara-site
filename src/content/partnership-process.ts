@@ -28,11 +28,11 @@ export const partnershipProcess: PartnershipStep[] = [
   {
     number: "04",
     title: "Design & Build.",
-    body: "Solutions are designed in close collaboration with your internal teams, subject matter experts, and stakeholders. The focus is on creating fully integrated, practical solutions that are tailored to your organization — not developed in isolation or based on generic models.",
+    body: "Approaches are designed in close collaboration with your internal teams, subject matter experts, and stakeholders. The focus is on creating fully integrated, practical approaches that are tailored to your organization — not developed in isolation or based on generic models.",
   },
   {
     number: "05",
     title: "Enable, Measure & Sustain.",
-    body: "Our work doesn't stop at design. We support implementation, adoption, and ongoing effectiveness through regular check-ins, continuous guidance, and measurement of impact — ensuring that solutions deliver sustained results over time.",
+    body: "Our work doesn't stop at design. We support implementation, adoption, and ongoing effectiveness through regular check-ins, continuous guidance, and measurement of impact — ensuring that approaches deliver sustained results over time.",
   },
 ];

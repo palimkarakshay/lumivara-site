@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site-config";
 import { Logo } from "./Logo";
 import { NewsletterSignup } from "./NewsletterSignup";
@@ -19,6 +22,9 @@ function LinkedInIcon({ size = 14 }: { size?: number }) {
 }
 
 export function Footer() {
+  const pathname = usePathname();
+  const showCredentials = pathname !== "/";
+
   return (
     <footer className="border-t border-border-subtle bg-canvas-elevated">
       <div className="mx-auto max-w-[1280px] px-6 py-16 sm:px-8 sm:py-20">
@@ -99,18 +105,20 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-14 flex flex-col items-center justify-center gap-3 border-t border-border-subtle pt-8">
-          <div className="text-label text-muted-strong flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-            {siteConfig.credentials.map((c, i) => (
-              <span key={c} className="flex items-center gap-3">
-                <span>{c}</span>
-                {i < siteConfig.credentials.length - 1 && (
-                  <span aria-hidden className="text-accent">·</span>
-                )}
-              </span>
-            ))}
+        {showCredentials && (
+          <div className="mt-14 flex flex-col items-center justify-center gap-3 border-t border-border-subtle pt-8">
+            <div className="text-label text-muted-strong flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+              {siteConfig.credentials.map((c, i) => (
+                <span key={c} className="flex items-center gap-3">
+                  <span>{c}</span>
+                  {i < siteConfig.credentials.length - 1 && (
+                    <span aria-hidden className="text-accent">·</span>
+                  )}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 text-caption text-muted-strong sm:flex-row">
           <p>

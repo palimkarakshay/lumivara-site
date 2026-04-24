@@ -78,11 +78,13 @@ Take the top ranked issue. Then:
   2. Reset: `git checkout main && git branch -D auto/issue-<n>` (if branch exists).
   3. Label the issue: `gh issue edit <n> --add-label "status/needs-clarification" --remove-label "status/in-progress" --remove-label "auto-routine"`.
   4. Comment with a bulleted list of the exact questions blocking you.
-- If a type-check or lint fails after your implementation and you can't fix it in a reasonable number of attempts:
-  1. Commit what you have on the branch.
-  2. Open the PR **as draft**: `gh pr create --draft ...`.
-  3. In the PR body, lead with `⚠️ Type-check/lint failing — see comments.` and list the failing errors verbatim.
-  4. Comment on the issue linking the draft PR.
+- If a type-check or lint fails after your implementation, **first baseline against `main`** to determine whether you caused it:
+  1. Stash your branch: `git stash` (if any uncommitted) and `git checkout main`.
+  2. Re-run the failing command (`npx tsc --noEmit` or `npm run lint`).
+  3. Compare:
+     - **Same errors on `main`** → pre-existing tech debt, not your regression. Open the PR **as ready (not draft)**. In the PR body, add a `**Pre-existing lint/type warnings:**` section listing the unchanged failures and noting "exists on main, unchanged by this PR."
+     - **New errors only on your branch** → you caused a regression. Try fixing within ~3 attempts. If still failing, commit what you have, open the PR **as draft** with `gh pr create --draft`, lead the body with `⚠️ Regression in type-check/lint — see comments.` and list the new errors verbatim. Comment on the issue linking the draft PR.
+  4. Then `git checkout auto/issue-<n>` and `git stash pop` if you stashed.
 
 ## Guardrails
 

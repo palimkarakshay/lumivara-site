@@ -44,5 +44,3 @@ jobs:
             doubt). When done, print the summary it asks for and exit.
           claude_args: |
             --max-turns 40
-          # TEMP: surface full Claude output for diagnosis. Disable once stable.
-          show_full_output: 'true'

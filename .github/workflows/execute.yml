@@ -66,5 +66,3 @@ jobs:
             lint` directly. When done, print the summary and exit.
           claude_args: |
             --max-turns 80
-          # TEMP: surface full Claude output for diagnosis. Disable once stable.
-          show_full_output: 'true'

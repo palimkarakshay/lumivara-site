@@ -49,18 +49,19 @@ jobs:
 # Attempt 2: Gemini Fallback (Runs ONLY if Claude fails)
       - name: Run Triage with Gemini (Fallback)
         if: steps.claude-triage.outcome == 'failure'
-        uses: google-github-actions/run-gemini-cli@v0
         env:
-          # This environment variable is what the underlying CLI actually looks for
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        with:
-          # We set this to true to satisfy the action's validation check, 
-          # even though we are using a standard API key.
-          use_vertex_ai: true 
-          google_api_key: ${{ secrets.GEMINI_API_KEY }}
-          gemini_model: "gemini-1.5-flash"
-          prompt: |
-            Claude failed to execute. Act as a triage agent. 
-            Read `scripts/triage-prompt.md` in the current directory and follow its instructions exactly. 
-            The `gh` CLI is available and authenticated.
-            When done, print the requested summary and exit.            When done, print the requested summary and exit.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Install the CLI directly
+          npm install -g @google/gemini-cli
+          
+          # Run the prompt directly using the CLI
+          gemini run --model "gemini-1.5-flash" --yolo <<EOF
+          Read the file \`scripts/triage-prompt.md\` in the current directory and 
+          follow its instructions exactly. That file is the triage playbook — 
+          do not improvise beyond what it says. 
+          
+          The \`gh\` CLI is available and already authenticated.
+          When done, print the summary it asks for and exit.
+          EOF

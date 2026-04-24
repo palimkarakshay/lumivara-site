@@ -57,20 +57,9 @@ jobs:
           # 1. Install the CLI
           npm install -g @google/gemini-cli
           
-          # 2. Dynamically find the absolute latest Flash model
-          # grep extracts the flash models, sort -rV sorts them by version descending, head takes the top one.
-          LATEST_MODEL=$(gemini models | grep -E -o 'models/gemini-[0-9.]+-flash' | sort -rV | head -n 1)
-          
-          # Failsafe fallback just in case the API call drops or format changes
-          if [ -z "$LATEST_MODEL" ]; then
-            echo "Failed to auto-detect model. Defaulting to gemini-3-flash."
-            LATEST_MODEL="models/gemini-3-flash"
-          fi
-          
-          echo "Selected Model: $LATEST_MODEL"
-          
-          # 3. Run the triage
-          gemini run --model "$LATEST_MODEL" --yolo <<EOF
+          # 2. Use the exact, fully-qualified -latest path
+          # This bypasses the alias bug in the CLI's v1beta routing
+          gemini run --model "models/gemini-1.5-flash-latest" --yolo <<EOF
           Read the file "scripts/triage-prompt.md" in the current directory and 
           follow those instructions exactly. That file is the triage playbook — 
           do not improvise beyond what it says. 

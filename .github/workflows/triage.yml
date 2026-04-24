@@ -53,15 +53,16 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Install the CLI directly
+          # 1. Install the official CLI directly
           npm install -g @google/gemini-cli
           
-          # Run the prompt directly using the CLI
+          # 2. Run the triage prompt using the CLI
+          # --yolo ensures it doesn't wait for user confirmation
           gemini run --model "gemini-1.5-flash" --yolo <<EOF
-          Read the file \`scripts/triage-prompt.md\` in the current directory and 
+          Read the file "scripts/triage-prompt.md" in the current directory and 
           follow its instructions exactly. That file is the triage playbook — 
           do not improvise beyond what it says. 
           
-          The \`gh\` CLI is available and already authenticated.
+          The "gh" CLI is available and already authenticated via GITHUB_TOKEN.
           When done, print the summary it asks for and exit.
           EOF

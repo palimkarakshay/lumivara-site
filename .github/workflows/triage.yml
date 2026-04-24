@@ -2,7 +2,7 @@ name: Triage backlog
 
 on:
   schedule:
-    # Every 4 hours (00, 04, 08, 12, 16, 20 UTC). Cheap on Haiku.
+    # Every 4 hours (00, 04, 08, 12, 16, 20 UTC).
     - cron: '0 */4 * * *'
   workflow_dispatch:
 
@@ -13,35 +13,49 @@ permissions:
   id-token: write
 
 concurrency:
-  group: claude-runtime
+  group: triage-runtime
   cancel-in-progress: false
 
 jobs:
   triage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: anthropics/claude-code-action@v1
+      # Attempt 1: Claude Haiku
+      - name: Run Triage with Claude
+        id: claude-triage
+        continue-on-error: true # This allows Gemini to run if Claude fails/rate-limits
+        uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           settings: |
             {
               "permissions": {
-                "allow": [
-                  "Bash",
-                  "Read",
-                  "Grep",
-                  "Glob"
-                ]
+                "allow": ["Bash", "Read", "Grep", "Glob"]
               }
             }
           prompt: |
             Read the file `scripts/triage-prompt.md` in the checked-out repo and
             follow those instructions exactly. That file is the triage playbook —
             do not improvise beyond what it says. The `gh` CLI is available and
-            already authenticated via GITHUB_TOKEN (check `gh auth status` if in
-            doubt). When done, print the summary it asks for and exit.
+            already authenticated via GITHUB_TOKEN. When done, print the summary
+            it asks for and exit.
           claude_args: |
             --max-turns 40
             --model claude-haiku-4-5-20251001
+
+      # Attempt 2: Gemini Fallback (Runs ONLY if Claude fails)
+      - name: Run Triage with Gemini (Fallback)
+        if: steps.claude-triage.outcome == 'failure'
+        uses: google-github-actions/run-gemini-cli@v0
+        with:
+          google_api_key: ${{ secrets.GEMINI_API_KEY }}
+          gemini_model: "gemini-1.5-flash" # High rate limits and cost-effective
+          prompt: |
+            Claude failed to execute or reached usage limits. 
+            Act as a triage agent. Read `scripts/triage-prompt.md` in the current 
+            directory and follow its instructions exactly. 
+            You have access to the `gh` CLI in this environment.
+            When done, print the requested summary and exit.

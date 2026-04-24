@@ -280,9 +280,72 @@ A 6-button home-screen folder:
 | Bot-mid | Trigger execute | Impatience |
 | Bot-right | View latest run | "Is the bot working?" |
 
-### "Auto-ready PRs" (proposed workflow tweak — not yet built)
+> **Trivial/easy content PRs auto-merge** (via `auto-merge.yml`) once Vercel's preview check passes. Design/visual PRs (`type/design-cosmetic`, `area/design`) stay open for your review.
 
-If you'd like all auto-routine PRs to skip the draft state and open directly as ready-for-review, the change is one line in `scripts/execute-prompt.md`: drop `--draft` from the default PR-create command. The trade-off: Vercel still posts the preview comment within ~60s either way, but Vercel's checks haven't run yet at PR-open time, so a "ready" PR briefly looks merge-able before Vercel confirms. Workable — just don't tap merge before the Vercel comment lands.
+### Execute a specific single issue
+
+Fire `execute-single.yml` against one issue you pick:
+
+```
+POST /repos/palimkarakshay/lumivara-site/actions/workflows/execute-single.yml/dispatches
+
+Body:
+{
+  "ref": "main",
+  "inputs": {
+    "issue": "42"
+  }
+}
+```
+
+Requires `Actions: Read/Write` on your PAT.
+
+### View the triaged queue (next items to execute)
+
+Items the bot is allowed to pick up, in priority order:
+
+```
+GET /repos/palimkarakshay/lumivara-site/issues?state=open&labels=auto-routine,status/planned&sort=created&direction=asc&per_page=20
+```
+
+Returns JSON array. In Apple Shortcuts, pipe through a *Get Dictionary Value* to extract `number`, `title`, and any label starting with `priority/`. No extra PAT scope needed beyond Issues:Read.
+
+To build an interactive list with per-item fire buttons: loop the JSON in a *Repeat with Each* action, present a *Choose from List* — chosen item's number feeds directly into the execute-single POST above.
+
+### View PRs in execution sequence
+
+Open PRs sorted by the priority of their linked issue:
+
+```
+GET /repos/palimkarakshay/lumivara-site/pulls?state=open&per_page=30
+```
+
+The response includes the PR body; parse "Fixes #N" from each body to find the issue number, then sort by the `priority/*` label on those issues. In practice, a quick read of the response on your phone is easier — PRs are labeled `auto-routine` and the issue title in the PR title already carries the priority hint.
+
+### View previous Vercel deploy
+
+```
+GET https://api.vercel.com/v6/deployments?projectId={projectId}&limit=5
+Authorization: Bearer {{VERCEL_TOKEN}}
+```
+
+Returns the last 5 deploys with URL, state, and timestamp. Grab `projectId` once via `GET https://api.vercel.com/v9/projects` and store it as a variable.
+
+### Suggested phone home-screen layout (updated)
+
+A 9-button folder:
+
+| Position | Shortcut | Why |
+|---|---|---|
+| 1 | Capture issue | Most common action |
+| 2 | Triaged queue | "What's scheduled?" |
+| 3 | Execute specific issue | "Run this one now" |
+| 4 | List P1 queue | "What's urgent?" |
+| 5 | List PRs to review | "What needs my eyes?" (design/visual) |
+| 6 | Trigger triage | After capturing a batch |
+| 7 | Trigger execute | Impatience |
+| 8 | Previous Vercel deploy | "What shipped?" |
+| 9 | View latest run | "Is the bot working?" |
 
 ---
 

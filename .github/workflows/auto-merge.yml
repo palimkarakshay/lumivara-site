@@ -1,0 +1,74 @@
+name: Auto-merge routine PRs
+
+# Enables auto-merge for trivial/easy non-design auto-routine PRs.
+# GitHub's built-in auto-merge then merges once Vercel's check passes.
+on:
+  pull_request:
+    types: [opened, labeled, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  maybe-auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check labels and enable auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_LABELS: ${{ toJSON(github.event.pull_request.labels) }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess, sys
+
+          pr_labels = {l['name'] for l in json.loads(os.environ['PR_LABELS'])}
+
+          # Only act on auto-routine PRs
+          if 'auto-routine' not in pr_labels:
+              print("Not auto-routine — skipping.")
+              sys.exit(0)
+
+          # Parse linked issue number from PR body ("Fixes #N" or "Closes #N")
+          body = os.environ.get('PR_BODY', '')
+          m = re.search(r'(?:Fixes|Closes|Resolves)\s+#(\d+)', body, re.IGNORECASE)
+          if not m:
+              print("No linked issue found in PR body — skipping auto-merge.")
+              sys.exit(0)
+
+          issue_num = m.group(1)
+
+          # Fetch issue labels
+          result = subprocess.run(
+              ['gh', 'issue', 'view', issue_num,
+               '--repo', 'palimkarakshay/lumivara-site',
+               '--json', 'labels'],
+              capture_output=True, text=True, check=True
+          )
+          issue_labels = {l['name'] for l in json.loads(result.stdout)['labels']}
+
+          all_labels = pr_labels | issue_labels
+
+          # Only trivial/easy get auto-merged
+          auto_ok = {'complexity/trivial', 'complexity/easy'}
+          if not (all_labels & auto_ok):
+              print(f"Issue #{issue_num} is not trivial/easy — requires human review.")
+              sys.exit(0)
+
+          # Design/visual changes need a human eye
+          block = {'type/design-cosmetic', 'area/design'}
+          if all_labels & block:
+              print(f"Issue #{issue_num} is a design change — human confirmation required.")
+              sys.exit(0)
+
+          pr = os.environ['PR_NUMBER']
+          print(f"Enabling auto-merge (squash) on PR #{pr} for issue #{issue_num}.")
+          subprocess.run(
+              ['gh', 'pr', 'merge', pr, '--auto', '--squash',
+               '--repo', 'palimkarakshay/lumivara-site'],
+              check=True
+          )
+          print("Auto-merge enabled. PR will merge once Vercel check passes.")
+          PY

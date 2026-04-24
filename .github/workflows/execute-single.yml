@@ -1,0 +1,120 @@
+name: Execute single backlog item
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number to implement (required)"
+        required: true
+      model_override:
+        description: "Override model (blank = use issue's model/* label)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "claude-haiku-4-5-20251001"
+          - "claude-sonnet-4-6"
+          - "claude-opus-4-7"
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: claude-runtime
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git identity
+        run: |
+          git config user.name "claude-auto"
+          git config user.email "claude-auto@users.noreply.github.com"
+
+      - name: Resolve model for issue
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_ISSUE: ${{ inputs.issue }}
+          INPUT_MODEL: ${{ inputs.model_override }}
+        run: |
+          gh issue view "$INPUT_ISSUE" --repo palimkarakshay/lumivara-site \
+            --json number,title,labels > /tmp/issue.json
+
+          python3 - <<'PY'
+          import json, os
+          i = json.load(open('/tmp/issue.json'))
+          labels = {l['name'] for l in i['labels']}
+          MODEL_FOR = {
+              "model/haiku":  "claude-haiku-4-5-20251001",
+              "model/sonnet": "claude-sonnet-4-6",
+              "model/opus":   "claude-opus-4-7",
+          }
+          MODEL_FROM_COMPLEXITY = {
+              "complexity/trivial": "claude-haiku-4-5-20251001",
+              "complexity/easy":    "claude-haiku-4-5-20251001",
+              "complexity/medium":  "claude-sonnet-4-6",
+              "complexity/complex": "claude-opus-4-7",
+          }
+          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), None)
+          if not model:
+              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-sonnet-4-6")
+          override = os.environ.get("INPUT_MODEL", "").strip()
+          if override:
+              model = override
+          out = open(os.environ["GITHUB_OUTPUT"], "a")
+          out.write(f"model={model}\n")
+          print(f"Issue #{i['number']}: {i['title']}  — model: {model}")
+          PY
+
+      - name: Export ISSUE_NUMBER
+        run: echo "ISSUE_NUMBER=${{ inputs.issue }}" >> "$GITHUB_ENV"
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          settings: |
+            {
+              "permissions": {
+                "allow": [
+                  "Bash",
+                  "Read",
+                  "Write",
+                  "Edit",
+                  "Glob",
+                  "Grep"
+                ]
+              }
+            }
+          prompt: |
+            Issue #${{ inputs.issue }} has been pre-selected for you.
+            ISSUE_NUMBER=${{ inputs.issue }} is available in your env.
+            This is a MANUAL SINGLE-ISSUE execution — the operator explicitly
+            chose this issue. Read `scripts/execute-prompt.md` and implement it.
+            Skip eligibility checks — the operator's choice overrides any triage
+            gate (including status/awaiting-review or human-only). Still respect
+            the hard exclusions (no touching workflows, env files, contact API).
+            The `gh` CLI is authenticated. Node + dependencies are installed.
+            When done, print the summary and exit.
+          claude_args: |
+            --max-turns 120
+            --model ${{ steps.pick.outputs.model }}

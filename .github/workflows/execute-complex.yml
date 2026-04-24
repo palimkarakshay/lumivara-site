@@ -81,9 +81,11 @@ jobs:
           print(f"Manual run: working issue #{i['number']} with model {model}")
           PY
           else
+            # Fetch manual-only issues AND all P1 auto-routine issues (P1 always
+            # qualifies for manual/complex run regardless of manual-only flag).
             gh issue list --repo palimkarakshay/lumivara-site \
-              --label auto-routine --label manual-only --state open \
-              --json number,title,labels,createdAt --limit 50 > /tmp/candidates.json
+              --label auto-routine --state open \
+              --json number,title,labels,createdAt --limit 100 > /tmp/candidates.json
             python3 - <<'PY'
           import json, os, sys
           issues = json.load(open('/tmp/candidates.json'))
@@ -96,21 +98,33 @@ jobs:
               "model/sonnet": "claude-sonnet-4-6",
               "model/opus":   "claude-opus-4-7",
           }
+          MODEL_FROM_COMPLEXITY = {
+              "complexity/trivial": "claude-haiku-4-5-20251001",
+              "complexity/easy":    "claude-haiku-4-5-20251001",
+              "complexity/medium":  "claude-sonnet-4-6",
+              "complexity/complex": "claude-opus-4-7",
+          }
           eligible = []
           for i in issues:
               labels = {l["name"] for l in i["labels"]}
               if labels & EXCLUDE: continue
               prio = min((PRIO_RANK.get(l, 99) for l in labels), default=99)
               if prio == 99: continue
+              is_manual_only = "manual-only" in labels
+              # Include: manual-only items (any priority) OR P1 items (any flag)
+              if not (is_manual_only or prio == 0):
+                  continue
               eligible.append((prio, i["createdAt"], i["number"], labels))
           out = open(os.environ["GITHUB_OUTPUT"], "a")
           if not eligible:
               out.write("issue=0\nmodel=\n")
-              print("No eligible manual-only issues.")
+              print("No eligible complex/P1 issues.")
               sys.exit(0)
           eligible.sort()
           _, _, num, labels = eligible[0]
-          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), "claude-sonnet-4-6")
+          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), None)
+          if not model:
+              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-opus-4-7")
           override = os.environ.get("INPUT_MODEL", "").strip()
           if override:
               model = override

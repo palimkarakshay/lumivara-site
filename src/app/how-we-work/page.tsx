@@ -10,7 +10,7 @@ import { PartnershipTimeline } from "@/components/sections/PartnershipTimeline";
 import { FAQSection } from "@/components/sections/FAQSection";
 
 export const metadata: Metadata = {
-  title: "How We Work",
+  title: "Our Approach",
   description:
     "Lumivara's approach to people strategy: built on strategy, delivered through capability, measured by impact. Explore our engagement lifecycle and models.",
 };

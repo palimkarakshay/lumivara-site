@@ -16,8 +16,8 @@ export default function NotFound() {
       <ul className="flex flex-col gap-2 max-w-[400px]">
         {[
           { href: "/", label: "Home" },
-          { href: "/what-we-do", label: "What We Do" },
-          { href: "/how-we-work", label: "How We Work" },
+          { href: "/what-we-do", label: "Services" },
+          { href: "/how-we-work", label: "Our Approach" },
           { href: "/insights", label: "Insights" },
           { href: "/contact", label: "Contact" },
         ].map((item) => (

@@ -57,13 +57,14 @@ jobs:
           # 1. Install the CLI
           npm install -g @google/gemini-cli
           
-          # 2. Dynamically find the latest Flash model
-          # This lists models and picks the first 'flash' model it finds (usually the latest)
-          LATEST_MODEL=$(gemini models | grep -o 'models/gemini-[0-9.]*-flash[^ ]*' | head -n 1)
+          # 2. Dynamically find the absolute latest Flash model
+          # grep extracts the flash models, sort -rV sorts them by version descending, head takes the top one.
+          LATEST_MODEL=$(gemini models | grep -E -o 'models/gemini-[0-9.]+-flash' | sort -rV | head -n 1)
           
-          # Fallback to a hardcoded ID if the grep fails for any reason
+          # Failsafe fallback just in case the API call drops or format changes
           if [ -z "$LATEST_MODEL" ]; then
-            LATEST_MODEL="models/gemini-2.5-flash"
+            echo "Failed to auto-detect model. Defaulting to gemini-3-flash."
+            LATEST_MODEL="models/gemini-3-flash"
           fi
           
           echo "Selected Model: $LATEST_MODEL"

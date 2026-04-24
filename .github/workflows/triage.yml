@@ -2,9 +2,11 @@ name: Triage backlog
 
 on:
   schedule:
-    # Every 4 hours (00, 04, 08, 12, 16, 20 UTC).
-    - cron: '0 */4 * * *'
+    # Every hour. Gemini fallback makes this cheap.
+    - cron: '0 * * * *'
   workflow_dispatch:
+  issues:
+    types: [opened, reopened]
 
 permissions:
   contents: read
@@ -13,6 +15,7 @@ permissions:
   id-token: write
 
 concurrency:
+  # Separate group from execute so triage + execute can run concurrently.
   group: triage-runtime
   cancel-in-progress: false
 
@@ -23,10 +26,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Attempt 1: Claude Haiku
-      - name: Run Triage with Claude
-        id: claude-triage
-        continue-on-error: true # This allows Gemini to run if Claude fails/rate-limits
+      # ── Primary: Claude Haiku ──────────────────────────────────────────
+      - name: Claude Haiku triage
+        id: claude_triage
+        continue-on-error: true
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -37,33 +40,28 @@ jobs:
               }
             }
           prompt: |
-            Read the file `scripts/triage-prompt.md` in the checked-out repo and
-            follow those instructions exactly. That file is the triage playbook —
-            do not improvise beyond what it says. The `gh` CLI is available and
-            already authenticated via GITHUB_TOKEN. When done, print the summary
-            it asks for and exit.
+            Read `scripts/triage-prompt.md` and follow it exactly. The `gh` CLI
+            is authenticated. When done, print the summary.
+
+            IMPORTANT: issues labeled `status/on-hold` are still eligible for
+            classification and title/body reformatting, but do NOT remove the
+            `status/on-hold` label and do NOT add `status/planned` — hold status
+            means the operator deliberately parked the item. Add priority/
+            complexity/area/type/model labels as usual so the hold item is
+            navigable.
           claude_args: |
             --max-turns 40
             --model claude-haiku-4-5-20251001
 
-# Attempt 2: Gemini Fallback (Runs ONLY if Claude fails)
-      - name: Run Triage with Gemini (Fallback)
-        if: steps.claude-triage.outcome == 'failure'
+      # ── Fallback: Gemini 2.5 Flash (REST API) ───────────────────────────
+      # Runs always (not conditional on Claude failure). The script itself
+      # exits early if no `status/needs-triage` items remain. This covers:
+      # (a) Claude hit quota mid-run and missed items, (b) Claude errored
+      # entirely, (c) issues arrived between Claude's scan and now.
+      # Uses REST API instead of gemini-cli to avoid non-interactive quirks.
+      - name: Gemini Flash triage fallback
+        if: always()
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GEMINI_CLI_TRUST_WORKSPACE: true
-        run: |
-          # 1. Install the CLI
-          npm install -g @google/gemini-cli
-          
-          # 2. Use the exact, fully-qualified -latest path
-          # This bypasses the alias bug in the CLI's v1beta routing
-          gemini run --model "gemini-3-flash-preview" --yolo <<EOF
-          Read the file "scripts/triage-prompt.md" in the current directory and 
-          follow those instructions exactly. That file is the triage playbook — 
-          do not improvise beyond what it says. 
-          
-          The "gh" CLI is available and already authenticated via GITHUB_TOKEN.
-          When done, print the summary it asks for and exit.
-          EOF
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/gemini-triage.py

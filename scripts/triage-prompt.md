@@ -11,6 +11,8 @@ Use the `gh` CLI (available on the runner; authenticated automatically via `GH_T
   - Labeled `status/needs-triage`, OR
   - Has no `priority/*` label yet (untagged backlog from earlier captures)
 
+**`status/on-hold` rule**: hold items ARE eligible for classification and title/body reformatting (so they stay navigable), but you must NOT remove `status/on-hold` and must NOT add `status/planned`. Hold means the operator deliberately parked the item — execute workflows skip them. Still add priority/complexity/area/type/model labels as usual.
+
 Command to list candidates:
 ```
 gh issue list --repo palimkarakshay/lumivara-site --state open \

@@ -2,8 +2,8 @@ name: Execute backlog item
 
 on:
   schedule:
-    # Every 8 hours — 00:00, 08:00, 16:00 UTC. 3 runs/day.
-    - cron: '0 0,8,16 * * *'
+    # Every 4 hours — 6 runs/day. Cadence raised after AI-routing optimizations.
+    - cron: '0 */4 * * *'
   workflow_dispatch:
 
 permissions:
@@ -57,7 +57,7 @@ jobs:
           # status/awaiting-review = bot already opened a PR for it; don't re-pick.
           EXCLUDE = {"human-only", "manual-only", "status/blocked",
                      "status/in-progress", "status/needs-clarification",
-                     "status/awaiting-review"}
+                     "status/awaiting-review", "status/on-hold"}
           PRIO_RANK = {"priority/P1": 0, "priority/P2": 1, "priority/P3": 2}
           COMP_RANK = {"complexity/trivial": 0, "complexity/easy": 1, "complexity/medium": 2}
 

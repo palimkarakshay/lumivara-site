@@ -12,8 +12,8 @@ export const siteConfig = {
   founderLinkedin: "https://www.linkedin.com/in/beasbanerjee/",
   calLink: process.env.NEXT_PUBLIC_CAL_LINK || "https://cal.com/lumivara/discovery",
   nav: [
-    { label: "How We Work", href: "/how-we-work" },
-    { label: "What We Do", href: "/what-we-do" },
+    { label: "Our Approach", href: "/how-we-work" },
+    { label: "Services", href: "/what-we-do" },
     { label: "Fractional HR", href: "/fractional-hr" },
     { label: "About", href: "/about" },
     { label: "Insights", href: "/insights" },

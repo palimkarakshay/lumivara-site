@@ -20,7 +20,7 @@ export function PrincipleCard({
   return (
     <article
       className={cn(
-        "flex h-full flex-col gap-4 rounded-lg border p-6 transition-all duration-300 sm:p-8",
+        "flex h-full flex-col gap-3 rounded-lg border p-4 transition-all duration-300 md:gap-4 md:p-6",
         isDark
           ? "border-canvas/10 bg-canvas/[0.04] backdrop-blur-sm hover:border-accent/40 hover:bg-canvas/[0.06]"
           : "border-border-subtle bg-canvas-elevated hover:border-accent/50 hover:shadow-sm",

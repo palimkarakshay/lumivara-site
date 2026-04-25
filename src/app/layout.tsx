@@ -4,6 +4,7 @@ import "./globals.css";
 import { siteConfig } from "@/lib/site-config";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { CrispChat } from "@/components/primitives/CrispChat";
 
 const fraunces = Fraunces({
   variable: "--font-display",
@@ -105,6 +106,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <CrispChat />
       </body>
     </html>
   );

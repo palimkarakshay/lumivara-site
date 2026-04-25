@@ -277,8 +277,11 @@ function ContactFormInner() {
           transition: border-color 0.15s ease;
         }
         .input:focus {
-          outline: none;
           border-color: var(--accent);
+        }
+        .input:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
         }
         .input::placeholder {
           color: var(--muted);

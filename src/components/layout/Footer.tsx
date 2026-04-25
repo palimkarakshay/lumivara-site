@@ -92,6 +92,7 @@ export function Footer() {
                   >
                     <LinkedInIcon />
                     LinkedIn
+                    <span className="sr-only">(opens in new tab)</span>
                   </a>
                 </li>
               </ul>

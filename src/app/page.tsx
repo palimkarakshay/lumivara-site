@@ -5,6 +5,7 @@ import { ThreePrinciples } from "@/components/sections/ThreePrinciples";
 import { ServicesGrid } from "@/components/sections/ServicesGrid";
 import { FractionalCTA } from "@/components/sections/FractionalCTA";
 import { FounderModule } from "@/components/sections/FounderModule";
+import { TestimonialsStrip } from "@/components/sections/TestimonialsStrip";
 import { LatestInsights } from "@/components/sections/LatestInsights";
 import { CTABlock } from "@/components/primitives/CTABlock";
 import { SectionShell } from "@/components/primitives/SectionShell";
@@ -32,6 +33,7 @@ export default async function Home() {
       </SectionShell>
       <FractionalCTA />
       <FounderModule />
+      <TestimonialsStrip />
       <LatestInsights articles={topThree} />
       <CTABlock
         headline={homeContent.finalCta.headline}

@@ -62,6 +62,8 @@ create_label "status/needs-clarification" "FBCA04" "Bot asked a question on the 
 # Gating
 create_label "auto-routine"         "0E8A16" "Eligible for automated execute.yml runs"
 create_label "human-only"           "E99695" "Skip auto-routine — human-only"
+create_label "infra-allowed"        "B60205" "Issue authorises infra/workflow edits by agent"
+create_label "needs-vercel-mirror"  "FFA500" "Operator must mirror changes in Vercel dashboard"
 
 create_issue() {
   local title="$1" body="$2" labels="$3"

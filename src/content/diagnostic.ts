@@ -95,6 +95,28 @@ export type DiagnosticResult = {
   callToAction: string;
 };
 
+function getLabel(questionId: string, value: string): string {
+  const question = diagnosticQuestions.find((q) => q.id === questionId);
+  return question?.options.find((o) => o.value === value)?.label ?? value;
+}
+
+export function buildDiagnosticSummary(
+  answers: DiagnosticAnswers,
+  primaryServiceTitle: string
+): string {
+  const lines = [
+    `I completed the service diagnostic on your website. Here are my answers:`,
+    ``,
+    `Priority: ${getLabel("priority", answers["priority"] ?? "")}`,
+    `Organisation size: ${getLabel("size", answers["size"] ?? "")}`,
+    `Timeline: ${getLabel("timeline", answers["timeline"] ?? "")}`,
+    `HR coverage: ${getLabel("hr-coverage", answers["hr-coverage"] ?? "")}`,
+    ``,
+    `Recommended starting point: ${primaryServiceTitle}`,
+  ];
+  return lines.join("\n");
+}
+
 export function scoreDiagnostic(
   answers: DiagnosticAnswers
 ): DiagnosticResult {

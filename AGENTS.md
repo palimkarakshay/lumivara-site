@@ -32,3 +32,9 @@ Use `--max-turns` as your budget proxy. Estimate `used_pct = turns_taken / max_t
 
 After each run, the action emits `total_cost_usd` and `num_turns` in its JSON output. Surface these in the run summary so the operator can spot quota drift.
 <!-- END:session-budget-charter -->
+
+<!-- BEGIN:vercel-parity -->
+# Vercel production parity
+
+Any change in this repo that influences production behaviour — environment variables, build commands, Next.js rewrites/redirects, or output configuration — must also be applied manually in the Vercel dashboard by the operator. GitHub Actions can update code and open PRs, but it cannot write Vercel project settings. When an agent implements such a change, it must: (1) append a `**Vercel mirror required:**` section to the PR description listing the exact steps the operator must take in the Vercel dashboard, and (2) add the `needs-vercel-mirror` label to the issue. The operator confirms the mirror is done by removing that label. Track all pending mirrors via the `needs-vercel-mirror` label view on the Issues tab.
+<!-- END:vercel-parity -->

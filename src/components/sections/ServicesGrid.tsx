@@ -9,10 +9,9 @@ import { Reveal } from "@/components/primitives/Reveal";
 
 export function ServicesGrid() {
   const { servicesGrid } = homeContent;
-  const [num, label] = servicesGrid.monoLabel.split(" / ");
   return (
     <SectionShell variant="canvas" id="services">
-      <NumberedSection number={num} label={label} />
+      <NumberedSection number="—" label={servicesGrid.monoLabel} />
       <h2 className="text-display-lg text-ink mt-6 mb-10 max-w-[880px]">
         {servicesGrid.heading}
       </h2>

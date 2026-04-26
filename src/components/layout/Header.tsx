@@ -67,6 +67,7 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
                     "text-body-sm font-medium transition-colors",
                     active
@@ -119,6 +120,7 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex items-center justify-between border-b border-border-subtle py-4 font-display text-2xl",
                     active ? "text-accent" : "text-ink"

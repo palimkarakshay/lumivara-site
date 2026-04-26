@@ -11,13 +11,12 @@ type LatestInsightsProps = {
 
 export function LatestInsights({ articles = [] }: LatestInsightsProps) {
   const { insights } = homeContent;
-  const [num, label] = insights.monoLabel.split(" / ");
   const slots = [0, 1, 2];
   return (
     <SectionShell variant="canvas">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-5">
         <div>
-          <NumberedSection number={num} label={label} />
+          <NumberedSection number="—" label={insights.monoLabel} />
           <h2 className="text-display-lg text-ink mt-6 max-w-[760px]">
             {insights.heading}
           </h2>

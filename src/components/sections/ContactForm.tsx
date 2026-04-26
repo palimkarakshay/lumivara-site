@@ -30,6 +30,7 @@ type InquiryValues = z.infer<typeof inquirySchema>;
 function ContactFormInner() {
   const searchParams = useSearchParams();
   const presetService = searchParams.get("service");
+  const diagnosticSummary = searchParams.get("diagnosticSummary") ?? "";
   const { inquiry } = contactContent;
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">(
     "idle"
@@ -51,16 +52,18 @@ function ContactFormInner() {
       size: "",
       interests: presetService ? [presetService] : [],
       timeline: "",
-      message: "",
+      message: diagnosticSummary,
       consent: false,
     },
   });
 
   useEffect(() => {
-    if (presetService) {
-      reset((prev) => ({ ...prev, interests: [presetService] }));
-    }
-  }, [presetService, reset]);
+    reset((prev) => ({
+      ...prev,
+      interests: presetService ? [presetService] : prev.interests,
+      message: diagnosticSummary || prev.message,
+    }));
+  }, [presetService, diagnosticSummary, reset]);
 
   async function onSubmit(values: InquiryValues) {
     setStatus("submitting");
@@ -277,8 +280,11 @@ function ContactFormInner() {
           transition: border-color 0.15s ease;
         }
         .input:focus {
-          outline: none;
           border-color: var(--accent);
+        }
+        .input:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
         }
         .input::placeholder {
           color: var(--muted);

@@ -46,7 +46,7 @@ export const homeContent = {
   },
 
   servicesGrid: {
-    monoLabel: "02 / What We Do",
+    monoLabel: "02 / Services",
     heading: "Six focused practices. One integrated approach.",
     seeAll: { label: "See all services", href: "/what-we-do" },
   },

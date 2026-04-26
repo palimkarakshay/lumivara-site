@@ -22,7 +22,7 @@ export function ServiceDetailTemplate({ service }: ServiceDetailTemplateProps) {
         <div className="mx-auto max-w-[1280px]">
           <div className="text-label text-muted-strong mb-2">
             <Link href="/what-we-do" className="transition-colors hover:text-ink">
-              What We Do
+              Services
             </Link>
             <span className="mx-2 text-accent">/</span>
             <span>{service.shortTitle}</span>

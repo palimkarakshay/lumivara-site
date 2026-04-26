@@ -7,7 +7,7 @@ import { DiagnosticQuiz } from "@/components/sections/DiagnosticQuiz";
 import { ServicesIndex } from "@/components/sections/ServicesIndex";
 
 export const metadata: Metadata = {
-  title: "What We Do",
+  title: "Services",
   description:
     "Six focused practices — talent acquisition, learning & leadership, talent management, culture & experience, future of work, and HR advisory — built around one integrated approach.",
 };

@@ -46,6 +46,9 @@ export const faqs: FAQ[] = [
     question: "What types of organizations do you typically work with?",
     answer:
       "Lumivara works with small to mid-sized organizations and growing enterprises looking to strengthen their people strategy, leadership capability, and talent systems. While the approach is industry-agnostic, engagements are particularly valuable for organizations experiencing growth, transformation, or capability gaps that require structured, tailored approaches.",
+      "Lumivara works with small to mid-sized organizations and growing enterprises looking to strengthen their people strategy, leadership capability, and talent systems. While the approach is industry-agnostic, engagements are particularly valuable for organizations experiencing growth, transformation, or capability gaps that require structured, tailored solutions.",
+    relatedHref: "/what-we-do",
+    relatedLabel: "Explore our services",
   },
   {
     id: "experience",
@@ -60,18 +63,26 @@ export const faqs: FAQ[] = [
     question: "How are engagements designed and delivered?",
     answer:
       "Every engagement begins with structured diagnostics to understand the root cause of the challenge. This includes stakeholder input, analysis of internal data, and where relevant, market and competitive context. Approaches are then designed specifically for the organization — aligned to its strategy, culture, and maturity. The focus is on creating practical, scalable approaches that fit the business, rather than applying standard or pre-defined models. Support can extend from design through implementation and enablement to ensure sustained impact.",
+      "Every engagement begins with structured diagnostics to understand the root cause of the challenge. This includes stakeholder input, analysis of internal data, and where relevant, market and competitive context. Solutions are then designed specifically for the organization — aligned to its strategy, culture, and maturity. The focus is on creating practical, scalable approaches that fit the business, rather than applying standard or pre-defined models. Support can extend from design through implementation and enablement to ensure sustained impact.",
+    relatedHref: "/how-we-work#process",
+    relatedLabel: "See our engagement lifecycle",
   },
   {
     id: "predefined-packages",
     question: "Do you offer predefined packages or customized engagements?",
     answer:
       "While structured packages can be developed for specific needs, most engagements are highly customized. Each engagement is designed based on the organization's context, priorities, and capability gaps. This ensures that the work is directly relevant, actionable, and aligned to business outcomes — rather than adapting the organization to fit a pre-built model.",
+      "While structured packages can be developed for specific needs, most engagements are highly customized. Each solution is designed based on the organization's context, priorities, and capability gaps. This ensures that the work is directly relevant, actionable, and aligned to business outcomes — rather than adapting the organization to fit a pre-built model.",
+    relatedHref: "/how-we-work#engagement-models",
+    relatedLabel: "See engagement models",
   },
   {
     id: "measuring-effectiveness",
     question: "How do you measure the effectiveness of your work?",
     answer:
       "Effectiveness is measured by linking people initiatives to business performance and outcomes. This may include improvements in hiring quality, leadership capability, employee performance, engagement, or adoption of new systems and programs. Where required, measurement frameworks, dashboards, and reporting mechanisms are designed to track progress, demonstrate impact, and provide visibility into return on investment.",
+    relatedHref: "/how-we-work#impact",
+    relatedLabel: "See how we measure impact",
   },
   {
     id: "when-to-engage",

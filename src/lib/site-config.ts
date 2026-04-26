@@ -20,6 +20,12 @@ export const siteConfig = {
   ] as const,
   credentials: ["MBA", "CHRL", "PROSCI", "B.Eng", "10+ Years"] as const,
   engagementModes: ["Project-Based", "Advisory Retainer", "Fractional HR"] as const,
+  newsletterCta: {
+    headline: "Field notes on people strategy",
+    subhead: "Practical HR insights for leaders — monthly. No filler.",
+    button: "Subscribe",
+    success: "You're in — look out for the next issue.",
+  } as const,
 } as const;
 
 export type SiteConfig = typeof siteConfig;

@@ -4,6 +4,7 @@ import "./globals.css";
 import { siteConfig } from "@/lib/site-config";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { CrispChat } from "@/components/primitives/CrispChat";
 
 const fraunces = Fraunces({
@@ -113,12 +114,16 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <Header />
+        <SiteChrome>
+          <Header />
+        </SiteChrome>
         <main id="main" className="flex-1">
           {children}
         </main>
-        <Footer />
-        <CrispChat />
+        <SiteChrome>
+          <Footer />
+          <CrispChat />
+        </SiteChrome>
       </body>
     </html>
   );

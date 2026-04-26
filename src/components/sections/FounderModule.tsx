@@ -60,6 +60,7 @@ export function FounderModule() {
               className="text-label text-muted-strong hover:text-ink transition-colors"
             >
               LinkedIn →
+              <span className="sr-only">(opens in new tab)</span>
             </a>
           </div>
         </div>

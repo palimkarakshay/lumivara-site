@@ -167,6 +167,7 @@ export function DiagnosticQuiz({ className }: DiagnosticQuizProps) {
         <div
           className="h-2 w-full overflow-hidden rounded-full bg-border-subtle"
           role="progressbar"
+          aria-label="Assessment progress"
           aria-valuenow={progress}
           aria-valuemin={0}
           aria-valuemax={100}

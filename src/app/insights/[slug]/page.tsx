@@ -8,6 +8,8 @@ import { SectionShell } from "@/components/primitives/SectionShell";
 import { ArticleCard } from "@/components/primitives/ArticleCard";
 import { CTABlock } from "@/components/primitives/CTABlock";
 import { NewsletterSignup } from "@/components/layout/NewsletterSignup";
+import { JsonLd } from "@/components/primitives/JsonLd";
+import type { Article, WithContext } from "schema-dts";
 
 type RouteParams = { params: Promise<{ slug: string }> };
 
@@ -49,6 +51,27 @@ export default async function InsightPage({ params }: RouteParams) {
     notFound();
   }
 
+  const base = siteConfig.url.replace(/\/$/, "");
+  const articleSchema: WithContext<Article> = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.publishedDate,
+    author: {
+      "@type": "Person",
+      name: article.author ?? "Beas Banerjee",
+      sameAs: siteConfig.founderLinkedin,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      url: siteConfig.url,
+    },
+    url: `${base}/insights/${slug}`,
+    mainEntityOfPage: `${base}/insights/${slug}`,
+  };
+
   const related = articles
     .filter((a) => a.slug !== slug)
     .slice(0, 2)
@@ -63,6 +86,7 @@ export default async function InsightPage({ params }: RouteParams) {
 
   return (
     <>
+      <JsonLd data={articleSchema} />
       {/* Hero */}
       <section className="w-full bg-canvas px-6 pt-28 pb-12 sm:px-8 sm:pt-36 sm:pb-16">
         <div className="mx-auto max-w-[760px]">

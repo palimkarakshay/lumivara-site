@@ -5,6 +5,10 @@ import { NumberedSection } from "@/components/primitives/NumberedSection";
 import { CTABlock } from "@/components/primitives/CTABlock";
 import { DiagnosticQuiz } from "@/components/sections/DiagnosticQuiz";
 import { ServicesIndex } from "@/components/sections/ServicesIndex";
+import { JsonLd } from "@/components/primitives/JsonLd";
+import { services } from "@/content/services";
+import { siteConfig } from "@/lib/site-config";
+import type { ItemList, WithContext } from "schema-dts";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -13,8 +17,32 @@ export const metadata: Metadata = {
 };
 
 export default function WhatWeDoPage() {
+  const base = siteConfig.url.replace(/\/$/, "");
+
+  const servicesSchema: WithContext<ItemList> = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Lumivara Services",
+    itemListElement: services.map((s, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "Service",
+        name: s.title,
+        description: s.shortDescription,
+        url: `${base}/what-we-do/${s.slug}`,
+        provider: {
+          "@type": "Organization",
+          name: siteConfig.name,
+          url: siteConfig.url,
+        },
+      },
+    })),
+  };
+
   return (
     <>
+      <JsonLd data={servicesSchema} />
       <PageHero
         monoLabel="Our Services"
         headline="Six focused practices. One integrated approach."

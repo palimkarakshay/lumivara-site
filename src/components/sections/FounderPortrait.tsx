@@ -19,6 +19,7 @@ export function FounderPortrait() {
         fill
         sizes="(min-width: 768px) 40vw, 100vw"
         className="object-cover"
+        quality={75}
         onError={imgError ? undefined : () => setImgError(true)}
       />
     </div>

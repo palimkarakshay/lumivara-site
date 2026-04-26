@@ -5,6 +5,8 @@ import { NumberedSection } from "@/components/primitives/NumberedSection";
 import { CTABlock } from "@/components/primitives/CTABlock";
 import { DiagnosticQuiz } from "@/components/sections/DiagnosticQuiz";
 import { ServicesIndex } from "@/components/sections/ServicesIndex";
+import { TallyDiagnostic } from "@/components/sections/TallyDiagnostic";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -35,6 +37,17 @@ export default function WhatWeDoPage() {
 
       <SectionShell variant="canvas" id="services">
         <ServicesIndex />
+      </SectionShell>
+
+      <SectionShell variant="parchment" width="content" id="hr-diagnostic">
+        <NumberedSection number="—" label="Quick HR Diagnostic" />
+        <h2 className="text-display-md text-ink mt-6 mb-3">
+          Quick HR Diagnostic
+        </h2>
+        <p className="text-body-lg text-ink-soft mb-8 max-w-[640px]">
+          5 questions. Instant clarity on your highest-leverage people priority.
+        </p>
+        <TallyDiagnostic formId={siteConfig.tallyDiagnosticFormId} />
       </SectionShell>
 
       <CTABlock

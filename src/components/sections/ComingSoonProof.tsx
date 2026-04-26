@@ -5,7 +5,7 @@ export function ComingSoonProof() {
   return (
     <section
       aria-label="Client engagements"
-      className="w-full bg-parchment px-6 py-14 sm:px-8 sm:py-16"
+      className="w-full bg-parchment px-6 py-8 sm:px-8 sm:py-12"
     >
       <div className="mx-auto flex max-w-[1280px] flex-col items-center gap-6 text-center">
         <p className="text-label text-muted-strong">{comingSoonProof.label}</p>

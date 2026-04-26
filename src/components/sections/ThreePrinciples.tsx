@@ -14,7 +14,7 @@ export function ThreePrinciples() {
       <h2 className="text-display-lg text-canvas mt-6 mb-8 max-w-[880px]">
         {principles.heading}
       </h2>
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
         {principles.items.map((p, i) => (
           <Reveal key={p.number} delay={i * 80}>
             <PrincipleCard

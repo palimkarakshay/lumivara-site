@@ -39,7 +39,7 @@ export function SectionShell({
     <Tag
       id={id}
       className={cn(
-        "w-full py-16 sm:py-20 md:py-28 px-6 sm:px-8",
+        "w-full py-10 sm:py-14 md:py-20 px-6 sm:px-8",
         variantStyles[variant],
         className
       )}

@@ -20,9 +20,7 @@ export default async function Home() {
       <HomeHero />
       <CredentialsStrip />
       <ComingSoonProof />
-      <ThreePrinciples />
-      <ServicesGrid />
-      <SectionShell variant="canvas" width="content" className="py-10 sm:py-14">
+      <SectionShell variant="canvas" width="content" className="py-8 sm:py-10">
         <div className="mx-auto max-w-[640px]">
           <PulseQuestion
             question={homeContent.pulse.question}
@@ -30,6 +28,8 @@ export default async function Home() {
           />
         </div>
       </SectionShell>
+      <ThreePrinciples />
+      <ServicesGrid />
       <FractionalCTA />
       <FounderModule />
       <LatestInsights articles={topThree} />

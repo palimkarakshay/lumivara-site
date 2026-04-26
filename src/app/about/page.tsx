@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { aboutContent } from "@/content/about";
@@ -9,6 +8,7 @@ import { SectionShell } from "@/components/primitives/SectionShell";
 import { NumberedSection } from "@/components/primitives/NumberedSection";
 import { PrincipleCard } from "@/components/primitives/PrincipleCard";
 import { CTABlock } from "@/components/primitives/CTABlock";
+import { FounderPortrait } from "@/components/sections/FounderPortrait";
 
 export const metadata: Metadata = {
   title: "About",
@@ -84,15 +84,7 @@ export default function AboutPage() {
       <SectionShell variant="canvas" id="founder">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-5">
-            <div className="relative aspect-[3/4] overflow-hidden rounded-lg border border-border-subtle bg-parchment">
-              <Image
-                src="/images/founder-placeholder.svg"
-                alt="Portrait of Beas Banerjee — coming soon"
-                fill
-                sizes="(min-width: 768px) 40vw, 100vw"
-                className="object-cover"
-              />
-            </div>
+            <FounderPortrait />
             <ul className="text-label text-muted-strong mt-6 flex flex-wrap items-center gap-x-3 gap-y-1.5">
               {founder.credentials.map((c, i) => (
                 <li key={c} className="flex items-center gap-3">

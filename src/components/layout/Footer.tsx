@@ -3,6 +3,7 @@ import { siteConfig } from "@/lib/site-config";
 import { Logo } from "./Logo";
 import { NewsletterSignup } from "./NewsletterSignup";
 import { TorontoTime } from "./TorontoTime";
+import { CarbonBadge } from "./CarbonBadge";
 
 function LinkedInIcon({ size = 14 }: { size?: number }) {
   return (
@@ -112,6 +113,7 @@ export function Footer() {
               </span>
             ))}
           </div>
+          <CarbonBadge />
         </div>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 text-caption text-muted-strong sm:flex-row">

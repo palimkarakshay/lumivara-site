@@ -86,6 +86,10 @@ const themeInitScript = `
         document.documentElement.classList.add('dark');
       }
     }
+    var p = localStorage.getItem('lumivara-palette');
+    if (p === 'earth' || p === 'slate' || p === 'forest') {
+      document.documentElement.dataset.palette = p;
+    }
   } catch (e) {}
 })();
 `;

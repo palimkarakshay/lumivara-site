@@ -6,6 +6,7 @@ import { ArrowRight, Check, RotateCcw } from "lucide-react";
 import {
   diagnosticQuestions,
   scoreDiagnostic,
+  buildDiagnosticSummary,
   type DiagnosticAnswers,
 } from "@/content/diagnostic";
 import { services, getServiceBySlug } from "@/content/services";
@@ -50,6 +51,19 @@ export function DiagnosticQuiz({ className }: DiagnosticQuizProps) {
     const alsoServices = result.alsoRecommend
       .map((s) => getServiceBySlug(s))
       .filter((s): s is NonNullable<typeof s> => Boolean(s));
+
+    const summaryServiceNames = [
+      primary?.title,
+      ...alsoServices.map((s) => s.title),
+    ]
+      .filter(Boolean)
+      .join(" and ");
+
+    const diagnosticSummary = primary
+      ? buildDiagnosticSummary(answers, primary.title)
+      : "";
+    const sendResultsHref = `/contact?service=${result.primarySlug}&diagnosticSummary=${encodeURIComponent(diagnosticSummary)}`;
+
     return (
       <div
         className={cn(
@@ -69,6 +83,14 @@ export function DiagnosticQuiz({ className }: DiagnosticQuizProps) {
             <RotateCcw size={12} aria-hidden /> Retake
           </button>
         </div>
+
+        <p className="text-body text-ink-soft mt-6 leading-relaxed">
+          Your answers suggest{" "}
+          <span className="font-medium text-ink">{summaryServiceNames}</span>{" "}
+          {alsoServices.length > 0 ? "are" : "is"} your highest-leverage{" "}
+          {alsoServices.length > 0 ? "priorities" : "priority"}.
+        </p>
+
         {primary && (
           <>
             <p className="text-label text-muted-strong mt-6">Where to start</p>
@@ -83,17 +105,17 @@ export function DiagnosticQuiz({ className }: DiagnosticQuizProps) {
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
-                href={`/what-we-do/${primary.slug}`}
+                href={`/contact?service=${primary.slug}`}
                 className="inline-flex items-center gap-2 rounded-md bg-ink px-5 py-2.5 text-sm font-medium text-canvas transition-colors hover:bg-accent hover:text-ink"
               >
-                Explore {primary.shortTitle}
+                Book a Discovery Call
                 <ArrowRight size={14} aria-hidden />
               </Link>
               <Link
-                href={`/contact?service=${primary.slug}`}
+                href={sendResultsHref}
                 className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-accent-soft"
               >
-                {result.callToAction}
+                Send us your results
                 <ArrowRight size={14} aria-hidden />
               </Link>
             </div>

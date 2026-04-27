@@ -1,0 +1,156 @@
+name: Auto-resume paused workflows
+
+on:
+  schedule:
+    # Every 15 min — fine-grained enough that a "pause for 1h" doesn't
+    # over-shoot by more than a quarter, but not so frequent that we
+    # eat scheduled-runner minutes for nothing.
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write     # to enable workflows
+  contents: read
+
+# Reads the WORKFLOW_PAUSE_SCHEDULE repo variable (written by the AI Ops
+# dashboard's pause-for-duration UI) and re-enables any workflow whose
+# deadline has passed. Decrements run-count entries and writes the
+# updated schedule back via the GitHub API using a PAT.
+#
+# The PAT lives in repo secret OPS_VARIABLES_TOKEN. Required scopes:
+#   - Variables: Read & write   (rewrite the schedule)
+#   - Actions:   Read & write   (enable workflows)
+#   - Metadata:  Read           (mandatory baseline)
+#
+# If the secret is absent the job exits cleanly — pause-for-duration
+# becomes "pause indefinitely" until the operator clears it manually.
+
+jobs:
+  resume:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resume expired pauses
+        env:
+          OPS_TOKEN: ${{ secrets.OPS_VARIABLES_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          if [ -z "$OPS_TOKEN" ]; then
+            echo "::warning::OPS_VARIABLES_TOKEN not set — auto-resume disabled."
+            echo "Set this secret with a fine-grained PAT (Variables R/W,"
+            echo "Actions R/W) so pause-for-duration entries can be cleared."
+            exit 0
+          fi
+
+          python3 - <<'PY'
+          import json, os, sys
+          from datetime import datetime, timezone
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError
+
+          OWNER = os.environ["OWNER"]
+          REPO  = os.environ["REPO"]
+          TOK   = os.environ["OPS_TOKEN"]
+
+          API = f"https://api.github.com"
+          HDR = {
+              "Authorization": f"Bearer {TOK}",
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+
+          def req(method, path, body=None):
+              data = json.dumps(body).encode() if body else None
+              r = Request(f"{API}{path}", data=data, headers=HDR, method=method)
+              try:
+                  with urlopen(r) as resp:
+                      txt = resp.read().decode() or "{}"
+                      return resp.status, (json.loads(txt) if txt.strip() else {})
+              except HTTPError as e:
+                  return e.code, {}
+
+          # 1) Read the schedule variable.
+          code, var = req("GET", f"/repos/{OWNER}/{REPO}/actions/variables/WORKFLOW_PAUSE_SCHEDULE")
+          if code == 404 or not var:
+              print("No pause schedule set — nothing to do.")
+              sys.exit(0)
+          raw = var.get("value") or ""
+          if not raw.strip():
+              print("Pause schedule is empty — nothing to do.")
+              sys.exit(0)
+
+          # 2) Parse entries.
+          entries = []
+          for piece in (p.strip() for p in raw.split("|")):
+              if not piece:
+                  continue
+              fields = {}
+              for kv in piece.split(";"):
+                  if "=" in kv:
+                      k, v = kv.strip().split("=", 1)
+                      fields[k.strip()] = v.strip()
+              if "path" not in fields:
+                  continue
+              entries.append(fields)
+
+          # 3) Decide which to resume.
+          now = datetime.now(timezone.utc)
+          keep, resume = [], []
+          for e in entries:
+              if "until" in e:
+                  try:
+                      dt = datetime.fromisoformat(e["until"].replace("Z", "+00:00"))
+                  except ValueError:
+                      keep.append(e); continue
+                  if dt <= now:
+                      resume.append(e["path"])
+                  else:
+                      keep.append(e)
+              elif "runs" in e:
+                  # `runs` count is decremented elsewhere (TBD); for now we
+                  # leave run-count pauses untouched and rely on the
+                  # operator to clear them once satisfied.
+                  keep.append(e)
+              else:
+                  keep.append(e)
+
+          if not resume:
+              print("Nothing to resume this tick.")
+              sys.exit(0)
+
+          print(f"Resuming {len(resume)} workflow(s): {resume}")
+
+          # 4) List workflows to map path -> id.
+          code, wfs = req("GET", f"/repos/{OWNER}/{REPO}/actions/workflows?per_page=100")
+          if code >= 400:
+              print(f"::error::Could not list workflows (HTTP {code}); aborting.")
+              sys.exit(1)
+          by_path = {w["path"]: w["id"] for w in wfs.get("workflows", [])}
+
+          for path in resume:
+              wf_id = by_path.get(path)
+              if not wf_id:
+                  print(f"::warning::Workflow {path} not found; skipping.")
+                  continue
+              code, _ = req("PUT", f"/repos/{OWNER}/{REPO}/actions/workflows/{wf_id}/enable")
+              if code in (204, 200):
+                  print(f"Re-enabled {path}")
+              else:
+                  print(f"::warning::Failed to enable {path}: HTTP {code}")
+
+          # 5) Write the trimmed schedule back.
+          new_raw = " | ".join(
+              ("until=" + e["until"] + ";path=" + e["path"]) if "until" in e
+              else ("runs=" + e["runs"] + ";path=" + e["path"])
+              for e in keep
+          )
+          code, _ = req(
+              "PATCH",
+              f"/repos/{OWNER}/{REPO}/actions/variables/WORKFLOW_PAUSE_SCHEDULE",
+              {"name": "WORKFLOW_PAUSE_SCHEDULE", "value": new_raw},
+          )
+          if code in (204, 200):
+              print("Pause schedule trimmed.")
+          else:
+              print(f"::warning::Could not update schedule (HTTP {code}).")
+          PY

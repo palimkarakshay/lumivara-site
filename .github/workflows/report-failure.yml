@@ -1,0 +1,109 @@
+name: Report workflow failures to triage
+
+# Listens to every other workflow's completion. When one ends in failure
+# (or timeout), this workflow files an `auto-routine` GitHub issue with
+# enough context that the triage bot picks it up on its next cron run
+# and the executor schedules a fix.
+#
+# This implements the operator's request:
+#   "if any tech/coding related errors occur in the future, automatically
+#    log and add to the changelog so the triage bot will pick it up"
+#
+# We file an issue rather than editing CHANGELOG.md directly because:
+#   1. issues are first-class to the triage/execute bot pipeline already
+#   2. CHANGELOG churn from infra failures would be noisy and unactionable
+#   3. issues carry rich metadata (run URL, attempt, conclusion) that a
+#      changelog line would lose
+#
+# To prevent thrashing when a workflow keeps failing, the issue body
+# carries a stable signature (workflow name + first failed-step name)
+# and the job opens-or-comments rather than spawning duplicates.
+
+on:
+  workflow_run:
+    # The workflow_run trigger only fires for workflows in the default
+    # branch's tree. Listing them explicitly lets us add new ones
+    # without auto-listening to deploy noise.
+    workflows:
+      - "Triage backlog"
+      - "Execute backlog item"
+      - "Auto-resume paused workflows"
+      - "Deep research (Gemini Pro)"
+      - "Codex review"
+    types: [completed]
+
+permissions:
+  issues: write
+  actions: read
+  contents: read
+
+jobs:
+  file-issue:
+    if: |
+      github.event.workflow_run.conclusion == 'failure' ||
+      github.event.workflow_run.conclusion == 'timed_out'
+    runs-on: ubuntu-latest
+    steps:
+      - name: File or update auto-routine issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_URL: ${{ github.event.workflow_run.html_url }}
+          WF_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WF_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          WF_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          WF_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          WF_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          REPO="${GITHUB_REPOSITORY}"
+
+          # Pull the first failed job's name + step so the issue title
+          # is stable across retries of the same root cause.
+          FAILED_JOB=$(gh run view "$WF_RUN_ID" --repo "$REPO" --json jobs \
+            --jq '[.jobs[] | select(.conclusion=="failure" or .conclusion=="timed_out")][0] // {}')
+          JOB_NAME=$(echo "$FAILED_JOB" | jq -r '.name // "unknown-job"')
+          STEP_NAME=$(echo "$FAILED_JOB" | jq -r \
+            '[.steps[]? | select(.conclusion=="failure" or .conclusion=="timed_out")][0].name // "unknown-step"')
+
+          SIGNATURE="${WF_NAME} :: ${JOB_NAME} :: ${STEP_NAME}"
+          TITLE="[ci-failure] ${SIGNATURE}"
+
+          # Search for an existing open issue with the same signature.
+          EXISTING=$(gh issue list --repo "$REPO" --state open \
+            --search "in:title \"${SIGNATURE}\"" --json number --jq '.[0].number // empty')
+
+          BODY=$(cat <<EOF
+          _Auto-filed by report-failure.yml. The triage bot will classify
+          this on its next cron run; the executor will schedule a fix._
+
+          | Field | Value |
+          | --- | --- |
+          | Workflow | \`${WF_NAME}\` |
+          | Conclusion | \`${WF_CONCLUSION}\` |
+          | Run | [#${WF_RUN_ID}, attempt ${WF_ATTEMPT}](${WF_URL}) |
+          | Branch | \`${WF_HEAD_BRANCH}\` |
+          | SHA | \`${WF_HEAD_SHA}\` |
+          | Failed job | \`${JOB_NAME}\` |
+          | Failed step | \`${STEP_NAME}\` |
+
+          ## Suggested next steps
+          1. Open the run link above and read the failed step's tail.
+          2. If this is a flake (network, rate limit), add comment \`/retry\`
+             and close. Otherwise let triage classify it.
+          3. If triage already labeled \`flaky\` once before, escalate to
+             \`priority/P1\` so the executor stops re-trying.
+          EOF
+          )
+
+          if [ -n "$EXISTING" ]; then
+            echo "Existing open issue #${EXISTING} for this signature — adding a recurrence comment."
+            gh issue comment "$EXISTING" --repo "$REPO" --body \
+              "Recurred at run [#${WF_RUN_ID}, attempt ${WF_ATTEMPT}](${WF_URL}) on \`${WF_HEAD_SHA}\`."
+          else
+            echo "Creating new auto-routine issue."
+            gh issue create --repo "$REPO" \
+              --title "$TITLE" \
+              --body "$BODY" \
+              --label "auto-routine,bug,priority/P2,complexity/medium,area/ci,status/needs-triage"
+          fi

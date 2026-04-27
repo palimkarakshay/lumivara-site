@@ -50,6 +50,12 @@ jobs:
         id: pick
         env:
           GH_TOKEN: ${{ github.token }}
+          # Read by the inline Python step below to override the Claude
+          # implementation tier. Both come from the AI Ops dashboard.
+          # NEXT_RUN_MODEL_OVERRIDE wins if set; otherwise DEFAULT_AI_MODEL;
+          # otherwise the previous hardcoded "sonnet".
+          DASHBOARD_OVERRIDE: ${{ vars.NEXT_RUN_MODEL_OVERRIDE }}
+          DASHBOARD_DEFAULT: ${{ vars.DEFAULT_AI_MODEL }}
         run: |
           gh issue list --repo palimkarakshay/lumivara-site \
             --label auto-routine --state open \
@@ -106,15 +112,47 @@ jobs:
           emit(decision.audit())
           emit("```")
 
-          # Code-edit workflows always run on Claude (Sonnet). Gemini and Codex
+          # Code-edit workflows always run on Claude. Gemini and Codex
           # paths produce research / review artefacts, not code commits.
           # Cline is downgraded to Sonnet by the router itself.
+          # The Claude *tier* (haiku/sonnet/opus) is now operator-controlled
+          # via the AI Ops dashboard's DEFAULT_AI_MODEL / NEXT_RUN_MODEL_OVERRIDE
+          # repo variables. Friendly names map to concrete model ids below.
+          # Non-Claude friendly names (gpt4/codex) are accepted but downgraded
+          # to sonnet here, with a logged warning, because execute.yml can't
+          # switch *providers* mid-run — that's what the codex-review.yml /
+          # deep-research.yml dispatch paths above are for.
           if decision.workflow == "claude":
-              impl_model = "claude-sonnet-4-6"
+              CLAUDE_TIER = {
+                  "opus":   "claude-opus-4-7",
+                  "sonnet": "claude-sonnet-4-6",
+                  "haiku":  "claude-haiku-4-5-20251001",
+              }
+              friendly = (
+                  os.environ.get("DASHBOARD_OVERRIDE", "").strip()
+                  or os.environ.get("DASHBOARD_DEFAULT", "").strip()
+                  or "sonnet"
+              )
+              impl_model = CLAUDE_TIER.get(friendly)
+              if impl_model is None:
+                  emit(
+                      f"\n⚠️  Dashboard requested provider '{friendly}', but "
+                      "execute.yml's Claude path can't switch providers mid-run. "
+                      "Falling back to claude-sonnet-4-6. For OpenAI/Gemini "
+                      "paths, label the issue accordingly so the router "
+                      "dispatches the right workflow."
+                  )
+                  impl_model = "claude-sonnet-4-6"
+                  friendly = "sonnet"
+              source = (
+                  "NEXT_RUN_MODEL_OVERRIDE" if os.environ.get("DASHBOARD_OVERRIDE", "").strip()
+                  else "DEFAULT_AI_MODEL" if os.environ.get("DASHBOARD_DEFAULT", "").strip()
+                  else "fallback default"
+              )
               emit(
-                  f"\n→ Implementation will run on {impl_model}. "
-                  "(Haiku is for triage/identification only; Opus is reserved "
-                  "for execute-complex.yml planning.)"
+                  f"\n→ Implementation will run on {impl_model} "
+                  f"(friendly={friendly}, source={source}). "
+                  "Override via the AI Ops dashboard."
               )
               out.write(f"issue={num}\n")
               out.write(f"workflow=claude\n")

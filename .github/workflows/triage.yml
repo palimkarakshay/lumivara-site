@@ -40,12 +40,58 @@ jobs:
       # The engine selector decides which steps run. `auto` runs the full
       # ladder (Claude → Gemini → Codex) so triage NEVER fails because one
       # provider is down. Forced engines short-circuit to that single path.
+      #
+      # Resolution order (highest priority first):
+      #   1. workflow_dispatch input  (operator on the GitHub UI)
+      #   2. vars.NEXT_RUN_MODEL_OVERRIDE  (AI Ops dashboard, one-shot)
+      #   3. "auto"  (cron default — keeps the full fallback ladder)
+      #
+      # vars.DEFAULT_AI_MODEL is intentionally NOT consulted here. Pinning
+      # triage to a single engine on every run would disable the Claude →
+      # Gemini → Codex fallback that exists specifically so a single
+      # provider outage can't strand the Inbox. DEFAULT_AI_MODEL is
+      # execute-only (see execute.yml).
       - name: Resolve engine
         id: engine
+        env:
+          INPUT_ENGINE: ${{ inputs.engine || '' }}
+          OVERRIDE: ${{ vars.NEXT_RUN_MODEL_OVERRIDE }}
         run: |
-          ENGINE="${{ inputs.engine || 'auto' }}"
+          map_engine() {
+            case "$1" in
+              opus|sonnet|haiku|claude) echo "claude" ;;
+              gemini|gemini-pro|gemini-flash) echo "gemini" ;;
+              gpt4|codex) echo "codex" ;;
+              *) echo "" ;;
+            esac
+          }
+
+          if [ -n "$INPUT_ENGINE" ] && [ "$INPUT_ENGINE" != "auto" ]; then
+            ENGINE="$INPUT_ENGINE"
+            SOURCE="workflow_dispatch input"
+          elif [ -n "$OVERRIDE" ]; then
+            MAPPED=$(map_engine "$OVERRIDE")
+            if [ -n "$MAPPED" ]; then
+              ENGINE="$MAPPED"
+              SOURCE="vars.NEXT_RUN_MODEL_OVERRIDE=$OVERRIDE"
+            else
+              ENGINE="auto"
+              SOURCE="override '$OVERRIDE' not engine-mappable; using auto"
+            fi
+          else
+            ENGINE="auto"
+            SOURCE="default (full ladder)"
+          fi
           echo "engine=$ENGINE" >> "$GITHUB_OUTPUT"
-          echo "Triage engine for this run: $ENGINE"
+          echo "Triage engine for this run: $ENGINE (source: $SOURCE)"
+          {
+            echo "## Triage engine resolution"
+            echo "- engine: \`$ENGINE\`"
+            echo "- source: $SOURCE"
+            echo ""
+            echo "_The dashboard does not auto-clear \`NEXT_RUN_MODEL_OVERRIDE\`._"
+            echo "_Clear it manually from AI Ops once you've confirmed the run._"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       # ── Claude Haiku (skipped if engine=gemini|codex) ──────────────────────
       - name: Claude Haiku triage

@@ -11,6 +11,7 @@ permissions:
   issues: write
   pull-requests: write
   id-token: write
+  actions: write   # needed to dispatch sibling workflows for non-Claude routes
 
 concurrency:
   group: claude-runtime
@@ -39,7 +40,11 @@ jobs:
           git config user.name "claude-auto"
           git config user.email "claude-auto@users.noreply.github.com"
 
-      - name: Pick eligible issue and model
+      # ── Pick eligible issue + emit detailed routing audit ──────────────────
+      # Uses scripts/lib/routing.py so triage / execute / smoke-test all agree
+      # on the same rubric. Audit log goes to stdout AND $GITHUB_STEP_SUMMARY
+      # so the operator can see *why* an issue went to a given model.
+      - name: Pick eligible issue and route
         id: pick
         env:
           GH_TOKEN: ${{ github.token }}
@@ -50,29 +55,17 @@ jobs:
 
           python3 - <<'PY'
           import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path("scripts").resolve()))
+          from lib.routing import decide
 
           issues = json.load(open('/tmp/candidates.json'))
 
-          # Cron path: skip manual-only. (manual path is execute-complex.yml)
-          # status/awaiting-review = bot already opened a PR for it; don't re-pick.
           EXCLUDE = {"human-only", "manual-only", "status/blocked",
                      "status/in-progress", "status/needs-clarification",
                      "status/awaiting-review", "status/on-hold"}
           PRIO_RANK = {"priority/P1": 0, "priority/P2": 1, "priority/P3": 2}
           COMP_RANK = {"complexity/trivial": 0, "complexity/easy": 1, "complexity/medium": 2}
-
-          MODEL_FOR = {
-              "model/haiku":  "claude-haiku-4-5-20251001",
-              "model/sonnet": "claude-sonnet-4-6",
-              "model/opus":   "claude-opus-4-7",
-          }
-          # Fallback if model label missing: derive from complexity
-          MODEL_FROM_COMPLEXITY = {
-              "complexity/trivial": "claude-haiku-4-5-20251001",
-              "complexity/easy":    "claude-haiku-4-5-20251001",
-              "complexity/medium":  "claude-sonnet-4-6",
-              "complexity/complex": "claude-opus-4-7",
-          }
 
           eligible = []
           for i in issues:
@@ -82,43 +75,109 @@ jobs:
               prio = min((PRIO_RANK.get(l, 99) for l in labels), default=99)
               comp = min((COMP_RANK.get(l, 99) for l in labels), default=99)
               if prio == 99 or comp == 99:
-                  # missing required triage labels — wait for next triage run
                   continue
-              eligible.append((prio, comp, i["createdAt"], i["number"], labels))
+              eligible.append((prio, comp, i["createdAt"], i["number"], i["title"], labels))
 
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
           out = open(os.environ["GITHUB_OUTPUT"], "a")
+
+          def emit(line: str):
+              print(line)
+              if summary_path:
+                  with open(summary_path, "a") as fh:
+                      fh.write(line + "\n")
+
+          emit("## Execute — routing audit")
+          emit(f"Scanned {len(issues)} candidate(s); {len(eligible)} eligible after filters.")
+
           if not eligible:
-              out.write("issue=0\n")
-              out.write("model=\n")
-              print("No eligible issues this run.")
+              out.write("issue=0\nworkflow=none\nmodel=\nprovider=\n")
+              emit("No eligible issues this run. Exiting cleanly.")
               sys.exit(0)
 
           eligible.sort()
-          _, _, _, num, labels = eligible[0]
+          _, _, _, num, title, labels = eligible[0]
+          decision = decide(labels)
 
-          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), None)
-          if not model:
-              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-sonnet-4-6")
+          emit(f"\nSelected issue #{num} — {title}")
+          emit("```")
+          emit(decision.audit())
+          emit("```")
 
-          # Implementation always runs on Sonnet. Haiku is for triage/identification only.
-          # Opus is reserved for the planning pass in execute-complex.yml.
-          impl_model = "claude-sonnet-4-6"
-
-          out.write(f"issue={num}\n")
-          out.write(f"model={impl_model}\n")
-          print(f"Selected issue #{num} — implementing with {impl_model}")
+          # Code-edit workflows always run on Claude (Sonnet). Gemini and Codex
+          # paths produce research / review artefacts, not code commits.
+          # Cline is downgraded to Sonnet by the router itself.
+          if decision.workflow == "claude":
+              impl_model = "claude-sonnet-4-6"
+              emit(
+                  f"\n→ Implementation will run on {impl_model}. "
+                  "(Haiku is for triage/identification only; Opus is reserved "
+                  "for execute-complex.yml planning.)"
+              )
+              out.write(f"issue={num}\n")
+              out.write(f"workflow=claude\n")
+              out.write(f"provider={decision.provider}\n")
+              out.write(f"model={impl_model}\n")
+          elif decision.workflow == "gemini-research":
+              emit(
+                  f"\n→ Dispatching deep-research.yml for issue #{num} "
+                  f"(Gemini {decision.model})."
+              )
+              out.write(f"issue={num}\n")
+              out.write(f"workflow=gemini-research\n")
+              out.write(f"provider={decision.provider}\n")
+              out.write(f"model={decision.model}\n")
+          elif decision.workflow == "codex-review":
+              emit(
+                  f"\n→ Dispatching codex-review.yml for issue #{num} "
+                  f"(Codex {decision.model})."
+              )
+              out.write(f"issue={num}\n")
+              out.write(f"workflow=codex-review\n")
+              out.write(f"provider={decision.provider}\n")
+              out.write(f"model={decision.model}\n")
+          else:
+              # Future-proof: unknown workflow -> exit cleanly so cron doesn't loop.
+              emit(f"\n⚠️  Unknown workflow `{decision.workflow}` — skipping.")
+              out.write("issue=0\nworkflow=none\nmodel=\nprovider=\n")
           PY
 
       - name: No eligible issue — exiting
         if: steps.pick.outputs.issue == '0'
         run: echo "No eligible issues this cron run. Exiting cleanly."
 
+      # ── Dispatch non-Claude routes to their dedicated workflows ────────────
+      # Keeps execute.yml's runtime stable and lets each provider's path own
+      # its own permissions / CLI install / failure handling.
+      - name: Dispatch deep-research.yml (Gemini Pro)
+        if: steps.pick.outputs.workflow == 'gemini-research'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run deep-research.yml \
+            --repo palimkarakshay/lumivara-site \
+            -f issue=${{ steps.pick.outputs.issue }} \
+            -f model=${{ steps.pick.outputs.model }}
+          echo "Dispatched deep-research.yml for issue #${{ steps.pick.outputs.issue }}."
+
+      - name: Dispatch codex-review.yml (OpenAI Codex)
+        if: steps.pick.outputs.workflow == 'codex-review'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run codex-review.yml \
+            --repo palimkarakshay/lumivara-site \
+            -f issue=${{ steps.pick.outputs.issue }} \
+            -f model=${{ steps.pick.outputs.model }}
+          echo "Dispatched codex-review.yml for issue #${{ steps.pick.outputs.issue }}."
+
+      # ── Claude path (default code implementation) ──────────────────────────
       - name: Export ISSUE_NUMBER to job env
-        if: steps.pick.outputs.issue != '0'
+        if: steps.pick.outputs.workflow == 'claude'
         run: echo "ISSUE_NUMBER=${{ steps.pick.outputs.issue }}" >> "$GITHUB_ENV"
 
       - uses: anthropics/claude-code-action@v1
-        if: steps.pick.outputs.issue != '0'
+        if: steps.pick.outputs.workflow == 'claude'
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           settings: |
@@ -135,7 +194,10 @@ jobs:
               }
             }
           prompt: |
-            Issue #${{ steps.pick.outputs.issue }} has been pre-selected for you.
+            Issue #${{ steps.pick.outputs.issue }} has been pre-selected for you
+            by the multi-model router (provider=${{ steps.pick.outputs.provider }},
+            model=${{ steps.pick.outputs.model }}). The full routing audit was
+            printed in the previous step's log and step summary.
             ISSUE_NUMBER=${{ steps.pick.outputs.issue }} is available in your env.
             Read `scripts/execute-prompt.md` and follow it to implement that
             specific issue. Skip any issue-selection logic — it's already done.

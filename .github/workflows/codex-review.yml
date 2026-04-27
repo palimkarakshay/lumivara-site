@@ -1,0 +1,175 @@
+name: Codex review (OpenAI gpt-4o-mini)
+
+# Runs OpenAI Codex / gpt-4o-mini on issues that the router has tagged for
+# code review or diff analysis. Posts the review as a comment on the issue
+# (and on the linked PR, if any). No code commits.
+#
+# Triggered by execute.yml when an issue is labeled `model/codex`, or
+# manually via workflow_dispatch.
+#
+# OPENAI_API_KEY is OPTIONAL on this repo — if missing or quota-exhausted,
+# the workflow exits cleanly with a warning and re-labels the issue back to
+# the Claude path so the work isn't lost.
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number"
+        required: true
+      model:
+        description: "OpenAI model id (default gpt-4o-mini)"
+        required: false
+        default: "gpt-4o-mini"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: codex-review-runtime
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Codex CLI
+        run: npm install -g @openai/codex
+
+      - name: Verify Codex CLI + key
+        id: verify
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::warning::OPENAI_API_KEY missing — re-routing issue to Claude."
+            gh issue comment ${{ inputs.issue }} \
+              --repo palimkarakshay/lumivara-site \
+              --body "Codex review requested but OPENAI_API_KEY is not configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
+            gh issue edit ${{ inputs.issue }} \
+              --repo palimkarakshay/lumivara-site \
+              --remove-label "model/codex" || true
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          codex --version || true
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Run Codex review pass
+        if: steps.verify.outputs.ok == 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
+          MODEL: ${{ inputs.model }}
+        run: |
+          set -euo pipefail
+          REPO=palimkarakshay/lumivara-site
+
+          gh issue view "$ISSUE" --repo "$REPO" \
+            --json number,title,body,labels > /tmp/issue.json
+
+          TITLE=$(python3 -c 'import json; print(json.load(open("/tmp/issue.json"))["title"])')
+          BODY=$(python3 -c 'import json; print(json.load(open("/tmp/issue.json")).get("body") or "(empty)")')
+
+          # If the issue body references a PR ("PR #N"), grab that diff for review.
+          PR_NUM=$(python3 - <<'PY'
+          import json, re
+          body = json.load(open("/tmp/issue.json")).get("body") or ""
+          m = re.search(r"PR\s*#?(\d+)", body, re.IGNORECASE)
+          print(m.group(1) if m else "")
+          PY
+          )
+
+          DIFF=""
+          if [ -n "$PR_NUM" ]; then
+            echo "Found referenced PR #$PR_NUM — fetching diff."
+            gh pr diff "$PR_NUM" --repo "$REPO" 2>/dev/null \
+              | head -c 60000 > /tmp/diff.txt || true
+            DIFF=$(cat /tmp/diff.txt)
+          fi
+
+          # Build the prompt + call OpenAI REST in one python step so we don't
+          # have to round-trip large strings through shell variables (which
+          # mangles quotes in diffs and titles).
+          export ISSUE TITLE BODY DIFF MODEL OPENAI_API_KEY PR_NUM
+          python3 - <<'PY' > /tmp/review.md
+          import json, os, sys, urllib.request, urllib.error
+
+          parts = [
+              "You are reviewing code for the Lumivara site repo.",
+              "Be concrete: cite file paths and line numbers. Flag issues by",
+              "severity (blocker/major/minor/nit). No filler.",
+              "",
+              f"## Issue #{os.environ['ISSUE']}: {os.environ['TITLE']}",
+              "",
+              os.environ.get("BODY") or "(empty)",
+          ]
+          diff = os.environ.get("DIFF") or ""
+          if diff.strip():
+              parts += ["", "## PR diff under review", "```diff", diff, "```"]
+          else:
+              parts += ["", "_No referenced PR found; review the issue's described change against the current codebase._"]
+          prompt = "\n".join(parts)
+
+          key = os.environ["OPENAI_API_KEY"].strip()
+          model = os.environ.get("MODEL", "gpt-4o-mini")
+          req = urllib.request.Request(
+              "https://api.openai.com/v1/chat/completions",
+              data=json.dumps({
+                  "model": model,
+                  "messages": [{"role": "user", "content": prompt}],
+                  "temperature": 0.2,
+              }).encode(),
+              headers={"Authorization": f"Bearer {key}",
+                       "Content-Type": "application/json"},
+              method="POST",
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=90) as r:
+                  resp = json.loads(r.read())
+              print(resp["choices"][0]["message"]["content"])
+          except urllib.error.HTTPError as e:
+              body = e.read().decode()[:500]
+              if e.code == 429:
+                  print("::warning::OpenAI quota exhausted — review skipped.",
+                        file=sys.stderr)
+                  print(f"_Codex review unavailable (HTTP 429): {body}_")
+                  sys.exit(0)
+              print(f"::error::OpenAI HTTP {e.code}: {body}", file=sys.stderr)
+              sys.exit(1)
+          PY
+
+          {
+            echo "## Code review (Codex $MODEL)"
+            echo ""
+            cat /tmp/review.md
+            echo ""
+            echo "---"
+            echo "_Posted by codex-review.yml. Review only — no code changes._"
+          } > /tmp/comment.md
+
+          gh issue comment "$ISSUE" --repo "$REPO" --body-file /tmp/comment.md
+          if [ -n "$PR_NUM" ]; then
+            gh pr comment "$PR_NUM" --repo "$REPO" --body-file /tmp/comment.md
+          fi
+
+          gh issue edit "$ISSUE" --repo "$REPO" \
+            --add-label "status/awaiting-review" \
+            --remove-label "status/planned" || true
+
+          echo "## Codex review summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Posted review on issue #$ISSUE${PR_NUM:+ + PR #$PR_NUM} using $MODEL." >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,148 @@
+name: Deep research (Gemini Pro)
+
+# Runs Gemini 2.5 Pro on issues that the router has tagged for large-context
+# work — full-tree audits, bulk MDX article generation, multi-source research
+# synthesis. Posts the result as a comment on the issue (no code commit).
+#
+# Triggered by execute.yml when an issue is labeled `model/gemini-pro`, or
+# manually via workflow_dispatch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number"
+        required: true
+      model:
+        description: "Gemini model id (default gemini-2.5-pro)"
+        required: false
+        default: "gemini-2.5-pro"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: deep-research-runtime
+  cancel-in-progress: false
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Gemini CLI
+        run: npm install -g @google/gemini-cli
+
+      - name: Verify Gemini CLI + API key
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "::error::GEMINI_API_KEY missing — cannot run deep-research."
+            exit 1
+          fi
+          gemini --version
+
+      - name: Run Gemini deep-research pass
+        id: research
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
+          MODEL: ${{ inputs.model }}
+        run: |
+          set -euo pipefail
+          REPO=palimkarakshay/lumivara-site
+
+          gh issue view "$ISSUE" --repo "$REPO" \
+            --json number,title,body,labels > /tmp/issue.json
+
+          TITLE=$(python3 -c 'import json,sys; print(json.load(open("/tmp/issue.json"))["title"])')
+          BODY=$(python3 -c 'import json,sys; print(json.load(open("/tmp/issue.json")).get("body") or "(empty)")')
+
+          # Build a single prompt covering the issue + a hint of the codebase.
+          # The 1M-token context lets us include the whole src/ tree on most
+          # research tasks.
+          {
+            echo "You are running a deep-research / large-context pass on the"
+            echo "Lumivara site repo. Your output goes back to the issue as a"
+            echo "comment — be concrete, cite files/paths, no hand-waving."
+            echo ""
+            echo "## Issue #$ISSUE — $TITLE"
+            echo ""
+            echo "$BODY"
+            echo ""
+            echo "## Project context (selected files)"
+          } > /tmp/prompt.txt
+
+          # Cap at ~200KB of source so we stay well within free-tier rate limits
+          # while still giving Gemini real context.
+          find src docs -type f \( -name '*.tsx' -o -name '*.ts' \
+              -o -name '*.mdx' -o -name '*.md' \) -size -50k 2>/dev/null \
+            | head -n 80 \
+            | while read -r f; do
+                echo ""
+                echo "### $f"
+                echo '```'
+                head -c 4000 "$f"
+                echo ''
+                echo '```'
+              done >> /tmp/prompt.txt
+
+          echo "── Prompt size: $(wc -c < /tmp/prompt.txt) bytes ──"
+
+          # Use the REST API directly — same pattern as gemini-triage.py — so
+          # we don't depend on the gemini CLI's interactive auth dance.
+          python3 - <<'PY' > /tmp/research.md
+          import json, os, urllib.request, urllib.error, sys
+          key = os.environ["GEMINI_API_KEY"].strip()
+          model = os.environ.get("MODEL", "gemini-2.5-pro")
+          prompt = open("/tmp/prompt.txt").read()
+          url = (
+              "https://generativelanguage.googleapis.com/v1beta/models/"
+              f"{model}:generateContent?key={key}"
+          )
+          payload = {"contents": [{"parts": [{"text": prompt}]}],
+                     "generationConfig": {"temperature": 0.3}}
+          req = urllib.request.Request(url,
+              data=json.dumps(payload).encode(),
+              headers={"Content-Type": "application/json"}, method="POST")
+          try:
+              with urllib.request.urlopen(req, timeout=120) as r:
+                  resp = json.loads(r.read())
+              text = resp["candidates"][0]["content"]["parts"][0]["text"]
+          except urllib.error.HTTPError as e:
+              print(f"::error::Gemini API {e.code}: {e.read().decode()[:500]}",
+                    file=sys.stderr)
+              sys.exit(1)
+          print(text)
+          PY
+
+          echo "Gemini response: $(wc -c < /tmp/research.md) bytes"
+
+          {
+            echo "## Deep research (Gemini $MODEL)"
+            echo ""
+            cat /tmp/research.md
+            echo ""
+            echo "---"
+            echo "_Posted by deep-research.yml. No code changes were made; this"
+            echo "is research output. The operator decides next steps._"
+          } > /tmp/comment.md
+
+          gh issue comment "$ISSUE" --repo "$REPO" --body-file /tmp/comment.md
+
+          gh issue edit "$ISSUE" --repo "$REPO" \
+            --add-label "status/awaiting-review" \
+            --remove-label "status/planned" || true
+
+          echo "## Deep-research summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Posted research comment to issue #$ISSUE using Gemini $MODEL." >> "$GITHUB_STEP_SUMMARY"

@@ -12,8 +12,12 @@ const qc = new QueryClient({
         if (status === 401 || status === 403 || status === 404) return false;
         return count < 2;
       },
-      refetchOnWindowFocus: true,
-      staleTime: 15_000,
+      // Window-focus refetch + 30s polling stacked together caused
+      // bursty parallel calls and intermittent secondary-rate-limit
+      // 403s on phones that switch apps frequently. Off by default;
+      // pull-to-refresh is the explicit refresh path.
+      refetchOnWindowFocus: false,
+      staleTime: 60_000,
     },
   },
 });

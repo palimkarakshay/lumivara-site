@@ -39,16 +39,57 @@ export function makeClient(token: string): Octokit {
 }
 
 // Surface a clean message instead of Octokit's RequestError shape.
-export function explainError(err: unknown): string {
+// Maps 403s to the specific PAT scope the failing endpoint needs, since
+// GitHub's "Resource not accessible by personal access token" body is
+// the same regardless of which permission is missing.
+export function explainError(
+  err: unknown,
+  scopeHint?: PermissionHint,
+): string {
   if (typeof err === "object" && err && "status" in err) {
     const e = err as { status?: number; message?: string };
     if (e.status === 401) return "Token rejected (401). Rotate your PAT.";
-    if (e.status === 403) return "Forbidden (403). Check token scopes.";
+    if (e.status === 403) {
+      const hint = scopeHint
+        ? `Your PAT likely needs ${describeHint(scopeHint)}.`
+        : "Check the PAT scopes (most often Variables, Actions, or Pull requests at Read & write).";
+      // GitHub also returns 403 for secondary rate limits; the body
+      // mentions "abuse" / "rate limit" when that's the cause.
+      const body = (e.message ?? "").toLowerCase();
+      if (body.includes("rate limit") || body.includes("abuse")) {
+        return "Rate limited (403). Wait a minute, then retry.";
+      }
+      return `Forbidden (403). ${hint}`;
+    }
     if (e.status === 404)
-      return "Not found (404). Token may lack repo access.";
+      return "Not found (404). Token may lack access to this repo.";
     return e.message ?? `HTTP ${e.status}`;
   }
   return err instanceof Error ? err.message : String(err);
+}
+
+export type PermissionHint =
+  | "variables-read"
+  | "variables-write"
+  | "actions-read"
+  | "actions-write"
+  | "pulls-write"
+  | "contents-write";
+
+function describeHint(h: PermissionHint): string {
+  switch (h) {
+    case "variables-read":
+    case "variables-write":
+      return "**Variables: Read & write**";
+    case "actions-read":
+      return "**Actions: Read**";
+    case "actions-write":
+      return "**Actions: Read & write**";
+    case "pulls-write":
+      return "**Pull requests: Read & write**";
+    case "contents-write":
+      return "**Contents: Read & write**";
+  }
 }
 
 // ── Repo Variables ─────────────────────────────────────────────────────
@@ -157,6 +198,10 @@ export async function setWorkflowEnabled(
 // Run-level logs come back as a zip; job-level logs come back as plain
 // text. We always use the job endpoint and concatenate, which avoids
 // shipping a zip library to the browser.
+//
+// Fetched sequentially (not Promise.all): a long run has 5–10 jobs, and
+// firing 10 parallel logs requests reliably trips GitHub's secondary
+// rate limit and returns intermittent 403s.
 export async function getRunLogs(
   octo: Octokit,
   runId: number,
@@ -167,20 +212,53 @@ export async function getRunLogs(
     run_id: runId,
     per_page: 100,
   });
-  const chunks = await Promise.all(
-    jobs.map(async (job) => {
-      try {
-        const res = await octo.request(
-          "GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs",
-          { owner: OWNER, repo: REPO, job_id: job.id },
-        );
-        return `\n===== job: ${job.name} =====\n${String(res.data)}`;
-      } catch {
-        return `\n===== job: ${job.name} (logs unavailable) =====\n`;
-      }
-    }),
-  );
+  const chunks: string[] = [];
+  for (const job of jobs) {
+    try {
+      const res = await octo.request(
+        "GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs",
+        { owner: OWNER, repo: REPO, job_id: job.id },
+      );
+      chunks.push(`\n===== job: ${job.name} =====\n${String(res.data)}`);
+    } catch {
+      chunks.push(`\n===== job: ${job.name} (logs unavailable) =====\n`);
+    }
+  }
   return chunks.join("\n");
+}
+
+// ── Workflow YAML (for cron parsing) ───────────────────────────────────
+// Returns the workflow file's plaintext source. Used to extract `cron:`
+// lines so the dashboard can show "next scheduled run" alongside the
+// pause/resume toggle.
+export async function getWorkflowFileContent(
+  octo: Octokit,
+  path: string,
+): Promise<string> {
+  const res = await octo.repos.getContent({
+    owner: OWNER,
+    repo: REPO,
+    path,
+  });
+  if (Array.isArray(res.data) || res.data.type !== "file") {
+    throw new Error(`Expected file at ${path}`);
+  }
+  // Browsers can decode base64 directly; no Buffer needed.
+  const b64 = (res.data as { content?: string }).content ?? "";
+  return atob(b64.replace(/\n/g, ""));
+}
+
+// Pulls all `cron: '<expr>'` lines from a workflow YAML. Returns the
+// raw cron expressions in order; empty array means no schedule trigger.
+export function extractCrons(yaml: string): string[] {
+  const re = /^\s*-?\s*cron:\s*['"]?([^'"#\n]+?)['"]?\s*(?:#.*)?$/gm;
+  const out: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(yaml)) !== null) {
+    const expr = m[1].trim();
+    if (expr) out.push(expr);
+  }
+  return out;
 }
 
 // Pulls the THINKING blocks out of the raw concatenated log text.

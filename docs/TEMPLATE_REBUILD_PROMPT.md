@@ -380,3 +380,290 @@ walkthrough video. Nothing from `docs/operator/`, nothing from
 
 ---
 
+## 2.5 Operator developer-environment setup (the multi-AI toolkit)
+
+This section covers the operator's *own machine and accounts* — not the
+client repo. It's what gets you authoring code with leverage. Ordered by
+priority: do tier-A first; tier-B is comfort; tier-C is opportunistic.
+
+> **Why multi-AI matters here.** The autopilot pipeline routes auto-coding
+> requests through Claude → Gemini → OpenAI fallbacks. If Claude is
+> quota-throttled at 2 a.m. on a client cron, Gemini's free tier picks up
+> triage and a deferred Sonnet run picks up the next morning. The same
+> redundancy applies to your own interactive work: when your Pro quota
+> hits the 5-hour wall, you switch to Codex or Gemini until it resets.
+> The cost of *not* having all three configured is a stalled day.
+
+### 2.5.A — Tier A: must have before client #1
+
+#### A.1 Claude account + Claude Code CLI
+
+1. Sign up for **Claude Pro** ($20 USD / mo) at https://claude.ai/upgrade.
+   Move to **Max 5x** ($100 / mo) when active client count crosses 5.
+   Move to **Max 20x** ($200 / mo) at 15 clients. (Per
+   `docs/freelance/03-cost-analysis.md` § Part E.)
+2. Install Claude Code CLI: `curl -fsSL https://claude.ai/install.sh | sh`
+   (or via Homebrew on macOS). Verify: `claude --version`.
+3. Mint the OAuth token that bills against your Pro quota:
+   ```bash
+   claude setup-token   # opens browser; pastes token to clipboard
+   ```
+   Save this string in a password manager labelled
+   `CLAUDE_CODE_OAUTH_TOKEN — operator (palimkarakshay)`. **It is the same
+   token across every client repo.** Never give it out, never paste it in
+   a chat, never commit it.
+4. Add it as a **GitHub organisation secret** (per § A1 above) — *not* as a
+   per-repo secret. Lower drift, single rotation point.
+5. Optional but recommended: `claude` IDE extension for VS Code or
+   JetBrains (Settings → Extensions → "Claude Code"). Lets you review and
+   accept agent edits from inside the editor instead of a terminal pane.
+6. Configure model defaults in `~/.claude/settings.json`:
+   ```json
+   {
+     "defaultModel": "claude-opus-4-7",
+     "fastModel": "claude-haiku-4-5-20251001",
+     "allowedTools": ["Bash", "Read", "Write", "Edit", "Glob", "Grep"]
+   }
+   ```
+   Opus for planning + this prompt itself; Haiku for triage and trivial
+   edits; Sonnet (the default in CI workflows) for implementation.
+
+#### A.2 GitHub — operator personal account + bot account
+
+You need *two* GitHub identities. Don't skip this — it's the single
+biggest hardening lever.
+
+| Account | Purpose | Identity |
+|---|---|---|
+| **Operator personal** (e.g. `palimkarakshay`) | Owns every client repo (until end-of-engagement transfer). Owns the operator org. Owns the operator's master / admin repo. Authors PR reviews, manual merges, contract-related commits. | Your real name / email. SSH key + signed commits enabled. |
+| **Operator bot** (e.g. `vibe-coded-bot`) | Author of every auto-PR. Holder of the vendor PAT used by n8n + GitHub Actions. Has *Write* access (not Admin) to each client repo. | Branded name + a bot-only email (e.g. `bot@vibe-coded.com` via Resend). HTTPS-only; no SSH key needed. |
+
+**Personal account setup (one-time):**
+
+```bash
+# Generate Ed25519 SSH key for the personal identity
+ssh-keygen -t ed25519 -C "palimkarakshay@operator" -f ~/.ssh/id_ed25519_operator
+# Add to ssh-agent and to github.com → Settings → SSH keys.
+
+# Sign commits with GPG (or with SSH signing on git ≥2.34):
+git config --global user.signingkey ~/.ssh/id_ed25519_operator.pub
+git config --global gpg.format ssh
+git config --global commit.gpgsign true
+```
+
+Enable **2FA with hardware key** on github.com → Settings → Password and
+authentication. The operator's GitHub identity is the master key to the
+whole practice; a stolen TOTP is too cheap an attack.
+
+**Bot account setup (one-time):**
+
+```bash
+# 1. Sign up new GitHub user — use a separate email (Resend alias works).
+# 2. Enable 2FA with TOTP (no hardware key needed for the bot).
+# 3. Settings → Developer settings → Personal access tokens → Fine-grained.
+#    Create a token with:
+#      Resource owner: palimkarakshay (your personal account, since
+#                                       client repos live there)
+#      Repository access: All repositories (or "Selected" and add as you go)
+#      Permissions: Issues RW, Pull requests RW, Contents RW, Metadata R,
+#                   Actions R (write only if needed for manual dispatch)
+#      Expiration: 90 days, calendar a rotation reminder.
+# 4. Save as VENDOR_GITHUB_PAT in:
+#      a. GitHub org secrets (for use in workflows)
+#      b. n8n credentials (for issue/comment/label writes)
+#      c. password manager
+# 5. Configure git locally for the bot identity (used only on operator
+#    machine when scripting commits as the bot):
+git config --global user.email "bot@vibe-coded.com"  # only in bot-scoped shells
+```
+
+**GitHub CLI**: install `gh` (`brew install gh` or per-platform). Auth as
+both:
+
+```bash
+gh auth login --hostname github.com   # personal identity, browser flow
+gh auth login --with-token <<< "$VENDOR_GITHUB_PAT"  # bot, in a separate shell
+gh auth status                         # verify both
+```
+
+Use `gh auth switch` between the two as needed. In day-to-day operator
+work, stay logged in as the personal identity; switch to bot only when
+testing webhook flows.
+
+#### A.3 Vercel
+
+1. Sign up at https://vercel.com/signup with the **operator personal
+   GitHub identity**. Vercel projects will live under your personal
+   Vercel account; one Vercel project per client.
+2. Verify **billing**: free Hobby plan covers small-business sites
+   (≤100 GB bandwidth, 1M function invocations / mo). Move to Pro
+   ($20 / mo / member) only if a client outgrows it — and that cost is
+   theirs, not yours.
+3. Install Vercel CLI: `npm i -g vercel`. Log in: `vercel login`.
+4. Create a **read-only Vercel API token** (Vercel → Account → Tokens) for
+   each client project; this becomes `VERCEL_API_TOKEN` in their env.
+5. Per-client: enable **Comment on Pull Requests** (Settings → Git) so
+   preview URLs surface on every auto-PR.
+
+#### A.4 Codex / OpenAI Codex CLI
+
+You said you already have this. The hardening notes:
+
+1. The **Codex CLI** is operator-side only — it's not used in client cron
+   workflows (Claude is the implementer there). Use Codex when:
+   - You hit your Claude quota in the middle of interactive work.
+   - You want a second opinion on a tricky refactor.
+   - You're doing a heavy local migration where Sonnet's 200k context
+     would need chunking.
+2. Auth: `codex login` (browser flow → ChatGPT Plus/Pro/Team account). The
+   subscription bills the operator's OpenAI account, not API credits.
+3. Stash the API key (different from Codex CLI auth) in your password
+   manager as `OPENAI_API_KEY — operator`. This is the value that becomes
+   the `OPENAI_API_KEY` org-level secret used by `ai-smoke-test.yml` and
+   the optional code-review fallback.
+4. Configure `~/.codex/config.toml`:
+   ```toml
+   model = "gpt-5"
+   reasoning_effort = "medium"
+   approval_policy = "on-request"
+   ```
+   `on-request` means Codex asks before edits — safer for operator-side
+   work where you don't want it touching the wrong file.
+
+#### A.5 Gemini API key + Gemini CLI
+
+1. Get the API key at https://aistudio.google.com/apikey. Free tier is
+   generous: 1500 requests / day on Flash, 50 / day on Pro. Save as
+   `GEMINI_API_KEY — operator` in your password manager.
+2. Add as a GitHub org secret. Used by `scripts/gemini-triage.py`
+   fallback and `ai-smoke-test.yml`. **This is what keeps client
+   triage running when Claude is throttled** — don't skip it.
+3. Install Gemini CLI: `npm i -g @google/generative-ai-cli` (or use the
+   newer `gemini` CLI from Google's docs). Configure:
+   ```bash
+   export GEMINI_API_KEY=...   # add to ~/.zshrc or ~/.bashrc
+   ```
+4. **Use Gemini 2.5 Pro for deep research / high context** — its 1M-token
+   context window is unmatched among the three providers. Operator
+   workflows where Gemini Pro shines:
+   - Auditing an entire client codebase before a major refactor (paste
+     `find . -type f -name '*.tsx' | xargs cat` or use the CLI's
+     `--directory` flag).
+   - Reading a 200-page Next.js / Tailwind / Auth.js docs PDF + the
+     client's repo in one prompt to spot version-mismatch bugs.
+   - Summarising 6 months of GitHub Actions logs.
+   - First-pass content drafting for blog posts (then Claude polishes).
+5. **Should you go paid?** The Gemini API paid tier (~$1.25 / 1M input
+   tokens for Pro) only matters once your free-tier daily cap actually
+   bites. For an operator running 3–5 clients on autopilot, free tier
+   suffices. Re-evaluate at 10+ clients.
+
+### 2.5.B — Tier B: nice to have, install before client #5
+
+#### B.1 Cline (the VS Code agent)
+
+1. Install from VS Code Marketplace: search "Cline".
+2. Configure with a **Gemini API key** (default) — keeps it free, and
+   Gemini's long context is a comfort fit for in-editor work where you
+   want it to read multiple files at once.
+3. Or wire it up to your **Anthropic API key** for Claude-in-Cline. This
+   bills against API credits (separate from the Pro/Max quota), so use
+   sparingly — ~$5–15 / mo at moderate use.
+4. Cline's role in your workflow: a "second pair of eyes" on tricky
+   client features, especially when you want a model to read a lot of
+   files and propose surgical edits *without* committing. Set its
+   approval mode to "Approve every edit" in client repos.
+
+#### B.2 Cursor (alternative IDE)
+
+Optional. If you prefer Cursor over VS Code with Cline, the trade-offs:
+
+- **Pro:** $20/mo bundles GPT-4o + Claude Sonnet + Gemini 2.5 Pro on a
+  single subscription. Tab-completion is best in class.
+- **Con:** doesn't natively integrate with `claude` CLI — you'd run two
+  agents side-by-side rather than one IDE.
+
+If you go Cursor: subscribe at https://cursor.com, sign in with your
+operator GitHub identity, and configure `~/.cursor/config.json` to set
+default model = `claude-sonnet-4-6`. Don't put a client repo into Cursor
+without first confirming `.cursorignore` excludes `docs/operator/`,
+`scripts/`, and `.github/workflows/`.
+
+#### B.3 ccusage (Claude usage monitor)
+
+```bash
+npm i -g ccusage
+ccusage    # one-shot report
+ccusage --watch   # live dashboard
+```
+
+Run weekly. Surfaces: monthly spend by repo, percentage of Pro/Max quota
+used, drift between clients. Used by `docs/MONITORING.md`.
+
+### 2.5.C — Tier C: opportunistic / specialty
+
+| Tool | When | Notes |
+|---|---|---|
+| **Aider** (`pip install aider-chat`) | Heavy refactors that span 50+ files. Aider's git-first model is unbeatable for "rename this symbol everywhere and commit each file separately". | Auth via OpenAI key or Anthropic key. Free CLI. |
+| **Continue** (VS Code / JetBrains plugin) | If you're already in JetBrains and want an in-IDE agent. Free, BYO-key. | Slower than Cline; use only if Cursor isn't an option. |
+| **Open Interpreter** (`pip install open-interpreter`) | Local-only tasks: log scraping, file reorg, ad-hoc SQL on a client export. | Don't point at a client repo without `--auto_run False`. |
+| **Phind** (https://phind.com) | Quick lookups of obscure error messages. Browser-only; not part of the auto-pipeline. | Free tier is fine. |
+
+### 2.5.D — Multi-AI fallback policy (what plugs into the autopilot)
+
+This is the *required* mapping for client cron workflows. The operator's
+job in the setup checklist (B5) is to confirm each lane has a working
+key:
+
+| Lane (cron / event) | Primary | Fallback | Final fallback |
+|---|---|---|---|
+| Triage classification | Claude Haiku (`CLAUDE_CODE_OAUTH_TOKEN`) | Gemini 2.5 Flash (`GEMINI_API_KEY`) | Defer to next cron |
+| Implementation (auto code edits) | Claude Sonnet (`CLAUDE_CODE_OAUTH_TOKEN`) | Defer to next cron | Operator runs `execute-single.yml` manually |
+| Planning (Opus pass for complex issues) | Claude Opus (`CLAUDE_CODE_OAUTH_TOKEN`) | Wait for availability | Operator plans manually |
+| Trivial edits (typo, single-line) | Claude Haiku | Gemini 2.5 Flash-Lite | Defer |
+| Large-context reads (audit, bulk) | Gemini 2.5 Pro (1M ctx) | Sonnet chunked | Operator chunks manually |
+| Content drafting (blog, marketing) | Gemini 2.5 Pro | Claude Sonnet | Operator drafts |
+| Code review on PR diff (optional) | OpenAI gpt-4o-mini (`OPENAI_API_KEY`) | Gemini 2.5 Flash | Skip review |
+| AI smoke test (weekly) | Pings each provider | n/a — this *is* the canary | Page operator |
+
+> **Minimum viable to run a client:** `CLAUDE_CODE_OAUTH_TOKEN` +
+> `GEMINI_API_KEY`. OpenAI is optional (code-review only).
+
+### 2.5.E — Account separation matrix (operator vs client)
+
+| Resource | Operator account | Client account |
+|---|---|---|
+| GitHub repo ownership | ✅ until end-of-engagement transfer | (transferred at termination) |
+| GitHub org membership | ✅ Owner of operator org | n/a — client never joins the operator org |
+| Vercel project | ✅ in operator's Vercel account | (transferred at termination) |
+| Production domain (DNS / registrar) | ❌ never | ✅ client owns from day 1 |
+| Resend domain | ✅ operator's `mail.<brand>.com` | n/a — magic-link emails come from operator domain |
+| Twilio phone number | ✅ in operator Twilio account | (transferable on request, ~$20 fee) |
+| n8n workflows | ✅ on operator Railway | n/a — workflows are not transferred |
+| Claude / Gemini / OpenAI API keys | ✅ all operator | n/a — never given to client |
+| Auth.js OAuth clients (Google / Entra) | ✅ in operator Cloud / Entra tenants | n/a — magic-link goes through operator infra |
+| `admin-allowlist.ts` content | n/a | ✅ client provides emails to allow |
+| `siteUrl` / production domain | n/a | ✅ client owns |
+| Site code (Next.js source) | (working copy) | ✅ client owns; transferred at termination |
+
+The **golden rule**: nothing in the "operator account" column is ever
+shared with the client. If they ask, the answer is *"those are the
+infrastructure components I license to you per engagement; you can buy
+them out at termination for [transfer fee]."*
+
+### 2.5.F — Daily / weekly / monthly operator hygiene
+
+- **Daily (5 min):** check `gh run list --workflow execute.yml --limit 5`
+  across each active client repo. Resolve any red runs.
+- **Weekly (15 min):** `ccusage` — track Pro/Max quota burn rate. Skim
+  the Monday `ai-smoke-test.yml` results.
+- **Monthly (45 min):** rotate any 30-day-expiring credentials (set
+  calendar reminders). Do the Tier 2/3 monthly improvement run for each
+  retainer client.
+- **Quarterly (2 h):** rotate the vendor PAT (90-day expiry). Audit who
+  still belongs in `admin-allowlist.ts` for each client. Re-run Phase 8
+  of Prompt A locally to spot template drift.
+
+---
+
+

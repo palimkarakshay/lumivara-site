@@ -151,3 +151,232 @@ Summarised here; the full procedure is in `docs/operator/OPERATOR_RUNBOOK.md`.
 10. On termination: run the graceful-exit playbook in the runbook (remove org membership, revoke vendor PAT, archive n8n workflows, rotate secrets, deliver vanilla repo).
 
 ---
+
+## 2. Operator setup checklist (the parts Claude can't do)
+
+Do these in roughly this order. Steps 1–6 are **per-engagement**; steps
+A1–A4 are **once-only** for the operator's whole practice and reused
+across every client.
+
+> The runbook in `docs/operator/OPERATOR_RUNBOOK.md` carries the same
+> steps with screenshots, troubleshooting, and the security rationale.
+> This section is the dense checklist; the runbook is the manual.
+
+### A. One-time operator practice setup (do this once, before client #1)
+
+#### A1. Operator GitHub organisation
+
+```bash
+# Pick a brand handle for the practice — this is the operator-only org.
+# Example: vibe-coded-co
+#
+# 1. Create the org on github.com (Free plan is fine until 30 clients).
+# 2. Add yourself as Owner.
+# 3. Settings → Member privileges → "Base permissions" = No permission.
+#    (We want explicit grants per repo only.)
+# 4. Settings → Actions → "Allow all actions and reusable workflows" = on.
+# 5. Settings → Secrets and variables → Actions → New organization secret
+#    for each of:
+#      CLAUDE_CODE_OAUTH_TOKEN   (from `claude setup-token`)
+#      GEMINI_API_KEY            (https://aistudio.google.com/apikey)
+#      OPENAI_API_KEY            (optional — code-review fallback only)
+#      VENDOR_GITHUB_PAT         (operator's bot account PAT, see A2)
+#    For each: Repository access = "Selected repositories", and add each
+#    new client repo here as you onboard them.
+```
+
+The OAuth token bills against the operator's single Claude Pro/Max
+subscription regardless of how many client repos use it — this is the
+shared-quota model the budget charter is built around.
+
+#### A2. Operator vendor GitHub bot account
+
+Create a separate GitHub user named `<brand>-bot` (e.g. `vibe-coded-bot`).
+This account:
+
+- Is added to every client repo with **Write** access only.
+- Holds the **vendor PAT** that n8n uses for issue / comment / label writes.
+- Is **never** added to the client's GitHub organisation, even if the
+  client has one — only to the client's repo, individually.
+- PAT scope: fine-grained, all client repos, `Issues: RW`, `Pull requests: R`,
+  `Contents: R`, `Metadata: R`, 90-day expiry, calendar a rotation.
+
+The bot's commit identity is the one that appears on every auto-generated
+PR. Use a recognisable name (e.g. `Vibe-Coded Bot <bot@vibe-coded.com>`)
+so the operator can spot bot PRs at a glance in any client repo.
+
+#### A3. Operator n8n on Railway
+
+Follow `docs/N8N_SETUP.md` once for the whole practice. One n8n
+instance hosts the workflows for *all* clients — separation is per-workflow
+inside n8n, not per-instance.
+
+```
+Per-client suffixing convention for n8n:
+  intake-web-{{CLIENT_SLUG}}        ← unique webhook URL per client
+  intake-email-{{CLIENT_SLUG}}      ← per-client IMAP folder filter
+  intake-sms-{{CLIENT_SLUG}}        ← per-client Twilio inbound number
+  client-input-notify-{{CLIENT_SLUG}}
+  client-input-record-{{CLIENT_SLUG}}
+  deploy-confirmed-{{CLIENT_SLUG}}
+```
+
+The webhook URLs become the values of `N8N_INTAKE_WEBHOOK_URL`,
+`N8N_DECISION_WEBHOOK_URL`, and `N8N_DEPLOY_WEBHOOK_URL` for that
+client's Vercel project.
+
+#### A4. Operator OAuth + email sender setup
+
+Once-only for the whole practice:
+
+| Service | What you create | Why |
+|---|---|---|
+| **Resend** | One sending domain — `mail.<your-brand>.com` — DKIM + SPF + DMARC verified. **One Resend API key** stored in operator vault. Reused as `AUTH_RESEND_KEY` for every client. | Magic-link emails on `/admin` sign-in for every client come from the operator's domain. Clients never set up Resend themselves. |
+| **Google Cloud Console** | One OAuth client per client (because the redirect URI is per-domain). Or: one OAuth app with multiple authorised redirect URIs. Either works; the per-client app is cleaner for revocation. | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` for that client. |
+| **Microsoft Entra ID** | One App Registration per client (same reason). | `AUTH_MICROSOFT_ENTRA_ID_*`. |
+| **Twilio** | Operator account (single). Buy a per-client number ($1.15 / mo) with SMS enabled. Wire its inbound webhook at the n8n `intake-sms-{{CLIENT_SLUG}}` URL. | Per-client SMS lane; routing by inbound number inside n8n. |
+| **IMAP forwarder** | Set up `requests@<client-domain>` as a forwarder or alias (or use Gmail "+" addressing into a single operator inbox; n8n IMAP filters by recipient). | The email channel of the three intake mechanisms. |
+| **Anthropic API console** | (Optional, only if n8n's AI structuring node is Anthropic.) One operator-account Anthropic key. Stored in n8n credentials. | Used by n8n to structure raw client text into title + acceptance criteria. Not the same key as `CLAUDE_CODE_OAUTH_TOKEN`. |
+
+### B. Per-engagement setup (do this for every new client)
+
+#### B1. Create the empty client repo
+
+```bash
+# Pick the repo slug. Example: acme-site
+gh repo create palimkarakshay/{{GH_REPO}} --private \
+  --description "{{ONE_LINE_DESCRIPTION}}"
+git clone https://github.com/palimkarakshay/{{GH_REPO}}.git
+cd {{GH_REPO}}
+```
+
+> **Important:** the repo lives under the **operator's** personal account
+> (`palimkarakshay`), not the client's. The client gets a *transfer
+> receipt* in the contract: at end of engagement, the operator either
+> transfers the repo to the client's account or hands them a clean
+> archive. Until then, the operator is the sole owner. This is how the
+> autopilot org-secrets stay attached.
+
+Add the repo to the operator's GitHub org as a member with the right
+secret scope:
+
+```bash
+# Visit operator org Settings → Secrets → CLAUDE_CODE_OAUTH_TOKEN →
+# Repository access → "Selected repositories" → add palimkarakshay/{{GH_REPO}}.
+# Repeat for GEMINI_API_KEY, OPENAI_API_KEY, VENDOR_GITHUB_PAT.
+```
+
+#### B2. Wire Vercel
+
+1. https://vercel.com/new → Import the GitHub repo.
+2. Framework preset: **Next.js**.
+3. Production branch: `main`. Preview branches: all PRs.
+4. Settings → Git → enable **Comment on Pull Requests** so the preview URL
+   shows up on every auto-PR.
+5. Settings → Deploy Hooks → create one named `{{CLIENT_SLUG}}-confirm-deploy`
+   → copy the URL. This becomes `VERCEL_DEPLOY_HOOK_{{CLIENT_SLUG_UPPER}}`.
+6. Settings → Webhooks → add a webhook for events
+   `deployment.succeeded`, `deployment.error` pointing at the n8n
+   `deploy-confirmed-{{CLIENT_SLUG}}` workflow URL.
+7. Copy the production URL into `src/lib/site-config.ts` (`siteUrl`) and
+   into `NEXT_PUBLIC_SITE_URL` in Vercel's env-var UI for **Production +
+   Preview** environments.
+
+#### B3. Vercel environment variables (the full list)
+
+Set every one of these in Vercel → Settings → Environment Variables for
+both **Production** and **Preview**.
+
+| Variable | Source | Notes |
+|---|---|---|
+| `AUTH_SECRET` | `openssl rand -base64 32` | Per-client. Auth.js JWT signing key. |
+| `AUTH_RESEND_KEY` | Operator's single Resend API key (A4) | Reused across clients. |
+| `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | Google Cloud Console OAuth client (A4) | Per-client OAuth app. |
+| `AUTH_MICROSOFT_ENTRA_ID_ID`, `_SECRET`, `_ISSUER` | Entra App Registration (A4) | Per-client app. |
+| `ADMIN_ALLOWLIST_EMAILS` | CSV of client decision-makers | Fallback if `admin-allowlist.ts` is empty. |
+| `GITHUB_PAT` | Vendor PAT (A2) | Read-only Octokit calls from `/admin`. |
+| `GITHUB_REPO` | `palimkarakshay/{{GH_REPO}}` | For `lib/github.ts`. |
+| `GITHUB_CLIENT_LABEL` | `client/{{CLIENT_SLUG}}` | Filter for this client's issues. |
+| `N8N_INTAKE_WEBHOOK_URL` | n8n workflow A URL (A3) | |
+| `N8N_DECISION_WEBHOOK_URL` | n8n workflow E URL (A3) | |
+| `N8N_DEPLOY_WEBHOOK_URL` | n8n workflow F URL (A3) | |
+| `N8N_HMAC_SECRET` | `openssl rand -hex 32` | Set the *same* value in n8n credentials. |
+| `VERCEL_DEPLOY_HOOK_{{CLIENT_SLUG_UPPER}}` | From step B2 #5 | |
+| `VERCEL_API_TOKEN` | Vercel → Account → Tokens, scoped to this project, read-only | For preview-URL lookup. |
+| `NEXT_PUBLIC_SITE_URL` | The production URL | For OG images, sitemaps, structured data. |
+| `CONTACT_EMAIL` | Where contact form replies go | |
+
+Twilio, IMAP, Anthropic / Gemini / OpenAI keys live **only in n8n
+credentials** — never in Vercel.
+
+#### B4. Bootstrap labels and Project board
+
+```bash
+# One-shot from the operator's machine. The script is NEVER committed
+# to the client's main; run it from your local operator-side checkout.
+bash scripts/bootstrap-kanban.sh   # creates labels + prints next steps
+```
+
+In the GitHub UI:
+1. Projects → New project → Board layout. Name: `{{BUSINESS_NAME}} Backlog`.
+2. Columns: Inbox / Triaged / In Progress / Review / Done.
+3. Project Settings → Workflows → enable **Auto-add to project** for the new repo.
+4. Add the `client/{{CLIENT_SLUG}}` label to the repo (this is the per-client
+   filter the admin portal reads in `src/lib/github.ts`).
+
+#### B5. Import the n8n workflows for this client
+
+```
+In n8n:
+1. Settings → Import → upload each of the six JSON files from
+   docs/n8n-workflows/admin-portal/ (operator-side copy):
+     intake-web.json
+     intake-email.json
+     intake-sms.json
+     client-input-notify.json
+     client-input-record.json
+     deploy-confirmed.json
+2. For each imported workflow:
+     • Rename to `<workflow-name>-{{CLIENT_SLUG}}`.
+     • Update credentials: GitHub → operator vendor PAT,
+       Twilio → operator account + this client's number,
+       IMAP → operator mailbox + filter by `requests+{{CLIENT_SLUG}}@<your-domain>`,
+       Resend → operator API key,
+       Anthropic → operator API key.
+     • Update the GitHub `owner/repo` field to `palimkarakshay/{{GH_REPO}}`.
+     • Update the `client/` label hard-coded in the issue body to
+       `client/{{CLIENT_SLUG}}`.
+     • Activate.
+3. Copy the three webhook URLs into the corresponding Vercel env vars.
+```
+
+The n8n workflow JSONs are **operator artefacts**. They're versioned in
+the operator's master repo (this repo, `docs/n8n-workflows/`) but **never
+copied into client repos**. The client's repo holds the *Server Actions
+that call them* and the HMAC secret that signs the calls — and that's it.
+
+#### B6. Run Prompt A (client site scaffold)
+
+Section 3 below. Approx. 1.5–3 hours of agent time on Opus.
+
+#### B7. Run Prompt B (operator pipeline overlay)
+
+Section 4 below. Approx. 30–60 minutes. **Run on a separate branch
+named `operator/main`.** Push that branch, but never PR it into `main`.
+The cron schedules in the workflows on `operator/main` will still
+execute against the repo's default branch — that's the GitHub Actions
+behaviour we want.
+
+#### B8. Smoke-test everything
+
+`docs/operator/SMOKE_TESTS.md` — run all six tests before sending the
+client the handover guide.
+
+#### B9. Hand over
+
+Send the client *only* `docs/client/HANDOVER_GUIDE.md` and a 5-minute
+walkthrough video. Nothing from `docs/operator/`, nothing from
+`docs/freelance/`, and nothing from this file.
+
+---
+

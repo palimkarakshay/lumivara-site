@@ -67,7 +67,7 @@ export default function OpengraphImage() {
               fontWeight: 400,
             }}
           >
-            Bring clarity to complex people problems.
+            Bring clarity to complex people challenges.
           </div>
           <div
             style={{

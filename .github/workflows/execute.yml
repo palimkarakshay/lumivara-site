@@ -2,8 +2,10 @@ name: Execute backlog item
 
 on:
   schedule:
-    # Every 4 hours — 6 runs/day. Cadence raised after AI-routing optimizations.
-    - cron: '0 */4 * * *'
+    # Every 2 hours — bumped from 4h now that fallback ladder makes Claude
+    # outages non-fatal. Higher cadence = lower per-issue latency without
+    # blowing the shared Claude quota (most runs find nothing to do).
+    - cron: '0 */2 * * *'
   workflow_dispatch:
 
 permissions:
@@ -176,8 +178,13 @@ jobs:
         if: steps.pick.outputs.workflow == 'claude'
         run: echo "ISSUE_NUMBER=${{ steps.pick.outputs.issue }}" >> "$GITHUB_ENV"
 
-      - uses: anthropics/claude-code-action@v1
+      # continue-on-error so a Claude outage triggers the fallback path below
+      # instead of failing the whole job. The downstream "outcome" check is
+      # what wires the dispatch.
+      - id: claude_run
         if: steps.pick.outputs.workflow == 'claude'
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           settings: |
@@ -206,3 +213,99 @@ jobs:
           claude_args: |
             --max-turns 80
             --model ${{ steps.pick.outputs.model }}
+
+      # ── Claude failed → fall through to Codex/Gemini if a plan exists ─────
+      # The fallback executor refuses to run without a `plan/detailed`
+      # comment, so this is safe even on issues we'd otherwise skip.
+      - name: Detect Claude failure + dispatch fallback
+        if: |
+          always() &&
+          steps.pick.outputs.workflow == 'claude' &&
+          steps.claude_run.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ steps.pick.outputs.issue }}
+        run: |
+          set +e
+          # Only dispatch if the issue has a detailed plan — otherwise the
+          # fallback executor would refuse anyway and we'd burn a workflow run.
+          LABELS=$(gh issue view "$ISSUE" --repo palimkarakshay/lumivara-site \
+                     --json labels --jq '[.labels[].name] | join(",")')
+          if echo "$LABELS" | grep -q "plan/detailed"; then
+            echo "Claude step did not succeed (outcome=${{ steps.claude_run.outcome }})."
+            echo "Issue #$ISSUE has plan/detailed — dispatching execute-fallback.yml."
+            gh workflow run execute-fallback.yml \
+              --repo palimkarakshay/lumivara-site \
+              -f issue="$ISSUE" -f engine=auto
+          else
+            echo "Claude step did not succeed AND issue lacks plan/detailed."
+            echo "Dispatching plan-issues.yml so the next execute can fall back."
+            gh workflow run plan-issues.yml \
+              --repo palimkarakshay/lumivara-site \
+              -f issue="$ISSUE" || true
+          fi
+
+      # ── Auto-merge → Vercel prod, immediately following execution ─────────
+      # If Claude opened a PR for an auto-merge-eligible issue, enable
+      # auto-merge right here so we don't depend on the auto-merge.yml
+      # workflow_run trigger lag. Auto-merge waits for Vercel's deploy-preview
+      # check to pass, then squash-merges to main, which Vercel then deploys
+      # to prod automatically.
+      - name: Enable auto-merge on the just-opened PR (if eligible)
+        if: |
+          always() &&
+          steps.pick.outputs.workflow == 'claude' &&
+          steps.claude_run.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ steps.pick.outputs.issue }}
+        run: |
+          set +e
+          # Find the PR that closes this issue. Claude opens it via gh pr
+          # create with body "Fixes #N", so we search by head branch first.
+          PR_NUM=$(gh pr list --repo palimkarakshay/lumivara-site \
+                     --state open --head "auto/issue-$ISSUE" \
+                     --json number --jq '.[0].number // empty')
+          if [ -z "$PR_NUM" ]; then
+            echo "No PR found for issue #$ISSUE — skipping auto-merge."
+            exit 0
+          fi
+          echo "Found PR #$PR_NUM for issue #$ISSUE."
+
+          # Pull the union of issue + PR labels and apply the same auto-merge
+          # rules as auto-merge.yml so behavior is consistent.
+          ISSUE_LABELS=$(gh issue view "$ISSUE" --repo palimkarakshay/lumivara-site \
+                          --json labels --jq '[.labels[].name] | join(",")')
+          PR_LABELS=$(gh pr view "$PR_NUM" --repo palimkarakshay/lumivara-site \
+                       --json labels --jq '[.labels[].name] | join(",")')
+          ALL="$ISSUE_LABELS,$PR_LABELS"
+
+          eligible=true
+          echo "$ALL" | grep -q "auto-routine" || eligible=false
+          (echo "$ALL" | grep -qE 'complexity/(trivial|easy)') || eligible=false
+          if echo "$ALL" | grep -qE '(type/design-cosmetic|area/design)'; then
+            eligible=false
+          fi
+
+          if [ "$eligible" = "true" ]; then
+            echo "PR #$PR_NUM is auto-merge eligible. Enabling auto-merge (squash)."
+            gh pr merge "$PR_NUM" --auto --squash \
+              --repo palimkarakshay/lumivara-site
+            echo "Auto-merge enabled. Vercel deploy preview will gate the merge;"
+            echo "after merge, Vercel auto-deploys to prod."
+          else
+            echo "PR #$PR_NUM is NOT auto-merge eligible. Human review required."
+          fi
+
+      # ── Final fail-safe: if Claude AND fallback both got skipped/failed,
+      # surface that loudly in the run summary so the operator can act.
+      - name: Surface terminal status
+        if: always() && steps.pick.outputs.workflow == 'claude'
+        run: |
+          {
+            echo "## Execute outcome — issue #${{ steps.pick.outputs.issue }}"
+            echo ""
+            echo "| Stage | Outcome |"
+            echo "|-------|---------|"
+            echo "| Claude implementation | ${{ steps.claude_run.outcome || 'skipped' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

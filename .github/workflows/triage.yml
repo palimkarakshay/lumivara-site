@@ -2,9 +2,21 @@ name: Triage backlog
 
 on:
   schedule:
-    # Every hour. Gemini fallback makes this cheap.
-    - cron: '0 * * * *'
+    # Every 30 minutes — bumped from hourly so new issues + clarifications
+    # round-trip faster. Gemini + Codex fallbacks make the cost negligible.
+    - cron: '*/30 * * * *'
   workflow_dispatch:
+    inputs:
+      engine:
+        description: "Triage engine to start with (auto = Claude → Gemini → Codex ladder)"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - "auto"
+          - "claude"
+          - "gemini"
+          - "codex"
   issues:
     types: [opened, reopened]
 
@@ -15,7 +27,6 @@ permissions:
   id-token: write
 
 concurrency:
-  # Separate group from execute so triage + execute can run concurrently.
   group: triage-runtime
   cancel-in-progress: false
 
@@ -26,9 +37,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ── Primary: Claude Haiku ──────────────────────────────────────────
+      # The engine selector decides which steps run. `auto` runs the full
+      # ladder (Claude → Gemini → Codex) so triage NEVER fails because one
+      # provider is down. Forced engines short-circuit to that single path.
+      - name: Resolve engine
+        id: engine
+        run: |
+          ENGINE="${{ inputs.engine || 'auto' }}"
+          echo "engine=$ENGINE" >> "$GITHUB_OUTPUT"
+          echo "Triage engine for this run: $ENGINE"
+
+      # ── Claude Haiku (skipped if engine=gemini|codex) ──────────────────────
       - name: Claude Haiku triage
         id: claude_triage
+        if: steps.engine.outputs.engine == 'auto' || steps.engine.outputs.engine == 'claude'
         continue-on-error: true
         uses: anthropics/claude-code-action@v1
         with:
@@ -53,15 +75,66 @@ jobs:
             --max-turns 40
             --model claude-haiku-4-5-20251001
 
-      # ── Fallback: Gemini 2.5 Flash (REST API) ───────────────────────────
-      # Runs always (not conditional on Claude failure). The script itself
-      # exits early if no `status/needs-triage` items remain. This covers:
-      # (a) Claude hit quota mid-run and missed items, (b) Claude errored
-      # entirely, (c) issues arrived between Claude's scan and now.
-      # Uses REST API instead of gemini-cli to avoid non-interactive quirks.
+      # ── Gemini Flash fallback (skipped if engine=claude|codex) ─────────────
+      # Always runs in `auto` mode (not conditional on Claude failure). The
+      # script itself exits early if no `status/needs-triage` items remain.
       - name: Gemini Flash triage fallback
-        if: always()
+        id: gemini_triage
+        if: |
+          always() && (
+            steps.engine.outputs.engine == 'auto' ||
+            steps.engine.outputs.engine == 'gemini'
+          )
+        continue-on-error: true
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/gemini-triage.py
+
+      # ── Codex final fallback (skipped if engine=claude|gemini) ─────────────
+      # Catches the case where Claude is rate-limited AND Gemini's free tier
+      # is exhausted. Exits cleanly when OPENAI_API_KEY is missing so a repo
+      # without OpenAI credits doesn't fail triage.
+      - name: Codex (gpt-4o-mini) triage fallback
+        id: codex_triage
+        if: |
+          always() && (
+            steps.engine.outputs.engine == 'auto' ||
+            steps.engine.outputs.engine == 'codex'
+          )
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/codex-triage.py
+
+      - name: Triage outcome summary
+        if: always()
+        run: |
+          {
+            echo "## Triage outcome — engine=${{ steps.engine.outputs.engine }}"
+            echo ""
+            echo "| Stage | Status |"
+            echo "|-------|--------|"
+            echo "| Claude Haiku | ${{ steps.claude_triage.outcome || 'skipped' }} |"
+            echo "| Gemini Flash | ${{ steps.gemini_triage.outcome || 'skipped' }} |"
+            echo "| Codex gpt-4o-mini | ${{ steps.codex_triage.outcome || 'skipped' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ── Kick the planning stage so newly-triaged issues get a detailed plan ───
+  # comment, regardless of which engine actually classified them. This is
+  # what makes Claude-down execute fallback safe — the plan exists already.
+  kick-planner:
+    needs: triage
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch plan-issues.yml
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run plan-issues.yml \
+            --repo palimkarakshay/lumivara-site || true
+          echo "Dispatched plan-issues.yml (best-effort; errors ignored)."

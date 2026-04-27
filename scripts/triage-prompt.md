@@ -41,12 +41,33 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - `priority/P3` — nice-to-have, experiment, speculative refactor, "consider X".
 3. Decide **complexity** AND attach the matching `model/*` and cron-eligibility labels.
    Model-tier rule: **Haiku identifies** (that's this triage step), **Opus plans** (planning pass
-   in execute-complex.yml), **Sonnet implements** (all execute runs). The `model/*` labels
-   below record complexity for routing purposes; execute.yml always implements with Sonnet.
+   in execute-complex.yml), **Sonnet implements** (all Claude execute runs). Some tasks are
+   better served by non-Claude providers — see "Provider routing" below.
    - `complexity/trivial` — typo, single-line, metadata tweak. → also add `model/haiku`. Cron-eligible.
    - `complexity/easy` — one file, obvious change, < 30 min. → also add `model/haiku`. Cron-eligible.
    - `complexity/medium` — a handful of files or non-trivial logic, 1–3h. → also add `model/sonnet`. Cron-eligible.
    - `complexity/complex` — spans many files, architectural decision, or > 3h. → also add `model/opus` AND `manual-only` (cron skips; execute-complex.yml runs Opus planning pass → Sonnet implementation).
+
+3b. Decide **provider routing** (override the default Claude path when a different model is a better fit).
+    Add **at most one** of these `model/*` labels in addition to (or instead of) the complexity-tier model label above.
+    The router (`scripts/lib/routing.py`) picks the workflow based on this label.
+
+   - `model/gemini-pro` — pick when the task benefits from Gemini 2.5 Pro's 1M-token
+     context window: full-codebase audits, bulk MDX article generation, deep research
+     synthesis with Google Search grounding, SEO/a11y sweeps across the entire `src/`
+     tree. Routes to `deep-research.yml` (no code commit; produces a research comment
+     or a docs-only PR).
+   - `model/codex` — pick for code review / second-opinion diff analysis, especially
+     on existing PRs. Routes to `codex-review.yml`. Requires `OPENAI_API_KEY` with
+     credits — if absent the workflow exits cleanly with a warning.
+   - `model/cline` — accepted for taxonomy parity (operators sometimes flag
+     agentic-large-refactor work as "Cline-style"), but the router downgrades it
+     to Claude Sonnet because Cline ships only as a VS Code extension; there is
+     no headless CLI for GitHub Actions. The downgrade is logged.
+
+   If you don't add any of the above, the router falls back to the Claude tier
+   implied by the complexity-tier label (haiku/sonnet/opus). That's the right
+   default for code edits.
 4. Decide **area** (choose 1–2, lean toward 1):
    - `area/site` — Next.js app code (components, routes, data fetching)
    - `area/content` — MDX, copy, content files
@@ -68,6 +89,9 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - `type/design-cosmetic` — Visual polish, color, typography, layout aesthetics
    - `type/cleanup` — Refactors, deletions, dead code, deprecation
    - `type/a11y` — Accessibility — WCAG, ARIA, keyboard nav (overlaps with `area/a11y`; both are fine)
+   - `type/research` — Deep research / multi-source synthesis (pairs with `model/gemini-pro`).
+   - `type/content-bulk` — Bulk content generation (multiple MDX articles in one shot; pairs with `model/gemini-pro`).
+   - `type/code-review` — Diff analysis / second opinion on a PR (pairs with `model/codex`).
    If you genuinely cannot pick one, default to `type/tech-site` and note your uncertainty in the rationale comment.
 5. Decide **auto-routine eligibility**:
    - Add `auto-routine` label if: task is self-contained AND has all the info needed in the issue body. Any complexity is OK — `complex` issues are still bot-workable, they just get `manual-only` (step 3) so cron skips them.
@@ -80,9 +104,14 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - Priority: P2 — content polish, not blocking
    - Complexity: easy → model/haiku
    - Area: content
+   - Routing: claude (default)
    - Auto-routine: yes (cron-eligible)
    ```
    For complex / manual-only items, the last line reads `Auto-routine: yes (manual-only — fire execute-complex.yml to run)`.
+   When you assign a non-Claude provider label, the `Routing:` line names it explicitly:
+   `Routing: gemini-pro (full-tree SEO audit needs >Claude context)` or
+   `Routing: codex (PR diff review)`. If you applied `model/cline`, note the downgrade:
+   `Routing: cline → sonnet (no headless Cline CLI; downgraded by router)`.
 
 ## Guardrails
 

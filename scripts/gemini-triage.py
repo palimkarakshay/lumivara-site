@@ -14,6 +14,10 @@ import subprocess
 import sys
 import urllib.request
 import urllib.error
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from lib.routing import decide_from_classification  # noqa: E402
 
 REPO = "palimkarakshay/lumivara-site"
 GEMINI_MODEL = "gemini-2.5-flash"
@@ -28,7 +32,8 @@ Return ONLY a JSON object, no prose, no markdown fences:
   "priority": "P1" | "P2" | "P3",
   "complexity": "trivial" | "easy" | "medium" | "complex",
   "area": "site" | "content" | "copy" | "design" | "infra" | "seo" | "a11y" | "perf",
-  "type": "claude-config" | "github" | "project-mgmt" | "tech-site" | "tech-vercel" | "business-lumivara" | "business-hr" | "design-cosmetic" | "cleanup" | "a11y",
+  "type": "claude-config" | "github" | "project-mgmt" | "tech-site" | "tech-vercel" | "business-lumivara" | "business-hr" | "design-cosmetic" | "cleanup" | "a11y" | "research" | "content-bulk" | "code-review",
+  "routing": "model/haiku" | "model/sonnet" | "model/opus" | "model/gemini-pro" | "model/codex" | "model/cline" | null,
   "auto_routine": true | false,
   "needs_clarification": true | false,
   "clarification_questions": ["question 1", "question 2"],
@@ -45,6 +50,14 @@ Rubric:
 - complex: Opus-planned + Sonnet-executed (many files, architectural, >3h)
 - auto_routine=true if self-contained with enough info; false if human judgement required
 - needs_clarification=true if the issue is ambiguous — list specific blocking questions
+
+Routing (pick ONE; null means use the complexity-tier Claude default):
+- model/gemini-pro: full-codebase audits, bulk MDX content generation, deep research
+  with multi-source synthesis. Uses Gemini's 1M-token context.
+- model/codex: code review / diff analysis / second-opinion on a PR.
+- model/cline: agentic-large-refactor flag (router will downgrade to Sonnet — no
+  headless Cline CLI exists). Use only if the operator's intent is clearly Cline-style.
+- null (default): Claude path; complexity tier picks Haiku/Sonnet/Opus.
 
 Title rules (if title_rewrite is non-null):
 - Start with a verb ("Add", "Fix", "Rename", "Remove", "Replace", "Audit")
@@ -110,6 +123,13 @@ def apply_labels(issue_num: int, classification: dict) -> None:
         else:
             labels_to_add.extend(["model/opus", "manual-only"])
 
+        # Provider override (gemini-pro / codex / cline). When the rubric asks
+        # for a non-Claude path, that label takes precedence over the
+        # complexity-tier model label at routing time.
+        routing = (classification.get("routing") or "").strip()
+        if routing in {"model/gemini-pro", "model/codex", "model/cline"}:
+            labels_to_add.append(routing)
+
         if classification.get("auto_routine"):
             labels_to_add.append("auto-routine")
         else:
@@ -136,12 +156,17 @@ def apply_labels(issue_num: int, classification: dict) -> None:
         questions = "\n".join(f"- {q}" for q in classification.get("clarification_questions", []))
         comment = f"**Triaged by Gemini (fallback) — needs clarification**\n\n{questions}"
     else:
+        decision = decide_from_classification(classification)
+        routing_line = f"{decision.provider} ({decision.model})"
+        if decision.downgraded_from:
+            routing_line += f" — downgraded from {decision.downgraded_from}"
         comment = (
             f"**Triaged by Gemini (fallback)**\n"
             f"- Priority: {classification['priority']}\n"
-            f"- Complexity: {classification['complexity']} → model/{classification['complexity'] if classification['complexity'] in ('haiku','sonnet','opus') else ('haiku' if classification['complexity'] in ('trivial','easy') else 'sonnet' if classification['complexity'] == 'medium' else 'opus')}\n"
+            f"- Complexity: {classification['complexity']}\n"
             f"- Area: {classification['area']}\n"
             f"- Type: {classification['type']}\n"
+            f"- Routing: {routing_line}\n"
             f"- Auto-routine: {'yes' if classification.get('auto_routine') else 'no (human-only)'}\n"
             f"- Rationale: {classification.get('rationale', '')}"
         )

@@ -58,6 +58,12 @@ export default async function AdminLayout({
             >
               Dashboard
             </Link>
+            <Link
+              href="/admin/runs"
+              className="flex min-h-[44px] flex-1 items-center justify-center rounded-md px-4 text-sm font-medium text-ink hover:bg-parchment"
+            >
+              Runs
+            </Link>
             <form
               action={async () => {
                 "use server";

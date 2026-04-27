@@ -43,6 +43,84 @@ trail to both stdout and the run summary**, and either:
 
 The non-Claude paths produce **research / review comments**, not code commits.
 
+## Resilience: triage + execute survive Claude outages
+
+The pipeline has three resilience layers so neither triage nor execute
+ever fails outright when Claude is unavailable.
+
+### 1. Triage ladder (every 30 min)
+
+`triage.yml` runs three engines back-to-back, each best-effort:
+
+```
+Claude Haiku  →  Gemini 2.5 Flash  →  OpenAI gpt-4o-mini
+   (preferred)         (free fallback)        (final fallback)
+```
+
+Each stage early-exits if the queue is empty, so the cost is one cheap
+"is the queue empty?" check per provider per run when Claude succeeded.
+Operators can force a single engine via `workflow_dispatch.engine` =
+`claude` | `gemini` | `codex`. Default `auto` runs the full ladder.
+
+### 2. Post-triage planning stage (every 2 h, +on triage workflow_run)
+
+`plan-issues.yml` walks `status/planned + auto-routine` issues that lack
+a `plan/detailed` label and asks an AI to write a structured
+implementation plan as a comment. Plan ladder:
+
+```
+Claude Sonnet  →  Gemini 2.5 Pro  →  OpenAI gpt-4o
+```
+
+The plan format is contractual (files to modify + step-by-step + DOD), so
+**any executor — Claude, Codex, or Gemini — can implement it without
+re-interpreting the issue**. This is what makes Claude-down execution safe.
+
+### 3. Execute ladder (every 2 h)
+
+`execute.yml` runs Claude with `continue-on-error: true`. If the Claude
+step fails for any reason (rate limit, OAuth dead, action error) AND the
+issue carries `plan/detailed`, execute dispatches `execute-fallback.yml`
+with engine=auto:
+
+```
+OpenAI Codex CLI  →  Gemini CLI
+   (preferred)         (free tier)
+```
+
+The fallback executor refuses to run on issues without a detailed plan
+(lower hallucination risk: it implements *the plan*, not *the issue*). It
+runs `tsc` + `lint`, opens a draft PR if either fails, otherwise opens a
+ready PR.
+
+### Cadence summary
+
+| Workflow | Cadence |
+|----------|---------|
+| `triage.yml` | every 30 min (was hourly) |
+| `plan-issues.yml` | every 2 h + after every triage |
+| `execute.yml` | every 2 h (was 4 h) |
+| `deep-research.yml` | dispatched by execute.yml |
+| `codex-review.yml` | dispatched by execute.yml |
+| `execute-fallback.yml` | dispatched by execute.yml on Claude failure |
+| `ai-smoke-test.yml` | weekly (Mondays 12:00 UTC) |
+
+### Auto-merge → Vercel prod immediately follows execution
+
+Both `execute.yml` (Claude path) and `execute-fallback.yml` (Codex/Gemini
+path) run an auto-merge gate immediately after a successful PR open. The
+gate enables `gh pr merge --auto --squash` for any PR that is
+
+- labeled `auto-routine`, AND
+- linked to an issue with `complexity/trivial` or `complexity/easy`, AND
+- not labeled `type/design-cosmetic` or `area/design`.
+
+GitHub then waits for Vercel's deploy-preview check, squash-merges to
+`main`, and Vercel auto-deploys to prod. No human round-trip.
+
+`auto-merge.yml` is still wired to `pull_request` events as a safety net
+for human-opened PRs and any race the inline gate misses.
+
 ### Provider labels
 
 Triage attaches one of these to each issue (in addition to the complexity-tier
@@ -67,8 +145,10 @@ Claude step, followed by a Gemini/OpenAI fallback step that detects unfinished
 work and completes it.
 
 Live examples:
-- **triage.yml** — Claude Haiku primary, Gemini Flash fallback via `scripts/gemini-triage.py`
-- **execute.yml** — Claude Sonnet only for code edits (no in-job fallback). If Claude fails, the issue stays `status/planned` and next cron picks it up.
+- **triage.yml** — Claude Haiku → Gemini Flash → Codex gpt-4o-mini ladder; engine selectable via `workflow_dispatch.engine`.
+- **plan-issues.yml** — Claude Sonnet → Gemini Pro → OpenAI gpt-4o ladder for the post-triage planning stage.
+- **execute.yml** — Claude Sonnet primary; on failure, dispatches `execute-fallback.yml` for any issue with `plan/detailed`. Issues without a plan get re-queued for the planner.
+- **execute-fallback.yml** — Codex CLI → Gemini CLI ladder. Refuses to run without a `plan/detailed` comment (so the executor implements the plan, not the issue).
 - **deep-research.yml** — Gemini Pro only. If `GEMINI_API_KEY` is missing the workflow errors loudly so the operator notices.
 - **codex-review.yml** — OpenAI Codex only. If `OPENAI_API_KEY` is missing OR returns 429, the workflow removes `model/codex` from the issue and routes it back to the Claude path on the next execute run.
 

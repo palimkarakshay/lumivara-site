@@ -108,23 +108,47 @@ jobs:
           fi
           echo "Claude OAuth token: present (length $(echo -n '${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}' | wc -c))"
 
+      - name: Checkout for routing smoke test
+        if: always()
+        uses: actions/checkout@v4
+
+      - name: Install external CLIs (Codex + Gemini)
+        id: clis
+        if: always()
+        continue-on-error: true
+        run: |
+          npm install -g @openai/codex @google/gemini-cli
+          codex --version
+          gemini --version
+
+      - name: Routing smoke test (10 sample issues, no model calls)
+        id: routing
+        if: always()
+        run: python3 scripts/test-routing.py
+
       - name: Summary
         if: always()
         run: |
           echo "### AI provider smoke test — $(date -u +%Y-%m-%d)" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Provider | Status | Role |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|----------|--------|------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Provider / check | Status | Role |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|------------------|--------|------|" >> "$GITHUB_STEP_SUMMARY"
           echo "| Gemini 2.5 Flash (REST) | ${{ steps.gemini.outcome }} | Primary free fallback for triage |" >> "$GITHUB_STEP_SUMMARY"
           echo "| OpenAI gpt-4o-mini (REST) | ${{ steps.openai.outcome }} | Optional Codex fallback (needs credits) |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Claude Code OAuth token | ${{ steps.claude.outcome }} | Primary for triage + execute |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Codex + Gemini CLIs install | ${{ steps.clis.outcome }} | Required by deep-research.yml + codex-review.yml |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Routing rubric (10 sample issues) | ${{ steps.routing.outcome }} | Multi-model dispatch correctness |" >> "$GITHUB_STEP_SUMMARY"
 
-          # Only fail the job if Gemini OR Claude OAuth is broken.
-          # OpenAI is optional — a warning in the step is enough.
-          if [ "${{ steps.gemini.outcome }}" != "success" ] || [ "${{ steps.claude.outcome }}" != "success" ]; then
+          # Only fail the job if Gemini OR Claude OAuth OR routing is broken.
+          # OpenAI + CLI install are optional — warnings only.
+          fail=0
+          if [ "${{ steps.gemini.outcome }}" != "success" ]; then fail=1; fi
+          if [ "${{ steps.claude.outcome }}" != "success" ]; then fail=1; fi
+          if [ "${{ steps.routing.outcome }}" != "success" ]; then fail=1; fi
+          if [ "$fail" = "1" ]; then
             echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "❌ **Critical provider failed.** Gemini and Claude OAuth are required." >> "$GITHUB_STEP_SUMMARY"
+            echo "❌ **Critical check failed.** Gemini, Claude OAuth, and the routing rubric are all required." >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "✅ Primary providers healthy." >> "$GITHUB_STEP_SUMMARY"
+          echo "✅ Primary providers healthy and router routes 10/10 sample issues correctly." >> "$GITHUB_STEP_SUMMARY"

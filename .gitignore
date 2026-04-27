@@ -49,3 +49,4 @@ Thumbs.db
 
 .vercel
 .env*.local
+__pycache__/

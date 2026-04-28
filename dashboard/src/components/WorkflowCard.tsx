@@ -8,12 +8,16 @@ import {
   GitPullRequest,
   Loader2,
   Play,
+  RotateCw,
   ScrollText,
+  StopCircle,
   XCircle,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Octokit } from "@octokit/rest";
 import {
+  cancelRun,
+  rerunRun,
   squashMergePull,
   triggerWorkflow,
   explainError,
@@ -39,7 +43,9 @@ export function WorkflowCard({
   onError,
 }: Props) {
   const qc = useQueryClient();
-  const [busy, setBusy] = useState<null | "trigger" | "merge">(null);
+  const [busy, setBusy] = useState<
+    null | "trigger" | "merge" | "cancel" | "rerun"
+  >(null);
 
   const trigger = useMutation({
     mutationFn: () => {
@@ -63,9 +69,35 @@ export function WorkflowCard({
     onError: (err) => onError(`Merge failed: ${explainError(err)}`),
   });
 
+  const cancel = useMutation({
+    mutationFn: () => cancelRun(octo, run.id),
+    onMutate: () => setBusy("cancel"),
+    onSettled: () => {
+      setBusy(null);
+      qc.invalidateQueries({ queryKey: ["runs"] });
+    },
+    onSuccess: () => onSuccess(`Cancellation requested for run #${run.id}`),
+    onError: (err) => onError(`Cancel failed: ${explainError(err)}`),
+  });
+
+  const rerun = useMutation({
+    mutationFn: () => rerunRun(octo, run.id),
+    onMutate: () => setBusy("rerun"),
+    onSettled: () => {
+      setBusy(null);
+      qc.invalidateQueries({ queryKey: ["runs"] });
+    },
+    onSuccess: () => onSuccess(`Re-run queued for run #${run.id}`),
+    onError: (err) => onError(`Re-run failed: ${explainError(err)}`),
+  });
+
   const pr = run.pull_requests[0];
   const canMerge =
     !!pr && run.event === "pull_request" && run.conclusion === "success";
+  const isInFlight =
+    run.status === "in_progress" ||
+    run.status === "queued" ||
+    run.status === "waiting";
 
   return (
     <article className="space-y-3 rounded-2xl border border-neutral-800 bg-neutral-900/60 p-4">
@@ -126,6 +158,36 @@ export function WorkflowCard({
           <ScrollText className="h-3.5 w-3.5" />
           Thinking
         </button>
+
+        {isInFlight ? (
+          <button
+            type="button"
+            onClick={() => cancel.mutate()}
+            disabled={busy !== null}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-rose-800 bg-rose-950/50 px-3 py-2 text-xs font-medium text-rose-200 hover:bg-rose-900/50 disabled:opacity-50"
+          >
+            {busy === "cancel" ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <StopCircle className="h-3.5 w-3.5" />
+            )}
+            Cancel
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => rerun.mutate()}
+            disabled={busy !== null}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs font-medium text-neutral-200 hover:bg-neutral-800 disabled:opacity-50"
+          >
+            {busy === "rerun" ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <RotateCw className="h-3.5 w-3.5" />
+            )}
+            Re-run
+          </button>
+        )}
 
         {canMerge && (
           <button

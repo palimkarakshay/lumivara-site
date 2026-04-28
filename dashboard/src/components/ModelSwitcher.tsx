@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Brain, Loader2, Zap } from "lucide-react";
+import { Brain, Loader2, RotateCcw, Zap } from "lucide-react";
 import clsx from "clsx";
 import type { Octokit } from "@octokit/rest";
 import {
+  clearNextRunOverride,
   getDefaultModel,
   getNextRunOverride,
   setDefaultModel,
@@ -67,6 +68,25 @@ export function ModelSwitcher({ octo, onSuccess, onError }: Props) {
     onSettled: () => qc.invalidateQueries({ queryKey: ["var", "override"] }),
   });
 
+  // DELETE the variable (vs. setting "") so workflows that gate on
+  // `vars.NEXT_RUN_MODEL_OVERRIDE != ''` stop seeing it entirely.
+  const clearOverride = useMutation({
+    mutationFn: () => clearNextRunOverride(octo),
+    onMutate: async () => {
+      await qc.cancelQueries({ queryKey: ["var", "override"] });
+      const prev = qc.getQueryData(["var", "override"]);
+      qc.setQueryData(["var", "override"], null);
+      return { prev };
+    },
+    onError: (err, _v, ctx) => {
+      if (ctx?.prev !== undefined)
+        qc.setQueryData(["var", "override"], ctx.prev);
+      onError(`Clear override: ${explainError(err)}`);
+    },
+    onSuccess: () => onSuccess("Next-run override cleared"),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["var", "override"] }),
+  });
+
   return (
     <section className="space-y-3 rounded-2xl border border-neutral-800 bg-neutral-900/60 p-4">
       <header className="flex items-center gap-2">
@@ -92,8 +112,10 @@ export function ModelSwitcher({ octo, onSuccess, onError }: Props) {
       <NextRunOverride
         currentValue={overrideQ.data?.value ?? ""}
         loading={overrideQ.isLoading}
-        saving={setOverride.isPending}
+        saving={setOverride.isPending || clearOverride.isPending}
+        clearing={clearOverride.isPending}
         onSet={(v) => setOverride.mutate(v)}
+        onClear={() => clearOverride.mutate()}
       />
     </section>
   );
@@ -165,12 +187,16 @@ function NextRunOverride({
   currentValue,
   loading,
   saving,
+  clearing,
   onSet,
+  onClear,
 }: {
   currentValue: string;
   loading: boolean;
   saving: boolean;
+  clearing: boolean;
   onSet: (v: string) => void;
+  onClear: () => void;
 }) {
   const [draft, setDraft] = useState<string>(currentValue);
   useEffect(() => setDraft(currentValue), [currentValue]);
@@ -207,9 +233,24 @@ function NextRunOverride({
         </button>
       </div>
       {currentValue && (
-        <p className="text-[11px] text-amber-400">
-          Currently armed: <span className="font-mono">{currentValue}</span>
-        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[11px] text-amber-400">
+            Currently armed: <span className="font-mono">{currentValue}</span>
+          </p>
+          <button
+            type="button"
+            onClick={onClear}
+            disabled={saving}
+            className="inline-flex items-center gap-1 rounded-md border border-neutral-800 bg-neutral-950 px-2 py-1 text-[11px] text-neutral-300 hover:border-neutral-700 disabled:opacity-50"
+          >
+            {clearing ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <RotateCcw className="h-3 w-3" />
+            )}
+            Clear
+          </button>
+        </div>
       )}
     </Field>
   );

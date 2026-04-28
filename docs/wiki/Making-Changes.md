@@ -8,7 +8,8 @@ The simplest way to request a site change is to create a GitHub Issue. No coding
 
 ## From your phone
 
-If you have the HTTP Shortcuts app set up (see [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md)):
+If you have the HTTP Shortcuts app set up (see `PHONE_SETUP.md` at the root of `<client-repo>` — for the current Client #1 that is [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md)):
+
 1. Tap the shortcut
 2. Type what you want changed
 3. Submit
@@ -17,7 +18,7 @@ The shortcut creates a GitHub Issue automatically with `status/needs-triage`.
 
 ## From a browser
 
-1. Go to [Issues → New issue](https://github.com/palimkarakshay/lumivara-site/issues/new/choose)
+1. Go to **Issues → New issue** on `<client-repo>` (for the current Client #1: [palimkarakshay/lumivara-site/issues/new/choose](https://github.com/palimkarakshay/lumivara-site/issues/new/choose))
 2. Pick **Site change request**
 3. Fill in the template
 4. Submit

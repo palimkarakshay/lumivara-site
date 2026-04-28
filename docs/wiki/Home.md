@@ -1,6 +1,7 @@
 # Lumivara Forge — Operator + Client wiki ⚪
 
-> **Legacy redirect note:** this page used to be titled *Lumivara Site Wiki* and assumed the repository was a single-purpose Next.js site. It is now a **dual-lane wiki** — the same source serves the operator's mothership and the per-client repos that ship the autopilot's product. Old `[[Home]]` links keep resolving to this file; the table-of-contents below replaces the previous "Quick links" table for one cycle.
+<!-- legacy redirect: title was "Lumivara Site Wiki"; old [[Home]] links resolve here. -->
+> **Legacy redirect note.** This page used to be titled *Lumivara Site Wiki* and assumed the repository was a single-purpose Next.js site. It is now a **dual-lane wiki** — the same source serves the operator's mothership and the per-client repos that ship the autopilot's product. Old `[[Home]]` links keep resolving to this file; the table-of-contents below replaces the previous "Quick links" table for one cycle.
 
 This wiki documents two related but distinct codebases:
 

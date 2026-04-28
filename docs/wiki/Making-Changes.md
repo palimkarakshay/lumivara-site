@@ -4,12 +4,11 @@ The simplest way to request a site change is to create a GitHub Issue. No coding
 
 ## From your phone
 
-If you have the HTTP Shortcuts app set up (see [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md)):
-1. Tap the shortcut
-2. Type what you want changed
-3. Submit
+Sign in to `/admin` (magic-link email via Resend, Google, or Microsoft Entra) and use the in-portal capture form. Email-to-issue and SMS-to-issue lanes route through n8n — see [admin portal plan](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/ADMIN_PORTAL_PLAN.md) and [n8n setup](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/N8N_SETUP.md).
 
-The shortcut creates a GitHub Issue automatically with `status/needs-triage`.
+> **Deprecated:** the previous HTTP Shortcuts / Apple Shortcuts + GitHub PAT path is no longer supported. Setup steps are removed from [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md), which is now a deprecation notice; the v1→v2 migration matrix lives in [`docs/TEMPLATE_REBUILD_PROMPT.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/TEMPLATE_REBUILD_PROMPT.md) §1.4.
+
+Each captured submission lands as a GitHub Issue with `status/needs-triage`.
 
 ## From a browser
 

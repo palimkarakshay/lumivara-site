@@ -17,6 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/contact`, lastModified: now, priority: 0.9 },
     { url: `${base}/privacy`, lastModified: now, priority: 0.3 },
     { url: `${base}/career-coaching`, lastModified: now, priority: 0.6 },
+    { url: `${base}/feedback`, lastModified: now, priority: 0.4 },
   ];
 
   const serviceRoutes: MetadataRoute.Sitemap = services.map((s) => ({

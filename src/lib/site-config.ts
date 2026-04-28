@@ -26,6 +26,10 @@ export const siteConfig = {
     button: "Subscribe",
     success: "You're in — look out for the next issue.",
   } as const,
+  feedbackSurvey: {
+    surveyUrl: process.env.NEXT_PUBLIC_FEEDBACK_SURVEY_URL || "",
+    embedEnabled: process.env.NEXT_PUBLIC_FEEDBACK_SURVEY_EMBED === "true",
+  } as const,
 } as const;
 
 export type SiteConfig = typeof siteConfig;

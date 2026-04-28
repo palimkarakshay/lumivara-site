@@ -118,6 +118,81 @@ export async function findPreviewByCommit(
   }
 }
 
+export type VercelProductionDeployment = {
+  /** Full https URL of the production deployment (the alias, when present). */
+  url: string;
+  /** READY / BUILDING / ERROR / QUEUED / CANCELED. Only READY is "live". */
+  state: string;
+  /** Commit SHA serving production. Lower-cased. */
+  commitSha: string | null;
+  /** Branch the prod deploy was built from (typically `main`). */
+  commitRef: string | null;
+  inspectorUrl: string | null;
+  /** ISO. Useful for "live since X". */
+  createdAt: string;
+};
+
+export type ProductionLookupResult =
+  | { ok: true; deployment: VercelProductionDeployment | null }
+  | { ok: false; error: string };
+
+/**
+ * Latest production deployment in any state (READY first if present),
+ * along with parsed git metadata. Used by /admin/deployments to render the
+ * "live now" card and by `production-guard.ts` to compute drift.
+ *
+ * We pull `limit=10` so the most recent build, even if currently failing,
+ * is visible — and we always prefer the latest READY one for the canonical
+ * "what's serving traffic right now" answer.
+ */
+export async function latestProductionDeployment(): Promise<ProductionLookupResult> {
+  const cfg = readConfig();
+  if (!cfg) {
+    return {
+      ok: false,
+      error: "Set VERCEL_API_TOKEN to enable production lookups.",
+    };
+  }
+  const params = new URLSearchParams({ limit: "10", target: "production" });
+  if (cfg.projectId) params.set("projectId", cfg.projectId);
+  if (cfg.teamId) params.set("teamId", cfg.teamId);
+
+  const url = `${VERCEL_API}/v6/deployments?${params.toString()}`;
+  try {
+    const res = await fetch(url, {
+      headers: authHeaders(cfg.token),
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      return { ok: false, error: `Vercel ${res.status}: ${res.statusText}` };
+    }
+    const json = (await res.json()) as { deployments?: RawDeployment[] };
+    const deploys = json.deployments ?? [];
+    if (deploys.length === 0) return { ok: true, deployment: null };
+
+    // Prefer latest READY; fall back to the most recent regardless of state
+    // so the "live since" panel still shows something during a deploy.
+    const readyOrFirst =
+      deploys.find((d) => (d.readyState ?? d.state) === "READY") ?? deploys[0];
+    const created = readyOrFirst.createdAt ?? readyOrFirst.created ?? Date.now();
+    return {
+      ok: true,
+      deployment: {
+        url: readyOrFirst.url.startsWith("http")
+          ? readyOrFirst.url
+          : `https://${readyOrFirst.url}`,
+        state: readyOrFirst.readyState ?? readyOrFirst.state ?? "UNKNOWN",
+        commitSha: readyOrFirst.meta?.githubCommitSha?.toLowerCase() ?? null,
+        commitRef: readyOrFirst.meta?.githubCommitRef ?? null,
+        inspectorUrl: readyOrFirst.inspectorUrl ?? null,
+        createdAt: new Date(created).toISOString(),
+      },
+    };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
 /**
  * Idempotency keys we use for deploy-confirm. Derived purely from the PR
  * head SHA so a second click within the same SHA collapses to the same

@@ -54,6 +54,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Idempotently ensure `area/forge` exists before the agent tries to
+      # add it. `gh label create --force` upserts (creates or updates) so
+      # this is safe to call every run.
+      - name: Ensure area/forge label exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create area/forge \
+            --repo palimkarakshay/lumivara-site \
+            --description "Lumivara Forge / Pattern C / mothership lane" \
+            --color "5319E7" \
+            --force
+          echo "Label area/forge upserted."
+
       - name: Forge triage — Claude Opus
         id: forge_triage
         uses: anthropics/claude-code-action@v1

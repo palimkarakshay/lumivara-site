@@ -1,4 +1,8 @@
-# Making Changes
+# Making Changes ⚪
+
+> **Lane:** ⚪ Both. The issue → PR loop is identical on the mothership and on every per-client repo. See [[_partials/lane-key]] for the badge legend.
+>
+> **Sidebar — who lands edits where.** On a **🌐 client repo**, the autopilot is the *only* thing that lands edits on `main` (the client has no write access until handover). On the **🛠 mothership**, both the bot and the operator commit. Either way, the issue → PR loop below is the same.
 
 The simplest way to request a site change is to create a GitHub Issue. No coding required.
 

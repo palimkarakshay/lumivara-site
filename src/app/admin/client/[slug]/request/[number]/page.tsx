@@ -2,11 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/admin/Card";
+import { ClientInputBanner } from "@/components/admin/ClientInputBanner";
 import { Section } from "@/components/admin/Section";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { findClient } from "@/lib/admin/clients";
+import { parseLatestAsk } from "@/lib/admin/ask-parser";
 import { formatUtc, relativeTime } from "@/lib/admin/format";
-import { listOpenIssues } from "@/lib/admin/github";
+import { getIssue, listIssueComments } from "@/lib/admin/github";
 import {
   clientSlugFromLabels,
   statusFromLabels,
@@ -32,21 +34,37 @@ export default async function ClientRequestDetailPage({
   const client = findClient(slug);
   if (!client) notFound();
 
-  const result = await listOpenIssues({ clientSlug: slug, perPage: 100 });
-  if (!result.ok) {
+  const numericId = Number.parseInt(number, 10);
+  if (!Number.isFinite(numericId) || numericId <= 0) notFound();
+
+  const [issueResult, commentsResult] = await Promise.all([
+    getIssue(numericId),
+    listIssueComments(numericId, 20),
+  ]);
+
+  if (!issueResult.ok) {
     return (
       <Card emphasis="warning">
         <p className="font-medium text-ink">Couldn&rsquo;t load this request.</p>
-        <p className="text-body-sm text-ink-soft mt-1">{result.error}</p>
+        <p className="text-body-sm text-ink-soft mt-1">{issueResult.error}</p>
       </Card>
     );
   }
+  const issue = issueResult.item;
 
-  const issue = result.items.find((it) => String(it.number) === number);
-  if (!issue || clientSlugFromLabels(issue.labels) !== slug) notFound();
+  // Belt-and-suspenders: middleware already enforced canAccessClient on the
+  // layout, but the issue itself might belong to a different slug. Hide it.
+  if (clientSlugFromLabels(issue.labels) !== slug) notFound();
 
   const status = statusFromLabels(issue.labels);
   const cleaned = cleanBody(issue.body);
+  const needsInput = issue.labels.some(
+    (l) => l === "needs-client-input" || l === "status/needs-clarification",
+  );
+  const ask =
+    needsInput && commentsResult.ok
+      ? parseLatestAsk(commentsResult.items)
+      : null;
 
   return (
     <>
@@ -69,10 +87,14 @@ export default async function ClientRequestDetailPage({
         </p>
       </header>
 
+      {ask ? (
+        <ClientInputBanner slug={slug} issueNumber={numericId} ask={ask} />
+      ) : null}
+
       <Section eyebrow="Status" title={status?.label ?? "Unsorted"}>
         <Card>
           <p className="text-body text-ink">
-            {status?.copy ?? "We&rsquo;re still classifying this request."}
+            {status?.copy ?? "We're still classifying this request."}
           </p>
         </Card>
       </Section>

@@ -32,8 +32,27 @@ You don't control: how often the client wants changes, whether they pay on time,
 
 ## Honest caveat
 
-The `TEMPLATE_REBUILD_PROMPT.md` in `docs/` lets you spin up a new client project fast, but in its current form a technically-curious client could in theory take it and run their own setup. The file at `docs/freelance/05-template-hardening-notes.md` (to be written) tracks the changes needed to make it harder to repackage — license headers, removing the auto-generated bootstrap script from the public template, gating the multi-AI fallback behind your operator account, etc. Treat the current template as **internal**: don't hand it to clients verbatim.
+The `TEMPLATE_REBUILD_PROMPT.md` in `docs/` lets you spin up a new client project fast, but in its current form a technically-curious client could in theory take it and run their own setup. The file at `docs/freelance/05-template-hardening-notes.md` tracks the changes needed to make it harder to repackage. Treat the current template as **internal**: don't hand it to clients verbatim.
 
 ---
 
-*Last updated: 2026-04-26.*
+## Mothership pack — operator-only
+
+The mothership business pack (`docs/mothership/`) is the operator-side runbook for the whole practice — separate from this folder, which is the public-facing storefront. Read order if you're new:
+
+1. `docs/mothership/00-INDEX.md` — master index + phased plan
+2. `docs/mothership/01-business-plan.md` — brand naming, mothership/client separation
+3. `docs/mothership/02-architecture.md` — two-repo shape (mothership + client)
+4. `docs/mothership/03-secure-architecture.md` — zone isolation, cost firewall
+5. `docs/mothership/04-tier-based-agent-cadence.md` — AI cron/model policy by tier
+6. `docs/mothership/05-mothership-repo-buildout-plan.md` — phased Claude plan to build the new repo
+7. `docs/mothership/06-operator-rebuild-prompt-v3.md` — per-engagement playbook (replaces v2)
+8. `docs/mothership/07-client-handover-pack.md` — client-facing handover + dummy intake forms
+9. `docs/mothership/08-future-work.md` — legal, vault, market research stubs
+10. `docs/mothership/09-github-account-topology.md` — org/bot/personal-account decision
+
+Everything inside `docs/mothership/` is operator-only and never ships in a client repo. This `docs/freelance/` folder remains the storefront — gigs, pricing, slide deck, cost analysis.
+
+---
+
+*Last updated: 2026-04-28.*

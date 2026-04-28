@@ -59,6 +59,8 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 06 | `06-operator-rebuild-prompt-v3.md` | "Per-client engagement: what do I run, in what order, to spin up a new client site?" | Operator | **Per engagement** |
 | 07 | `07-client-handover-pack.md` | "What do I send to the client?" — includes dummy intake forms | Operator → Client | **Per engagement** (rendered per client) |
 | 08 | `08-future-work.md` | "What's deferred? Legal, vault, market research, contracts, payments." | Operator | Once, revisit before each big milestone |
+| 09 | `09-github-account-topology.md` | "Should I create a new GitHub org/account, and what are the three identities?" | Operator | Once |
+| 10 | `10-lumivara-infotech-setup-plan.md` | "How do I actually set up the Lumivara Infotech GitHub org with real slugs?" | Operator | Once (at brand-lock time) |
 
 Existing context that this folder builds on (do not duplicate):
 

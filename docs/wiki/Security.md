@@ -103,4 +103,11 @@ The autopilot opens PRs against `auto/issue-*` branches and never pushes to `mai
 - The PR cannot touch workflows, env files, or `src/app/api/contact/*` — those paths are forbidden by the bot playbooks (see `docs/mothership/02-architecture.md §1` for the structural reason: those paths live on `operator/main`).
 - The client's `main` is therefore safe to deploy via Vercel without further hardening.
 
+- **Branch protection on `main`**: enforced via GitHub repository settings
+- **Workflow permissions**: read-only by default; write access only where explicitly granted
+- **Secrets**: `CLAUDE_CODE_OAUTH_TOKEN` is the only repository secret; it is scoped to the Pro subscription OAuth token and never logs to workflow output
+
+## Pattern C compliance (operator-side)
+
+The two-repo / two-branch trust model that keeps operator IP and per-client costs invisible to clients is enforced by an explicit checklist in the mothership pack: [`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md). Walk that file before any spinout (its §4 pre-migration gate) and immediately after (its §5 post-migration verification). The checklist is the single MUST / MUST-NOT control surface; the architecture rationale lives in `docs/mothership/02-architecture.md` and `docs/mothership/03-secure-architecture.md`.
 See [`.github/SECURITY.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/.github/SECURITY.md) for the canonical policy.

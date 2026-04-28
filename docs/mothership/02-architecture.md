@@ -61,6 +61,8 @@
 
 The defining trick: **the autopilot files live on `operator/main` of each client repo, never on `main`.** A curious client cloning their `main` sees a clean Next.js + admin-portal codebase. The cron schedules still fire because GitHub Actions reads workflows from any branch with `schedule:` triggers in them. End-of-engagement: delete `operator/main`, the autopilot stops, the client keeps a vanilla repo.
 
+> **Enforcement:** every assertion in this section is enforced by an explicit MUST / MUST-NOT row in [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md). When a future change to the architecture would break a row there, update both files in the same PR.
+
 ---
 
 ## 2. Mothership repo file layout (target end state of P5)
@@ -193,6 +195,8 @@ The "operator/main is invisible to client even though it's in the same repo" cla
 - Branch protection rules on `main` prevent the client from force-pushing or rewriting history.
 - `operator/main` is set to "restricted to write by `{{BRAND_SLUG}}-bot`" via branch protection, so even the operator's personal account doesn't push there in normal flow.
 - At graceful exit (`teardown` CLI), `operator/main` is deleted, branch protections are relaxed, the repo is transferred to the client's account, and `{{BRAND_SLUG}}-bot` is removed as a collaborator.
+
+> **Enforcement:** trust-zone separation is enforced by C-MUST-1, C-MUST-2, C-MUST-4, and C-MUST-NOT-2 in [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md). The pre-migration gate (§4) and post-migration verification (§5) of that file are what gate every client spinout.
 
 ---
 

@@ -28,6 +28,20 @@ export function readWebhookConfig(): WebhookConfig {
   };
 }
 
+export function readDecisionWebhookConfig(): WebhookConfig {
+  return {
+    url: process.env.N8N_DECISION_WEBHOOK_URL?.trim() || null,
+    secret: process.env.N8N_HMAC_SECRET?.trim() || null,
+  };
+}
+
+export function readDeployWebhookConfig(): WebhookConfig {
+  return {
+    url: process.env.N8N_DEPLOY_WEBHOOK_URL?.trim() || null,
+    secret: process.env.N8N_HMAC_SECRET?.trim() || null,
+  };
+}
+
 export function signPayload(
   body: string,
   secret: string,
@@ -98,6 +112,95 @@ export async function dispatchIntake(
       headers: {
         "Content-Type": "application/json",
         [HEADER_NAME]: header,
+      },
+      body,
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      return { ok: false, error: `n8n ${res.status}: ${res.statusText}` };
+    }
+    return { ok: true, status: res.status };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
+export type DecisionPayload = {
+  issueNumber: number;
+  clientSlug: string;
+  /** Either an option id ("A", "B", …) or `free` for textarea answers. */
+  kind: "option" | "free";
+  optionId: string | null;
+  optionLabel: string | null;
+  text: string | null;
+};
+
+/** POST a signed decision payload to the operator's decision webhook. */
+export async function dispatchDecision(
+  payload: DecisionPayload,
+): Promise<DispatchResult> {
+  const cfg = readDecisionWebhookConfig();
+  if (!cfg.url || !cfg.secret) {
+    return {
+      ok: false,
+      error:
+        "Decision webhook is not wired up yet. Set N8N_DECISION_WEBHOOK_URL and N8N_HMAC_SECRET.",
+    };
+  }
+  const body = JSON.stringify(payload);
+  const { header } = signPayload(body, cfg.secret);
+  try {
+    const res = await fetch(cfg.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        [HEADER_NAME]: header,
+      },
+      body,
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      return { ok: false, error: `n8n ${res.status}: ${res.statusText}` };
+    }
+    return { ok: true, status: res.status };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
+export type DeployPayload = {
+  issueNumber: number;
+  clientSlug: string;
+  prHeadSha: string;
+  /** Stable idempotency key derived from prHeadSha. */
+  idempotencyKey: string;
+};
+
+/**
+ * POST to the operator's deploy webhook. We send to n8n (not the Vercel
+ * Deploy Hook directly) so n8n can record the trigger, then call the
+ * client-specific deploy hook from a single trusted origin.
+ */
+export async function dispatchDeploy(
+  payload: DeployPayload,
+): Promise<DispatchResult> {
+  const cfg = readDeployWebhookConfig();
+  if (!cfg.url || !cfg.secret) {
+    return {
+      ok: false,
+      error:
+        "Deploy webhook is not wired up yet. Set N8N_DEPLOY_WEBHOOK_URL and N8N_HMAC_SECRET.",
+    };
+  }
+  const body = JSON.stringify(payload);
+  const { header } = signPayload(body, cfg.secret);
+  try {
+    const res = await fetch(cfg.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        [HEADER_NAME]: header,
+        "Idempotency-Key": payload.idempotencyKey,
       },
       body,
       cache: "no-store",

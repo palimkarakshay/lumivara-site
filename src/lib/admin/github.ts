@@ -239,6 +239,103 @@ export async function summariseChecks(
   }
 }
 
+export type IssueDetail = IssueSummary & {
+  state: "open" | "closed";
+  closedAt: string | null;
+  /** Linked PRs surfaced through the timeline / Issues API. */
+  linkedPullNumbers: number[];
+};
+
+type RawIssueDetail = RawIssue & {
+  state: string;
+  closed_at: string | null;
+};
+
+export type SingleResult<T> = { ok: true; item: T } | { ok: false; error: string };
+
+export async function getIssue(
+  number: number,
+): Promise<SingleResult<IssueDetail>> {
+  const cfg = readConfig();
+  if (!cfg) {
+    return { ok: false, error: "Set GITHUB_REPO and GITHUB_TOKEN to load issues." };
+  }
+  try {
+    const res = await fetch(
+      `${GITHUB_API}/repos/${cfg.repo}/issues/${number}`,
+      { headers: authHeaders(cfg.token), cache: "no-store" },
+    );
+    if (res.status === 404) return { ok: false, error: "Not found." };
+    if (!res.ok) {
+      return { ok: false, error: `GitHub ${res.status}: ${res.statusText}` };
+    }
+    const json = (await res.json()) as RawIssueDetail;
+    const item: IssueDetail = {
+      number: json.number,
+      title: json.title,
+      htmlUrl: json.html_url,
+      createdAt: json.created_at,
+      updatedAt: json.updated_at,
+      body: json.body ?? "",
+      labels: normaliseLabels(json.labels),
+      pullRequest: json.pull_request
+        ? { url: json.pull_request.url, htmlUrl: json.pull_request.html_url }
+        : null,
+      state: json.state === "closed" ? "closed" : "open",
+      closedAt: json.closed_at,
+      linkedPullNumbers: [],
+    };
+    return { ok: true, item };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
+export type IssueComment = {
+  id: number;
+  body: string;
+  createdAt: string;
+  authorLogin: string | null;
+};
+
+type RawComment = {
+  id: number;
+  body: string | null;
+  created_at: string;
+  user: { login: string } | null;
+};
+
+export async function listIssueComments(
+  number: number,
+  perPage = 30,
+): Promise<ListResult<IssueComment>> {
+  const cfg = readConfig();
+  if (!cfg) {
+    return { ok: false, error: "Set GITHUB_REPO and GITHUB_TOKEN to load comments." };
+  }
+  try {
+    const res = await fetch(
+      `${GITHUB_API}/repos/${cfg.repo}/issues/${number}/comments?per_page=${perPage}&sort=created&direction=desc`,
+      { headers: authHeaders(cfg.token), cache: "no-store" },
+    );
+    if (!res.ok) {
+      return { ok: false, error: `GitHub ${res.status}: ${res.statusText}` };
+    }
+    const json = (await res.json()) as RawComment[];
+    return {
+      ok: true,
+      items: json.map((c) => ({
+        id: c.id,
+        body: c.body ?? "",
+        createdAt: c.created_at,
+        authorLogin: c.user?.login ?? null,
+      })),
+    };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
 export type WorkflowDescriptor = {
   id: number;
   name: string;

@@ -4,17 +4,24 @@
 
 ## 1. Brand naming — pick one
 
-The user-supplied placeholder *Lumivara Tech Solutions / Lumivara Info Tech Solutions* works but reads generic and risks confusing prospects with Beas's HR brand (*Lumivara People Advisory*). Five options ranked, plus the trade-off:
+The user-supplied placeholder *Lumivara Tech Solutions / Lumivara Info Tech Solutions* works but reads generic and risks confusing prospects with Beas's HR brand (*Lumivara People Advisory*). Ten options, the original five plus five added during the `15-terminology-and-brand` review, ranked with the trade-off:
 
 | # | Name | Reads as | Pros | Cons |
 |---|---|---|---|---|
-| 1 | **Lumivara Forge** ★ recommended | "the maker shop within the Lumivara family" | Keeps brand-family halo (HR + tech under one umbrella); "forge" connotes building & maintaining | Still leans on Beas's brand recognition; if she rebrands, you inherit the change |
-| 2 | **Lumivara Loom** | "weaver of systems" | Distinct word, premium feel, easy to logo | Less obviously tech |
-| 3 | **Lumivara Stack** | "explicitly tech" | Instantly understood; no decoding | Generic; lots of "Stack" co's |
-| 4 | **Lumivara Atelier** | "premium studio" | Premium positioning supports T2/T3 prices | Sounds boutique-y; may scare T0/T1 |
-| 5 | **Plumbline Studio** (independent of Lumivara) | "straight-shooting builder" | Full separation from HR brand; cleaner if Beas's biz changes shape | Loses brand-family halo; need to build awareness from zero |
+| 1 | **Lumivara Forge** ★ co-recommended | "the maker shop within the Lumivara family" | Keeps brand-family halo; "forge" connotes building & maintaining | Slightly crowded — many tech-tool brands use "Forge" |
+| 2 | **Lumivara Cadence** ★★ co-recommended for the broader vision | "the rhythm-keeper" | The product's actual mechanic *is* a cadence (`04 §1`) — brand & engineering vocabulary reinforce each other; sub-product family reads cleanly: *Cadence Sites*, *Cadence Voice*, *Cadence Brand*, *Cadence Pulse* | Newer brand pattern; slightly less obvious "tech" connotation |
+| 3 | **Lumivara Continuum** | "the unbroken thread" | Speaks directly to "doesn't decay between updates" | Slightly long; harder to logo |
+| 4 | **Lumivara Pulse** | "the heartbeat" | Living-system metaphor; pairs with monitoring/dashboard | Better as a sub-product than the parent |
+| 5 | **Lumivara Loom** | "the weaver" | Distinct word, premium feel, easy to logo | Less obviously tech |
+| 6 | **Lumivara Atelier** | "premium studio" | Supports T2/T3 prices | Boutique-y; may scare T0/T1 |
+| 7 | **Lumivara Helm** | "the captain" | Steering/guidance; works for tech + advisory under one umbrella | Less specific to building |
+| 8 | **Lumivara Compass** | "the direction-giver" | Clean adjacent to Beas's HR practice | Generic |
+| 9 | **Lumivara Stack** | "explicitly tech" | Instantly understood | Generic; lots of "Stack" co's |
+| 10 | **Plumbline Studio** (independent of Lumivara) | "the straight-shooter" | Full separation from HR brand; cleaner if Beas's biz changes shape | Loses brand-family halo; build awareness from zero |
 
-**Recommendation: Lumivara Forge.** Use it as `{{BRAND}}` everywhere in this folder until you decide otherwise. Slug: `lumivara-forge`. Domain candidates (check availability): `lumivara-forge.com`, `lumivara-forge.ca`, `forge.lumivara.com` (subdomain off the existing site).
+**Locked recommendation: Lumivara Forge.** Operator confirmed via the doc-15 review (2026-04-28). Use it as `{{BRAND}}` everywhere until Run S1 (`16 §5`) does the global rename. Slug: `lumivara-forge`. Domain candidates: `lumivara-forge.com / .ca`, or a subdomain off Beas's existing `lumivara.ca`. Trademark check (CIPO Class 42 + USPTO) and full criteria list in `15 §2`.
+
+> **Lumivara Cadence** is preserved as the closest runner-up should the operator ever revisit the brand — its mechanic-mirrors-naming property (cadence matrix in `04`) is unique. The other 8 candidates and their trade-offs live in `15 §2`.
 
 The rest of this document uses `{{BRAND}}` and `{{BRAND_SLUG}}` placeholders so the rename is mechanical.
 

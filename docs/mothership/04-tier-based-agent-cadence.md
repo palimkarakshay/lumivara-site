@@ -4,7 +4,7 @@
 
 How often the autopilot runs, which models it uses, and how aggressive its review is — set per client by tier. The rule of thumb: **higher tier = more cron, fancier model, lighter human review**. Lower tier = sparser cron, cheaper model, heavier human review.
 
-This is implemented as **per-client labels** read by the workflows on `operator/main`, plus a single per-client config file `docs/operator/clients/<slug>/cadence.json` in the mothership repo.
+This is implemented as **per-client labels** read by the workflows in each `<slug>-pipeline` repo (Pattern C — see `02b`), plus a single per-client config file `docs/operator/clients/<slug>/cadence.json` in the mothership repo.
 
 ---
 
@@ -33,7 +33,7 @@ These values are starting points. Tune per client based on observed activity; do
 
 ## 2. How the per-client cadence is enforced
 
-Each client repo's `operator/main` has, at the top of every cron'd workflow:
+Each `<slug>-pipeline` repo's `main` has, at the top of every cron'd workflow:
 
 ```yaml
 on:
@@ -42,17 +42,19 @@ on:
   workflow_dispatch: {}
 ```
 
-And each workflow reads its tier-specific config from a repo Variable:
+Cron fires from the pipeline repo's default branch (`main`) — the canonical GitHub Actions path. Each workflow reads its tier-specific config from a repo Variable:
 
 ```yaml
 env:
   CLIENT_TIER: ${{ vars.CLIENT_TIER }}        # "0" | "1" | "2" | "3"
   CLIENT_SLUG: ${{ vars.CLIENT_SLUG }}
+  SITE_REPO_OWNER: ${{ vars.SITE_REPO_OWNER }}
+  SITE_REPO_NAME: ${{ vars.SITE_REPO_NAME }}
   DEFAULT_AI_MODEL: ${{ vars.DEFAULT_AI_MODEL }}
   CONCURRENCY_CAP: ${{ vars.CONCURRENCY_CAP }}
 ```
 
-The `provision` CLI sets these per-client variables when the engagement starts. Changing tier is a single CLI call: `npx forge set-tier --client johns-plumbing --tier 2` (which updates the variables and reschedules the cron expressions accordingly).
+`SITE_REPO_OWNER` / `SITE_REPO_NAME` tell the workflow which site repo to mint a GitHub-App installation token against (see `02b §3`). The `provision` CLI sets these per-client variables when the engagement starts. Changing tier is a single CLI call: `npx forge set-tier --client johns-plumbing --tier 2` (which updates the variables and reschedules the cron expressions accordingly).
 
 ---
 
@@ -117,7 +119,7 @@ The dashboard's "Quota usage" panel charts this in real time (P5 deliverable; no
 
 If one client's activity threatens to starve the others (e.g. a T2 client opens 30 issues in one day), the per-client `CONCURRENCY_CAP` Variable kicks in:
 
-- The `triage.yml` workflow runs `gh pr list --label client/<slug> --state open` first.
+- The `triage.yml` workflow runs `gh pr list --repo "$SITE_REPO_OWNER/$SITE_REPO_NAME" --label client/<slug> --state open` first (using an App installation token).
 - If the count exceeds the cap, the workflow exits early with `BUDGET: per-client cap hit, deferring`.
 - The operator gets a notification (n8n `quota-warn` workflow) and decides whether to:
   - Bump the cap manually for the day.
@@ -135,8 +137,8 @@ npx forge set-tier --client viktor-law --tier 2 --effective 2026-05-01
 ```
 
 What happens:
-1. Updates `vars.CLIENT_TIER`, `vars.TRIAGE_CRON`, `vars.EXECUTE_CRON`, `vars.DEFAULT_AI_MODEL`, `vars.CONCURRENCY_CAP` on the client repo.
-2. Updates the cron expressions inside the workflow files on `operator/main` (commit + push as `{{BRAND_SLUG}}-bot`).
+1. Updates `vars.CLIENT_TIER`, `vars.TRIAGE_CRON`, `vars.EXECUTE_CRON`, `vars.DEFAULT_AI_MODEL`, `vars.CONCURRENCY_CAP` on the pipeline repo.
+2. Updates the cron expressions inside the workflow files on the pipeline repo's `main` (commit + push as the operator).
 3. Updates `docs/clients/viktor-law/cadence.json` in the mothership repo.
 4. Updates the Stripe / Lemon Squeezy subscription price.
 5. Posts a comment on the client's pinned admin-portal welcome issue: *"Tier upgraded to T2 effective 2026-05-01. Faster response times, more frequent improvements."*

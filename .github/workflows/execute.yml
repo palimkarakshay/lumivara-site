@@ -2,10 +2,9 @@ name: Execute backlog item
 
 on:
   schedule:
-    # Every 2 hours — bumped from 4h now that fallback ladder makes Claude
-    # outages non-fatal. Higher cadence = lower per-issue latency without
-    # blowing the shared Claude quota (most runs find nothing to do).
-    - cron: '0 */2 * * *'
+    # Every hour — quality-first phase. Max 20x quota gives ample headroom,
+    # and most runs still find nothing to do, so the cron is cheap.
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -131,19 +130,19 @@ jobs:
               friendly = (
                   os.environ.get("DASHBOARD_OVERRIDE", "").strip()
                   or os.environ.get("DASHBOARD_DEFAULT", "").strip()
-                  or "sonnet"
+                  or "opus"
               )
               impl_model = CLAUDE_TIER.get(friendly)
               if impl_model is None:
                   emit(
                       f"\n⚠️  Dashboard requested provider '{friendly}', but "
                       "execute.yml's Claude path can't switch providers mid-run. "
-                      "Falling back to claude-sonnet-4-6. For OpenAI/Gemini "
-                      "paths, label the issue accordingly so the router "
-                      "dispatches the right workflow."
+                      "Falling back to claude-opus-4-7 (quality-first default). "
+                      "For OpenAI/Gemini paths, label the issue accordingly so "
+                      "the router dispatches the right workflow."
                   )
-                  impl_model = "claude-sonnet-4-6"
-                  friendly = "sonnet"
+                  impl_model = "claude-opus-4-7"
+                  friendly = "opus"
               source = (
                   "NEXT_RUN_MODEL_OVERRIDE" if os.environ.get("DASHBOARD_OVERRIDE", "").strip()
                   else "DEFAULT_AI_MODEL" if os.environ.get("DASHBOARD_DEFAULT", "").strip()
@@ -249,7 +248,7 @@ jobs:
             The `gh` CLI is authenticated. Node + dependencies are installed.
             When done, print the summary and exit.
           claude_args: |
-            --max-turns 80
+            --max-turns 400
             --model ${{ steps.pick.outputs.model }}
 
       # ── Claude failed → fall through to Codex/Gemini if a plan exists ─────

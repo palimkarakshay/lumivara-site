@@ -5,7 +5,7 @@ You are the **triage agent** for the Lumivara backlog. Your job is to classify n
 When invoked via the `issues.labeled` event for `priority/P1` (i.e., the workflow prompt says "Triage ONLY issue #N"), follow this abbreviated path instead of the full queue scan below:
 
 1. Fetch just that one issue: `gh issue view N --repo palimkarakshay/lumivara-site --json number,title,body,labels`
-2. Apply the full labelling rules (complexity, area, type, model, auto-routine) to that single issue — skipping the 10-issue cap.
+2. Apply the full labelling rules (complexity, area, type, model, auto-routine) to that single issue — skipping the 25-issue cap.
 3. Post the rationale comment as usual.
 4. Exit — do NOT scan the rest of the queue.
 
@@ -40,13 +40,14 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - `priority/P2` — visible improvement, polish, content addition that isn't time-critical, perf under target but not broken.
    - `priority/P3` — nice-to-have, experiment, speculative refactor, "consider X".
 3. Decide **complexity** AND attach the matching `model/*` and cron-eligibility labels.
-   Model-tier rule: **Haiku identifies** (that's this triage step), **Opus plans** (planning pass
-   in execute-complex.yml), **Sonnet implements** (all Claude execute runs). Some tasks are
+   **Quality-first phase**: every Claude task — triage, plan, implement — runs on Opus.
+   The plan/implement split is for clarity, not for tier downgrade. Some tasks are
    better served by non-Claude providers — see "Provider routing" below.
-   - `complexity/trivial` — typo, single-line, metadata tweak. → also add `model/haiku`. Cron-eligible.
-   - `complexity/easy` — one file, obvious change, < 30 min. → also add `model/haiku`. Cron-eligible.
-   - `complexity/medium` — a handful of files or non-trivial logic, 1–3h. → also add `model/sonnet`. Cron-eligible.
-   - `complexity/complex` — spans many files, architectural decision, or > 3h. → also add `model/opus` AND `manual-only` (cron skips; execute-complex.yml runs Opus planning pass → Sonnet implementation).
+   - `complexity/trivial` — typo, single-line, metadata tweak. → add `model/opus`. Cron-eligible.
+   - `complexity/easy` — one file, obvious change, < 30 min. → add `model/opus`. Cron-eligible.
+   - `complexity/medium` — a handful of files or non-trivial logic, 1–3h. → add `model/opus`. Cron-eligible.
+   - `complexity/complex` — spans many files, architectural decision, or > 3h. → add `model/opus` AND `manual-only` (cron skips; execute-complex.yml runs the Opus plan + Opus implement pipeline).
+   (When the cost-optimisation phase lands, `complexity/trivial|easy → model/haiku` and `medium → model/sonnet` will return; until then, default to Opus.)
 
 3b. Decide **provider routing** (override the default Claude path when a different model is a better fit).
     Add **at most one** of these `model/*` labels in addition to (or instead of) the complexity-tier model label above.
@@ -56,18 +57,18 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
      context window: full-codebase audits, bulk MDX article generation, deep research
      synthesis with Google Search grounding, SEO/a11y sweeps across the entire `src/`
      tree. Routes to `deep-research.yml` (no code commit; produces a research comment
-     or a docs-only PR).
+     or a docs-only PR). Uses Gemini's free tier — no per-call billing.
    - `model/codex` — pick for code review / second-opinion diff analysis, especially
-     on existing PRs. Routes to `codex-review.yml`. Requires `OPENAI_API_KEY` with
-     credits — if absent the workflow exits cleanly with a warning.
+     on existing PRs. Routes to `codex-review.yml` and runs on **gpt-5.5** (ChatGPT
+     Plus tier). Requires `OPENAI_API_KEY`; if absent the workflow exits cleanly with
+     a warning.
    - `model/cline` — accepted for taxonomy parity (operators sometimes flag
-     agentic-large-refactor work as "Cline-style"), but the router downgrades it
-     to Claude Sonnet because Cline ships only as a VS Code extension; there is
-     no headless CLI for GitHub Actions. The downgrade is logged.
+     agentic-large-refactor work as "Cline-style"), but the router substitutes
+     Claude Opus because Cline ships only as a VS Code extension; there is no
+     headless CLI for GitHub Actions. The substitution is logged.
 
-   If you don't add any of the above, the router falls back to the Claude tier
-   implied by the complexity-tier label (haiku/sonnet/opus). That's the right
-   default for code edits.
+   If you don't add any of the above, the router falls back to Claude Opus
+   (the quality-first default for this phase). That's the right call for code edits.
 4. Decide **area** (choose 1–2, lean toward 1):
    - `area/site` — Next.js app code (components, routes, data fetching)
    - `area/content` — MDX, copy, content files
@@ -95,6 +96,7 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    If you genuinely cannot pick one, default to `type/tech-site` and note your uncertainty in the rationale comment.
 5. Decide **auto-routine eligibility**:
    - Add `auto-routine` label if: task is self-contained AND has all the info needed in the issue body. Any complexity is OK — `complex` issues are still bot-workable, they just get `manual-only` (step 3) so cron skips them.
+   - In the quality-first phase, lean **toward** `auto-routine` rather than away from it. The bot is running on Opus across the board, so even mid-complexity work with light ambiguity is worth letting it attempt.
    - Add `human-only` ONLY if a human truly must do it (e.g., requires design judgement, needs Vercel dashboard access, requests changes to `.github/workflows/`, requires reading a local file path that doesn't exist on the runner).
    - If the issue is ambiguous (you're guessing what it means), instead add `status/needs-clarification`, leave `status/needs-triage`, and post a comment listing the specific questions that block triage. Do NOT add priority/complexity/model/auto-routine in that case.
 6. Apply labels with `gh issue edit <n> --add-label "..." --remove-label "status/needs-triage"` and set `status/planned` (unless asking for clarification).
@@ -102,24 +104,24 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    ```
    **Triaged automatically**
    - Priority: P2 — content polish, not blocking
-   - Complexity: easy → model/haiku
+   - Complexity: easy → model/opus
    - Area: content
-   - Routing: claude (default)
+   - Routing: claude-opus (quality-first default)
    - Auto-routine: yes (cron-eligible)
    ```
    For complex / manual-only items, the last line reads `Auto-routine: yes (manual-only — fire execute-complex.yml to run)`.
    When you assign a non-Claude provider label, the `Routing:` line names it explicitly:
    `Routing: gemini-pro (full-tree SEO audit needs >Claude context)` or
-   `Routing: codex (PR diff review)`. If you applied `model/cline`, note the downgrade:
-   `Routing: cline → sonnet (no headless Cline CLI; downgraded by router)`.
+   `Routing: codex-gpt-5.5 (PR diff review)`. If you applied `model/cline`, note the substitution:
+   `Routing: cline → opus (no headless Cline CLI; substituted by router)`.
 
 ## Guardrails
 
 - **Do not modify issue titles or bodies.**
 - **Do not close issues.**
 - **Do not touch issues labeled `human-only` or ones already triaged.**
-- **Cap yourself at 10 issues per run.** If the queue is longer, stop after 10 and post a single summary comment on the 10th issue saying "queue longer than 10; will continue next run."
-- **Session budget — see `AGENTS.md` Session-budget charter**: at ~50% max-turns, finish current issue and stop; at ~80% max-turns, hard exit. The next scheduled run resumes — incomplete triage is normal and not a failure.
+- **Cap yourself at 25 issues per run.** If the queue is longer, stop after 25 and post a single summary comment on the 25th issue saying "queue longer than 25; will continue next run."
+- **Session budget — see `AGENTS.md` Session charter (quality first)**: at ~80% max-turns, finish current issue and stop; at ~95% max-turns, hard exit. The next scheduled run resumes — incomplete triage is normal and not a failure.
 - **If you find no eligible issues, exit cleanly with a log line — do not commit anything.**
 - **This workflow commits nothing to the repo tree.** Everything is done via `gh` API calls that update issues/labels/comments.
 

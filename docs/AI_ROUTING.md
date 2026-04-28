@@ -2,20 +2,27 @@
 
 Single source of truth for which AI does what in this repo. Updated as free/cheap models improve.
 
-## Policy
+> **Active phase: quality-first.** The operator runs on Claude Max 20x and the
+> project is in critical planning. Every Claude task — triage, plan, implement —
+> defaults to **Opus 4.7**. OpenAI/Codex paths run on **gpt-5.5** (ChatGPT Plus
+> tier). Gemini's free tier covers deep research and the fallback ladder. The
+> per-tier mapping in the table below is what we'll restore in the future
+> cost-optimisation phase; it is *not* what runs today.
+
+## Policy (quality-first overrides in italics)
 
 | Task | Primary | Fallback | Why |
 |------|---------|----------|-----|
-| **Triage / classification** | Claude Haiku | Gemini 2.5 Flash | Cheap, fast. Gemini free tier (500 req/day) picks up when Claude quota exhausted. |
-| **Implementation (code edits)** | Claude Sonnet | — (defer to next run) | Tool use + file edits need mature tool-calling. No safe fallback for writing code. |
-| **Planning (architecture, strategy, overview)** | Claude Opus | Wait for availability | Strategic reasoning; worth waiting. |
-| **Trivial edits (typos, single-line)** | Claude Haiku | Gemini 2.5 Flash-Lite / OpenAI gpt-4o-mini | Minimum effort. |
-| **Large-context reads (full codebase audit, bulk MDX generation)** | Gemini 2.5 Pro (1M ctx) | Claude Sonnet chunked | Gemini's context is ~5x larger. |
-| **Content generation (articles, copy drafts)** | Gemini 2.5 Pro | Claude Sonnet | Free tier, good writing, large context for style consistency. |
+| **Triage / classification** | Claude Opus *(Haiku in cost-opt phase)* | Gemini 2.5 Flash | Best label decisions; Gemini free tier (500 RPD) keeps the fallback loop unconstrained. |
+| **Implementation (code edits)** | Claude Opus *(Sonnet in cost-opt phase)* | execute-fallback.yml ladder | Quality first; Opus + extended thinking handles every tier. |
+| **Planning (architecture, strategy, overview)** | Claude Opus | Gemini 2.5 Pro → gpt-5.5 | Plans are read by every executor downstream — quality compounds. |
+| **Trivial edits (typos, single-line)** | Claude Opus *(Haiku in cost-opt phase)* | Gemini 2.5 Flash-Lite / OpenAI gpt-5.5 | Quality first — no tier downgrade in this phase. |
+| **Large-context reads (full codebase audit, bulk MDX generation)** | Gemini 2.5 Pro (1M ctx) | Claude Opus chunked | Gemini's context is ~5× larger; free tier covers our volume. |
+| **Content generation (articles, copy drafts)** | Gemini 2.5 Pro | Claude Opus | Free tier, good writing, large context for style consistency. |
 | **Image / video / music** | Gemini (native multimodal) | — | Claude doesn't generate media. |
-| **Deep research (multi-source synthesis)** | Gemini (with Google Search grounding) | OpenAI with web | Google Search integration is the differentiator. |
-| **Code review on PR diff** | OpenAI gpt-4o-mini (Codex) | Gemini 2.5 Flash | Cheapest second opinion. |
-| **Cline-style agentic refactor** | (downgraded → Claude Sonnet) | — | Cline ships only as a VS Code extension; no headless CLI. |
+| **Deep research (multi-source synthesis)** | Gemini 2.5 Pro (with Google Search grounding) | OpenAI gpt-5.5 with web | Google Search integration is the differentiator; free tier. |
+| **Code review on PR diff** | OpenAI gpt-5.5 (Codex / ChatGPT Plus) | Gemini 2.5 Flash | Strongest second opinion on the ChatGPT Plus tier the operator already pays for. |
+| **Cline-style agentic refactor** | (substituted → Claude Opus) | — | Cline ships only as a VS Code extension; no headless CLI. |
 
 ## Architecture
 
@@ -30,7 +37,7 @@ issue labels →  │  routing.py  │  ← single source of truth (scripts/lib/
    workflow=      workflow=            workflow=
    "claude"       "gemini-research"    "codex-review"
    execute.yml    deep-research.yml    codex-review.yml
-   (Sonnet)       (Gemini 2.5 Pro)     (gpt-4o-mini)
+   (Opus 4.7)     (Gemini 2.5 Pro)     (gpt-5.5)
 ```
 
 `execute.yml` always runs first on the cron. It picks the top eligible
@@ -48,13 +55,13 @@ The non-Claude paths produce **research / review comments**, not code commits.
 The pipeline has three resilience layers so neither triage nor execute
 ever fails outright when Claude is unavailable.
 
-### 1. Triage ladder (every 30 min)
+### 1. Triage ladder (every 15 min)
 
 `triage.yml` runs three engines back-to-back, each best-effort:
 
 ```
-Claude Haiku  →  Gemini 2.5 Flash  →  OpenAI gpt-4o-mini
-   (preferred)         (free fallback)        (final fallback)
+Claude Opus   →  Gemini 2.5 Flash  →  OpenAI gpt-5.5
+ (preferred)        (free fallback)       (final fallback)
 ```
 
 Each stage early-exits if the queue is empty, so the cost is one cheap
@@ -62,21 +69,21 @@ Each stage early-exits if the queue is empty, so the cost is one cheap
 Operators can force a single engine via `workflow_dispatch.engine` =
 `claude` | `gemini` | `codex`. Default `auto` runs the full ladder.
 
-### 2. Post-triage planning stage (every 2 h, +on triage workflow_run)
+### 2. Post-triage planning stage (every hour, +on triage workflow_run)
 
 `plan-issues.yml` walks `status/planned + auto-routine` issues that lack
 a `plan/detailed` label and asks an AI to write a structured
 implementation plan as a comment. Plan ladder:
 
 ```
-Claude Sonnet  →  Gemini 2.5 Pro  →  OpenAI gpt-4o
+Claude Opus  →  Gemini 2.5 Pro  →  OpenAI gpt-5.5
 ```
 
 The plan format is contractual (files to modify + step-by-step + DOD), so
 **any executor — Claude, Codex, or Gemini — can implement it without
 re-interpreting the issue**. This is what makes Claude-down execution safe.
 
-### 3. Execute ladder (every 2 h)
+### 3. Execute ladder (every hour)
 
 `execute.yml` runs Claude with `continue-on-error: true`. If the Claude
 step fails for any reason (rate limit, OAuth dead, action error) AND the
@@ -97,9 +104,9 @@ ready PR.
 
 | Workflow | Cadence |
 |----------|---------|
-| `triage.yml` | every 30 min (was hourly) |
-| `plan-issues.yml` | every 2 h + after every triage |
-| `execute.yml` | every 2 h (was 4 h) |
+| `triage.yml` | every 15 min |
+| `plan-issues.yml` | every hour (offset 30 min) + after every triage |
+| `execute.yml` | every hour |
 | `deep-research.yml` | dispatched by execute.yml |
 | `codex-review.yml` | dispatched by execute.yml |
 | `execute-fallback.yml` | dispatched by execute.yml on Claude failure |
@@ -128,15 +135,15 @@ Triage attaches one of these to each issue (in addition to the complexity-tier
 
 | Label | Workflow | When to use |
 |-------|----------|-------------|
-| (none) | execute.yml → Claude | Default. Code edits. |
-| `model/gemini-pro` | deep-research.yml | Full-codebase audits, bulk MDX, deep research with citations. |
-| `model/codex` | codex-review.yml | Diff/PR review, second-opinion code analysis. |
-| `model/cline` | execute.yml → Sonnet (downgraded) | Operator hint that the task is "agentic-large-refactor" flavored. Logged as a downgrade. |
+| (none) | execute.yml → Claude Opus | Default in the quality-first phase. Code edits. |
+| `model/gemini-pro` | deep-research.yml | Full-codebase audits, bulk MDX, deep research with citations. Free tier. |
+| `model/codex` | codex-review.yml | Diff/PR review, second-opinion code analysis on `gpt-5.5` (ChatGPT Plus). |
+| `model/cline` | execute.yml → Opus (substituted) | Operator hint that the task is "agentic-large-refactor" flavored. Logged as a substitution. |
 
-Triage rules and rationale live in `scripts/triage-prompt.md` (Claude Haiku
-path) and the rubric inside `scripts/gemini-triage.py` (Gemini Flash fallback).
-Both feed the same `decide()` function, so a single change to the rubric
-propagates everywhere.
+Triage rules and rationale live in `scripts/triage-prompt.md` (Claude Opus
+path in this phase) and the rubric inside `scripts/gemini-triage.py` (Gemini
+Flash fallback). Both feed the same `decide()` function, so a single change
+to the rubric propagates everywhere.
 
 ## "Claude unavailable" fallback logic
 
@@ -145,9 +152,9 @@ Claude step, followed by a Gemini/OpenAI fallback step that detects unfinished
 work and completes it.
 
 Live examples:
-- **triage.yml** — Claude Haiku → Gemini Flash → Codex gpt-4o-mini ladder; engine selectable via `workflow_dispatch.engine`.
-- **plan-issues.yml** — Claude Sonnet → Gemini Pro → OpenAI gpt-4o ladder for the post-triage planning stage.
-- **execute.yml** — Claude Sonnet primary; on failure, dispatches `execute-fallback.yml` for any issue with `plan/detailed`. Issues without a plan get re-queued for the planner.
+- **triage.yml** — Claude Opus → Gemini Flash → Codex gpt-5.5 ladder; engine selectable via `workflow_dispatch.engine`.
+- **plan-issues.yml** — Claude Opus → Gemini Pro → OpenAI gpt-5.5 ladder for the post-triage planning stage.
+- **execute.yml** — Claude Opus primary (quality-first); on failure, dispatches `execute-fallback.yml` for any issue with `plan/detailed`. Issues without a plan get re-queued for the planner.
 - **execute-fallback.yml** — Codex CLI → Gemini CLI ladder. Refuses to run without a `plan/detailed` comment (so the executor implements the plan, not the issue).
 - **deep-research.yml** — Gemini Pro only. If `GEMINI_API_KEY` is missing the workflow errors loudly so the operator notices.
 - **codex-review.yml** — OpenAI Codex only. If `OPENAI_API_KEY` is missing OR returns 429, the workflow removes `model/codex` from the issue and routes it back to the Claude path on the next execute run.
@@ -212,31 +219,31 @@ to a particular model.
 ## Model IDs (as of 2026-04)
 
 ```
-claude-opus-4-7              # strategic work, planning pass
-claude-sonnet-4-6            # default code implementation
-claude-haiku-4-5-20251001    # triage, trivial edits
+claude-opus-4-7              # default for triage / plan / implement (quality-first phase)
+claude-sonnet-4-6            # reserved for the cost-optimisation phase (medium tier)
+claude-haiku-4-5-20251001    # reserved for the cost-optimisation phase (trivial / easy)
 gemini-2.5-pro               # 1M ctx, deep reasoning (free tier: 100 RPD)
 gemini-2.5-flash             # fast, good enough for classification (free tier: 500 RPD)
 gemini-2.5-flash-lite        # cheapest (free tier: 1000 RPD)
-gpt-4o-mini                  # Codex / cheap OpenAI fallback, code review
-gpt-4o                       # strong OpenAI when needed
+gpt-5.5                      # ChatGPT Plus tier — Codex review, plan fallback, triage fallback
+gpt-4o-mini                  # legacy reference; superseded by gpt-5.5 on this repo
 ```
 
 ## Note on Cline
 
 Cline (formerly Claude Dev) is a VS Code extension for agentic coding. It does
 not ship a headless CLI suitable for GitHub Actions, so any task tagged
-`model/cline` is downgraded to Claude Sonnet by `scripts/lib/routing.py`. The
-downgrade is visible in the audit trail. If/when an upstream `cline` CLI lands,
-swap the downgrade for a real dispatch path in `routing.py` and add a
-corresponding `cline-execute.yml`.
+`model/cline` is substituted to Claude Opus by `scripts/lib/routing.py` (the
+quality-first default). The substitution is visible in the audit trail. If/when
+an upstream `cline` CLI lands, swap the substitution for a real dispatch path
+in `routing.py` and add a corresponding `cline-execute.yml`.
 
 ## Review cadence
 
 Check this table every ~2 months. New free/cheap models emerge regularly. Questions to ask:
 - Is there a new Gemini/OpenAI tier with better free limits?
 - Has a local/open model (Llama, Qwen) become good enough for triage?
-- Is there a new code-review-specific model that's cheaper than gpt-4o-mini?
+- Is there a stronger / cheaper OpenAI model than gpt-5.5 for code review?
 - Has Cline shipped a headless CLI yet?
 
 Suggest candidates in a GitHub issue tagged `type/claude-config`.

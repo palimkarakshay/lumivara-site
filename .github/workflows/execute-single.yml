@@ -69,15 +69,18 @@ jobs:
               "model/sonnet": "claude-sonnet-4-6",
               "model/opus":   "claude-opus-4-7",
           }
+          # Quality-first phase: every complexity tier defaults to Opus. The
+          # explicit `model/haiku` and `model/sonnet` labels still work via
+          # MODEL_FOR above when an operator opts in.
           MODEL_FROM_COMPLEXITY = {
-              "complexity/trivial": "claude-haiku-4-5-20251001",
-              "complexity/easy":    "claude-haiku-4-5-20251001",
-              "complexity/medium":  "claude-sonnet-4-6",
+              "complexity/trivial": "claude-opus-4-7",
+              "complexity/easy":    "claude-opus-4-7",
+              "complexity/medium":  "claude-opus-4-7",
               "complexity/complex": "claude-opus-4-7",
           }
           model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), None)
           if not model:
-              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-sonnet-4-6")
+              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-opus-4-7")
           override = os.environ.get("INPUT_MODEL", "").strip()
           if override:
               model = override
@@ -116,5 +119,5 @@ jobs:
             The `gh` CLI is authenticated. Node + dependencies are installed.
             When done, print the summary and exit.
           claude_args: |
-            --max-turns 120
+            --max-turns 500
             --model ${{ steps.pick.outputs.model }}

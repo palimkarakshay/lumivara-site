@@ -72,7 +72,8 @@ jobs:
               "model/sonnet": "claude-sonnet-4-6",
               "model/opus":   "claude-opus-4-7",
           }
-          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), "claude-sonnet-4-6")
+          # Quality-first default: Opus when no explicit model/* label set.
+          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), "claude-opus-4-7")
           override = os.environ.get("INPUT_MODEL", "").strip()
           if override:
               model = override
@@ -98,10 +99,11 @@ jobs:
               "model/sonnet": "claude-sonnet-4-6",
               "model/opus":   "claude-opus-4-7",
           }
+          # Quality-first phase: every complexity tier defaults to Opus.
           MODEL_FROM_COMPLEXITY = {
-              "complexity/trivial": "claude-haiku-4-5-20251001",
-              "complexity/easy":    "claude-haiku-4-5-20251001",
-              "complexity/medium":  "claude-sonnet-4-6",
+              "complexity/trivial": "claude-opus-4-7",
+              "complexity/easy":    "claude-opus-4-7",
+              "complexity/medium":  "claude-opus-4-7",
               "complexity/complex": "claude-opus-4-7",
           }
           eligible = []
@@ -187,11 +189,13 @@ jobs:
             Save the plan to /tmp/plan.md before posting. Do NOT touch any source files.
             Do NOT open a branch. Do NOT open a PR.
           claude_args: |
-            --max-turns 30
+            --max-turns 150
             --model claude-opus-4-7
 
-      # ── Phase 2: Sonnet implements ────────────────────────────────────────
-      - name: "Phase 2 — Sonnet: implement from plan"
+      # ── Phase 2: Opus implements ──────────────────────────────────────────
+      # Quality-first phase: implementation runs on Opus too. Cost-optimisation
+      # phase will revisit and likely move this back to Sonnet.
+      - name: "Phase 2 — Opus: implement from plan"
         if: steps.pick.outputs.issue != '0'
         uses: anthropics/claude-code-action@v1
         with:
@@ -222,5 +226,5 @@ jobs:
             Implement the issue. The gh CLI is authenticated. Node + dependencies installed.
             When done, print the summary and exit.
           claude_args: |
-            --max-turns 120
-            --model claude-sonnet-4-6
+            --max-turns 500
+            --model claude-opus-4-7

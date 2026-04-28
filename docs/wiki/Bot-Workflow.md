@@ -15,8 +15,8 @@ Create a GitHub Issue describing what you want. Use the **Site change request** 
 
 The issue gets label `status/needs-triage`.
 
-### 2. Triage (daily, 06:00 UTC)
-The triage bot (Claude Haiku via GitHub Actions) reads new issues and applies:
+### 2. Triage (every 15 min)
+The triage bot (Claude Opus via GitHub Actions, with Gemini Flash + gpt-5.5 as fallbacks) reads new issues and applies:
 - `priority/P0`–`P3` — urgency
 - `complexity/XS`–`XL` — estimated effort  
 - `area/copy`, `area/design`, etc. — affected area
@@ -24,8 +24,8 @@ The triage bot (Claude Haiku via GitHub Actions) reads new issues and applies:
 - `human-only` — requires a human (ambiguous, sensitive, or flagged)
 - `status/needs-clarification` — bot has questions; check the issue comment
 
-### 3. Execute (every 8 h at 00:00, 08:00, 16:00 UTC)
-The execute bot (Claude Sonnet via GitHub Actions):
+### 3. Execute (every hour)
+The execute bot (Claude Opus via GitHub Actions in the quality-first phase):
 1. Picks the top-ranked `auto-routine` issue
 2. Creates branch `auto/issue-<n>`
 3. Implements the change
@@ -64,13 +64,13 @@ Merging to `main` triggers Vercel's production build (~60 s). The live site upda
 | `priority/P3` | Backlog |
 | `needs-vercel-mirror` | Operator must update Vercel dashboard settings |
 
-## Session budget
+## Session charter (quality first)
 
-The bot shares the operator's Claude Pro 5-hour rolling quota. To keep interactive Claude sessions fast:
-- The triage bot processes 5–10 issues per run
-- The execute bot handles ONE issue per run
-- At ~50% of its turn budget, the bot finishes the current issue and stops
-- At ~80%, the bot hard-exits and labels the issue `status/needs-continuation`
+The bot shares the operator's Claude **Max 20x** 5-hour rolling quota. The current phase optimises for best-possible outcome, not cost:
+- The triage bot processes up to ~25 issues per run on Opus
+- The execute bot handles up to 3 issues per cron run, sequentially, on Opus
+- At ~80% of its turn budget, the bot finishes the current issue and stops
+- At ~95%, the bot hard-exits and labels the issue `status/needs-continuation`
 
 ## Bypassing the bot
 

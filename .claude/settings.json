@@ -10,8 +10,8 @@
     ]
   },
   "thinking": {
-    "budget_tokens": 10000
+    "budget_tokens": 32000
   },
-  "compactContextThreshold": 0.5,
-  "subagentModel": "claude-haiku-4-5-20251001"
+  "compactContextThreshold": 0.9,
+  "subagentModel": "claude-opus-4-7"
 }

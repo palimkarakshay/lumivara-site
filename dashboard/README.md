@@ -51,10 +51,10 @@ upload the Pages artifact and deploy.
 
 Settings → Secrets and variables → Actions → Variables tab.
 
-| Name                      | Initial value | Notes                          |
-| ------------------------- | ------------- | ------------------------------ |
-| `DEFAULT_AI_MODEL`        | `sonnet`      | Read by `execute.yml`          |
-| `NEXT_RUN_MODEL_OVERRIDE` | *(empty)*     | One-shot, no auto-clear (yet)  |
+| Name                      | Initial value | Notes                                                  |
+| ------------------------- | ------------- | ------------------------------------------------------ |
+| `DEFAULT_AI_MODEL`        | `opus`        | Read by `execute.yml` (quality-first phase default).   |
+| `NEXT_RUN_MODEL_OVERRIDE` | *(empty)*     | One-shot, no auto-clear (yet).                         |
 
 Optional: `DASHBOARD_BASE_PATH` (e.g. `/`) if you ever move the dashboard
 to a custom domain.

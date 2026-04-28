@@ -4,6 +4,7 @@ import { LogOut, RefreshCcw, Activity } from "lucide-react";
 import { AuthGate } from "./components/AuthGate";
 import { ModelSwitcher } from "./components/ModelSwitcher";
 import { WorkflowList } from "./components/WorkflowList";
+import { PendingIssues } from "./components/PendingIssues";
 import { WorkflowCard } from "./components/WorkflowCard";
 import { LogViewer } from "./components/LogViewer";
 import { ToastStack } from "./components/Toast";
@@ -97,6 +98,8 @@ function Authed({ token, onSignOut }: { token: string; onSignOut: () => void }) 
         onSuccess={toasts.success}
         onError={toasts.error}
       />
+
+      <PendingIssues octo={octo} />
 
       <section className="space-y-3">
         <header className="flex items-center justify-between">

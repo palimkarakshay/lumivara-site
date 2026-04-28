@@ -1,8 +1,10 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+import { auth } from "@/auth";
 import { ClientTabs } from "@/components/admin/ClientTabs";
 import { clientNav } from "@/components/admin/nav-config";
-import { findClient } from "@/lib/admin/clients";
+import { isAdminEmail } from "@/lib/admin-allowlist";
+import { canAccessClient, findClient } from "@/lib/admin/clients";
 import { TIERS, quotaLabel } from "@/lib/admin/tiers";
 
 export default async function ClientAdminLayout({
@@ -15,6 +17,16 @@ export default async function ClientAdminLayout({
   const { slug } = await params;
   const client = findClient(slug);
   if (!client) notFound();
+
+  const session = await auth();
+  const email = session?.user?.email ?? null;
+  if (!isAdminEmail(email)) {
+    redirect(`/admin/sign-in?from=/admin/client/${slug}`);
+  }
+  if (!canAccessClient(email, slug)) {
+    // Don't leak whether the slug exists — same idea as /admin/no-access.
+    redirect("/admin/no-access");
+  }
 
   const tier = TIERS[client.tier];
   const nav = clientNav(slug);

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ArrowRight, Check, RotateCcw } from "lucide-react";
+import { diagnosticQuestions, scoreDiagnostic } from "@/content/diagnostic";
 import {
   diagnosticQuestions,
   scoreDiagnostic,
@@ -11,15 +12,14 @@ import {
 } from "@/content/diagnostic";
 import { services, getServiceBySlug } from "@/content/services";
 import { cn } from "@/lib/utils";
+import { useDiagnosticStore } from "@/store/diagnostic";
 
 type DiagnosticQuizProps = {
   className?: string;
 };
 
 export function DiagnosticQuiz({ className }: DiagnosticQuizProps) {
-  const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<DiagnosticAnswers>({});
-  const [completed, setCompleted] = useState(false);
+  const { step, answers, completed, pick, back, reset } = useDiagnosticStore();
 
   const total = diagnosticQuestions.length;
   const current = diagnosticQuestions[step];
@@ -29,22 +29,6 @@ export function DiagnosticQuiz({ className }: DiagnosticQuizProps) {
     () => (completed ? scoreDiagnostic(answers) : null),
     [completed, answers]
   );
-
-  function pick(value: string) {
-    const next = { ...answers, [current.id]: value };
-    setAnswers(next);
-    if (step + 1 >= total) {
-      setCompleted(true);
-    } else {
-      setStep(step + 1);
-    }
-  }
-
-  function reset() {
-    setStep(0);
-    setAnswers({});
-    setCompleted(false);
-  }
 
   if (completed && result) {
     const primary = getServiceBySlug(result.primarySlug);
@@ -202,7 +186,7 @@ export function DiagnosticQuiz({ className }: DiagnosticQuizProps) {
       {step > 0 && (
         <button
           type="button"
-          onClick={() => setStep(step - 1)}
+          onClick={back}
           className="mt-5 text-label text-muted-strong transition-colors hover:text-ink"
         >
           ← Back

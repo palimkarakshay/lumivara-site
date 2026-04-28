@@ -1,0 +1,117 @@
+{
+  "name": "Lumivara — intake-email",
+  "_notes": [
+    "Reference template for Phase 2 of the admin portal.",
+    "Import into n8n, then: (1) set IMAP credential on the 'Watch requests@ mailbox' node",
+    "(account 'requests@lumivara.ca' or whichever address you forwarded to the IMAP host),",
+    "(2) set the Anthropic credential on 'Structure with Claude',",
+    "(3) set the GitHub credential on 'Create GitHub Issue',",
+    "(4) set the SMTP credential on 'SMTP auto-reply'.",
+    "Allow-list senders by editing the 'Allow-list sender' filter — defaults to lumivara.ca + the admin allowlist.",
+    "The original email body is stored verbatim in the issue so the AI cannot silently rewrite the source of truth."
+  ],
+  "nodes": [
+    {
+      "id": "imap-trigger",
+      "name": "Watch requests@ mailbox",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [240, 320],
+      "parameters": {
+        "mailbox": "INBOX",
+        "postProcessAction": "read",
+        "format": "resolved",
+        "options": { "allowUnauthorizedCerts": false }
+      }
+    },
+    {
+      "id": "allow-list",
+      "name": "Allow-list sender",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 320],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "combinator": "or",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.from.value[0].address }}",
+              "rightValue": "@lumivara.ca",
+              "operator": { "type": "string", "operation": "endsWith" }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "structure-claude",
+      "name": "Structure with Claude",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [700, 320],
+      "parameters": {
+        "model": "claude-opus-4-7",
+        "messages": {
+          "values": [
+            {
+              "role": "user",
+              "content": "Restructure this client email as a GitHub issue.\n\nReturn JSON with keys: title (<=80 chars), body_md (Markdown with sections: 'What the client said' (verbatim email), 'Acceptance criteria' (checklist)).\n\nFrom: {{ $json.from.value[0].address }}\nSubject: {{ $json.subject }}\nBody:\n{{ $json.text }}"
+            }
+          ]
+        },
+        "options": { "responseFormat": "json_object", "maxTokens": 1024 }
+      }
+    },
+    {
+      "id": "create-issue",
+      "name": "Create GitHub Issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [940, 320],
+      "parameters": {
+        "resource": "issue",
+        "operation": "create",
+        "owner": "palimkarakshay",
+        "repository": "lumivara-site",
+        "title": "={{ $json.title }}",
+        "body": "={{ $json.body_md }}\n\n<!-- lumivara:source=email -->\n<!-- lumivara:reply-to={{ $node[\"Watch requests@ mailbox\"].json.from.value[0].address }} -->\n\n---\n**Original email (verbatim):**\n\n> {{ ($node[\"Watch requests@ mailbox\"].json.text || '').replace(/\\n/g, '\\n> ') }}",
+        "labels": ["source/email", "client/lumivara", "status/triage"]
+      }
+    },
+    {
+      "id": "smtp-reply",
+      "name": "SMTP auto-reply",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1180, 320],
+      "parameters": {
+        "fromEmail": "Lumivara <hello@lumivara.ca>",
+        "toEmail": "={{ $node[\"Watch requests@ mailbox\"].json.from.value[0].address }}",
+        "subject": "=Re: {{ $node[\"Watch requests@ mailbox\"].json.subject }}",
+        "html": "<p>Thanks — we&rsquo;ve logged your request. You can track progress in your dashboard:</p><p><a href=\"https://lumivara.ca/admin\">Open the dashboard →</a></p><p style=\"color:#666;font-size:12px\">Tracking: {{ $json.html_url }}</p>",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Watch requests@ mailbox": {
+      "main": [[{ "node": "Allow-list sender", "type": "main", "index": 0 }]]
+    },
+    "Allow-list sender": {
+      "main": [
+        [{ "node": "Structure with Claude", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Structure with Claude": {
+      "main": [[{ "node": "Create GitHub Issue", "type": "main", "index": 0 }]]
+    },
+    "Create GitHub Issue": {
+      "main": [[{ "node": "SMTP auto-reply", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "version": 1
+}

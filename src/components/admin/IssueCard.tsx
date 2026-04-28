@@ -20,13 +20,28 @@ export function IssueCard({ issue, audience, href }: Props) {
   const status = statusFromLabels(issue.labels);
   const clientSlug = clientSlugFromLabels(issue.labels);
   const showInternal = audience === "operator";
-  const target = href ?? issue.htmlUrl;
+  // Operator cards default-link to the in-app detail page; clients always
+  // get a slug-scoped detail. External href wins when explicitly passed.
+  const target =
+    href ??
+    (showInternal
+      ? `/admin/issues/${issue.number}`
+      : clientSlug
+        ? `/admin/client/${clientSlug}/request/${issue.number}`
+        : issue.htmlUrl);
   const isExternal = target.startsWith("http");
+
+  const needsInput = issue.labels.some(
+    (l) => l === "needs-client-input" || l === "status/needs-clarification",
+  );
 
   const tags = issue.labels.filter((l) => {
     if (l.startsWith("client/")) return false;
     if (!showInternal && l.startsWith("status/")) return false;
-    if (!showInternal && (l === "auto-routine" || l === "manual-only" || l === "human-only")) {
+    if (
+      !showInternal &&
+      (l === "auto-routine" || l === "manual-only" || l === "human-only")
+    ) {
       return false;
     }
     if (!showInternal && l.startsWith("model/")) return false;
@@ -34,7 +49,11 @@ export function IssueCard({ issue, audience, href }: Props) {
   });
 
   const Inner = (
-    <Card as="article" className="flex flex-col gap-3">
+    <Card
+      as="article"
+      emphasis={needsInput ? "warning" : "default"}
+      className="flex flex-col gap-3"
+    >
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           {showInternal && clientSlug ? (
@@ -43,6 +62,13 @@ export function IssueCard({ issue, audience, href }: Props) {
             </p>
           ) : null}
           <h3 className="font-display text-lg text-ink leading-snug">
+            {needsInput ? (
+              <span
+                aria-label="Action needed"
+                title="We need your input"
+                className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-[color:var(--error)] align-middle"
+              />
+            ) : null}
             {showInternal ? `#${issue.number} ` : ""}
             {issue.title}
           </h3>
@@ -74,13 +100,21 @@ export function IssueCard({ issue, audience, href }: Props) {
 
   if (isExternal) {
     return (
-      <a href={target} target="_blank" rel="noreferrer" className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg">
+      <a
+        href={target}
+        target="_blank"
+        rel="noreferrer"
+        className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
+      >
         {Inner}
       </a>
     );
   }
   return (
-    <Link href={target} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg">
+    <Link
+      href={target}
+      className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
+    >
       {Inner}
     </Link>
   );

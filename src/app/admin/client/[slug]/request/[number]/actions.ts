@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { isAdminEmail } from "@/lib/admin-allowlist";
 import { canAccessClient, findClient } from "@/lib/admin/clients";
+import { recordDeployAttempt } from "@/lib/admin/deploy-log";
+import { assertSafePromotion } from "@/lib/admin/production-guard";
 import { TIERS } from "@/lib/admin/tiers";
 import {
   clearDeployReservation,
@@ -104,6 +106,33 @@ export async function confirmDeploy(
     return { ok: false, error: "Invalid PR head SHA." };
   }
 
+  const guard = await assertSafePromotion(prHeadSha);
+  if (!guard.ok) {
+    await recordDeployAttempt({
+      clientSlug: slug,
+      candidateSha: prHeadSha.toLowerCase(),
+      issueNumber,
+      actorEmail: email,
+      outcome: "rejected",
+      reason: guard.reason,
+      message: guard.message,
+    });
+    return { ok: false, error: guard.message };
+  }
+  if (guard.noop) {
+    await recordDeployAttempt({
+      clientSlug: slug,
+      candidateSha: prHeadSha.toLowerCase(),
+      issueNumber,
+      actorEmail: email,
+      outcome: "noop",
+      reason: "already_live",
+      message: "Candidate SHA is already serving production.",
+    });
+    revalidatePath(`/admin/client/${slug}/request/${issueNumber}`);
+    return { ok: true };
+  }
+
   const key = deployIdempotencyKey(slug, prHeadSha);
   const reserved = reserveDeploy(key);
   if (!reserved) {
@@ -118,10 +147,28 @@ export async function confirmDeploy(
   });
 
   if (!result.ok) {
-    // Free the reservation so a corrected retry isn't blocked for 60 s.
     clearDeployReservation(key);
+    await recordDeployAttempt({
+      clientSlug: slug,
+      candidateSha: prHeadSha.toLowerCase(),
+      issueNumber,
+      actorEmail: email,
+      outcome: "dispatch_failed",
+      reason: "vercel_lookup_failed",
+      message: result.error,
+    });
     return result;
   }
+
+  await recordDeployAttempt({
+    clientSlug: slug,
+    candidateSha: prHeadSha.toLowerCase(),
+    issueNumber,
+    actorEmail: email,
+    outcome: "dispatched",
+    reason: null,
+    message: null,
+  });
 
   revalidatePath(`/admin/client/${slug}`);
   revalidatePath(`/admin/client/${slug}/preview`);

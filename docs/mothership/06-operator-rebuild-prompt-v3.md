@@ -14,10 +14,12 @@ v2 had two prompts. v3 has four — splitting "operator pipeline overlay" into t
 
 | Prompt | Run on | Approx. budget | Output |
 |---|---|---|---|
-| **Prompt A** — Client site scaffold | Client repo, `main` | 1.5–3 h Opus | `client-template/` rendered + populated content + green Vercel preview |
-| **Prompt B1** — Operator workflows overlay | Client repo, `operator/main` | 30–45 min | All workflow files + scripts on `operator/main`, branch protected |
+| **Prompt A** — Client site scaffold | Site repo (`<slug>-site`), `main` | 1.5–3 h Opus | `client-template/` rendered + populated content + green Vercel preview |
+| **Prompt B1** — Pipeline repo provisioning | Pipeline repo (`<slug>-pipeline`), `main` | 30–45 min | All workflow files + scripts on the pipeline repo's `main`, branch protected, GitHub App installed on the site repo |
 | **Prompt B2** — n8n + Vercel + Twilio integration | Operator's machine (mothership) | 30–60 min | n8n workflows imported & activated, Vercel envs set, Twilio number wired |
-| **Prompt C** — Smoke test sweep | Client repo (anywhere) | 15–30 min | All six smoke tests in `docs/operator/SMOKE_TESTS.md` green |
+| **Prompt C** — Smoke test sweep | Site + pipeline repos (anywhere with `gh`) | 15–30 min | All six smoke tests in `docs/operator/SMOKE_TESTS.md` green |
+
+> **Pattern C is canonical.** The site repo and pipeline repo are separate; workflows live in the pipeline repo only. See `02b-pattern-c-architecture.md` for the canonical architecture and §11 below for the one-paragraph "why two repos."
 
 ---
 
@@ -105,13 +107,18 @@ Definition of done:
 
 ---
 
-## 3. Prompt B1 — Operator workflows overlay
+## 3. Prompt B1 — Pipeline repo provisioning
 
-**Where to run:** same client repo, but on a branch named `operator/main`. The agent must *not* merge this into `main`.
+**Where to run:** the freshly-created pipeline repo (`{{BRAND_SLUG}}/{{CLIENT_SLUG}}-pipeline`), on `main`. This is a different GitHub repository from the site repo. The agent must not edit the site repo from this run except to confirm the cross-repo smoke test passes.
+
+**Pre-step (operator manual):** confirm the GitHub App `{{BRAND_SLUG}}-pipeline-bot` is installed on `{{BRAND_SLUG}}/{{CLIENT_SLUG}}-site` before this prompt fires. Without the install, the workflows cannot mint installation tokens and the cron silently no-ops.
 
 ```
-You are setting up the operator-only autopilot overlay on {{CLIENT_NAME}}'s
-repo. You are running on branch operator/main. Never PR or merge into main.
+You are bootstrapping the operator-only pipeline repo for {{CLIENT_NAME}}.
+You are running in {{BRAND_SLUG}}/{{CLIENT_SLUG}}-pipeline on branch main.
+You never PR or push to {{BRAND_SLUG}}/{{CLIENT_SLUG}}-site from this repo's
+working tree — the workflows you commit here will reach the site repo at
+runtime via a GitHub App installation token, not via this filesystem.
 
 Copy these files from mothership/workflows-template/ into .github/workflows/:
   triage.yml, plan-issues.yml, execute.yml, execute-complex.yml,
@@ -119,33 +126,46 @@ Copy these files from mothership/workflows-template/ into .github/workflows/:
   deep-research.yml, auto-merge.yml, project-sync.yml, setup-cli.yml,
   ai-smoke-test.yml.
 
-Substitute every {{...}} placeholder using mothership/docs/clients/{{CLIENT_SLUG}}/cadence.json
-and mothership/docs/clients/{{CLIENT_SLUG}}/intake.md.
+Substitute every {{...}} placeholder using
+mothership/docs/clients/{{CLIENT_SLUG}}/cadence.json
+and mothership/docs/clients/{{CLIENT_SLUG}}/intake.md. Set the pipeline
+repo's vars: SITE_REPO_OWNER, SITE_REPO_NAME, CLIENT_SLUG, CLIENT_TIER,
+DEFAULT_AI_MODEL, CONCURRENCY_CAP, plus per-tier cron expressions
+from 04-tier-based-agent-cadence.md §1.
 
 Copy these files from mothership/scripts/ into scripts/:
   triage-prompt.md, execute-prompt.md, gemini-triage.py, codex-triage.py,
   plan-issue.py, test-routing.py, lib/routing.py.
 
-Adjust the cron expressions per {{TIER}} using the matrix in
-04-tier-based-agent-cadence.md §1.
+Every workflow that talks to the site repo must mint an installation
+token via actions/create-github-app-token@v1, scoped to
+${{ vars.SITE_REPO_OWNER }}/${{ vars.SITE_REPO_NAME }}. The pattern is
+in 02b §3.
 
 Add scripts/bootstrap-kanban.sh — but DO NOT execute it (the operator
-will run it once locally with their own gh-cli credentials).
+will run it once locally against the SITE repo with their own gh-cli
+credentials, or the pipeline triggers it once via workflow_dispatch
+using an App token).
 
-Commit each logical group. Push to operator/main only. Verify with
-`gh api repos/.../branches/operator/main` that the branch exists.
+Commit each logical group. Push to main of the pipeline repo. Verify:
+  gh api repos/{{BRAND_SLUG}}/{{CLIENT_SLUG}}-pipeline/branches/main
 
 DOD:
-- All workflow files present on operator/main; none on main.
-- `gh workflow list --branch operator/main` shows every workflow.
-- `gh run list --branch operator/main --limit 1` shows nothing yet (no
-  push has triggered them; the cron will fire on schedule).
+- All workflow files present on the pipeline repo's main.
+- `gh workflow list --repo {{BRAND_SLUG}}/{{CLIENT_SLUG}}-pipeline`
+  shows every workflow.
+- `gh run list --repo {{BRAND_SLUG}}/{{CLIENT_SLUG}}-pipeline --limit 1`
+  shows the bootstrap commit but no scheduled run yet (the cron will
+  fire on its next interval).
+- The site repo's `.github/workflows/` directory does not exist
+  (or is empty) — verify with `gh api repos/{{BRAND_SLUG}}/{{CLIENT_SLUG}}-site/contents/.github/workflows`
+  returning 404.
 ```
 
 **Operator manual after Prompt B1:**
-1. In GitHub UI: Settings → Branches → Add protection for `operator/main` per `03-secure-architecture.md §2.2`.
-2. Settings → Secrets → confirm the org-level secrets are visible to this repo (run `gh secret list --org {{BRAND_SLUG}}`).
-3. Run `bash scripts/bootstrap-kanban.sh` locally (creates labels + project board).
+1. In GitHub UI: Settings → Branches on the **pipeline** repo → Add protection per `03-secure-architecture.md §2.5` (pipeline repo column).
+2. Settings → Secrets → confirm the org-level secrets (`APP_ID`, `APP_PRIVATE_KEY`, `CLAUDE_CODE_OAUTH_TOKEN`, `GEMINI_API_KEY`, `OPENAI_API_KEY`) are visible to the pipeline repo (run `gh secret list --org {{BRAND_SLUG}}`).
+3. Trigger `bootstrap-kanban` via workflow_dispatch on the pipeline repo (or run locally with the operator's `gh` against the site repo).
 
 ---
 
@@ -310,19 +330,24 @@ npx forge teardown --client-slug {{CLIENT_SLUG}} --mode handover
 
 Or (pre-CLI) follow the steps manually:
 
-1. Disable workflows on `operator/main` by setting `vars.AUTOPILOT_DISABLED=true`.
+1. Disable cron on the pipeline repo by setting `vars.AUTOPILOT_DISABLED=true`. Every workflow's first step exits early when this is `true`.
 2. Notify client by email (template: `mothership/templates/handover-email.md`).
-3. After 14-day grace period, force-push a clean `main` over `operator/main` (deletes overlay).
-4. Drop branch protections on `operator/main` (it no longer exists).
-5. Remove `{{BRAND_SLUG}}-bot` collaborator.
-6. Remove repo from `{{BRAND_SLUG}}` org.
-7. Transfer repo to client's GitHub account via Settings → Transfer ownership.
-8. Cancel the Vercel project ownership; reassign to client's Vercel team.
-9. Delete per-client n8n workflows (or rename to `archived-{{CLIENT_SLUG}}-*` if the client may return).
-10. Release the Twilio number (return to pool) or hand it to the client (they pay $1.15/mo direct).
-11. Append to `engagement-log.md`: end date, mode, residual notes.
-12. Move `docs/clients/{{CLIENT_SLUG}}/` to `docs/clients/_archived/{{CLIENT_SLUG}}/`.
+3. After the 14-day grace period, uninstall the GitHub App from the site repo (Settings → Integrations → GitHub Apps → Uninstall on the site repo only).
+4. Archive the pipeline repo (Settings → Archive this repository) or delete it after exporting Actions logs to the operator's vault.
+5. Drop branch protections on the site repo's `main`.
+6. Transfer the site repo to the client's GitHub account via Settings → Transfer ownership.
+7. Cancel the Vercel project ownership; reassign to client's Vercel team.
+8. Delete per-client n8n workflows (or rename to `archived-{{CLIENT_SLUG}}-*` if the client may return).
+9. Release the Twilio number (return to pool) or hand it to the client (they pay $1.15/mo direct).
+10. Append to `engagement-log.md`: end date, mode, residual notes.
+11. Move `docs/clients/{{CLIENT_SLUG}}/` to `docs/clients/_archived/{{CLIENT_SLUG}}/`.
 
 Done in 30 minutes if everything is documented; an unpleasant afternoon if it isn't. That's why §8's checklist matters.
+
+---
+
+## 11. Why two repos (Pattern C in one paragraph)
+
+The site repo is what the client clones, owns at handover, and shows the world. The pipeline repo is where the cron fires from, where the bot's workflows live, and where the operator's prompts and scripts sit. They are separate GitHub repositories — the client has Read access only on the site repo and never sees the pipeline repo. The GitHub App bridges the two: per workflow run, the pipeline mints a short-lived installation token scoped to the matched site repo, uses it to push branches and open PRs, and discards it. The "client cannot see the autopilot" claim is now an architectural fact, not a marketing line. Full canonical reference: `02b-pattern-c-architecture.md`.
 
 *Last updated: 2026-04-28.*

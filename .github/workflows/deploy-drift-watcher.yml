@@ -1,0 +1,295 @@
+name: Deploy drift watcher
+
+# Detects "production is behind main" and files a structured issue so the
+# existing Triage + Execute mothership loop picks it up like any other
+# work. Closes failure mode 2 from docs/deploy/production-integrity.md
+# ('skipped promotes' — operator merges a PR but never opens the admin).
+#
+# Read-only: this workflow never *triggers* a deploy on its own. The
+# integrity contract requires a human (or n8n on a human's behalf) to fire
+# the Vercel Deploy Hook. We only surface the drift.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      open_issue:
+        description: "Open / update the drift issue even if drift is small (default: only when ≥1 deployable commit)"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: deploy-drift-watcher
+  cancel-in-progress: true
+
+jobs:
+  detect-and-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect drift
+        id: detect
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+        run: |
+          python3 <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+          import sys
+          import urllib.parse
+          import urllib.request
+
+          token = os.environ.get("VERCEL_API_TOKEN", "").strip()
+          if not token:
+              print("VERCEL_API_TOKEN not set — cannot detect drift. Skipping.")
+              with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+                  fh.write("drift=skip\n")
+              sys.exit(0)
+
+          params = {"limit": "10", "target": "production"}
+          for k in ("VERCEL_PROJECT_ID", "VERCEL_TEAM_ID"):
+              v = os.environ.get(k, "").strip()
+              if v:
+                  params[
+                      "projectId" if k == "VERCEL_PROJECT_ID" else "teamId"
+                  ] = v
+          url = "https://api.vercel.com/v6/deployments?" + urllib.parse.urlencode(params)
+          req = urllib.request.Request(
+              url,
+              headers={
+                  "Authorization": f"Bearer {token}",
+                  "Accept": "application/json",
+              },
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=15) as resp:
+                  body = json.loads(resp.read())
+          except Exception as exc:  # noqa: BLE001
+              print("Vercel API call failed:", exc)
+              with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+                  fh.write("drift=skip\n")
+              sys.exit(0)
+
+          deploys = body.get("deployments") or []
+          ready = next(
+              (d for d in deploys if (d.get("readyState") or d.get("state")) == "READY"),
+              None,
+          )
+          if not ready:
+              print("No READY production deployment found.")
+              with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+                  fh.write("drift=none\n")
+              sys.exit(0)
+
+          prod_sha = (ready.get("meta") or {}).get("githubCommitSha", "").lower()
+          if not prod_sha:
+              print("Latest READY deploy has no commit SHA in meta — cannot diff.")
+              with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+                  fh.write("drift=skip\n")
+              sys.exit(0)
+
+          # Compute deployable diff using the same regex as vercel.json's
+          # ignoreCommand. Walk first-parent so squash-merges show as one
+          # commit each.
+          deployable_re = re.compile(
+              r"^(src/|public/|package\.json|next\.config|tailwind\.config|postcss\.config)"
+          )
+
+          try:
+              log = subprocess.check_output(
+                  [
+                      "git",
+                      "log",
+                      "--first-parent",
+                      f"{prod_sha}..origin/main",
+                      "--pretty=%H%x09%s",
+                  ],
+                  text=True,
+              ).strip()
+          except subprocess.CalledProcessError as exc:
+              print("git log failed:", exc)
+              with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+                  fh.write("drift=skip\n")
+              sys.exit(0)
+
+          if not log:
+              print("No commits on main beyond production — drift = 0.")
+              with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+                  fh.write("drift=none\n")
+                  fh.write(f"prod_sha={prod_sha}\n")
+              sys.exit(0)
+
+          rows = []
+          for line in log.split("\n"):
+              sha, _, subject = line.partition("\t")
+              files = subprocess.check_output(
+                  [
+                      "git",
+                      "show",
+                      "--stat=4096",
+                      "--name-only",
+                      "--pretty=",
+                      sha,
+                  ],
+                  text=True,
+              ).splitlines()
+              files = [f for f in files if f]
+              deployable = any(deployable_re.match(p) for p in files)
+              pr_match = re.search(r"\(#(\d+)\)\s*$", subject)
+              pr_number = pr_match.group(1) if pr_match else None
+              rows.append(
+                  {
+                      "sha": sha,
+                      "short": sha[:7],
+                      "subject": subject,
+                      "deployable": deployable,
+                      "pr": pr_number,
+                  }
+              )
+
+          deployable_rows = [r for r in rows if r["deployable"]]
+          force_open = (
+              os.environ.get("FORCE_OPEN", "").lower() == "true"
+              or os.environ.get("INPUT_OPEN_ISSUE", "").lower() == "true"
+          )
+
+          out_path = os.environ["GITHUB_OUTPUT"]
+          with open(out_path, "a") as fh:
+              fh.write(f"prod_sha={prod_sha}\n")
+              fh.write(f"total={len(rows)}\n")
+              fh.write(f"deployable={len(deployable_rows)}\n")
+              if deployable_rows or force_open:
+                  fh.write("drift=detected\n")
+              else:
+                  fh.write("drift=docs_only\n")
+
+          # Markdown body for the issue. Saved to a file so the next step
+          # can pick it up without shell-escaping every line.
+          body_lines = [
+              "**Production drift detected by `deploy-drift-watcher`.**",
+              "",
+              f"Production is currently serving `{prod_sha[:12]}`.",
+              f"`origin/main` is **{len(rows)}** commit(s) ahead "
+              f"({len(deployable_rows)} deployable, "
+              f"{len(rows) - len(deployable_rows)} docs/scripts only).",
+              "",
+              "## Pending deployable changes",
+              "",
+              "| SHA | PR | Subject |",
+              "| --- | --- | --- |",
+          ]
+          for r in deployable_rows[:30]:
+              pr_cell = f"#{r['pr']}" if r["pr"] else "—"
+              subject = r["subject"].replace("|", "\\|")[:80]
+              body_lines.append(f"| `{r['short']}` | {pr_cell} | {subject} |")
+          if len(deployable_rows) > 30:
+              body_lines.append(f"\n…and {len(deployable_rows) - 30} more.")
+
+          body_lines += [
+              "",
+              "## What to do",
+              "",
+              "1. Open `/admin/deployments` (operator-only).",
+              "2. Confirm the diff in the **Drift card**.",
+              "3. Click **Promote tip of main → production** (or have the "
+              "client tier with deployApproval click their per-request "
+              "**Confirm deploy** button).",
+              "4. The production-guard will refuse if the candidate SHA is "
+              "older than what's live (forward-only invariant).",
+              "5. Once Vercel reports `deployment.succeeded` this issue "
+              "auto-closes.",
+              "",
+              "<details><summary>Non-deployable commits in the same range "
+              "(skipped — docs/scripts only)</summary>\n",
+          ]
+          non_deployable = [r for r in rows if not r["deployable"]]
+          for r in non_deployable[:30]:
+              pr_cell = f"#{r['pr']}" if r["pr"] else "—"
+              subject = r["subject"].replace("|", "\\|")[:80]
+              body_lines.append(f"- `{r['short']}` {pr_cell} — {subject}")
+          if len(non_deployable) > 30:
+              body_lines.append(f"…and {len(non_deployable) - 30} more.")
+          body_lines += [
+              "",
+              "</details>",
+              "",
+              "_Filed automatically. Same Triage and Execute workflows that "
+              "handle other issues will pick this up; if your tier allows, "
+              "Claude may auto-promote when the only pending PRs are "
+              "`complexity/trivial` or `complexity/easy`._",
+          ]
+
+          with open("drift-body.md", "w", encoding="utf-8") as fh:
+              fh.write("\n".join(body_lines))
+          PY
+
+      - name: Open or update drift issue
+        if: steps.detect.outputs.drift == 'detected'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYABLE: ${{ steps.detect.outputs.deployable }}
+          PROD_SHA: ${{ steps.detect.outputs.prod_sha }}
+        run: |
+          set -euo pipefail
+          TITLE="Production drift: ${DEPLOYABLE} change(s) pending"
+          # Find an existing open drift issue (we keep a single rolling
+          # one to avoid spamming the inbox).
+          EXISTING=$(gh issue list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --label "auto-routine,area/infra,deploy-drift" \
+            --json number,title \
+            --jq '.[0].number // empty')
+          if [ -n "${EXISTING}" ]; then
+            echo "Updating existing drift issue #${EXISTING}"
+            gh issue edit "${EXISTING}" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "${TITLE}" \
+              --body-file drift-body.md
+            gh issue comment "${EXISTING}" \
+              --repo "$GITHUB_REPOSITORY" \
+              --body "Updated by drift watcher at $(date -u +%FT%TZ). Production is on \`${PROD_SHA:0:12}\`."
+          else
+            echo "Opening new drift issue"
+            gh issue create \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "${TITLE}" \
+              --body-file drift-body.md \
+              --label "auto-routine,area/infra,deploy-drift,priority/P1,status/needs-triage"
+          fi
+
+      - name: Close drift issue if drift cleared
+        if: steps.detect.outputs.drift == 'none' || steps.detect.outputs.drift == 'docs_only'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          EXISTING=$(gh issue list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --label "auto-routine,area/infra,deploy-drift" \
+            --json number \
+            --jq '.[].number')
+          if [ -z "${EXISTING}" ]; then
+            echo "No open drift issue and no drift detected — nothing to do."
+            exit 0
+          fi
+          for n in ${EXISTING}; do
+            gh issue comment "$n" --repo "$GITHUB_REPOSITORY" \
+              --body "Drift cleared. Closing automatically."
+            gh issue close "$n" --repo "$GITHUB_REPOSITORY" --reason completed
+          done

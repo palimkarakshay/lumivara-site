@@ -89,6 +89,24 @@ export async function upsertRepoVariable(
   }
 }
 
+// DELETE the variable entirely. Used by the "Clear" button on the override
+// panel — distinct from setting the value to "" so that a workflow's
+// `if: vars.NEXT_RUN_MODEL_OVERRIDE != ''` guard sees an absent variable.
+export async function deleteRepoVariable(
+  octo: Octokit,
+  name: string,
+): Promise<void> {
+  try {
+    await octo.request(
+      "DELETE /repos/{owner}/{repo}/actions/variables/{name}",
+      { owner: OWNER, repo: REPO, name },
+    );
+  } catch (err) {
+    if ((err as { status?: number }).status === 404) return;
+    throw err;
+  }
+}
+
 export const getDefaultModel = (octo: Octokit) =>
   getRepoVariable(octo, VARIABLE_NAMES.defaultModel);
 export const getNextRunOverride = (octo: Octokit) =>
@@ -97,6 +115,8 @@ export const setDefaultModel = (octo: Octokit, value: string) =>
   upsertRepoVariable(octo, VARIABLE_NAMES.defaultModel, value);
 export const setNextRunOverride = (octo: Octokit, value: string) =>
   upsertRepoVariable(octo, VARIABLE_NAMES.nextRunOverride, value);
+export const clearNextRunOverride = (octo: Octokit) =>
+  deleteRepoVariable(octo, VARIABLE_NAMES.nextRunOverride);
 
 // ── Workflows & Runs ───────────────────────────────────────────────────
 export async function listWorkflows(octo: Octokit): Promise<Workflow[]> {
@@ -151,6 +171,32 @@ export async function setWorkflowEnabled(
       workflow_id: workflowId,
     });
   }
+}
+
+// Cancel an in-flight run. Returns 202 on success; the run flips to
+// `cancelled` once the runner notices.
+export async function cancelRun(
+  octo: Octokit,
+  runId: number,
+): Promise<void> {
+  await octo.actions.cancelWorkflowRun({
+    owner: OWNER,
+    repo: REPO,
+    run_id: runId,
+  });
+}
+
+// Re-run a finished run (failed or successful). Mirrors the "Re-run all jobs"
+// button on the GitHub Actions web UI.
+export async function rerunRun(
+  octo: Octokit,
+  runId: number,
+): Promise<void> {
+  await octo.actions.reRunWorkflow({
+    owner: OWNER,
+    repo: REPO,
+    run_id: runId,
+  });
 }
 
 // ── Logs & Thinking extraction ─────────────────────────────────────────

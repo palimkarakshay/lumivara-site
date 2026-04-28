@@ -2,6 +2,8 @@
 
 # 03 — Secure Architecture: Zone Isolation & Cost Firewall
 
+> **⚠️ Historical / partially deprecated as of 2026-04-28.** The branch-overlay description in this file (`operator/main` overlay; `VENDOR_GITHUB_PAT` as vendor identity) was superseded when the operator chose **Pattern C** in `11 §1`. The four "never" rules (§1) and the secret-handling principles (§3) still apply; the *mechanics* (which branch, which token) are replaced by the two-repo + GitHub App model in `02b-pattern-c-architecture.md`. The full rewrite of this file lands via Run B (`16 §2`), which adds the GitHub App spec at `03b-github-app-spec.md` and rewrites §2.1/§2.2/§2.5 + §3 to match. Until that PR merges, treat the overlay-branch text below as **historical context describing the deprecated pattern** — apply the principles, ignore the branch mechanics. Cross-reference `02b` for canonical mechanics.
+
 The single most important property of this practice: **a curious client cannot see the operator's secrets, costs, or tools, even by inspecting their own repo.** This document is the rule-set that makes that true.
 
 ## 1. The four "never" rules (memorise these)

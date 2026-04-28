@@ -385,7 +385,7 @@ Before sending the rendered handover pack, the operator confirms:
 - [ ] T3 sites do **not** include the footer credit; T0/1/2 do.
 - [ ] The handover guide does **not** mention GitHub, Vercel, n8n, Twilio, or any operator-side tool by name.
 - [ ] The walkthrough video URL is filled in.
-- [ ] The handover file is committed only to the client's `main` (never to operator/main, never to mothership).
+- [ ] The handover file is committed only to the client's site-repo `main` (never to the pipeline repo, never to mothership). Under Pattern C the site repo is the only repo the client ever sees — see `02b`.
 
 The render → validate → commit → email cycle takes ~10 minutes per client when the intake YAML is complete. If any field is missing, the operator follows up with the client before rendering.
 

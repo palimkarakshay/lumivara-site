@@ -1,6 +1,8 @@
-<!-- OPERATOR-ONLY. Pair with 02-architecture.md and 03-secure-architecture.md. -->
+<!-- OPERATOR-ONLY. Pair with 02-architecture.md and 03-secure-architecture.md. Historical / decision record. -->
 
 # 11 — Critique: Architectural & Structural Issues
+
+> **Historical / decision record.** This file documents the cron-on-default-branch bug that motivated the move from the deprecated `operator/main` branch-overlay design to Pattern C. The `operator/main` and `VENDOR_GITHUB_PAT` references throughout this file describe the *deprecated* pattern as part of the decision history; they are preserved here so the choice of Pattern C remains auditable. The canonical architecture is `02b-pattern-c-architecture.md`.
 
 The pack's architecture is sound in shape but has one critical correctness bug and several boundary leaks. This doc lists them in priority order with concrete fixes the operator can implement.
 

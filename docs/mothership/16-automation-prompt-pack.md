@@ -1,6 +1,8 @@
-<!-- OPERATOR-ONLY. Copy-paste prompts for Claude Code in the browser (Opus 4.7 Max). -->
+<!-- OPERATOR-ONLY. Copy-paste prompts for Claude Code in the browser (Opus 4.7 Max). Historical migration spec. -->
 
 # 16 — Automation Prompt Pack (Claude Code in the browser, Opus 4.7 Max)
+
+> **Historical / migration spec.** This pack holds the prompts that move the canonical docs from the deprecated `operator/main` + `VENDOR_GITHUB_PAT` design to Pattern C. The `operator/main` and `VENDOR_GITHUB_PAT` strings inside these prompts are quoting the deprecated terms so the rewrite agents know exactly what to replace. The canonical architecture is `02b-pattern-c-architecture.md`. Once Run A and Run B have merged across the practice, this pack remains useful as a re-runnable migration playbook but is no longer aspirational.
 
 Three closes-the-critique prompts (Run A, B, C) plus a fourth optional cleanup (Run D) and three supplementary one-shot prompts (S1, S2, S3) to hand to Claude Code in the browser. Each prompt is self-contained — paste it, hit run, walk away.
 

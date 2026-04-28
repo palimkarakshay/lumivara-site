@@ -8,8 +8,9 @@ import type { NavItem } from "./AdminNav";
 export const MOTHERSHIP_NAV: readonly NavItem[] = [
   { href: "/admin", label: "Overview", glyph: "◐" },
   { href: "/admin/runs", label: "Runs", glyph: "▶" },
-  { href: "/admin/tests", label: "Tests", glyph: "✓" },
-  { href: "/admin/brain", label: "Brain", glyph: "✦" },
+  { href: "/admin/deployments", label: "Deploys", glyph: "▲" },
+  { href: "/admin/tests", label: "Tests", glyph: "✓", desktopOnly: true },
+  { href: "/admin/brain", label: "Brain", glyph: "✦", desktopOnly: true },
   { href: "/admin/clients", label: "Clients", glyph: "◇", desktopOnly: true },
 ];
 

@@ -105,12 +105,11 @@ A good brand for this practice scores well on:
 | 9 | **Lumivara Compass** | "the direction-giver" | Advisory / guidance frame; clean adjacent to Beas's HR practice | Compass Sites, Compass Voice |
 | 10 | **Plumbline Studio** (independent of Lumivara, already in `01`) | "the straight-shooter" | Full separation; cleaner if brand-family ever decouples | Plumbline Sites, Plumbline Voice, Plumbline Comms |
 
-### The recommendation
+### The locked choice
 
-**Two viable choices depending on where the operator wants to land in 24 months:**
+**Operator confirmed Lumivara Forge (2026-04-28).** Maker/artisan frame; "build & maintain" verbs; keeps brand-family halo with Beas's HR practice. The slightly crowded namespace ("Forge" appears in many tech-tool names) is a known trade-off; differentiation comes from the consistent sub-product naming below in §3.
 
-- **If you are committed to staying inside the Lumivara brand-family for the long haul:** **Lumivara Cadence** is the strongest pick. The reason: "cadence" is also the technical mechanic of the product (the cadence matrix in `04`), so the brand and the engineering vocabulary reinforce each other. Future product names — *Cadence Voice* (communication), *Cadence Brand* (visual identity), *Cadence Pulse* (monitoring) — all read as a coherent suite.
-- **If you want a name that survives a future independent path:** **Forge** (already chosen) is fine. Slightly more crowded ("Forge" appears in many tech-tool names) but evokes the right verbs.
+**Lumivara Cadence** is preserved as the closest runner-up should the operator ever revisit the brand decision — its mechanic-mirrors-naming property (cadence matrix in `04`) is unique and cheap to revive (placeholders are mechanical to swap; see `15 §4`).
 
 ### Names I'd avoid
 
@@ -141,20 +140,20 @@ A good brand for this practice scores well on:
 
 The operator hinted at future products in adjacent verticals. Establish a naming convention now so the second product doesn't break the system.
 
-### Pattern: `{{BRAND}} {{Product Word}}`
+### Pattern: `Lumivara Forge {{Product Word}}` (locked)
 
 ```
-Lumivara Cadence Sites      — the offering covered by this pack
-Lumivara Cadence Voice      — communication / inbox / reply automation
-Lumivara Cadence Brand      — logo / colour / type / asset generation
-Lumivara Cadence Pulse      — monitoring + observability + alerts
-Lumivara Cadence Atlas      — multi-site / multi-region overview
-Lumivara Cadence Studio     — the mobile-first operator dashboard
+Lumivara Forge Sites        — the offering covered by this pack
+Lumivara Forge Voice        — communication / inbox / reply automation
+Lumivara Forge Brand        — logo / colour / type / asset generation
+Lumivara Forge Pulse        — monitoring + observability + alerts
+Lumivara Forge Atlas        — multi-site / multi-region overview
+Lumivara Forge Studio       — the mobile-first operator dashboard
 ```
 
 - **One brand, many products.** Each "product word" is a single English noun.
-- **Each product gets its own GitHub repo** under the same org (`{{BRAND_SLUG}}/{{slug}}-voice`, `{{BRAND_SLUG}}/{{slug}}-brand`, etc.).
-- **Cross-product integration is a deliberate "Cadence Suite" decision**, not an accident.
+- **Each product gets its own GitHub repo** under the same org (`lumivara-forge/<slug>-voice`, `lumivara-forge/<slug>-brand`, etc.).
+- **Cross-product integration is a deliberate "Forge Suite" decision**, not an accident.
 - **Sub-product retirement is graceful** — the suite name doesn't change when you sunset one product.
 
 ### What to do today
@@ -165,52 +164,56 @@ Lumivara Cadence Studio     — the mobile-first operator dashboard
 
 ---
 
-## §4 — Renames to apply when the brand locks
+## §4 — Renames to apply (locked: Lumivara Forge)
 
-Once the operator picks a brand:
+Operator confirmed Lumivara Forge on 2026-04-28. The mechanical mapping:
 
 ```
-Repo-level    {{BRAND_SLUG}}        → e.g., lumivara-cadence
-              {{BRAND_SLUG}}-bot    → lumivara-cadence-bot
-              {{BRAND_SLUG}}-mothership → lumivara-cadence-platform
+Repo-level    {{BRAND_SLUG}}              → lumivara-forge
+              {{BRAND_SLUG}}-bot          → lumivara-forge-bot
+              {{BRAND_SLUG}}-mothership   → lumivara-forge-platform
                           (also rename "mothership" → "platform" per §1)
 
-Domain        {{BRAND_SLUG}}.com    → lumivara-cadence.com
-              mail.{{BRAND_SLUG}}.com → mail.lumivara-cadence.com
+Domain        {{BRAND_SLUG}}.com          → lumivara-forge.com
+              mail.{{BRAND_SLUG}}.com     → mail.lumivara-forge.com
 
-Org          GitHub org name        → lumivara-cadence
-              n8n hostname           → n8n.lumivara-cadence.com
+Org           GitHub org name             → lumivara-forge
+              n8n hostname                → n8n.lumivara-forge.com
 
-Display       {{BRAND}}              → "Lumivara Cadence"
-              Sub-product            → "Lumivara Cadence Sites"
+Display       {{BRAND}}                   → "Lumivara Forge"
+              Sub-product                  → "Lumivara Forge Sites"
 
-Workflow     n8n workflow prefixes   → cadence-* (per-client suffix)
-              Site footer credit     → "Built on Lumivara Cadence"
+Workflow      n8n workflow prefixes       → forge-* (per-client suffix)
+              Site footer credit           → "Built on Lumivara Forge"
 ```
 
-Single global find-replace pass against `docs/mothership/`, `docs/freelance/`, the templates, the workflows, and the dashboard. All placeholders already use `{{BRAND}}` / `{{BRAND_SLUG}}`, so the rename is mechanical.
+Single global find-replace pass against `docs/mothership/`, `docs/freelance/`, the templates, the workflows, and the dashboard. All placeholders already use `{{BRAND}}` / `{{BRAND_SLUG}}`, so the rename is mechanical. Run S1 (`16 §5`) executes this pass.
 
 ---
 
 ## §5 — Summary action list
 
-Decisions the operator owes themselves before P5 ships:
+Decisions locked on 2026-04-28:
 
 ```
-[ ] Lock the brand. Recommendation: Lumivara Cadence (or stay with Forge).
-[ ] Decide §1 rename: mothership → control plane / platform.
-    Recommendation: platform (less jargon-y for newcomers, still
-    industry-correct).
-[ ] Decide whether the sub-product naming convention is "Cadence Sites,
-    Cadence Voice" or "Forge Sites, Forge Voice" — this is essentially
-    locking the brand pick.
-[ ] Buy the brand domain.
-[ ] CIPO + USPTO trademark availability check.
-[ ] Add this glossary to 00-INDEX.md once renames land.
-[ ] Update 01 §1 with the additional brand candidates above; mark
-    Lumivara Cadence as the new co-recommended option alongside Forge.
+[x] Brand: Lumivara Forge
+[x] Internal rename: full §1 table (mothership → platform,
+    agent → pipeline+run+bot, etc.)
+[x] Sub-product naming: Forge Sites, Forge Voice, Forge Brand,
+    Forge Pulse, Forge Atlas, Forge Studio
 ```
 
-The renames touch ~150 references across the repo. Doable in one Claude session (60–90 turns, Sonnet). Prompt body lives in `16 §4`.
+Operator-side actions still pending:
+
+```
+[ ] Buy lumivara-forge.com and lumivara-forge.ca.
+[ ] CIPO + USPTO trademark availability check (Class 42 + Class 35).
+[ ] Run S1 (16 §5) to do the global mechanical rename.
+[ ] After S1: insert this doc's glossary into 00-INDEX.md.
+[ ] Update GitHub org slug to lumivara-forge (one-time, irreversible
+    without paid migration — do it after the trademark check clears).
+```
+
+The renames touch ~150 references across the repo. Doable in one Claude session (60–90 turns, Sonnet). Prompt body lives in `16 §5`.
 
 *Last updated: 2026-04-28.*

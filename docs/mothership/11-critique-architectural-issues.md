@@ -18,23 +18,29 @@ GitHub's `schedule:` trigger **only fires from workflow files that exist on the 
 
 So as written, **no cron in any client repo will ever fire**. The whole tier-cadence matrix in `04` is non-functional out of the gate.
 
-### Three viable fixes — pick one
+### Three viable fixes — operator chose Pattern C (2026-04-28)
 
-| Pattern | Sketch | Pros | Cons | Recommendation |
+| Pattern | Sketch | Pros | Cons | Status |
 |---|---|---|---|---|
-| **A. Default branch = `operator/main`; client-visible content lives on `client/main`** | Flip the convention. Workflows live on the default branch (`operator/main`), client edits on `client/main`. The admin portal and the auto-PR gate target `client/main`. Vercel deploys from `client/main`. | Cron works. Org-level secrets work. Branch protection works. | Inverts the GitHub UI default ("default branch" is what visitors land on); so set the repo's "Default branch" to something neutral or set Vercel/Pages to track `client/main`. Renaming the public-facing branch later is high-friction. | ✅ **Recommended.** Lowest behaviour-change for the autopilot. |
-| **B. Single repo, single `main`; workflows are present on `main` but gated** | Workflows live on `main`. Use `if: github.actor == '<bot>'` and `concurrency:` + label gates to keep them invisible-by-effect rather than invisible-by-location. | One branch; simpler; no cron surprise. | Workflows are fully visible to client-as-Read; `.claudeignore` only protects the LLM context, not human readers. The "client cannot see the autopilot" claim becomes a marketing line, not an architectural fact. | Acceptable for T0/T1 only. |
-| **C. Two repos: `<slug>-site` (client) + `<slug>-pipeline` (operator-owned)** | The client repo has only the site. A second private repo, owned by the operator's org and **not** shared with the client, holds the workflows. Workflows use `repository_dispatch` / GitHub App with `Contents: write` on `<slug>-site` to push branches and open PRs. | Cleanest separation. Client genuinely cannot see workflows. Survives turning the client repo public. | Two repos per client (operations overhead). Need a GitHub App or fine-grained PAT with cross-repo write. Auto-merge gate runs in the pipeline repo and writes to the site repo. | ✅ **Recommended for T2+** if Pattern A's "default-branch optics" bothers the operator. |
+| **A. Default branch = `operator/main`; client-visible content lives on `client/main`** | Flip the convention. Workflows live on the default branch (`operator/main`), client edits on `client/main`. The admin portal and the auto-PR gate target `client/main`. Vercel deploys from `client/main`. | Cron works. Org-level secrets work. Branch protection works. | Inverts the GitHub UI default ("default branch" is what visitors land on); so set the repo's "Default branch" to something neutral or set Vercel/Pages to track `client/main`. Renaming the public-facing branch later is high-friction. | Fallback only — preserved for emergency use. |
+| **B. Single repo, single `main`; workflows are present on `main` but gated** | Workflows live on `main`. Use `if: github.actor == '<bot>'` and `concurrency:` + label gates to keep them invisible-by-effect rather than invisible-by-location. | One branch; simpler; no cron surprise. | Workflows are fully visible to client-as-Read; `.claudeignore` only protects the LLM context, not human readers. The "client cannot see the autopilot" claim becomes a marketing line, not an architectural fact. | Rejected — leaks the pipeline. |
+| **C. Two repos: `<slug>-site` (client) + `<slug>-pipeline` (operator-owned)** | The client repo has only the site. A second private repo, owned by the operator's org and **not** shared with the client, holds the workflows. Workflows use `repository_dispatch` / a GitHub App with `Contents: write` on `<slug>-site` to push branches and open PRs. | Cleanest separation. Client genuinely cannot see workflows. Survives turning the client repo public. The "system = operator-licensed" contractual claim becomes architecturally enforceable. | Two repos per client (operations overhead — but `forge provision` automates both). Requires a GitHub App with cross-repo Contents:RW. Auto-merge gate runs in the pipeline repo and writes to the site repo. | ✅ **CHOSEN — locked 2026-04-28.** |
 
-### What to update in the existing pack once you pick
+**Why Pattern C wins:** the operator chose enforceable separation over operational simplicity. Doc 12 §4 already recommends a GitHub App (no PATs); Pattern C makes that recommendation a load-bearing architectural piece, not a nice-to-have. The provisioning CLI absorbs the two-repo overhead, and the client genuinely never sees the pipeline — turning the cost-firewall promise into a permission boundary instead of a marketing line.
 
-- **`02 §1` diagram** — replace the dual-branch box with the chosen pattern.
-- **`02 §6` "the autopilot's view of the world"** — fix the line "cron in workflows on `operator/main` operates against the repo's default branch" — it's wrong. Replace with the actual mechanism for the chosen pattern.
-- **`03 §2.1`/`§2.2`** — branch-protection rules need to flip target branches.
-- **`05 §P5.6` step 3** — "Move `.github/workflows/` files into a temp branch `operator/main`" must change.
-- **`06 §3` Prompt B1** — substitute the chosen pattern.
+### What to update in the existing pack (Pattern C propagation)
 
-A single Run A in `16 §1` does the propagation.
+- **`02 §1` diagram** — replace the dual-branch box with the two-repo model: `<slug>-site` (client-readable) and `<slug>-pipeline` (operator-only, never shared).
+- **`02 §3` provisioning flow** — add a step "create the pipeline repo" between current steps 2 and 3; the flow becomes 12 steps, not 11.
+- **`02 §4` trust-zones table** — add a new "Pipeline Repo" zone alongside Mothership and Site.
+- **`02 §6` "the autopilot's view of the world"** — rewrite the section: "cron fires in the pipeline repo on its `main` branch; the bot uses a GitHub App installation token with `Contents: write` on the site repo to push branches and open PRs targeting site repo's `main`."
+- **`03 §2.1`/`§2.2`** — drop `operator/main` references entirely; branch-protection rules now apply to the site repo's `main` only. Add §2.5 covering pipeline-repo protections (require admin review on `.github/workflows/` paths; restrict pushes to bot account).
+- **`03 §3` secret topology** — `VENDOR_GITHUB_PAT` is replaced by the GitHub App installation token (per `12 §4` recommendation, now locked).
+- **`05 §P5.6`** — rewrite to provision two repos for Beas's engagement, not one. The step list becomes "create site repo → create pipeline repo → push workflows to pipeline → push site to site".
+- **`06 §3` Prompt B1** — fundamentally changes: workflows are pushed to the pipeline repo's `main`, not to a branch of the site repo.
+- **`09 §3`** — Pattern C means client repos always live in the operator's org during engagement (they have to, for the App's installation scope). At handover, the App is uninstalled from the site repo, the pipeline repo is deleted/archived, and the site repo transfers cleanly.
+
+Run A in `16 §1` does the full propagation.
 
 ---
 

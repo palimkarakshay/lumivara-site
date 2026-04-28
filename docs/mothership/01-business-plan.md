@@ -19,12 +19,9 @@ The user-supplied placeholder *Lumivara Tech Solutions / Lumivara Info Tech Solu
 | 9 | **Lumivara Stack** | "explicitly tech" | Instantly understood | Generic; lots of "Stack" co's |
 | 10 | **Plumbline Studio** (independent of Lumivara) | "the straight-shooter" | Full separation from HR brand; cleaner if Beas's biz changes shape | Loses brand-family halo; build awareness from zero |
 
-**Two-track recommendation:**
+**Locked recommendation: Lumivara Forge.** Operator confirmed via the doc-15 review (2026-04-28). Use it as `{{BRAND}}` everywhere until Run S1 (`16 §5`) does the global rename. Slug: `lumivara-forge`. Domain candidates: `lumivara-forge.com / .ca`, or a subdomain off Beas's existing `lumivara.ca`. Trademark check (CIPO Class 42 + USPTO) and full criteria list in `15 §2`.
 
-- **If staying inside the Lumivara brand-family for the long haul:** **Lumivara Cadence** is the strongest pick. The brand and the engineering vocabulary (cadence matrix, cadence.json, the autopilot's *cadence*) reinforce each other; the sub-product family scales (*Cadence Sites*, *Cadence Voice*, *Cadence Pulse*) without breaking.
-- **If you want a name with a slightly more independent feel:** stay with **Lumivara Forge** — fine, evokes the right verbs.
-
-Either way, use it as `{{BRAND}}` everywhere until locked. Slug: `lumivara-cadence` or `lumivara-forge`. Domain candidates: `lumivara-cadence.com / .ca`, `lumivara-forge.com / .ca`, or a subdomain off Beas's existing `lumivara.ca`. Trademark check (CIPO Class 42 + USPTO) and full criteria list in `15 §2`.
+> **Lumivara Cadence** is preserved as the closest runner-up should the operator ever revisit the brand — its mechanic-mirrors-naming property (cadence matrix in `04`) is unique. The other 8 candidates and their trade-offs live in `15 §2`.
 
 The rest of this document uses `{{BRAND}}` and `{{BRAND_SLUG}}` placeholders so the rename is mechanical.
 

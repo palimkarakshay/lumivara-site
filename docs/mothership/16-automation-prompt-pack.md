@@ -10,109 +10,185 @@ Three closes-the-critique prompts (Run A, B, C) plus a fourth optional cleanup (
 
 ---
 
-## §1 — Run A: Fix the architectural cron flaw + propagate
+## §1 — Run A: Adopt the two-repo (Pattern C) architecture
 
-**Goal:** close the items in `11 §1` and `11 §2`. Pick a pattern, refactor every doc and template that depends on the old "two-branch trick," and ship one PR.
+**Goal:** close the items in `11 §1` and `11 §2`. The operator chose **Pattern C** (separate `<slug>-pipeline` repo) as the architectural model. This Run rewrites every dependent doc and ships one PR.
 
-**Estimated:** Opus 4.7 Max, ~80–120 turns, ~1.5–2.5 h wall time.
+**Estimated:** Opus 4.7 Max, ~120–160 turns, ~2.5–3.5 h wall time. (Pattern C is more invasive than the original Pattern A draft would have been; budget accordingly.)
 
-**Branch:** `claude/architecture-cron-fix`.
+**Branch:** `claude/pattern-c-two-repo-architecture`.
 
 **Copy-paste prompt:**
 
 ```
-You are a senior infrastructure architect helping me close a correctness
-bug in this repo's mothership pack. Read these files first, in order:
+You are a senior infrastructure architect implementing the Pattern C
+two-repo architecture chosen by the operator on 2026-04-28. Read in
+order:
 
   docs/mothership/00-INDEX.md
   docs/mothership/02-architecture.md
   docs/mothership/03-secure-architecture.md
   docs/mothership/05-mothership-repo-buildout-plan.md
   docs/mothership/06-operator-rebuild-prompt-v3.md
-  docs/mothership/11-critique-architectural-issues.md   ← read carefully, this is your spec
-  docs/mothership/15-terminology-and-brand.md           ← rename guidance
+  docs/mothership/09-github-account-topology.md
+  docs/mothership/11-critique-architectural-issues.md   ← your spec
+  docs/mothership/12-critique-security-secrets.md §4    ← GitHub App rationale
 
-The bug: 02 §1 / §6 and 03 §2.1 claim that scheduled GitHub Actions
+The bug: 02 §1 / §6 and 03 §2.1 claim scheduled GitHub Actions
 workflows on a non-default branch ('operator/main') will fire on cron.
-They will not. Cron only triggers from workflow files on the default
+They will not — cron only fires from workflow files on the default
 branch. The pack as written produces zero scheduled runs.
 
-Your task: pick **Pattern A** from 11 §1 (default branch becomes
-'operator/main', client-visible content lives on 'client/main') for
-the existing engagement, and document **Pattern C** (separate
-pipeline repo) as the migration target by client #3.
+The chosen fix: Pattern C from 11 §1. Per client engagement, the
+operator provisions TWO private repos:
+  • {{BRAND_SLUG}}/<slug>-site      — client-readable; Next.js site
+                                       only; transferred to client at
+                                       handover.
+  • {{BRAND_SLUG}}/<slug>-pipeline  — operator-only; ALL workflows,
+                                       scripts, and cron schedules;
+                                       NEVER shared with the client;
+                                       deleted/archived at handover.
+
+The pipeline repo's bot uses a GitHub App (not a PAT) with installation
+scope on the matched site repo. The App's permissions: Issues:RW,
+Pull requests:RW, Contents:RW, Metadata:R, Workflows:R on the site
+repo only.
 
 Concretely, in this PR:
 
-1. Decision: write a new file 'docs/mothership/02b-branch-and-fleet-pattern.md'
-   that explains Pattern A as the current convention, including:
-     - default branch rename procedure (gh api PATCH .../repos/.../{owner}/{repo})
-     - branch protection rule deltas vs 03 §2.2
-     - Vercel project source-branch flip ('client/main')
-     - the 'why this works' callout: scheduled workflows fire from default
-     - a 'when to migrate to Pattern C' section listing the trigger
-       (>= 3 paying clients OR a client requests Read access to their
-       repo before handover) and a one-page migration sketch.
+1. Create a NEW file 'docs/mothership/02b-pattern-c-architecture.md'
+   that documents Pattern C as canonical:
+     - Diagram showing both repos + the GitHub App flow.
+     - Repo provisioning order (site first, pipeline second).
+     - GitHub App installation procedure (one-time per org; per-repo
+       install on each new client provision).
+     - Workflow communication: pipeline-repo workflows authenticate
+       as the App, generate an installation token via
+       actions/create-github-app-token@v1, then push branches to the
+       site repo and open PRs.
+     - Cross-repo deploy flow: site-repo Vercel deploys from main;
+       pipeline-repo workflows trigger via repository_dispatch when
+       site-repo pushes happen (using the App's token).
+     - Teardown: at handover, uninstall App from site repo, delete
+       pipeline repo (or archive), transfer site repo ownership.
+     - Why this is worth the extra repo: Section "the system =
+       operator-licensed" claim becomes architecturally enforceable,
+       not just contractually.
 
-2. Update existing docs to match the chosen pattern:
-     - 02 §1 diagram: replace 'main / operator/main' with
-       'client/main / operator/main (default)'.
-     - 02 §4 trust-zones table: update branch references.
-     - 02 §6 'autopilot's view of the world': fix the cron paragraph
-       to read 'cron fires from operator/main, the repo's default
-       branch; the pipeline opens PRs targeting client/main, which
-       Vercel deploys.'
-     - 03 §2.1 / §2.2: branch-protection rules now apply to
-       client/main (the 'client-readable' branch) and operator/main
-       (the 'pipeline' branch); update the YAML examples.
-     - 05 §P5.6 step 3: replace 'Move .github/workflows/ files into
-       a temp branch operator/main' with the corrected sequence:
-       'Set repo default branch to operator/main; rename existing
-       main → client/main; push workflow files to operator/main;
-       reconfigure Vercel to deploy from client/main.'
-     - 06 §3 Prompt B1: substitute the new branch names throughout.
+2. Rewrite docs/mothership/02-architecture.md:
+     - §1 diagram: replace dual-branch box with two-repo box. Show
+       the App as a third ASCII element bridging the repos.
+     - §2 file layout: add 'pipeline-template/' alongside
+       'client-template/' and 'workflows-template/'. Split:
+       'workflows-template/' is what gets pushed to the pipeline
+       repo's main; 'client-template/' is what gets pushed to the
+       site repo's main. There are NO workflow files on the site
+       repo.
+     - §3 provisioning flow: now 12 steps (was 11). Add new step 2b
+       'Create the pipeline repo' immediately after step 2 'Create
+       the site repo'. Steps that referenced operator/main (step 5)
+       now push to '<slug>-pipeline:main' instead.
+     - §4 trust zones: replace 'Operator overlay on client repo'
+       with new zone 'Pipeline Repo' — operator-only, never client-
+       readable, scoped to App installation.
+     - §5 HMAC handshake: stays unchanged (admin portal ↔ n8n).
+     - §6 'autopilot view of the world': rewrite. Cron fires in the
+       pipeline repo on its main branch; the bot generates a
+       short-lived installation token via the App; uses the token
+       to push 'auto/issue-N' to the site repo and open PRs.
+     - §7 teardown: add the App-uninstall + pipeline-repo-delete
+       sequence to each mode (handover/archive/pause/rebuild-vanilla).
 
-3. Sanitize the audit-trail comments per 12 §6 (the reasoning why
-   now applies as soon as the autopilot is functional). For every
-   workflow file under .github/workflows/ in this repo that posts
-   PR comments or step summaries with model-routing details, gate
-   the post step on:
+3. Rewrite docs/mothership/03-secure-architecture.md:
+     - §2.1: replace 'two-branch trick' subsection title with
+       'two-repo separation'. The site repo has only main; the
+       pipeline repo has only main; there is no operator/main.
+     - §2.2: branch protection now applies to two separate repos.
+       Site-repo main: standard protection (PR review, Vercel
+       check). Pipeline-repo main: stricter (admin-only push,
+       require Code Owners review for any .github/workflows/
+       change, no force-push, no deletions).
+     - §3 secret topology: VENDOR_GITHUB_PAT row is replaced by
+       APP_ID + APP_PRIVATE_KEY (org secrets) + INSTALLATION_TOKEN
+       (generated per-run, never stored). Document the App as the
+       canonical vendor identity.
+     - §6 thought experiment 'what if Anthropic exfiltrates': add
+       that pipeline-repo issue contents are still visible to the
+       LLM, but operator prompts are scoped per-pipeline-repo and
+       never readable to the client even via leaked logs.
+     - §7 client-zone file checklist: drop the 'no .github/workflows/
+       triage|execute|...' rules — those workflows simply do not
+       exist on the site repo at all.
 
-       if: github.actor == vars.OPERATOR_HANDLE ||
-           github.actor == vars.BOT_HANDLE
+4. Rewrite docs/mothership/05-mothership-repo-buildout-plan.md
+   §P5.6:
+     - The migration is now 'create lumivara-people-advisory-pipeline
+       repo, push workflows + scripts there, install GitHub App
+       scoped to lumivara-people-advisory-site, then strip workflows
+       from lumivara-people-advisory-site/main'.
+     - Update steps 3-6 with explicit gh CLI commands.
 
-   This is a small but real defensive measure once a client gets
-   Read access.
+5. Rewrite docs/mothership/06-operator-rebuild-prompt-v3.md:
+     - Prompt B1 'Operator workflows overlay' renames to 'Pipeline
+       repo provisioning' and runs against the new
+       <slug>-pipeline repo on its main branch.
+     - Prompt A and Prompt B2 stay as-is structurally, but add a
+       pre-step to Prompt B1: 'Confirm GitHub App is installed on
+       the site repo before workflows fire.'
+     - Add a new section §11 'Why two repos' citing 02b.
 
-4. Open a tracking issue in this repo titled 'migrate to Pattern C
-   (separate pipeline repo) by client #3' with the body extracted
-   from 02b §"when to migrate to Pattern C". Label it
-   `area/architecture`, `priority/P2`, `human-only`.
+6. Update docs/mothership/09-github-account-topology.md:
+     - §3 'where client repos live': now 'each engagement gets two
+       repos in the {{BRAND_SLUG}} org during the engagement; site
+       repo transfers at handover, pipeline repo deletes/archives.'
+     - Add §3.1 'GitHub App spec' (or link to 03b once Run B
+       creates it).
+     - §6 setup checklist: bump from one repo to two per client.
 
-5. Update docs/mothership/00-INDEX.md:
+7. Sanitize audit-trail comments per 12 §6: even though the client
+   no longer sees the pipeline repo, gate any cross-repo PR-comment
+   posters on github.actor == bot/operator. Belt-and-braces.
+
+8. Open one tracking issue in this repo titled 'P5.4: forge
+   provision must create both site repo and pipeline repo + install
+   GitHub App' linking to 02b and 02 §3. Label area/architecture,
+   priority/P0.
+
+9. Update docs/mothership/00-INDEX.md:
      - Add 02b to the read-order table.
-     - Mark 11 (the critique that drove this work) with a 'closed
-       by PR #N' note in §1 once the PR is opened.
+     - Mark 11 as 'closed by PR #N' once this PR opens.
+     - Update P4.6 row to mark Run A as in-progress (with PR link).
 
 Constraints:
-  - One PR. Branch name: claude/architecture-cron-fix.
-  - Commit per logical unit (one for 02b, one for 02, one for 03,
-    one for 05, one for 06, one for the audit-trail sanitization,
-    one for the tracking issue).
-  - Do not touch any client-template/ or workflows-template/
-    contents — those migrations happen in P5, not this PR.
-  - Do not make naming/brand decisions; that is Run S1.
-  - Respect AGENTS.md budget gates: at 50% turns, finish current
-    commit and stop with a status comment on the PR.
+  - One PR. Branch: claude/pattern-c-two-repo-architecture.
+  - Commit per logical unit:
+      1. 02b new file
+      2. 02 rewrite
+      3. 03 rewrite
+      4. 05 §P5.6 rewrite
+      5. 06 rewrite
+      6. 09 update
+      7. audit-trail sanitisation
+      8. 00-INDEX update + tracking issue
+  - Do NOT touch client-template/ or workflows-template/ contents;
+    that's a downstream PR (P5.2).
+  - Do NOT lock or change brand naming — operator already chose
+    Lumivara Forge; that's Run S1's mechanical rename, not this PR.
+  - Respect AGENTS.md budget gates. At 50%, finish current commit
+    and stop with PR comment summarising progress.
 
 DOD:
-  - PR is open against main.
-  - 02b exists and is internally linked from 02 §1 and from 00-INDEX.
+  - PR open against main.
+  - 02b exists and is internally linked from 02, 03, 05, 06, 09,
+    and 00-INDEX.
   - All section anchors in cross-references resolve.
-  - 'git -C . grep -n "operator/main is invisible"' returns 0 matches
-    (the old claim is gone).
-  - 'grep -nE "schedule:.*operator/main" docs/' returns 0 matches.
-  - The tracking issue exists.
+  - 'git grep -nE "operator/main"' returns matches ONLY in
+    historical CHANGELOG.md / docs marked 'pre-Pattern-C' /
+    docs that explicitly explain the deprecated pattern.
+  - 'git grep -nE "VENDOR_GITHUB_PAT"' returns ZERO matches
+    in 02/03/05/06/09 (replaced by APP_INSTALLATION_TOKEN /
+    APP_ID + APP_PRIVATE_KEY references).
+  - The P5.4 tracking issue exists with the right labels.
 ```
 
 **What to verify after Run A finishes (operator review, ~10 min):**
@@ -463,66 +539,85 @@ DOD:
 
 ## §5 — Run S1 (one-shot): Brand lock + global rename
 
-**Goal:** once the operator picks a brand from `15 §2`, do the global rename in one mechanical pass. Sequence **after** A/B/C are merged so no rename collides with in-flight critique fixes.
+**Goal:** apply the brand decision the operator made on 2026-04-28: **Lumivara Forge**. Mechanical global rename in one pass. Sequence **after** A/B/C are merged so no rename collides with in-flight critique fixes.
 
 **Estimated:** Sonnet 4.6, ~40–60 turns, ~30 min.
 
-**Branch:** `claude/brand-lock-{{BRAND_SLUG}}`.
+**Branch:** `claude/brand-lock-lumivara-forge`.
 
-**Copy-paste prompt (fill in the BRAND choice on lines 1–2):**
+**Copy-paste prompt:**
 
 ```
-The operator has chosen the brand: BRAND = "Lumivara Cadence"
-                                  BRAND_SLUG = "lumivara-cadence"
+The operator chose the brand on 2026-04-28:
+  BRAND      = "Lumivara Forge"
+  BRAND_SLUG = "lumivara-forge"
 
 You are doing a mechanical global rename pass. Read first:
 
   docs/mothership/15-terminology-and-brand.md  ← rename rules
+  docs/mothership/01-business-plan.md §1       ← brand rationale
 
-Apply, in order:
+The operator confirmed: ALL renames per 15 §1 are in scope, not
+just the brand swap. Apply in order:
 
-1. Find-replace every '{{BRAND}}' → 'Lumivara Cadence' across:
+1. Find-replace every '{{BRAND}}' → 'Lumivara Forge' across:
      - docs/mothership/**
      - docs/freelance/**
      - AGENTS.md, CLAUDE.md
+     - .env.local.example, README.md
    except: 15-terminology-and-brand.md (it documents the
-   placeholder convention; leave the placeholders intact there
-   so the doc remains useful for future renames).
+   placeholder convention; leave the placeholders intact so the
+   doc remains useful for future renames).
 
-2. Find-replace every '{{BRAND_SLUG}}' → 'lumivara-cadence'
+2. Find-replace every '{{BRAND_SLUG}}' → 'lumivara-forge'
    in the same scope, with the same exception.
 
-3. Apply the §1 internal-terminology renames from 15:
-     - 'mothership repo' → 'platform repo' (case-insensitive,
-       except in code identifiers like 'mothership-smoke.yml'
-       which stay; rename the file itself in a follow-up PR)
-     - 'the mothership' → 'the platform' (where it refers to
-       the repo/system); leave 'mothership business pack' intact
-       on the index file as a one-time historical reference.
-     - 'agent' (when meaning the AI runtime) → 'pipeline run' or
-       'pipeline' depending on context; check each occurrence,
-       keep 'agent' where it refers to a specific Claude/Codex
-       agent technology.
-     - 'autopilot' → leave unchanged (customer-facing term).
+3. Apply the full §1 internal-terminology rename table from doc 15:
+     - 'mothership repo' / 'mothership' → 'platform repo' /
+       'the platform' where it refers to the repo or system.
+       (Exception: keep 'mothership business pack' as the literal
+       phrase ONCE in 00-INDEX as a one-time historical reference,
+       with a footnote pointing to the new term.)
+     - 'agent' as AI runtime → 'pipeline run' (one execution) or
+       'pipeline' (the system); inspect each occurrence; keep
+       'agent' where it refers to a specific Claude/Codex agent
+       technology (e.g., 'Claude agent SDK').
+     - 'operator overlay' / 'operator/main branch' → 'pipeline
+       repo' / 'pipeline-repo main' (Pattern C is now canonical
+       per Run A).
+     - 'autopilot' → LEAVE UNCHANGED (customer-facing term).
+     - 'tier' / 'cadence' / 'zone' / 'engagement' / 'client' →
+       LEAVE UNCHANGED (already correct).
+     - 'vendor bot account' → 'bot account'.
 
-4. Update the 00-INDEX.md glossary section with the new
-   terminology table from 15 §1.
+4. Update the 00-INDEX.md glossary section by inserting the
+   one-page glossary from doc 15 §1 (under a new heading 'Glossary').
 
 5. Verify nothing breaks:
-     - 'grep -n "{{BRAND" docs/' returns only matches inside
+     - 'grep -nE "\\{\\{BRAND" docs/' returns matches only in
        15-terminology-and-brand.md.
      - 'grep -n "mothership repo" docs/' returns 0 matches outside
-       historical/footnote contexts.
+       historical/footnote contexts in 00-INDEX.
+     - 'grep -nE "operator/main|operator overlay" docs/' returns
+       only matches inside changelogs or the 'deprecated pattern'
+       footnote in 02b.
 
-6. Open one PR. Branch: claude/brand-lock-lumivara-cadence.
+6. Rename file 'docs/mothership/' folder → 'docs/platform/' is
+   OUT OF SCOPE for this PR (filesystem rename has too many
+   downstream link impacts; defer to a separate PR labelled
+   'docs-folder-rename'). Just leave the folder name as-is and
+   update the prose references.
+
+7. Open one PR. Branch: claude/brand-lock-lumivara-forge.
 
 Constraints:
   - Pure mechanical. No reasoning.
   - One commit per scope (mothership-pack, freelance-pack,
-    root-level files).
+    root-level files, 00-INDEX glossary insertion).
   - If a rename feels semantically wrong (e.g., a sentence reads
-    awkwardly), STOP and add a TODO comment with the original
-    line for the operator to review; never paraphrase.
+    awkwardly after substitution), STOP and add a TODO comment
+    with the original line for the operator to review; never
+    paraphrase.
 ```
 
 ---
@@ -574,7 +669,9 @@ DOD:
 
 ## §7 — Run S3 (one-shot): Open the second-Owner break-glass items
 
-**Goal:** even before Run B lands, open tracked issues for the operator-side ceremonies that Run B's prompt cannot do automatically (inviting a second human Owner, printing recovery codes, sealing the envelope, scheduling the first quarterly drill).
+**Goal:** open the four tracked issues for the operator-side ceremonies that Run B's prompt cannot do automatically (inviting a second human Owner, printing recovery codes, sealing the envelope, scheduling the first quarterly drill).
+
+**Status: pre-approved by the operator on 2026-04-28.** Run this as soon as the next Claude Code session starts; no further approval needed.
 
 **Estimated:** Haiku 4.5, ~10 turns, ~5 min.
 

@@ -50,11 +50,13 @@ jobs:
 
       - name: Check API keys
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY_PRIMARY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY_BACKUP: ${{ secrets.OPENAI_API_KEY_BACKUP }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           CLAUDE_OAUTH: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
           fail=0
+          OPENAI_API_KEY="${OPENAI_API_KEY_PRIMARY:-$OPENAI_API_KEY_BACKUP}"
           if [ -z "$GEMINI_API_KEY" ]; then
             echo "::error::GEMINI_API_KEY missing — Gemini path will not work."
             fail=1
@@ -62,9 +64,13 @@ jobs:
             echo "GEMINI_API_KEY: present (length ${#GEMINI_API_KEY})"
           fi
           if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::warning::OPENAI_API_KEY missing — Codex path will fall back."
+            echo "::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP missing — Codex path will fall back."
           else
-            echo "OPENAI_API_KEY: present (length ${#OPENAI_API_KEY})"
+            if [ -n "$OPENAI_API_KEY_PRIMARY" ]; then
+              echo "OPENAI_API_KEY (primary): present (length ${#OPENAI_API_KEY_PRIMARY})"
+            else
+              echo "OPENAI_API_KEY_BACKUP: present and selected (length ${#OPENAI_API_KEY_BACKUP})"
+            fi
           fi
           if [ -z "$CLAUDE_OAUTH" ]; then
             echo "::error::CLAUDE_CODE_OAUTH_TOKEN missing — Claude path will not work."
@@ -102,6 +108,7 @@ jobs:
             echo "| codex CLI | installed |"
             echo "| gemini CLI | installed |"
             echo "| GEMINI_API_KEY | ${{ secrets.GEMINI_API_KEY != '' && 'present' || 'MISSING' }} |"
-            echo "| OPENAI_API_KEY | ${{ secrets.OPENAI_API_KEY != '' && 'present' || 'missing (optional)' }} |"
+            echo "| OPENAI_API_KEY (primary) | ${{ secrets.OPENAI_API_KEY != '' && 'present' || 'missing (optional)' }} |"
+            echo "| OPENAI_API_KEY_BACKUP | ${{ secrets.OPENAI_API_KEY_BACKUP != '' && 'present (backup)' || 'missing (optional)' }} |"
             echo "| CLAUDE_CODE_OAUTH_TOKEN | ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' && 'present' || 'MISSING' }} |"
           } >> "$GITHUB_STEP_SUMMARY"

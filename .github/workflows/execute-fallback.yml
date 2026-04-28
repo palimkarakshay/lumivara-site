@@ -113,12 +113,12 @@ jobs:
           inputs.engine == 'auto' || inputs.engine == 'codex'
         continue-on-error: true
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
           ISSUE: ${{ inputs.issue }}
         run: |
           set -e
           if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::warning::OPENAI_API_KEY missing — skipping Codex."
+            echo "::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP missing — skipping Codex."
             exit 1
           fi
           npm install -g @openai/codex

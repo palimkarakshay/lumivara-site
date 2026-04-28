@@ -3,16 +3,24 @@ import { notFound } from "next/navigation";
 
 import { Card } from "@/components/admin/Card";
 import { ClientInputBanner } from "@/components/admin/ClientInputBanner";
+import { DeployControls } from "@/components/admin/DeployControls";
 import { Section } from "@/components/admin/Section";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { findClient } from "@/lib/admin/clients";
 import { parseLatestAsk } from "@/lib/admin/ask-parser";
 import { formatUtc, relativeTime } from "@/lib/admin/format";
-import { getIssue, listIssueComments } from "@/lib/admin/github";
+import {
+  findLinkedPrNumber,
+  getIssue,
+  getPullRequest,
+  listIssueComments,
+} from "@/lib/admin/github";
 import {
   clientSlugFromLabels,
   statusFromLabels,
 } from "@/lib/admin/status-map";
+import { TIERS } from "@/lib/admin/tiers";
+import { findPreviewByCommit } from "@/lib/admin/vercel";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +74,38 @@ export default async function ClientRequestDetailPage({
       ? parseLatestAsk(commentsResult.items)
       : null;
 
+  const tier = TIERS[client.tier];
+  const showDeploySection =
+    issue.labels.includes("status/awaiting-review") ||
+    issue.labels.includes("status/done");
+
+  // Pull the linked PR + Vercel preview only when we'll render the section.
+  let prHeadSha: string | null = null;
+  let prBranch: string | null = null;
+  let previewUrl: string | null = null;
+
+  if (showDeploySection) {
+    const prNumber = findLinkedPrNumber(issue);
+    if (prNumber != null) {
+      const pr = await getPullRequest(prNumber);
+      if (pr.ok) {
+        prHeadSha = pr.item.headSha;
+        prBranch = pr.item.headBranch;
+        const preview = await findPreviewByCommit(prHeadSha, prBranch);
+        if (preview.ok && preview.preview && preview.preview.state === "READY") {
+          previewUrl = preview.preview.url;
+        }
+      }
+    }
+  }
+
+  const deployState: "idle" | "deploying" | "live" | "failed" =
+    issue.labels.includes("status/done")
+      ? "live"
+      : issue.labels.includes("status/awaiting-review")
+        ? "idle"
+        : "idle";
+
   return (
     <>
       <header className="flex flex-col gap-3">
@@ -89,6 +129,40 @@ export default async function ClientRequestDetailPage({
 
       {ask ? (
         <ClientInputBanner slug={slug} issueNumber={numericId} ask={ask} />
+      ) : null}
+
+      {showDeploySection ? (
+        <Section
+          eyebrow="Test &amp; deploy"
+          title={
+            deployState === "live"
+              ? "Live"
+              : "Ready for your test"
+          }
+          description={
+            deployState === "live"
+              ? `This is now running on ${client.domain}.`
+              : "Open the preview, click around, then approve to push it live."
+          }
+        >
+          <Card>
+            <DeployControls
+              slug={slug}
+              issueNumber={numericId}
+              prHeadSha={prHeadSha}
+              previewUrl={previewUrl}
+              initialState={deployState}
+              approvalEnabled={tier.features.deployApproval}
+              disabledReason={
+                tier.features.deployApproval
+                  ? prHeadSha == null
+                    ? "Linked PR not available yet — preview build hasn't started."
+                    : undefined
+                  : "Confirm Deploy is on Growth and Scale plans. The operator will approve this deploy for you."
+              }
+            />
+          </Card>
+        </Section>
       ) : null}
 
       <Section eyebrow="Status" title={status?.label ?? "Unsorted"}>

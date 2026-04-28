@@ -246,6 +246,70 @@ export type IssueDetail = IssueSummary & {
   linkedPullNumbers: number[];
 };
 
+export type PullRequestSummary = {
+  number: number;
+  htmlUrl: string;
+  state: string;
+  merged: boolean;
+  mergeable: boolean | null;
+  headSha: string;
+  headBranch: string;
+};
+
+type RawPull = {
+  number: number;
+  html_url: string;
+  state: string;
+  merged: boolean;
+  mergeable: boolean | null;
+  head: { sha: string; ref: string };
+};
+
+/** Fetch a single PR. Used by DeployControls to find the head SHA. */
+export async function getPullRequest(
+  number: number,
+): Promise<SingleResult<PullRequestSummary>> {
+  const cfg = readConfig();
+  if (!cfg) {
+    return { ok: false, error: "Set GITHUB_REPO and GITHUB_TOKEN to load PRs." };
+  }
+  try {
+    const res = await fetch(`${GITHUB_API}/repos/${cfg.repo}/pulls/${number}`, {
+      headers: authHeaders(cfg.token),
+      cache: "no-store",
+    });
+    if (res.status === 404) return { ok: false, error: "PR not found." };
+    if (!res.ok) {
+      return { ok: false, error: `GitHub ${res.status}: ${res.statusText}` };
+    }
+    const json = (await res.json()) as RawPull;
+    return {
+      ok: true,
+      item: {
+        number: json.number,
+        htmlUrl: json.html_url,
+        state: json.state,
+        merged: json.merged,
+        mergeable: json.mergeable,
+        headSha: json.head.sha,
+        headBranch: json.head.ref,
+      },
+    };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
+/** Look up the linked PR number from an issue body's GitHub-rendered metadata. */
+export function findLinkedPrNumber(issue: IssueDetail): number | null {
+  // GitHub adds `Closes #N` / `Fixes #N` / etc. to the issue body or the
+  // PR's body. The PR side is fetched separately; here we just scrape the
+  // issue body for the most explicit pattern.
+  const re = /(?:closes|fixes|resolves)\s+#(\d+)/i;
+  const m = issue.body.match(re);
+  return m ? Number.parseInt(m[1], 10) : null;
+}
+
 type RawIssueDetail = RawIssue & {
   state: string;
   closed_at: string | null;

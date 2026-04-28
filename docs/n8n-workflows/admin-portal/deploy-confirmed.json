@@ -1,0 +1,140 @@
+{
+  "name": "Lumivara · Admin · Deploy confirmed",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lumivara-deploy",
+        "responseMode": "responseNode",
+        "options": { "rawBody": true }
+      },
+      "name": "Confirm-deploy webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [200, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "const crypto = require('crypto');\nconst secret = $env['N8N_HMAC_SECRET'];\nconst header = $input.first().headers['x-lumivara-signature'] || '';\nconst raw = $input.first().rawBody?.toString('utf8') ?? '';\nconst parts = Object.fromEntries(header.split(',').map(p => p.split('=')));\nconst t = Number(parts.t);\nconst supplied = parts.v1;\nif (!Number.isFinite(t) || !supplied) throw new Error('bad-signature-format');\nif (Math.abs(Math.floor(Date.now() / 1000) - t) > 300) throw new Error('signature-stale');\nconst expected = crypto.createHmac('sha256', secret).update(`${t}.${raw}`).digest('hex');\nconst a = Buffer.from(expected, 'hex');\nconst b = Buffer.from(supplied, 'hex');\nif (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw new Error('signature-invalid');\nreturn [{ json: JSON.parse(raw) }];"
+      },
+      "name": "Verify HMAC",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [400, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env['VERCEL_DEPLOY_HOOK_' + $json.clientSlug.toUpperCase()] }}",
+        "method": "POST"
+      },
+      "name": "Trigger Vercel deploy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [620, 200]
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": "={{ $env['GITHUB_REPO'].split('/')[0] }}",
+        "repository": "={{ $env['GITHUB_REPO'].split('/')[1] }}",
+        "issueNumber": "={{ $('Verify HMAC').item.json.issueNumber }}",
+        "body": "={{ '🚀 Client tapped Confirm Deploy at ' + new Date().toISOString() + ' for SHA `' + $('Verify HMAC').item.json.prHeadSha.slice(0,7) + '`.' }}"
+      },
+      "name": "Annotate issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [840, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, dispatched: true } }}"
+      },
+      "name": "ACK Next.js",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1060, 200]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vercel-deploy-events",
+        "responseMode": "lastNode"
+      },
+      "name": "Vercel events webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [200, 500]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            { "conditions": { "string": [{ "value1": "={{ $json.type }}", "operation": "equal", "value2": "deployment.succeeded" }] } }
+          ]
+        }
+      },
+      "name": "Succeeded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [400, 500]
+    },
+    {
+      "parameters": {
+        "operation": "edit",
+        "owner": "={{ $env['GITHUB_REPO'].split('/')[0] }}",
+        "repository": "={{ $env['GITHUB_REPO'].split('/')[1] }}",
+        "issueNumber": "={{ $json.payload?.deployment?.meta?.issue || 0 }}",
+        "state": "closed",
+        "labels": "status/done"
+      },
+      "name": "Close issue + status/done",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [620, 400]
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": "={{ $env['GITHUB_REPO'].split('/')[0] }}",
+        "repository": "={{ $env['GITHUB_REPO'].split('/')[1] }}",
+        "issueNumber": "={{ $json.payload?.deployment?.meta?.issue || 0 }}",
+        "body": "🎉 Deploy succeeded — your change is live."
+      },
+      "name": "Celebrate (issue comment)",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [840, 400]
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": "={{ $env['GITHUB_REPO'].split('/')[0] }}",
+        "repository": "={{ $env['GITHUB_REPO'].split('/')[1] }}",
+        "issueNumber": "={{ $json.payload?.deployment?.meta?.issue || 0 }}",
+        "body": "❌ Deploy failed — team notified. Vercel inspector: ={{ $json.payload?.deployment?.url }}"
+      },
+      "name": "Annotate failure",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [620, 600]
+    }
+  ],
+  "connections": {
+    "Confirm-deploy webhook": { "main": [[{ "node": "Verify HMAC", "type": "main", "index": 0 }]] },
+    "Verify HMAC": { "main": [[{ "node": "Trigger Vercel deploy", "type": "main", "index": 0 }]] },
+    "Trigger Vercel deploy": { "main": [[{ "node": "Annotate issue", "type": "main", "index": 0 }]] },
+    "Annotate issue": { "main": [[{ "node": "ACK Next.js", "type": "main", "index": 0 }]] },
+    "Vercel events webhook": { "main": [[{ "node": "Succeeded?", "type": "main", "index": 0 }]] },
+    "Succeeded?": {
+      "main": [
+        [{ "node": "Close issue + status/done", "type": "main", "index": 0 }],
+        [{ "node": "Annotate failure", "type": "main", "index": 0 }]
+      ]
+    },
+    "Close issue + status/done": { "main": [[{ "node": "Celebrate (issue comment)", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "tags": ["lumivara", "admin-portal", "deploy"]
+}

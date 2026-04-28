@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { auth, signOut } from "@/auth";
+import { AdminNav } from "@/components/admin/AdminNav";
+import { MOTHERSHIP_NAV } from "@/components/admin/nav-config";
 import { isAdminEmail } from "@/lib/admin-allowlist";
 
 export const metadata: Metadata = {
@@ -19,68 +21,81 @@ export default async function AdminLayout({
   const signedIn = isAdminEmail(email);
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink">
-      <header className="sticky top-0 z-30 border-b border-border-subtle bg-canvas/90 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-screen-sm items-center justify-between px-4">
+    <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink lg:flex-row">
+      {signedIn ? (
+        <aside
+          aria-label="Admin sections"
+          className="hidden lg:flex lg:w-60 lg:shrink-0 lg:flex-col lg:gap-6 lg:border-r lg:border-border-subtle lg:bg-canvas-elevated lg:px-4 lg:py-6"
+        >
           <Link
             href="/admin"
             className="font-display text-lg tracking-tight text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             Lumivara Admin
           </Link>
-          {signedIn && email ? (
-            <span
-              className="text-caption text-muted-strong truncate max-w-[180px]"
-              title={email}
-            >
-              {email}
-            </span>
-          ) : null}
-        </div>
-      </header>
-
-      <main className="flex-1">
-        <div className="mx-auto w-full max-w-screen-sm px-4 pb-24 pt-6">
-          {children}
-        </div>
-      </main>
-
-      {signedIn ? (
-        <nav
-          aria-label="Admin"
-          className="fixed inset-x-0 bottom-0 z-30 border-t border-border-subtle bg-canvas-elevated/95 backdrop-blur"
-          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-        >
-          <div className="mx-auto flex max-w-screen-sm items-stretch justify-between gap-2 px-4 py-2">
-            <Link
-              href="/admin"
-              className="flex min-h-[44px] flex-1 items-center justify-center rounded-md px-4 text-sm font-medium text-ink hover:bg-parchment"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/admin/runs"
-              className="flex min-h-[44px] flex-1 items-center justify-center rounded-md px-4 text-sm font-medium text-ink hover:bg-parchment"
-            >
-              Runs
-            </Link>
+          <AdminNav items={MOTHERSHIP_NAV} variant="desktop" />
+          <div className="mt-auto flex flex-col gap-2 border-t border-border-subtle pt-4">
+            {email ? (
+              <p
+                className="text-caption text-muted-strong truncate"
+                title={email}
+              >
+                {email}
+              </p>
+            ) : null}
             <form
               action={async () => {
                 "use server";
                 await signOut({ redirectTo: "/admin/sign-in" });
               }}
-              className="flex flex-1"
             >
               <button
                 type="submit"
-                className="min-h-[44px] flex-1 rounded-md px-4 text-sm font-medium text-ink-soft hover:bg-parchment"
+                className="min-h-[40px] w-full rounded-md border border-border-subtle bg-canvas px-3 text-body-sm font-medium text-ink-soft hover:bg-parchment"
               >
                 Sign out
               </button>
             </form>
           </div>
-        </nav>
+        </aside>
       ) : null}
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 border-b border-border-subtle bg-canvas/90 backdrop-blur lg:hidden">
+          <div className="mx-auto flex h-14 max-w-screen-sm items-center justify-between px-4">
+            <Link
+              href="/admin"
+              className="font-display text-lg tracking-tight text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              Lumivara Admin
+            </Link>
+            {signedIn && email ? (
+              <span
+                className="text-caption text-muted-strong truncate max-w-[180px]"
+                title={email}
+              >
+                {email}
+              </span>
+            ) : null}
+          </div>
+        </header>
+
+        <main className="flex-1">
+          <div className="mx-auto w-full max-w-screen-sm px-4 pb-24 pt-6 lg:max-w-6xl lg:px-8 lg:pb-12">
+            {children}
+          </div>
+        </main>
+
+        {signedIn ? (
+          <nav
+            aria-label="Admin"
+            className="fixed inset-x-0 bottom-0 z-30 border-t border-border-subtle bg-canvas-elevated/95 backdrop-blur lg:hidden"
+            style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          >
+            <AdminNav items={MOTHERSHIP_NAV} variant="mobile" />
+          </nav>
+        ) : null}
+      </div>
     </div>
   );
 }

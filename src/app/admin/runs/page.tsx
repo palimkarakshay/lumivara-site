@@ -1,47 +1,26 @@
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
+import { Card } from "@/components/admin/Card";
+import { EmptyState } from "@/components/admin/EmptyState";
+import { RunStateBadge } from "@/components/admin/RunStateBadge";
+import { Section } from "@/components/admin/Section";
 import { isAdminEmail } from "@/lib/admin-allowlist";
+import { formatUtc, relativeTime } from "@/lib/admin/format";
 import {
-  fetchLatestWorkflowRun,
-  fetchRepoVariable,
   isGithubConfigured,
+  listRecentRuns,
   repoSlug,
-  type WorkflowRunResult,
-} from "@/lib/dashboard/github-actions";
-import {
-  DEFAULT_EXECUTE_MODEL_VAR,
-  modelLabel,
-} from "@/lib/dashboard/models";
+  summariseChecks,
+  type CheckSummary,
+} from "@/lib/admin/github";
+import { fetchLatestWorkflowRun } from "@/lib/dashboard/github-actions";
 import { loadWorkflowSchedules } from "@/lib/dashboard/workflow-schedules";
-
-import { ModelForm } from "./model-form";
 
 export const dynamic = "force-dynamic";
 
 const TRIAGE_FILE = "triage.yml";
 const EXECUTE_FILE = "execute.yml";
-
-function formatUtc(date: Date): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "UTC",
-  }).format(date);
-}
-
-function relativeFromNow(target: Date, now: Date): string {
-  const diffMs = target.getTime() - now.getTime();
-  const future = diffMs >= 0;
-  const abs = Math.abs(diffMs);
-  const minutes = Math.round(abs / 60_000);
-  if (minutes < 1) return future ? "in <1 min" : "<1 min ago";
-  if (minutes < 60) return future ? `in ${minutes} min` : `${minutes} min ago`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 48) return future ? `in ${hours} h` : `${hours} h ago`;
-  const days = Math.round(hours / 24);
-  return future ? `in ${days} d` : `${days} d ago`;
-}
 
 function eventLabel(event: string): string {
   switch (event) {
@@ -58,11 +37,6 @@ function eventLabel(event: string): string {
   }
 }
 
-function statusBadge(status: string | null, conclusion: string | null): string {
-  if (status && status !== "completed") return status;
-  return conclusion ?? "unknown";
-}
-
 export default async function RunsDashboardPage() {
   const session = await auth();
   if (!isAdminEmail(session?.user?.email)) {
@@ -70,11 +44,12 @@ export default async function RunsDashboardPage() {
   }
 
   const now = new Date();
-  const [schedules, triageRun, executeRun, modelVar] = await Promise.all([
+  const [schedules, triageRun, executeRun, recent, checks] = await Promise.all([
     loadWorkflowSchedules(now),
     fetchLatestWorkflowRun(TRIAGE_FILE),
     fetchLatestWorkflowRun(EXECUTE_FILE),
-    fetchRepoVariable(DEFAULT_EXECUTE_MODEL_VAR),
+    listRecentRuns(20),
+    summariseChecks([TRIAGE_FILE, EXECUTE_FILE]),
   ]);
 
   const triageSchedule = schedules.find((s) => s.workflow === "Triage");
@@ -82,101 +57,126 @@ export default async function RunsDashboardPage() {
   const configured = isGithubConfigured();
   const repo = repoSlug();
 
-  const currentModel = modelVar.ok ? modelVar.value : null;
-  const modelError = !modelVar.ok ? modelVar.error : null;
+  const checkByFile = new Map<string, CheckSummary>();
+  if (checks.ok) {
+    for (const c of checks.items) checkByFile.set(c.workflowFile, c);
+  }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
+    <div className="flex flex-col gap-10">
+      <header className="flex flex-col gap-2">
         <p className="text-caption text-muted-strong uppercase tracking-wider">
-          Automation
+          Runs
         </p>
-        <h1 className="font-display text-3xl text-ink mt-1">Runs</h1>
-        <p className="text-body-sm text-ink-soft mt-2">
-          Schedule, last run, and the default model the next execute will use.
-          {repo ? (
-            <>
-              {" "}
-              Repo:{" "}
-              <a
-                href={`https://github.com/${repo}/actions`}
-                className="underline"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {repo}
-              </a>
-              .
-            </>
-          ) : null}
+        <h1 className="font-display text-display-sm text-ink">
+          Triage &amp; execute
+        </h1>
+        <p className="text-body-sm text-ink-soft max-w-2xl">
+          Schedule, last run, and quick health check for the two workflows that
+          drive the autopilot. Brain controls (default model + next-run
+          override) live in <a href="/admin/brain" className="underline">Brain</a>.
         </p>
-      </div>
+      </header>
 
       {!configured ? (
-        <div
-          role="alert"
-          className="rounded-lg border border-border-subtle bg-canvas-elevated p-4 text-body-sm text-ink"
-        >
-          <p className="font-medium">GitHub API is not configured.</p>
-          <p className="text-ink-soft mt-1">
-            Set <code>GITHUB_REPO</code> and <code>GITHUB_TOKEN</code> in the
-            environment to load run history and edit the default model. The
-            schedule cards below still work because they read{" "}
-            <code>.github/workflows/*.yml</code> directly.
+        <Card emphasis="warning">
+          <p className="font-medium text-ink">GitHub API is not configured.</p>
+          <p className="text-body-sm text-ink-soft mt-1">
+            Set <code className="font-mono">GITHUB_REPO</code> and{" "}
+            <code className="font-mono">GITHUB_TOKEN</code> to load run data.
+            The schedule cards still work because they read{" "}
+            <code className="font-mono">.github/workflows/*.yml</code> directly.
           </p>
-        </div>
+        </Card>
       ) : null}
 
-      <WorkflowCard
-        title="Triage"
-        file={TRIAGE_FILE}
-        crons={triageSchedule?.crons ?? []}
-        nextRun={triageSchedule?.nextRun ?? null}
-        run={triageRun}
-        now={now}
-      />
-
-      <WorkflowCard
-        title="Execute"
-        file={EXECUTE_FILE}
-        crons={executeSchedule?.crons ?? []}
-        nextRun={executeSchedule?.nextRun ?? null}
-        run={executeRun}
-        now={now}
-      />
-
-      <section className="rounded-lg border border-border-subtle bg-canvas-elevated p-5">
-        <h2 className="font-display text-lg text-ink">Default execute model</h2>
-        <p className="text-body-sm text-ink-soft mt-1">
-          Stored as the <code>{DEFAULT_EXECUTE_MODEL_VAR}</code> repository
-          variable. Per-issue <code>model/*</code> labels still take precedence
-          — this is the fallback when no label is set, and the override the
-          operator can dispatch with.
-        </p>
-        <p className="text-body-sm text-ink mt-3">
-          Currently:{" "}
-          <span className="font-medium">{modelLabel(currentModel)}</span>
-        </p>
-        {modelError ? (
-          <p className="text-caption text-red-700 mt-2">{modelError}</p>
-        ) : null}
-        <div className="mt-4">
-          <ModelForm
-            currentModelId={currentModel}
-            disabled={!configured}
-            disabledReason={
-              configured
-                ? undefined
-                : "Configure GITHUB_REPO and GITHUB_TOKEN to enable editing."
-            }
-          />
-        </div>
+      <section className="grid gap-4 lg:grid-cols-2">
+        <WorkflowScheduleCard
+          title="Triage"
+          file={TRIAGE_FILE}
+          crons={triageSchedule?.crons ?? []}
+          nextRun={triageSchedule?.nextRun ?? null}
+          run={triageRun}
+          now={now}
+        />
+        <WorkflowScheduleCard
+          title="Execute"
+          file={EXECUTE_FILE}
+          crons={executeSchedule?.crons ?? []}
+          nextRun={executeSchedule?.nextRun ?? null}
+          run={executeRun}
+          now={now}
+        />
       </section>
+
+      <Section
+        eyebrow="History"
+        title="Recent runs"
+        description="The last 20 runs across every workflow. Use the GitHub link to drill into job-level logs."
+        action={
+          repo ? (
+            <a
+              href={`https://github.com/${repo}/actions`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-caption underline text-ink-soft hover:text-ink"
+            >
+              View all on GitHub ↗
+            </a>
+          ) : null
+        }
+      >
+        {!recent.ok ? (
+          <Card>
+            <p className="text-body-sm text-[color:var(--error)]">{recent.error}</p>
+          </Card>
+        ) : recent.items.length === 0 ? (
+          <EmptyState title="No runs yet." />
+        ) : (
+          <Card>
+            <ul className="flex flex-col">
+              {recent.items.map((r) => (
+                <li
+                  key={r.id}
+                  className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle py-3 last:border-b-0"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-body-sm font-medium text-ink">
+                      {r.workflowName}{" "}
+                      <span className="font-mono text-muted-strong">
+                        · #{r.runNumber}
+                      </span>
+                    </p>
+                    <p className="truncate text-caption text-ink-soft">
+                      {r.displayTitle}
+                    </p>
+                    <p className="text-caption text-muted-strong">
+                      {eventLabel(r.event)} by {r.actor} ·{" "}
+                      {relativeTime(r.startedAt)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <RunStateBadge status={r.status} conclusion={r.conclusion} />
+                    <a
+                      href={r.htmlUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-caption underline text-ink-soft hover:text-ink"
+                    >
+                      logs ↗
+                    </a>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        )}
+      </Section>
     </div>
   );
 }
 
-function WorkflowCard({
+function WorkflowScheduleCard({
   title,
   file,
   crons,
@@ -188,15 +188,15 @@ function WorkflowCard({
   file: string;
   crons: string[];
   nextRun: Date | null;
-  run: WorkflowRunResult;
+  run: Awaited<ReturnType<typeof fetchLatestWorkflowRun>>;
   now: Date;
 }) {
   return (
-    <section className="rounded-lg border border-border-subtle bg-canvas-elevated p-5">
-      <div className="flex items-baseline justify-between gap-3">
+    <Card>
+      <header className="flex items-baseline justify-between gap-3">
         <h2 className="font-display text-lg text-ink">{title}</h2>
-        <code className="text-caption text-muted-strong">{file}</code>
-      </div>
+        <code className="text-caption text-muted-strong font-mono">{file}</code>
+      </header>
 
       <dl className="mt-4 grid grid-cols-1 gap-3 text-body-sm">
         <div>
@@ -209,55 +209,45 @@ function WorkflowCard({
           <dt className="text-label text-muted-strong">Next scheduled</dt>
           <dd className="text-ink mt-1">
             {nextRun
-              ? `${formatUtc(nextRun)} UTC (${relativeFromNow(nextRun, now)})`
+              ? `${formatUtc(nextRun)} UTC (${relativeTime(nextRun.toISOString(), now)})`
               : "—"}
           </dd>
         </div>
         <div>
           <dt className="text-label text-muted-strong">Last run</dt>
           <dd className="text-ink mt-1">
-            <LastRunDetails run={run} now={now} />
+            {!run.ok ? (
+              <span className="text-[color:var(--error)]">{run.error}</span>
+            ) : !run.run ? (
+              <span className="text-ink-soft">No runs recorded yet.</span>
+            ) : (
+              <div className="flex flex-col gap-1">
+                <span className="flex items-center gap-2">
+                  <RunStateBadge
+                    status={run.run.status}
+                    conclusion={run.run.conclusion}
+                  />
+                  <span className="text-ink">{run.run.displayTitle}</span>
+                </span>
+                <span className="text-ink-soft text-caption">
+                  Triggered by{" "}
+                  <span className="font-medium">{run.run.actor}</span> ·{" "}
+                  {formatUtc(new Date(run.run.startedAt))} UTC (
+                  {relativeTime(run.run.startedAt, now)})
+                </span>
+                <a
+                  href={run.run.htmlUrl}
+                  className="text-caption underline w-fit"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View run #{run.run.runNumber} on GitHub ↗
+                </a>
+              </div>
+            )}
           </dd>
         </div>
       </dl>
-    </section>
-  );
-}
-
-function LastRunDetails({
-  run,
-  now,
-}: {
-  run: WorkflowRunResult;
-  now: Date;
-}) {
-  if (!run.ok) {
-    return <span className="text-red-700">{run.error}</span>;
-  }
-  if (!run.run) {
-    return <span className="text-ink-soft">No runs recorded yet.</span>;
-  }
-  const r = run.run;
-  const started = new Date(r.startedAt);
-  return (
-    <div className="flex flex-col gap-1">
-      <span>
-        <span className="font-medium">{statusBadge(r.status, r.conclusion)}</span>{" "}
-        — {r.displayTitle}
-      </span>
-      <span className="text-ink-soft">
-        Triggered by <span className="font-medium">{r.actor}</span> via{" "}
-        {eventLabel(r.event)} · {formatUtc(started)} UTC (
-        {relativeFromNow(started, now)})
-      </span>
-      <a
-        href={r.htmlUrl}
-        className="text-caption underline"
-        target="_blank"
-        rel="noreferrer"
-      >
-        View run #{r.runNumber} on GitHub →
-      </a>
-    </div>
+    </Card>
   );
 }

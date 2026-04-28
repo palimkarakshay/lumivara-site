@@ -219,7 +219,7 @@ If a Vercel build fails on a bot PR, leave it unmerged and re-comment on the iss
 
 ## Cost
 
-Bot runs use your **Claude Pro/Max subscription** via `CLAUDE_CODE_OAUTH_TOKEN` — no API billing. Usage shares the same 5-hour rolling window as your interactive Claude sessions. See [`docs/BACKLOG.md`](./docs/BACKLOG.md) for tuning levers.
+Bot runs use the operator's **Claude Max 20x subscription** via `CLAUDE_CODE_OAUTH_TOKEN` — no API billing. Usage shares the same 5-hour rolling window as interactive Claude sessions, with ~20× the headroom of the Pro tier. The current phase prioritises quality (Opus everywhere) over throughput; cost optimisation is a later milestone. See [`docs/BACKLOG.md`](./docs/BACKLOG.md) for tuning levers and [`AGENTS.md`](./AGENTS.md) for the active session charter.
 
 ---
 

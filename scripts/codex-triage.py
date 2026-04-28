@@ -4,9 +4,9 @@ OpenAI-Codex-based triage fallback.
 
 Drop-in replacement for `gemini-triage.py` when the operator picks Codex as
 the triage engine, or when both Claude and Gemini are unavailable. Uses
-gpt-4o-mini (configurable via CODEX_TRIAGE_MODEL env var) — cheap and
-fast — and emits the same JSON classification shape, applies the same
-labels, and posts the same rationale comment so downstream tooling
+gpt-5.5 (configurable via CODEX_TRIAGE_MODEL env var) — the ChatGPT Plus
+tier model — and emits the same JSON classification shape, applies the
+same labels, and posts the same rationale comment so downstream tooling
 (routing.py, plan-issues.yml, execute.yml) doesn't have to know which
 engine ran.
 
@@ -25,9 +25,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 from lib.routing import decide_from_classification  # noqa: E402
 
 REPO = "palimkarakshay/lumivara-site"
-OPENAI_MODEL = os.environ.get("CODEX_TRIAGE_MODEL", "gpt-4o-mini")
+OPENAI_MODEL = os.environ.get("CODEX_TRIAGE_MODEL", "gpt-5.5")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
-MAX_ISSUES = 10
+MAX_ISSUES = 25  # Quality-first phase: matches the bumped Claude triage cap
 
 # Reuse the rubric from gemini-triage.py — single source of truth lives there.
 # We re-import so a single edit propagates to both engines.
@@ -85,13 +85,15 @@ def apply_labels(issue_num: int, classification: dict) -> None:
             f"type/{classification['type']}",
             "status/planned",
         ])
+        # Quality-first phase: every complexity tier maps to model/opus by
+        # default. Operators can still hand-edit `model/haiku` or
+        # `model/sonnet` after the fact; the router honours either. When the
+        # cost-optimisation phase lands, this block is the single place to
+        # restore the per-tier mapping.
         complexity = classification["complexity"]
-        if complexity in ("trivial", "easy"):
-            labels_to_add.append("model/haiku")
-        elif complexity == "medium":
-            labels_to_add.append("model/sonnet")
-        else:
-            labels_to_add.extend(["model/opus", "manual-only"])
+        labels_to_add.append("model/opus")
+        if complexity == "complex":
+            labels_to_add.append("manual-only")
 
         routing = (classification.get("routing") or "").strip()
         if routing in {"model/gemini-pro", "model/codex", "model/cline"}:

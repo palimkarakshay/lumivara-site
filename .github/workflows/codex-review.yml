@@ -1,7 +1,7 @@
-name: Codex review (OpenAI gpt-4o-mini)
+name: Codex review (OpenAI gpt-5.5)
 
-# Runs OpenAI Codex / gpt-4o-mini on issues that the router has tagged for
-# code review or diff analysis. Posts the review as a comment on the issue
+# Runs OpenAI gpt-5.5 (ChatGPT Plus tier) on issues that the router has tagged
+# for code review or diff analysis. Posts the review as a comment on the issue
 # (and on the linked PR, if any). No code commits.
 #
 # Triggered by execute.yml when an issue is labeled `model/codex`, or
@@ -18,9 +18,9 @@ on:
         description: "Issue number"
         required: true
       model:
-        description: "OpenAI model id (default gpt-4o-mini)"
+        description: "OpenAI model id (default gpt-5.5)"
         required: false
-        default: "gpt-4o-mini"
+        default: "gpt-5.5"
 
 permissions:
   contents: read
@@ -125,7 +125,7 @@ jobs:
           prompt = "\n".join(parts)
 
           key = os.environ["OPENAI_API_KEY"].strip()
-          model = os.environ.get("MODEL", "gpt-4o-mini")
+          model = os.environ.get("MODEL", "gpt-5.5")
           req = urllib.request.Request(
               "https://api.openai.com/v1/chat/completions",
               data=json.dumps({

@@ -6,10 +6,10 @@ name: Plan triaged issues
 # can implement it deterministically — that's what makes Claude-down execute
 # fallback safe.
 #
-# Engine ladder per issue:
-#   1. Claude Sonnet (preferred — best structured output + tool use)
+# Engine ladder per issue (quality-first phase):
+#   1. Claude Opus (preferred — strongest planning quality + tool use)
 #   2. Gemini 2.5 Pro     ← scripts/plan-issue.py
-#   3. OpenAI gpt-4o      ← scripts/plan-issue.py
+#   3. OpenAI gpt-5.5     ← scripts/plan-issue.py
 #
 # If all three fail, the issue stays unplanned and the next run retries.
 
@@ -21,9 +21,10 @@ on:
         required: false
         default: ""
   schedule:
-    # Every 2 hours — keeps the planner roughly in step with the bumped
-    # execute cadence so the executor rarely waits on a planless issue.
-    - cron: '15 */2 * * *'
+    # Every hour, offset 30 min from execute.yml so plans land just before
+    # the next execute pass. Quality-first phase keeps the executor from
+    # stalling on planless issues.
+    - cron: '30 * * * *'
 
 permissions:
   contents: read
@@ -78,8 +79,8 @@ jobs:
         if: steps.pick.outputs.issues == ''
         run: echo "Nothing to plan this run. Exiting cleanly."
 
-      # ── Preferred: Claude Sonnet writes the plan ──────────────────────────
-      - name: "Plan with Claude Sonnet (preferred)"
+      # ── Preferred: Claude Opus writes the plan ────────────────────────────
+      - name: "Plan with Claude Opus (preferred)"
         id: claude_plan
         if: steps.pick.outputs.issues != ''
         continue-on-error: true
@@ -105,7 +106,7 @@ jobs:
             2. Skim relevant src/ files to ground the plan in real paths.
             3. Write a comment in this exact format:
 
-               **Detailed plan (Claude Sonnet)**
+               **Detailed plan (Claude Opus)**
 
                _Posted by plan-issues.yml. Any executor (Claude, Codex,
                Gemini) may implement this plan without further interpretation._
@@ -135,10 +136,10 @@ jobs:
             needs to touch one of those, list it in "Risks / open questions"
             instead of planning the change.
           claude_args: |
-            --max-turns 50
-            --model claude-sonnet-4-6
+            --max-turns 200
+            --model claude-opus-4-7
 
-      # ── Fallback: Gemini Pro / OpenAI gpt-4o via plan-issue.py ────────────
+      # ── Fallback: Gemini Pro / OpenAI gpt-5.5 via plan-issue.py ───────────
       # Runs even if Claude succeeded, but plan-issue.py's --skip-existing
       # logic (the `plan/detailed` label check) means it's a no-op for
       # issues Claude already handled.
@@ -166,6 +167,6 @@ jobs:
             echo ""
             echo "| Engine | Status |"
             echo "|--------|--------|"
-            echo "| Claude Sonnet | ${{ steps.claude_plan.outcome || 'skipped' }} |"
+            echo "| Claude Opus | ${{ steps.claude_plan.outcome || 'skipped' }} |"
             echo "| Gemini → OpenAI fallback | ran best-effort |"
           } >> "$GITHUB_STEP_SUMMARY"

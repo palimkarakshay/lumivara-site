@@ -9,6 +9,18 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- **Quality-first phase** for the operator's **Claude Max 20x** subscription. Best-possible outcome is now the gating priority; cost optimisation is deferred to a future client-onboarding milestone. See `AGENTS.md` for the active session charter.
+- Claude routing: every triage / plan / implement step defaults to `claude-opus-4-7`. Per-tier mapping (`trivial|easy → haiku`, `medium → sonnet`, `complex → opus`) is preserved in comments and reserved for the future cost-optimisation phase.
+- OpenAI / Codex paths upgraded to `gpt-5.5` (ChatGPT Plus tier) across `codex-review.yml`, `triage.yml` Codex fallback, `scripts/codex-triage.py`, `scripts/plan-issue.py`, `scripts/lib/routing.py`, and the smoke-test ping.
+- Gemini free tier remains the default for the high-frequency fallback ladder (`gemini-2.5-flash` for triage, `gemini-2.5-pro` for deep research / planning).
+- Session-budget gates relaxed: `50%/80%` → `80%/95%` watermarks. Triage cap `5–10 → ~25` issues per run. Execute path now allows up to **3 issues per cron run** (was hard-capped at one).
+- `--max-turns` lifted across the board: triage `40 → 150`, execute `80 → 400`, execute-single `120 → 500`, execute-complex Opus plan `30 → 150` and Phase 2 `120 → 500` (Phase 2 also promoted from Sonnet to Opus), plan-issues `50 → 200`.
+- Cron cadence: triage `30m → 15m`, execute `2h → 1h`, plan-issues `2h → 1h` (offset 30 min).
+- `.claude/settings.json`: thinking `budget_tokens 10000 → 32000`, `compactContextThreshold 0.5 → 0.9`, `subagentModel haiku → claude-opus-4-7`.
+- AI Ops dashboard: `DEFAULT_AI_MODEL` documented initial value `sonnet → opus` to match the new default.
+- Documentation refreshed: `README.md`, `docs/BACKLOG.md`, `docs/AI_ROUTING.md`, `docs/MONITORING.md`, `docs/wiki/Bot-Workflow.md` now describe the quality-first phase and the gpt-5.5 / Gemini-free-tier routing.
+
 ---
 
 ## [0.3.0] — 2026-04-23

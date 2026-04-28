@@ -54,13 +54,13 @@ CASES = [
         "gemini", "gemini-research",
     ),
     (
-        "Code review on a PR diff (Codex / gpt-4o-mini)",
+        "Code review on a PR diff (Codex / gpt-5.5)",
         {"priority/P3", "complexity/easy", "model/codex",
          "area/site", "type/code-review", "auto-routine"},
         "codex", "codex-review",
     ),
     (
-        "Cline-flagged agentic refactor — must downgrade to Sonnet",
+        "Cline-flagged agentic refactor — substituted to Opus (quality-first)",
         {"priority/P2", "complexity/complex", "model/cline",
          "area/site", "type/tech-site", "manual-only"},
         "cline-downgraded", "claude",
@@ -78,7 +78,7 @@ CASES = [
         "claude", "claude",
     ),
     (
-        "Bare issue with nothing useful — defaults to Claude Sonnet",
+        "Bare issue with nothing useful — defaults to Claude Opus (quality-first)",
         {"priority/P3"},
         "claude", "claude",
     ),

@@ -2,9 +2,9 @@ name: Triage backlog
 
 on:
   schedule:
-    # Every 30 minutes — bumped from hourly so new issues + clarifications
-    # round-trip faster. Gemini + Codex fallbacks make the cost negligible.
-    - cron: '*/30 * * * *'
+    # Every 15 minutes — quality-first phase keeps the Inbox fresh so new
+    # issues land in the planner queue with minimal latency.
+    - cron: '*/15 * * * *'
   workflow_dispatch:
     inputs:
       engine:
@@ -93,8 +93,10 @@ jobs:
             echo "_Clear it manually from AI Ops once you've confirmed the run._"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # ── Claude Haiku (skipped if engine=gemini|codex) ──────────────────────
-      - name: Claude Haiku triage
+      # ── Claude Opus triage (skipped if engine=gemini|codex) ────────────────
+      # Quality-first phase: Opus is the default for classification. The
+      # cost-optimisation phase will reconsider this in favour of Haiku.
+      - name: Claude Opus triage
         id: claude_triage
         if: steps.engine.outputs.engine == 'auto' || steps.engine.outputs.engine == 'claude'
         continue-on-error: true
@@ -118,8 +120,8 @@ jobs:
             complexity/area/type/model labels as usual so the hold item is
             navigable.
           claude_args: |
-            --max-turns 40
-            --model claude-haiku-4-5-20251001
+            --max-turns 150
+            --model claude-opus-4-7
 
       # ── Gemini Flash fallback (skipped if engine=claude|codex) ─────────────
       # Always runs in `auto` mode (not conditional on Claude failure). The
@@ -141,7 +143,7 @@ jobs:
       # Catches the case where Claude is rate-limited AND Gemini's free tier
       # is exhausted. Exits cleanly when OPENAI_API_KEY is missing so a repo
       # without OpenAI credits doesn't fail triage.
-      - name: Codex (gpt-4o-mini) triage fallback
+      - name: Codex (gpt-5.5) triage fallback
         id: codex_triage
         if: |
           always() && (
@@ -162,9 +164,9 @@ jobs:
             echo ""
             echo "| Stage | Status |"
             echo "|-------|--------|"
-            echo "| Claude Haiku | ${{ steps.claude_triage.outcome || 'skipped' }} |"
+            echo "| Claude Opus | ${{ steps.claude_triage.outcome || 'skipped' }} |"
             echo "| Gemini Flash | ${{ steps.gemini_triage.outcome || 'skipped' }} |"
-            echo "| Codex gpt-4o-mini | ${{ steps.codex_triage.outcome || 'skipped' }} |"
+            echo "| Codex gpt-5.5 | ${{ steps.codex_triage.outcome || 'skipped' }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
   # ── Kick the planning stage so newly-triaged issues get a detailed plan ───

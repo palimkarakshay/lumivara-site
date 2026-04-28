@@ -1,0 +1,216 @@
+<!-- OPERATOR-ONLY. Recommendations on naming and brand. -->
+
+# 15 — Terminology & Brand: Recommendations
+
+The pack uses placeholders (`mothership`, `operator`, `client`, `agent`) that work internally but don't map cleanly to industry-standard terms. This doc proposes a renaming scheme that is unambiguous to anyone with a standard PMP / SRE / agency background, plus brand-name alternatives that scale to the broader product family the operator hinted at ("automation/self-sustaining/branding/communication/marketing products that will be logically offered in the next few years").
+
+---
+
+## §1 — Internal terminology: what to keep, what to rename
+
+The principle: every internal noun should be **immediately understood by a senior engineer or PM walking in cold**. The current placeholders are evocative but require translation.
+
+| Current placeholder | Issue | Recommended rename | Why |
+|---|---|---|---|
+| **Mothership** | Sci-fi / metaphorical; not a standard role in any industry framework | **Control Plane** (preferred) or **Platform** | "Control plane" is the standard term in cloud / SRE / k8s for the system that manages a fleet. It's exactly what the mothership *is*. Anyone with a backend background understands it instantly. |
+| **Mothership repo** | "ship" implies a thing, not a system | **Platform Repo** or **Control-Plane Repo** | Pairs with the above. |
+| **Operator** | Slightly ambiguous (SRE / industrial / pyhsical-plant operator?) | **Operator** (keep) — but qualify in context as **Founder-Operator** until headcount > 1, then **Practice Operator** | "Operator" as a role is established in MSP/IT and SRE worlds; just qualify scope. |
+| **Client** | Fine | **Client** (keep) | Industry-standard for service businesses. |
+| **Client repo** | Fine but generic | **Site Repo** | Names the artefact (a marketing site), not the relationship. Reduces confusion when the same client later has a "careers site" — that's also a Site Repo, owned by the same Client. |
+| **Agent** | Overloaded — "AI agent", "client agent" (legal), "service agent" — pick one | **Pipeline** for the overall automation; **Run** or **Job** for one execution; **Bot** for the GitHub identity | Keeps "agent" out of the pack entirely, avoiding the three competing meanings. |
+| **Autopilot** (customer-facing) | Already a marketing word that maps cleanly | **Autopilot** (keep) — *only* in client-facing copy; never in operator docs | Customer-facing differentiator. Internally call it "the pipeline." |
+| **Cadence** (T0–T3 cron schedules) | Fine | **Cadence** (keep) | Industry-standard term for "how frequently a thing runs." |
+| **Tier** | Fine | **Tier** (keep) | Industry-standard. |
+| **Trust zone** | Slightly heavy | **Zone** (keep, but drop "trust" prefix in casual references) | "Trust zone" is correct security terminology; just don't repeat the modifier 5 times per page. |
+| **Vendor bot account** | Two words doing one job | **Bot Account** | "Vendor" is implicit; just call it the bot. |
+| **Operator overlay** | Specific to the two-branch trick — and that trick is being reworked (`11 §1`) | TBD after `11` lands | Will become "Pipeline branch" if Pattern A wins, or "Pipeline repo" if Pattern C wins. |
+
+### One-page glossary, post-rename
+
+```
+Control Plane / Platform   The mothership: one private repo + one GitHub
+                          org + Railway n8n + operator vault. Manages the
+                          fleet. Never client-visible.
+
+Platform Repo             palimkarakshay/{{BRAND_SLUG}}-platform — the
+                          control plane's source code, runbooks, CLI.
+
+Site Repo                 One per client engagement. Holds the marketing
+                          site + the admin portal.
+
+Pipeline                  The set of GitHub Actions workflows + scripts +
+                          n8n flows that triage, plan, execute, and
+                          deploy site changes.
+
+Pipeline Run              One scheduled execution of one workflow.
+
+Bot Account               {{BRAND_SLUG}}-bot — the GitHub identity that
+                          opens PRs and writes labels.
+
+Operator                  The human running the practice. Today: one
+                          person (Founder-Operator). Future: optionally
+                          a second (Practice Operator).
+
+Client                    The small-business customer.
+
+Tier                      One of T0 / T1 / T2 / T3 / T4 — the price +
+                          cadence + included-edits bundle.
+
+Cadence                   How frequently the pipeline runs for a given
+                          client (set per Tier).
+
+Zone                      Trust boundary. Three zones: Platform,
+                          Site (per-client), Shared third-party
+                          (Vercel, Resend, etc.).
+
+Engagement                One Client × one signed Statement of Work ×
+                          one Site Repo. Has a start, an end, an
+                          engagement-log.md.
+
+Autopilot                 Customer-facing name for the Pipeline. Used
+                          in marketing copy, never in code or runbooks.
+```
+
+Apply this glossary as a top-of-doc reference in `00-INDEX.md` once the rename lands.
+
+---
+
+## §2 — Brand alternatives: beyond Lumivara Forge
+
+The operator likes "Lumivara Forge." It's a fine name. Listing alternatives because the brand will sit in domains, GitHub orgs, customer copy, sub-product names, and the operator's email signature for the next 5–10 years; the right name compounds.
+
+### Selection criteria
+
+A good brand for this practice scores well on:
+
+1. **Captures the essence:** building, maintaining, and improving without supervision.
+2. **Extensible:** the operator wants to ship adjacent products (automation, self-sustaining, branding, communication, marketing) over the next few years. The brand should accommodate sub-products without breaking.
+3. **Brand-family halo with Lumivara People Advisory** (Beas's brand) — but not so coupled that her rebrand forces yours.
+4. **Pronounceable globally** (the operator is in Toronto; clients may be ROW).
+5. **Domain availability** in `.com` and `.ca`.
+6. **Doesn't collide** with existing tech-stack names or trademarks.
+
+### The shortlist (recommended for serious consideration)
+
+| # | Name | Reads as | Why it fits | Future product names |
+|---|---|---|---|---|
+| 1 | **Lumivara Forge** ★ (current) | "the maker shop within Lumivara" | Maker / artisan; exactly the "build & maintain" frame | Forge Sites, Forge Comms, Forge Brand, Forge Pulse |
+| 2 | **Lumivara Cadence** ★ recommended for the broader vision | "the rhythm-keeper" | The literal mechanism of the offering — the autopilot's *cadence* — becomes the brand. Self-sustaining is in the name. | Cadence Sites, Cadence Comms, Cadence Voice, Cadence Pulse, Cadence Studio |
+| 3 | **Lumivara Continuum** | "the unbroken thread" | Speaks directly to "doesn't decay between updates"; very elegant for the always-improving promise | Continuum Sites, Continuum Voice, Continuum Atlas |
+| 4 | **Lumivara Pulse** | "the heartbeat" | Living-system metaphor; pairs with monitoring/dashboard naturally | Pulse Sites, Pulse Comms, Pulse Beat |
+| 5 | **Lumivara Loom** (already in `01`) | "the weaver" | Distinct, premium, brand-able | Loom Sites, Loom Lines, Loom Voice |
+| 6 | **Lumivara Atelier** (already in `01`) | "the studio" | Premium positioning | Atelier Sites, Atelier Press |
+| 7 | **Lumivara Helm** | "the captain" | Steering/guidance; works for advisory + tech under one umbrella | Helm Sites, Helm Voice, Helm Compass |
+| 8 | **Lumivara Lighthouse** | "the beacon" | Plays on "Lumi" (light) etymology; signals reliability | Lighthouse Sites, Lighthouse Watch |
+| 9 | **Lumivara Compass** | "the direction-giver" | Advisory / guidance frame; clean adjacent to Beas's HR practice | Compass Sites, Compass Voice |
+| 10 | **Plumbline Studio** (independent of Lumivara, already in `01`) | "the straight-shooter" | Full separation; cleaner if brand-family ever decouples | Plumbline Sites, Plumbline Voice, Plumbline Comms |
+
+### The recommendation
+
+**Two viable choices depending on where the operator wants to land in 24 months:**
+
+- **If you are committed to staying inside the Lumivara brand-family for the long haul:** **Lumivara Cadence** is the strongest pick. The reason: "cadence" is also the technical mechanic of the product (the cadence matrix in `04`), so the brand and the engineering vocabulary reinforce each other. Future product names — *Cadence Voice* (communication), *Cadence Brand* (visual identity), *Cadence Pulse* (monitoring) — all read as a coherent suite.
+- **If you want a name that survives a future independent path:** **Forge** (already chosen) is fine. Slightly more crowded ("Forge" appears in many tech-tool names) but evokes the right verbs.
+
+### Names I'd avoid
+
+- *Lumivara Stack* — generic, every tech co called Stack-something.
+- *Lumivara Tech Solutions* / *Info Tech Solutions* (the original placeholder) — reads like a 2012 SI-shop.
+- *Lumivara AI* — dates immediately; AI-as-noun naming will look 2024-vintage by 2027.
+- Any brand that needs a hyphen in the URL (`my-brand-name.com`) — readability tax forever.
+
+### What the operator needs to verify before committing
+
+```
+[ ] {{BRAND_SLUG}}.com available (Namecheap / Cloudflare check).
+[ ] {{BRAND_SLUG}}.ca available.
+[ ] @{{BRAND_SLUG}} handle on Twitter/X, LinkedIn, Github (org slug).
+[ ] No active CIPO trademark conflict in Class 42 (computer services)
+    or Class 35 (advertising/business management) — quick search at
+    https://ised-isde.canada.ca/cipo/trademarks-search/.
+[ ] No US TM conflict (USPTO TESS) for the same classes.
+[ ] Pronounces cleanly when said aloud at a coffee shop ("hi, I'm
+    from Lumivara Cadence" should not require a spelling).
+[ ] Reads cleanly in an email signature 4 lines from your name
+    without crowding.
+```
+
+---
+
+## §3 — Sub-product naming convention (for the next 24 months)
+
+The operator hinted at future products in adjacent verticals. Establish a naming convention now so the second product doesn't break the system.
+
+### Pattern: `{{BRAND}} {{Product Word}}`
+
+```
+Lumivara Cadence Sites      — the offering covered by this pack
+Lumivara Cadence Voice      — communication / inbox / reply automation
+Lumivara Cadence Brand      — logo / colour / type / asset generation
+Lumivara Cadence Pulse      — monitoring + observability + alerts
+Lumivara Cadence Atlas      — multi-site / multi-region overview
+Lumivara Cadence Studio     — the mobile-first operator dashboard
+```
+
+- **One brand, many products.** Each "product word" is a single English noun.
+- **Each product gets its own GitHub repo** under the same org (`{{BRAND_SLUG}}/{{slug}}-voice`, `{{BRAND_SLUG}}/{{slug}}-brand`, etc.).
+- **Cross-product integration is a deliberate "Cadence Suite" decision**, not an accident.
+- **Sub-product retirement is graceful** — the suite name doesn't change when you sunset one product.
+
+### What to do today
+
+- Buy the parent domain (`{{BRAND_SLUG}}.com` and `.ca`).
+- Park a one-page placeholder.
+- Don't buy sub-product domains yet; subdomain or path until each product proves itself (`pulse.{{BRAND_SLUG}}.com`, `{{BRAND_SLUG}}.com/voice`).
+
+---
+
+## §4 — Renames to apply when the brand locks
+
+Once the operator picks a brand:
+
+```
+Repo-level    {{BRAND_SLUG}}        → e.g., lumivara-cadence
+              {{BRAND_SLUG}}-bot    → lumivara-cadence-bot
+              {{BRAND_SLUG}}-mothership → lumivara-cadence-platform
+                          (also rename "mothership" → "platform" per §1)
+
+Domain        {{BRAND_SLUG}}.com    → lumivara-cadence.com
+              mail.{{BRAND_SLUG}}.com → mail.lumivara-cadence.com
+
+Org          GitHub org name        → lumivara-cadence
+              n8n hostname           → n8n.lumivara-cadence.com
+
+Display       {{BRAND}}              → "Lumivara Cadence"
+              Sub-product            → "Lumivara Cadence Sites"
+
+Workflow     n8n workflow prefixes   → cadence-* (per-client suffix)
+              Site footer credit     → "Built on Lumivara Cadence"
+```
+
+Single global find-replace pass against `docs/mothership/`, `docs/freelance/`, the templates, the workflows, and the dashboard. All placeholders already use `{{BRAND}}` / `{{BRAND_SLUG}}`, so the rename is mechanical.
+
+---
+
+## §5 — Summary action list
+
+Decisions the operator owes themselves before P5 ships:
+
+```
+[ ] Lock the brand. Recommendation: Lumivara Cadence (or stay with Forge).
+[ ] Decide §1 rename: mothership → control plane / platform.
+    Recommendation: platform (less jargon-y for newcomers, still
+    industry-correct).
+[ ] Decide whether the sub-product naming convention is "Cadence Sites,
+    Cadence Voice" or "Forge Sites, Forge Voice" — this is essentially
+    locking the brand pick.
+[ ] Buy the brand domain.
+[ ] CIPO + USPTO trademark availability check.
+[ ] Add this glossary to 00-INDEX.md once renames land.
+[ ] Update 01 §1 with the additional brand candidates above; mark
+    Lumivara Cadence as the new co-recommended option alongside Forge.
+```
+
+The renames touch ~150 references across the repo. Doable in one Claude session (60–90 turns, Sonnet). Prompt body lives in `16 §4`.
+
+*Last updated: 2026-04-28.*

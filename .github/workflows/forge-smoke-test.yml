@@ -1,0 +1,69 @@
+name: Forge smoke test
+
+# Verifies the Forge lane (forge-triage.yml + forge-execute.yml + their prompts)
+# is structurally sound. Runs:
+#   - on every push that touches the Forge files (so a regression is caught
+#     in the same PR that introduces it)
+#   - on a weekly cron (Mondays 12:30 UTC, 30 min after ai-smoke-test.yml)
+#   - on workflow_dispatch
+#
+# This test does NOT call any AI provider — it's pure shape/regex/eligibility
+# logic. The provider-level smoke is owned by ai-smoke-test.yml.
+
+on:
+  push:
+    paths:
+      - '.github/workflows/forge-triage.yml'
+      - '.github/workflows/forge-execute.yml'
+      - '.github/workflows/forge-smoke-test.yml'
+      - 'scripts/forge-triage-prompt.md'
+      - 'scripts/forge-execute-prompt.md'
+      - 'scripts/test-forge-routing.py'
+  pull_request:
+    paths:
+      - '.github/workflows/forge-triage.yml'
+      - '.github/workflows/forge-execute.yml'
+      - '.github/workflows/forge-smoke-test.yml'
+      - 'scripts/forge-triage-prompt.md'
+      - 'scripts/forge-execute-prompt.md'
+      - 'scripts/test-forge-routing.py'
+  schedule:
+    - cron: '30 12 * * 1'   # Mondays 12:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyYAML
+        run: pip install --quiet pyyaml
+
+      - name: YAML parse — forge-triage.yml + forge-execute.yml
+        run: |
+          python3 -c "import yaml; yaml.safe_load(open('.github/workflows/forge-triage.yml').read()); print('forge-triage.yml OK')"
+          python3 -c "import yaml; yaml.safe_load(open('.github/workflows/forge-execute.yml').read()); print('forge-execute.yml OK')"
+
+      - name: Forge routing + eligibility + path-allow tests
+        run: python3 scripts/test-forge-routing.py
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Forge smoke test"
+            echo ""
+            echo "- Workflow shape: parsed"
+            echo "- Eligibility filter: validated against 10 synthetic issues"
+            echo "- Auto-merge path-allow regex: validated against 11 paths"
+            echo "- AI provider tests live in ai-smoke-test.yml (separate)"
+          } >> "$GITHUB_STEP_SUMMARY"

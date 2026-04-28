@@ -198,19 +198,21 @@ jobs:
           # outside the forge allow-list. Prevents a hallucinated edit to src/
           # or .github/workflows/ from sliding into prod.
           BAD=$(gh pr diff "$PR_NUM" --repo palimkarakshay/lumivara-site --name-only \
-                 | grep -vE '^(docs/|AGENTS\.md|CLAUDE\.md|CHANGELOG\.md|README\.md|scripts/lib/routing\.py)$' \
+                 | grep -vE '^(docs/.+|AGENTS\.md|CLAUDE\.md|CHANGELOG\.md|README\.md|scripts/lib/routing\.py)$' \
                  || true)
           if [ -n "$BAD" ]; then
             echo "::warning::Forge PR #$PR_NUM touches files outside the Forge allow-list:"
             echo "$BAD"
             echo "Skipping auto-merge. Operator review required."
+            {
+              printf '%s\n' "Auto-merge skipped: this Forge PR touches files outside the Forge allow-list. Operator review required."
+              printf '\n'
+              printf '%s\n' "Files outside scope:"
+              printf '\n'
+              printf '    %s\n' $BAD
+            } > /tmp/forge-skip-comment.md
             gh pr comment "$PR_NUM" --repo palimkarakshay/lumivara-site \
-              --body "⚠️ Auto-merge **skipped**: this Forge PR touches files outside the Forge allow-list. Operator review required.
-
-Files outside scope:
-\`\`\`
-$BAD
-\`\`\`"
+              --body-file /tmp/forge-skip-comment.md
             exit 0
           fi
 

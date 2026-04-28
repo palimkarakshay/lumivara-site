@@ -129,8 +129,8 @@ export function ServiceDetailTemplate({ service }: ServiceDetailTemplateProps) {
         </p>
         <ol className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {[
-            { step: "Diagnose", body: "Stakeholders, data, surrounding context — find the real problem." },
-            { step: "Design", body: "Solution tailored to your strategy, culture, and maturity." },
+            { step: "Diagnose", body: "Stakeholders, data, surrounding context — find the real challenge." },
+            { step: "Design", body: "Approach tailored to your strategy, culture, and maturity." },
             { step: "Measure", body: "Outcome-linked KPIs, defined upfront, tracked through delivery." },
           ].map((p, i) => (
             <li

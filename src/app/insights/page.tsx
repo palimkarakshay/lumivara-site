@@ -28,7 +28,7 @@ export default async function InsightsPage() {
       <PageHero
         monoLabel="Insights"
         headline="Field notes on people strategy."
-        subhead="Writing on the real problems leaders face — hiring, leadership capability, talent systems, culture, and the future of work."
+        subhead="Writing on the real challenges leaders face — hiring, leadership capability, talent systems, culture, and the future of work."
       />
 
       <SectionShell variant="canvas">

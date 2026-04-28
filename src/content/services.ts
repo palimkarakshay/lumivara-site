@@ -110,7 +110,7 @@ export const services: Service[] = [
       {
         title: "Workforce Upskilling, Learning Strategy & Capability Building",
         tagline:
-          "Design learning systems that solve real business problems and drive sustained performance.",
+          "Design learning systems that address real business challenges and drive sustained performance.",
         description:
           "End-to-end learning strategy and program design focused on building critical workforce capabilities — aligned to business priorities, enabled through modern learning approaches, and reinforced through sustainment and measurement.",
         items: [
@@ -273,7 +273,7 @@ export const services: Service[] = [
     shortTitle: "Future of Work",
     tagline: "Prepare your workforce for a digital, AI-enabled future of work.",
     shortDescription:
-      "We help organizations identify emerging capability needs, design future-ready workforce strategies, and implement technology-enabled systems that support learning, talent development, and decision-making. The focus is on building practical, scalable solutions that connect technology investments to real business outcomes.",
+      "We help organizations identify emerging capability needs, design future-ready workforce strategies, and implement technology-enabled systems that support learning, talent development, and decision-making. The focus is on building practical, scalable approaches that connect technology investments to real business outcomes.",
     diagnosticQuestion: "Is your workforce ready for what AI is about to change in your industry?",
     signals: [
       "AI and automation are moving faster than your capability planning",
@@ -319,10 +319,10 @@ export const services: Service[] = [
     number: "06",
     title: "General HR Advisory & Strategic Support",
     shortTitle: "HR Advisory",
-    tagline: "Diagnose the real problem — and design the right people strategy to solve it.",
+    tagline: "Diagnose the real challenge — and design the right people strategy to address it.",
     shortDescription:
-      "We work with leadership teams to assess underlying organizational challenges, identify root causes, and provide targeted HR and people strategy advisory. The focus is on moving beyond surface-level solutions to address the real drivers of performance, capability, and organizational effectiveness. We also partner with organizations to provide support as a fractional HR consultant.",
-    diagnosticQuestion: "What if the problem you're trying to solve isn't the real problem?",
+      "We work with leadership teams to assess underlying organizational challenges, identify root causes, and provide targeted HR and people strategy advisory. The focus is on moving beyond surface-level approaches to address the real drivers of performance, capability, and organizational effectiveness. We also partner with organizations to provide support as a fractional HR consultant.",
+    diagnosticQuestion: "What if the challenge you're addressing isn't the real challenge?",
     signals: [
       "The same people issues keep resurfacing under different labels",
       "Leadership disagrees on the root cause",
@@ -337,13 +337,13 @@ export const services: Service[] = [
         title: "Diagnostics & Talent Needs Assessment",
         tagline: "Identify what's really driving outcomes — and act on it.",
         description:
-          "Structured diagnostics and advisory support to help organizations understand gaps in capability, leadership, processes, or culture, and design practical solutions aligned to business priorities.",
+          "Structured diagnostics and advisory support to help organizations understand gaps in capability, leadership, processes, or culture, and design practical approaches aligned to business priorities.",
         items: [
           "Organizational diagnostics and root cause analysis",
           "HR and people strategy advisory aligned to business goals",
           "HR capability assessments and maturity evaluations",
           "Leadership advisory on people, structure, and organizational effectiveness",
-          "Problem definition and solution design for complex people challenges",
+          "Challenge definition and approach design for complex people challenges",
         ],
       },
       {
@@ -373,7 +373,7 @@ export const services: Service[] = [
       },
     ],
     kpis: [
-      "Problem-to-solution clarity",
+      "Challenge-to-approach clarity",
       "Stakeholder alignment",
       "Execution velocity",
       "Capability lift post-engagement",

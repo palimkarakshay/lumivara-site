@@ -1,14 +1,14 @@
 export const contactContent = {
   hero: {
     monoLabel: "Start a Conversation",
-    headline: "Let's find the real problem.",
+    headline: "Let's find the real challenge.",
     subhead:
       "Every engagement starts with a 30-minute discovery conversation — complimentary and focused on you. We'll review your message and get back to you within 48 hours.",
   },
 
   booking: {
     label: "Book a Discovery Call",
-    body: "Pick a time that works. Thirty minutes, focused on the problem you're trying to solve. No pitch deck.",
+    body: "Pick a time that works. Thirty minutes, focused on the challenge you're working through. No pitch deck.",
   },
 
   inquiry: {

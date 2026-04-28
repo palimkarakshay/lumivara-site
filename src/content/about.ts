@@ -17,7 +17,7 @@ export const aboutContent = {
   philosophy: {
     monoLabel: "The Philosophy",
     heading: "Built on strategy. Delivered through capability. Measured by impact.",
-    caption: "Designed for organizations that want more than standard solutions.",
+    caption: "Designed for organizations that want more than standard approaches.",
     items: [
       {
         number: "01",
@@ -27,7 +27,7 @@ export const aboutContent = {
       {
         number: "02",
         title: "Delivered through capability.",
-        body: "Solutions are designed specifically for your organization's stage, culture, and maturity — then built so they continue to work after we leave.",
+        body: "Approaches are designed specifically for your organization's stage, culture, and maturity — then built so they continue to work after we leave.",
       },
       {
         number: "03",
@@ -47,8 +47,8 @@ export const aboutContent = {
     monoLabel: "Our Approach",
     heading: "Clarity first. Then design.",
     paragraphs: [
-      "We believe most organizations don't have a talent problem — they have a clarity, capability, or execution gap. Addressing these gaps requires more than applying standard frameworks. Lumivara focuses on identifying root causes, understanding the unique dynamics of the organization, and designing targeted solutions that are specific to its needs.",
-      "Every engagement is grounded in the belief that no two organizations are the same. Lumivara designs solutions that are fully tailored to each client's context, challenges, and priorities — ensuring that what is built is not only well-designed, but relevant, practical, and effective in real-world application.",
+      "We believe most organizations don't have a talent problem — they have a clarity, capability, or execution gap. Addressing these gaps requires more than applying standard frameworks. Lumivara focuses on identifying root causes, understanding the unique dynamics of the organization, and designing targeted approaches that are specific to its needs.",
+      "Every engagement is grounded in the belief that no two organizations are the same. Lumivara designs approaches that are fully tailored to each client's context, challenges, and priorities — ensuring that what is built is not only well-designed, but relevant, practical, and effective in real-world application.",
     ],
   },
 

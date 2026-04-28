@@ -42,6 +42,32 @@ Store both in a password manager. They go into Vercel **and** n8n.
 | Google   | https://console.cloud.google.com → APIs & Services → Credentials → Create OAuth 2.0 client | Authorised redirect: `https://lumivara.ca/api/auth/callback/google` | `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` |
 | Microsoft Entra | https://entra.microsoft.com → App registrations → New registration | Redirect: `https://lumivara.ca/api/auth/callback/microsoft-entra-id` | `AUTH_MICROSOFT_ENTRA_ID_ID`, `_SECRET`, `_ISSUER` |
 
+### 1.2b Provision the verification-token store `[ONCE]`
+
+Auth.js v5's Resend (magic-link) provider needs somewhere to store the
+verification token between when it's sent and when the user clicks the
+link in the email. **Without this, magic-link sign-in fails silently:
+the email arrives, but clicking the link redirects back to
+`/api/auth/signin/resend` instead of `/admin`.**
+
+The cheapest path is **Vercel KV** (Upstash-backed, free tier):
+
+1. Vercel dashboard → your project → **Storage** → **Create Database**
+   → KV → name it `lumivara-auth` (or anything) → **Create**.
+2. Connect it to this project (Vercel does this automatically when you
+   create from inside the project's Storage tab). Vercel injects:
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
+   - plus `KV_*` aliases (we use the Upstash names).
+3. **Redeploy** — env vars only apply on a fresh build.
+4. Verify on `/admin/sign-in`: the Resend form is visible (when
+   missing, the page shows a "Magic-link sign-in is offline" notice
+   and falls back to OAuth).
+
+> **Skip-this-step alternative**: leave these vars unset and use only
+> Google + Microsoft OAuth for now. The page handles this gracefully —
+> add Vercel KV when you're ready to enable magic links.
+
 ### 1.3 Create the GitHub PAT `[ONCE]`
 
 GitHub → Settings → Developer settings → **Fine-grained personal access
@@ -120,6 +146,8 @@ of the rows in the table below to **Production** and **Preview**:
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | …Google OAuth client | 1.2 |
 | `AUTH_MICROSOFT_ENTRA_ID_ID` / `_SECRET` / `_ISSUER` | …Microsoft app | 1.2 |
 | `ADMIN_ALLOWLIST_EMAILS` | `hello@lumivara.ca` (comma-separated for more) | code default already includes this |
+| `UPSTASH_REDIS_REST_URL` | …Upstash REST URL | 1.2b (Vercel KV auto-injects) |
+| `UPSTASH_REDIS_REST_TOKEN` | …Upstash REST token | 1.2b (Vercel KV auto-injects) |
 | `GITHUB_REPO` | `palimkarakshay/lumivara-site` | 1.3 |
 | `GITHUB_TOKEN` | …PAT | 1.3 |
 | `N8N_HMAC_SECRET` | …32-byte hex | 1.1 |
@@ -323,6 +351,7 @@ checked out this branch in their working repo.
 | Symptom                                          | First place to check                                         |
 |--------------------------------------------------|--------------------------------------------------------------|
 | Magic-link email never arrives                   | Resend dashboard → check the API key + DKIM is verified.     |
+| Magic link arrives but clicking it returns to `/api/auth/signin/resend` | Vercel KV not connected — the verification token has nowhere to live. See step 1.2b. |
 | `/admin` redirects in a loop                     | Vercel env: `AUTH_SECRET` set on **both** Production and Preview. |
 | Submit form errors “Intake is offline”           | `N8N_INTAKE_WEBHOOK_URL` + `N8N_HMAC_SECRET` not set, or n8n workflow inactive. |
 | Decision banner submits but label doesn't drop   | `client-input-record` workflow inactive, or PAT missing **Issues: write**. |

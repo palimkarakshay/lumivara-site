@@ -146,7 +146,7 @@ jobs:
         if: steps.pick.outputs.issues != ''
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
           GH_TOKEN: ${{ github.token }}
           ISSUES: ${{ steps.pick.outputs.issues }}
         run: |

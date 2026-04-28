@@ -50,14 +50,14 @@ jobs:
       - name: Verify Codex CLI + key
         id: verify
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::warning::OPENAI_API_KEY missing — re-routing issue to Claude."
+            echo "::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP missing — re-routing issue to Claude."
             gh issue comment ${{ inputs.issue }} \
               --repo palimkarakshay/lumivara-site \
-              --body "Codex review requested but OPENAI_API_KEY is not configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
+              --body "Codex review requested but neither OPENAI_API_KEY nor OPENAI_API_KEY_BACKUP is configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
             gh issue edit ${{ inputs.issue }} \
               --repo palimkarakshay/lumivara-site \
               --remove-label "model/codex" || true
@@ -70,7 +70,7 @@ jobs:
       - name: Run Codex review pass
         if: steps.verify.outputs.ok == 'true'
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
           GH_TOKEN: ${{ github.token }}
           ISSUE: ${{ inputs.issue }}
           MODEL: ${{ inputs.model }}

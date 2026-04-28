@@ -53,13 +53,13 @@ jobs:
         if: always()
         continue-on-error: true
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
         run: |
           python3 - <<'PY'
           import json, os, sys, urllib.request, urllib.error
           key = os.environ.get("OPENAI_API_KEY","").strip()
           if not key:
-              print("::warning::OPENAI_API_KEY not set — OpenAI/Codex fallback unavailable")
+              print("::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP not set — OpenAI/Codex fallback unavailable")
               sys.exit(0)
           req = urllib.request.Request(
               "https://api.openai.com/v1/chat/completions",

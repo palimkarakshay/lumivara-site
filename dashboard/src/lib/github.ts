@@ -34,6 +34,14 @@ export type RepoVariable = {
   updated_at: string;
 };
 
+export type PendingIssue = {
+  number: number;
+  title: string;
+  html_url: string;
+  created_at: string;
+  labels: string[];
+};
+
 export function makeClient(token: string): Octokit {
   return new Octokit({ auth: token, userAgent: "lumivara-ai-ops/0.1" });
 }
@@ -138,6 +146,43 @@ export async function listWorkflowRuns(
     per_page: perPage,
   });
   return res.data.workflow_runs as unknown as WorkflowRun[];
+}
+
+export async function listPendingIssues(
+  octo: Octokit,
+  perPage = 100,
+): Promise<PendingIssue[]> {
+  const res = await octo.issues.listForRepo({
+    owner: OWNER,
+    repo: REPO,
+    state: "open",
+    per_page: perPage,
+  });
+
+  return res.data
+    .filter((item) => !("pull_request" in item))
+    .map((item) => {
+      const labels = item.labels
+        .map((label) => (typeof label === "string" ? label : label.name ?? ""))
+        .filter(Boolean);
+      return {
+        number: item.number,
+        title: item.title,
+        html_url: item.html_url,
+        created_at: item.created_at,
+        labels,
+      };
+    })
+    .filter((item) =>
+      item.labels.some(
+        (label) =>
+          label === "status/planned" ||
+          label === "status/in-progress" ||
+          label === "status/needs-clarification" ||
+          label === "needs-client-input",
+      ),
+    )
+    .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
 }
 
 export async function triggerWorkflow(

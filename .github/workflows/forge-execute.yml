@@ -1,0 +1,233 @@
+name: Forge execute (high cadence)
+
+# High-cadence implementation lane scoped to Lumivara Forge / Pattern C / mothership
+# work. Runs every 30 minutes (vs. the general execute's hourly) so doc-refactor
+# PRs land continuously while the operator works in other lanes.
+#
+# This workflow does NOT replace `execute.yml`. It only handles issues that carry
+# `area/forge` AND were classified by `forge-triage.yml` (or the general triage,
+# but only after `area/forge` was added).
+#
+# Quality-first phase: every step runs on Claude Opus.
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Specific Forge issue number (blank = auto-pick top P1/P2)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: forge-execute-runtime
+  cancel-in-progress: false
+
+jobs:
+  forge-execute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git identity
+        run: |
+          git config user.name "claude-auto"
+          git config user.email "claude-auto@users.noreply.github.com"
+
+      # ── Pick the top eligible Forge issue ─────────────────────────────────
+      # Eligibility:
+      #   - open
+      #   - has `area/forge`
+      #   - has `auto-routine`
+      #   - is NOT already in-progress / awaiting-review / blocked / on-hold
+      #   - has a priority/* label
+      # Ordering: priority → complexity → createdAt (FIFO within tier).
+      - name: Pick eligible Forge issue
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_ISSUE: ${{ inputs.issue }}
+        run: |
+          if [ -n "$INPUT_ISSUE" ]; then
+            gh issue view "$INPUT_ISSUE" \
+              --repo palimkarakshay/lumivara-site \
+              --json number,title,labels > /tmp/forge.json
+            python3 - <<'PY'
+          import json, os
+          i = json.load(open('/tmp/forge.json'))
+          labels = {l['name'] for l in i['labels']}
+          if 'area/forge' not in labels:
+              print(f"::warning::Issue #{i['number']} lacks area/forge — out of scope.")
+              open(os.environ['GITHUB_OUTPUT'], 'a').write("issue=0\n")
+          else:
+              open(os.environ['GITHUB_OUTPUT'], 'a').write(f"issue={i['number']}\n")
+              print(f"Manual dispatch: working Forge issue #{i['number']}")
+          PY
+            exit 0
+          fi
+
+          gh issue list --repo palimkarakshay/lumivara-site \
+            --label area/forge --label auto-routine --state open \
+            --json number,title,labels,createdAt --limit 50 > /tmp/candidates.json
+
+          python3 - <<'PY'
+          import json, os, sys
+          issues = json.load(open('/tmp/candidates.json'))
+          EXCLUDE = {"human-only", "manual-only", "status/blocked",
+                     "status/in-progress", "status/needs-clarification",
+                     "status/awaiting-review", "status/on-hold"}
+          PRIO_RANK = {"priority/P1": 0, "priority/P2": 1, "priority/P3": 2}
+          COMP_RANK = {"complexity/trivial": 0, "complexity/easy": 1,
+                       "complexity/medium": 2, "complexity/complex": 3}
+          eligible = []
+          for i in issues:
+              labels = {l["name"] for l in i["labels"]}
+              if labels & EXCLUDE: continue
+              prio = min((PRIO_RANK.get(l, 99) for l in labels), default=99)
+              comp = min((COMP_RANK.get(l, 99) for l in labels), default=99)
+              if prio == 99: continue
+              eligible.append((prio, comp, i["createdAt"], i["number"], i["title"]))
+          out = open(os.environ["GITHUB_OUTPUT"], "a")
+          summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          def emit(s: str):
+              print(s)
+              if summary:
+                  open(summary, "a").write(s + "\n")
+          emit("## Forge execute — pick")
+          emit(f"Scanned {len(issues)} `area/forge`+`auto-routine` candidate(s); "
+               f"{len(eligible)} eligible after filters.")
+          if not eligible:
+              out.write("issue=0\n")
+              emit("No eligible Forge issues this run. Exiting cleanly.")
+              sys.exit(0)
+          eligible.sort()
+          _, _, _, num, title = eligible[0]
+          emit(f"Selected Forge issue #{num} — {title}")
+          out.write(f"issue={num}\n")
+          PY
+
+      - name: No eligible Forge issue — exiting
+        if: steps.pick.outputs.issue == '0'
+        run: echo "No eligible Forge issues this cron run. Exiting cleanly."
+
+      - name: Export ISSUE_NUMBER to job env
+        if: steps.pick.outputs.issue != '0'
+        run: echo "ISSUE_NUMBER=${{ steps.pick.outputs.issue }}" >> "$GITHUB_ENV"
+
+      # ── Implementation: Claude Opus reads forge-execute-prompt.md ────────
+      - id: forge_run
+        if: steps.pick.outputs.issue != '0'
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          settings: |
+            {
+              "permissions": {
+                "allow": [
+                  "Bash",
+                  "Read",
+                  "Write",
+                  "Edit",
+                  "Glob",
+                  "Grep"
+                ]
+              }
+            }
+          prompt: |
+            Forge issue #${{ steps.pick.outputs.issue }} has been pre-selected
+            for you by the Forge router. ISSUE_NUMBER is exported in your env.
+
+            Read `scripts/forge-execute-prompt.md` and follow it exactly. Honour
+            the Allowed-writes / Forbidden-writes lists — they are the safety
+            boundary that lets this lane run on a 30-min cron without supervision.
+
+            Commit in small batches (one logical change per commit). The Forge
+            issues explicitly request this; honour it.
+
+            The `gh` CLI is authenticated. Node + dependencies are installed.
+            When done, print the summary and exit.
+          claude_args: |
+            --max-turns 500
+            --model claude-opus-4-7
+
+      # ── Auto-merge → Vercel prod ─────────────────────────────────────────
+      # Forge PRs are docs-only by construction (the prompt's Forbidden-writes
+      # list enforces it), so they're safe to auto-merge once Vercel's deploy
+      # preview check passes. Auto-merge waits for that check, then squash-merges
+      # to main, and Vercel auto-deploys main to prod.
+      - name: Enable auto-merge on the Forge PR (if opened)
+        if: |
+          always() &&
+          steps.pick.outputs.issue != '0' &&
+          steps.forge_run.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ steps.pick.outputs.issue }}
+        run: |
+          set +e
+          PR_NUM=$(gh pr list --repo palimkarakshay/lumivara-site \
+                     --state open --head "auto/forge-issue-$ISSUE" \
+                     --json number --jq '.[0].number // empty')
+          if [ -z "$PR_NUM" ]; then
+            echo "No Forge PR found for issue #$ISSUE — skipping auto-merge."
+            exit 0
+          fi
+          echo "Found Forge PR #$PR_NUM for issue #$ISSUE."
+
+          # Sanity guardrail: refuse to auto-merge if the PR touches anything
+          # outside the forge allow-list. Prevents a hallucinated edit to src/
+          # or .github/workflows/ from sliding into prod.
+          BAD=$(gh pr diff "$PR_NUM" --repo palimkarakshay/lumivara-site --name-only \
+                 | grep -vE '^(docs/|AGENTS\.md|CLAUDE\.md|CHANGELOG\.md|README\.md|scripts/lib/routing\.py)$' \
+                 || true)
+          if [ -n "$BAD" ]; then
+            echo "::warning::Forge PR #$PR_NUM touches files outside the Forge allow-list:"
+            echo "$BAD"
+            echo "Skipping auto-merge. Operator review required."
+            gh pr comment "$PR_NUM" --repo palimkarakshay/lumivara-site \
+              --body "⚠️ Auto-merge **skipped**: this Forge PR touches files outside the Forge allow-list. Operator review required.
+
+Files outside scope:
+\`\`\`
+$BAD
+\`\`\`"
+            exit 0
+          fi
+
+          echo "Forge PR #$PR_NUM stays inside the docs allow-list. Enabling auto-merge (squash)."
+          gh pr merge "$PR_NUM" --auto --squash \
+            --repo palimkarakshay/lumivara-site
+          echo "Auto-merge enabled. Vercel preview check gates the merge;"
+          echo "after merge, Vercel auto-deploys main to prod."
+
+      # ── Summary ───────────────────────────────────────────────────────────
+      - name: Surface terminal status
+        if: always() && steps.pick.outputs.issue != '0'
+        run: |
+          {
+            echo "## Forge execute outcome — issue #${{ steps.pick.outputs.issue }}"
+            echo ""
+            echo "| Stage | Outcome |"
+            echo "|-------|---------|"
+            echo "| Forge implementation (Opus) | ${{ steps.forge_run.outcome || 'skipped' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

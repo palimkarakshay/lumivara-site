@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AutoRefresh } from "@/components/admin/AutoRefresh";
 import { Card } from "@/components/admin/Card";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { Section } from "@/components/admin/Section";
@@ -75,6 +76,7 @@ export default async function ClientPreviewPage({
 
   return (
     <>
+      <AutoRefresh />
       <header className="flex flex-col gap-2">
         <p className="text-caption text-muted-strong uppercase tracking-wider">
           Preview

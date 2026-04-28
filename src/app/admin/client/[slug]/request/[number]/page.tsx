@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AutoRefresh } from "@/components/admin/AutoRefresh";
 import { Card } from "@/components/admin/Card";
 import { ClientInputBanner } from "@/components/admin/ClientInputBanner";
 import { DeployControls } from "@/components/admin/DeployControls";
@@ -108,6 +109,7 @@ export default async function ClientRequestDetailPage({
 
   return (
     <>
+      <AutoRefresh />
       <header className="flex flex-col gap-3">
         <Link
           href={`/admin/client/${slug}`}

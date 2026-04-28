@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
+import { AutoRefresh } from "@/components/admin/AutoRefresh";
 import { Card } from "@/components/admin/Card";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { IssueCard } from "@/components/admin/IssueCard";
@@ -47,6 +48,7 @@ export default async function ClientRequestsPage({
 
   return (
     <>
+      <AutoRefresh />
       <header className="flex flex-col gap-2">
         <p className="text-caption text-muted-strong uppercase tracking-wider">
           Your requests

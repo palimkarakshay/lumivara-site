@@ -114,4 +114,82 @@
   "active": false,
   "settings": { "executionOrder": "v1" },
   "version": 1
+  "name": "Lumivara · Admin · Intake (email)",
+  "nodes": [
+    {
+      "parameters": {
+        "mailbox": "INBOX",
+        "format": "simple",
+        "downloadAttachments": false,
+        "options": { "customEmailConfig": "[\"UNSEEN\"]" }
+      },
+      "name": "IMAP — requests@",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const allowed = ($env['INTAKE_ALLOW_DOMAINS'] || '').split(',').map(s => s.trim()).filter(Boolean);\nconst from = $input.first().json.from?.value?.[0]?.address || '';\nconst host = from.split('@')[1] || '';\nif (allowed.length && !allowed.includes(host)) throw new Error('sender-domain-not-allowlisted');\nconst clientSlug = $env['INTAKE_DEFAULT_CLIENT'] || 'lumivara';\nreturn [{ json: { title: $input.first().json.subject || '(no subject)', body: $input.first().json.text || $input.first().json.html || '', replyTo: from, clientSlug } }];"
+      },
+      "name": "Allow-list + normalise",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "model": "claude-opus-4-7",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are an issue-structurer for the Lumivara admin portal. Take the client's raw email and produce JSON with {title, body, suggestedLabels[]}. Always include the raw email under '## Original request'."
+          },
+          {
+            "role": "user",
+            "content": "={{ $json.title }}\\n\\n{{ $json.body }}"
+          }
+        ]
+      },
+      "name": "Structure with Claude",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [620, 300]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "owner": "={{ $env['GITHUB_REPO'].split('/')[0] }}",
+        "repository": "={{ $env['GITHUB_REPO'].split('/')[1] }}",
+        "title": "={{ $json.title }}",
+        "body": "={{ $json.body }}\\n\\n<!-- source=email client={{ $('Allow-list + normalise').item.json.clientSlug }} reply={{ $('Allow-list + normalise').item.json.replyTo }} -->",
+        "labels": "=source/email,client/{{ $('Allow-list + normalise').item.json.clientSlug }},status/triage"
+      },
+      "name": "Create GitHub issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [840, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "Lumivara <hello@={{ $env['LUMIVARA_DOMAIN'] }}>",
+        "toEmail": "={{ $('Allow-list + normalise').item.json.replyTo }}",
+        "subject": "Re: ={{ $('Allow-list + normalise').item.json.title }}",
+        "html": "<p>Got it. We're reviewing your request.</p><p>Live status: <a href=\"https://{{ $env['LUMIVARA_DOMAIN'] }}/admin/client/{{ $('Allow-list + normalise').item.json.clientSlug }}/request/{{ $json.number }}\">tap here</a>.</p>"
+      },
+      "name": "Auto-reply",
+      "type": "n8n-nodes-base.resend",
+      "typeVersion": 1,
+      "position": [1060, 300]
+    }
+  ],
+  "connections": {
+    "IMAP — requests@": { "main": [[{ "node": "Allow-list + normalise", "type": "main", "index": 0 }]] },
+    "Allow-list + normalise": { "main": [[{ "node": "Structure with Claude", "type": "main", "index": 0 }]] },
+    "Structure with Claude": { "main": [[{ "node": "Create GitHub issue", "type": "main", "index": 0 }]] },
+    "Create GitHub issue": { "main": [[{ "node": "Auto-reply", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "tags": ["lumivara", "admin-portal", "intake"]
 }

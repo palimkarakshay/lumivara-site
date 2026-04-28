@@ -1,0 +1,98 @@
+{
+  "name": "Lumivara · Admin · Client input — notify",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "github-needs-client-input",
+        "responseMode": "lastNode"
+      },
+      "name": "GitHub label-added webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const evt = $input.first().json;\nif (evt.action !== 'labeled') return [];\nif (evt.label?.name !== 'needs-client-input') return [];\nconst issue = evt.issue;\nconst body = issue.body || '';\nconst meta = body.match(/<!--\\s*source=(\\w+)\\s+client=(\\S+)\\s+reply=(\\S+)\\s*-->/);\nconst source = meta?.[1] ?? 'web';\nconst clientSlug = meta?.[2] ?? 'lumivara';\nconst replyTo = meta?.[3] ?? '';\nreturn [{ json: { issueNumber: issue.number, title: issue.title, source, clientSlug, replyTo } }];"
+      },
+      "name": "Parse issue + source",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "owner": "={{ $env['GITHUB_REPO'].split('/')[0] }}",
+        "repository": "={{ $env['GITHUB_REPO'].split('/')[1] }}",
+        "issueNumber": "={{ $json.issueNumber }}",
+        "limit": 5
+      },
+      "name": "Fetch latest comment",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [620, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const items = $input.all();\nconst latest = items.reverse().find(i => (i.json.body || '').trim().toUpperCase().startsWith('[ASK]'));\nconst question = latest ? latest.json.body.replace(/^\\[ASK\\]/i, '').trim() : 'We need your input.';\nconst meta = $('Parse issue + source').item.json;\nreturn [{ json: { ...meta, question } }];"
+      },
+      "name": "Pick [ASK]",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [840, 300]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            { "conditions": { "string": [{ "value1": "={{ $json.source }}", "operation": "equal", "value2": "sms" }] }, "renameOutput": false }
+          ]
+        }
+      },
+      "name": "Switch on source",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1060, 300]
+    },
+    {
+      "parameters": {
+        "from": "={{ $env['TWILIO_FROM_NUMBER'] }}",
+        "to": "={{ $json.replyTo }}",
+        "message": "We need your quick input on \"={{ $json.title }}\". Tap: https://{{ $env['LUMIVARA_DOMAIN'] }}/admin/client/{{ $json.clientSlug }}/request/{{ $json.issueNumber }}"
+      },
+      "name": "Notify by SMS",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [1280, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "Lumivara <hello@={{ $env['LUMIVARA_DOMAIN'] }}>",
+        "toEmail": "={{ $json.replyTo }}",
+        "subject": "We have a quick question",
+        "html": "<p>We need your input on <strong>={{ $json.title }}</strong>.</p><p>{{ $json.question }}</p><p><a href=\"https://{{ $env['LUMIVARA_DOMAIN'] }}/admin/client/{{ $json.clientSlug }}/request/{{ $json.issueNumber }}\">Answer in the dashboard</a>.</p>"
+      },
+      "name": "Notify by email",
+      "type": "n8n-nodes-base.resend",
+      "typeVersion": 1,
+      "position": [1280, 400]
+    }
+  ],
+  "connections": {
+    "GitHub label-added webhook": { "main": [[{ "node": "Parse issue + source", "type": "main", "index": 0 }]] },
+    "Parse issue + source": { "main": [[{ "node": "Fetch latest comment", "type": "main", "index": 0 }]] },
+    "Fetch latest comment": { "main": [[{ "node": "Pick [ASK]", "type": "main", "index": 0 }]] },
+    "Pick [ASK]": { "main": [[{ "node": "Switch on source", "type": "main", "index": 0 }]] },
+    "Switch on source": {
+      "main": [
+        [{ "node": "Notify by SMS", "type": "main", "index": 0 }],
+        [{ "node": "Notify by email", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "tags": ["lumivara", "admin-portal", "client-input"]
+}

@@ -152,4 +152,93 @@
   "active": false,
   "settings": { "executionOrder": "v1" },
   "version": 1
+  "name": "Lumivara · Admin · Intake (web)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lumivara-intake-web",
+        "responseMode": "responseNode",
+        "options": { "rawBody": true }
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const crypto = require('crypto');\nconst secret = $env['N8N_HMAC_SECRET'];\nconst header = $input.first().headers['x-lumivara-signature'] || '';\nconst raw = $input.first().rawBody?.toString('utf8') ?? '';\nconst parts = Object.fromEntries(header.split(',').map(p => p.split('=')));\nconst t = Number(parts.t);\nconst supplied = parts.v1;\nif (!Number.isFinite(t) || !supplied) throw new Error('bad-signature-format');\nif (Math.abs(Math.floor(Date.now() / 1000) - t) > 300) throw new Error('signature-stale');\nconst expected = crypto.createHmac('sha256', secret).update(`${t}.${raw}`).digest('hex');\nconst a = Buffer.from(expected, 'hex');\nconst b = Buffer.from(supplied, 'hex');\nif (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw new Error('signature-invalid');\nreturn [{ json: JSON.parse(raw) }];"
+      },
+      "name": "Verify HMAC",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "model": "claude-opus-4-7",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are an issue-structurer for the Lumivara admin portal. Take the client's raw request and produce a Markdown body with: ## Acceptance criteria (bullet list), ## Suggested labels (CSV from: priority/P1, priority/P2, priority/P3, complexity/trivial..complex, area/site, area/copy, area/infra, area/content, type/tech-site, type/business-lumivara). Always include the raw request verbatim under '## Original request' so a human can re-read source. Output JSON: {\"title\": string, \"body\": string, \"suggestedLabels\": string[]}"
+          },
+          {
+            "role": "user",
+            "content": "={{ $json.title }}\\n\\n{{ $json.body }}"
+          }
+        ]
+      },
+      "name": "Structure with Claude",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [620, 300]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "owner": "={{ $env['GITHUB_REPO'].split('/')[0] }}",
+        "repository": "={{ $env['GITHUB_REPO'].split('/')[1] }}",
+        "title": "={{ $json.title }}",
+        "body": "={{ $json.body }}\\n\\n<!-- source=web client=={{ $('Verify HMAC').item.json.clientSlug }} reply={{ $('Verify HMAC').item.json.replyTo }} -->",
+        "labels": "=source/web,client/{{ $('Verify HMAC').item.json.clientSlug }},status/triage"
+      },
+      "name": "Create GitHub issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [840, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "Lumivara <hello@={{ $env['LUMIVARA_DOMAIN'] }}>",
+        "toEmail": "={{ $('Verify HMAC').item.json.replyTo }}",
+        "subject": "We got it — tracking your request",
+        "html": "<p>Got it. We're reviewing your request <strong>{{ $('Verify HMAC').item.json.title }}</strong>.</p><p>Live status: <a href=\"https://{{ $env['LUMIVARA_DOMAIN'] }}/admin/client/{{ $('Verify HMAC').item.json.clientSlug }}/request/{{ $json.number }}\">tap here</a>.</p>"
+      },
+      "name": "Reply to client (Resend)",
+      "type": "n8n-nodes-base.resend",
+      "typeVersion": 1,
+      "position": [1060, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, issueNumber: $('Create GitHub issue').item.json.number } }}"
+      },
+      "name": "ACK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1280, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Verify HMAC", "type": "main", "index": 0 }]] },
+    "Verify HMAC": { "main": [[{ "node": "Structure with Claude", "type": "main", "index": 0 }]] },
+    "Structure with Claude": { "main": [[{ "node": "Create GitHub issue", "type": "main", "index": 0 }]] },
+    "Create GitHub issue": { "main": [[{ "node": "Reply to client (Resend)", "type": "main", "index": 0 }]] },
+    "Reply to client (Resend)": { "main": [[{ "node": "ACK", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "tags": ["lumivara", "admin-portal", "intake"]
 }

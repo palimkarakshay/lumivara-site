@@ -183,6 +183,50 @@ export async function setRepoVariable(
   }
 }
 
+export async function deleteRepoVariable(
+  name: string,
+): Promise<RepoVariableWriteResult> {
+  const cfg = readConfig();
+  if (!cfg) {
+    return {
+      ok: false,
+      error: "GITHUB_REPO and GITHUB_TOKEN must be configured.",
+    };
+  }
+  try {
+    const res = await fetch(
+      `${GITHUB_API}/repos/${cfg.repo}/actions/variables/${encodeURIComponent(name)}`,
+      {
+        method: "DELETE",
+        headers: authHeaders(cfg.token),
+        cache: "no-store",
+      },
+    );
+    if (res.status === 204 || res.status === 404) return { ok: true };
+    return { ok: false, error: `GitHub ${res.status}: ${res.statusText}` };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
+export async function fetchRepoVariableUpdatedAt(
+  name: string,
+): Promise<{ updatedAt: string } | null> {
+  const cfg = readConfig();
+  if (!cfg) return null;
+  try {
+    const res = await fetch(
+      `${GITHUB_API}/repos/${cfg.repo}/actions/variables/${encodeURIComponent(name)}`,
+      { headers: authHeaders(cfg.token), cache: "no-store" },
+    );
+    if (!res.ok) return null;
+    const json = (await res.json()) as { updated_at?: string };
+    return json.updated_at ? { updatedAt: json.updated_at } : null;
+  } catch {
+    return null;
+  }
+}
+
 export function isGithubConfigured(): boolean {
   return readConfig() !== null;
 }

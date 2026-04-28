@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { auth, signIn } from "@/auth";
+import { adapterReady, auth, signIn } from "@/auth";
 
 export default async function AdminSignInPage({
   searchParams,
@@ -37,36 +37,49 @@ export default async function AdminSignInPage({
         </div>
       ) : null}
 
-      <form
-        action={async (formData) => {
-          "use server";
-          await signIn("resend", {
-            email: String(formData.get("email") ?? ""),
-            redirectTo: "/admin",
-          });
-        }}
-        className="flex flex-col gap-3"
-      >
-        <label htmlFor="email" className="text-label text-muted-strong">
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-          inputMode="email"
-          placeholder="you@company.com"
-          className="min-h-[44px] w-full rounded-md border border-border-subtle bg-canvas px-4 text-base text-ink placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-        />
-        <button
-          type="submit"
-          className="min-h-[44px] w-full rounded-md bg-ink px-4 text-base font-medium text-canvas hover:bg-accent hover:text-ink"
+      {adapterReady ? (
+        <form
+          action={async (formData) => {
+            "use server";
+            await signIn("resend", {
+              email: String(formData.get("email") ?? ""),
+              redirectTo: "/admin",
+            });
+          }}
+          className="flex flex-col gap-3"
         >
-          Email me a sign-in link
-        </button>
-      </form>
+          <label htmlFor="email" className="text-label text-muted-strong">
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            inputMode="email"
+            placeholder="you@company.com"
+            className="min-h-[44px] w-full rounded-md border border-border-subtle bg-canvas px-4 text-base text-ink placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          />
+          <button
+            type="submit"
+            className="min-h-[44px] w-full rounded-md bg-ink px-4 text-base font-medium text-canvas hover:bg-accent hover:text-ink"
+          >
+            Email me a sign-in link
+          </button>
+        </form>
+      ) : (
+        <div
+          role="status"
+          className="rounded-lg border border-[color:var(--accent)]/40 bg-[color:var(--accent)]/10 p-4 text-body-sm text-ink"
+        >
+          <p className="font-medium">Magic-link sign-in is offline.</p>
+          <p className="text-ink-soft mt-1">
+            We need a Vercel KV / Upstash Redis store before email links work.
+            Use Google or Microsoft below for now — same account, same access.
+          </p>
+        </div>
+      )}
 
       <div className="flex items-center gap-3" aria-hidden>
         <span className="h-px flex-1 bg-border-subtle" />

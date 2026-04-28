@@ -1,4 +1,133 @@
 {
+  "name": "Lumivara — intake-sms",
+  "_notes": [
+    "Reference template for Phase 2 of the admin portal.",
+    "Import into n8n, then: (1) set Twilio credential on 'Twilio reply',",
+    "(2) set Anthropic credential on 'Structure with Claude',",
+    "(3) set GitHub credential on 'Create GitHub Issue'.",
+    "Activate the workflow and copy the webhook URL into the Twilio number's 'A message comes in' webhook (HTTP POST).",
+    "Allow-list sender phone numbers by editing the 'Allow-list phone' node — defaults are placeholders.",
+    "Twilio posts application/x-www-form-urlencoded; the payload is in the form body, not JSON, hence no HMAC verification node — Twilio's own X-Twilio-Signature header is the auth boundary and should be enforced via the Webhook node's 'Twilio Signature' option."
+  ],
+  "nodes": [
+    {
+      "id": "webhook-in",
+      "name": "Twilio webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 320],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lumivara/intake/sms",
+        "responseMode": "responseNode",
+        "options": { "rawBody": false }
+      }
+    },
+    {
+      "id": "allow-list-phone",
+      "name": "Allow-list phone",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 320],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "combinator": "or",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.body.From }}",
+              "rightValue": "+15555550100",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "structure-claude",
+      "name": "Structure with Claude",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [700, 320],
+      "parameters": {
+        "model": "claude-opus-4-7",
+        "messages": {
+          "values": [
+            {
+              "role": "user",
+              "content": "Restructure this client SMS as a GitHub issue.\n\nReturn JSON with keys: title (<=80 chars), body_md (Markdown with sections: 'What the client said' (verbatim SMS), 'Acceptance criteria' (checklist)).\n\nFrom: {{ $json.body.From }}\nMessage:\n{{ $json.body.Body }}"
+            }
+          ]
+        },
+        "options": { "responseFormat": "json_object", "maxTokens": 1024 }
+      }
+    },
+    {
+      "id": "create-issue",
+      "name": "Create GitHub Issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [940, 320],
+      "parameters": {
+        "resource": "issue",
+        "operation": "create",
+        "owner": "palimkarakshay",
+        "repository": "lumivara-site",
+        "title": "={{ $json.title }}",
+        "body": "={{ $json.body_md }}\n\n<!-- lumivara:source=sms -->\n<!-- lumivara:reply-to={{ $node[\"Twilio webhook\"].json.body.From }} -->\n\n---\n**Original SMS (verbatim):**\n\n> {{ ($node[\"Twilio webhook\"].json.body.Body || '').replace(/\\n/g, '\\n> ') }}",
+        "labels": ["source/sms", "client/lumivara", "status/triage"]
+      }
+    },
+    {
+      "id": "twilio-reply",
+      "name": "Twilio reply",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [1180, 320],
+      "parameters": {
+        "operation": "send",
+        "from": "={{ $node[\"Twilio webhook\"].json.body.To }}",
+        "to": "={{ $node[\"Twilio webhook\"].json.body.From }}",
+        "message": "Thanks — we got it. Track progress: https://lumivara.ca/admin"
+      }
+    },
+    {
+      "id": "respond-200",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1420, 320],
+      "parameters": {
+        "respondWith": "text",
+        "responseCode": 200,
+        "responseBody": "<Response/>",
+        "options": { "responseHeaders": { "entries": [{ "name": "Content-Type", "value": "application/xml" }] } }
+      }
+    }
+  ],
+  "connections": {
+    "Twilio webhook": {
+      "main": [[{ "node": "Allow-list phone", "type": "main", "index": 0 }]]
+    },
+    "Allow-list phone": {
+      "main": [
+        [{ "node": "Structure with Claude", "type": "main", "index": 0 }],
+        [{ "node": "Respond 200", "type": "main", "index": 0 }]
+      ]
+    },
+    "Structure with Claude": {
+      "main": [[{ "node": "Create GitHub Issue", "type": "main", "index": 0 }]]
+    },
+    "Create GitHub Issue": {
+      "main": [[{ "node": "Twilio reply", "type": "main", "index": 0 }]]
+    },
+    "Twilio reply": {
+      "main": [[{ "node": "Respond 200", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "version": 1
   "name": "Lumivara · Admin · Intake (sms)",
   "nodes": [
     {

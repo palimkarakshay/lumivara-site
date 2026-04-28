@@ -1,4 +1,157 @@
 {
+  "name": "Lumivara — intake-web",
+  "_notes": [
+    "Reference template for Phase 2 of the admin portal.",
+    "Import into n8n, then: (1) set the GitHub credential on the 'Create GitHub Issue' node,",
+    "(2) set the Anthropic credential on the 'Structure with Claude' node,",
+    "(3) set the Resend credential on the 'Reply with magic link' node,",
+    "(4) set N8N_HMAC_SECRET as an env var on the n8n instance,",
+    "(5) activate the workflow and copy the webhook URL into Vercel as N8N_INTAKE_WEBHOOK_URL.",
+    "HMAC contract: header X-Lumivara-Signature: 't=<unix>,v1=<hex>' over '<unix>.<rawBody>', max 5 min skew."
+  ],
+  "nodes": [
+    {
+      "id": "webhook-in",
+      "name": "Webhook (web intake)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 320],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lumivara/intake/web",
+        "responseMode": "responseNode",
+        "options": { "rawBody": true }
+      }
+    },
+    {
+      "id": "verify-hmac",
+      "name": "Verify HMAC",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 320],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_HMAC_SECRET;\nif (!secret) { throw new Error('N8N_HMAC_SECRET is not set'); }\nconst header = $input.item.json.headers['x-lumivara-signature'] || '';\nconst raw = ($input.item.binary && $input.item.binary.data && Buffer.from($input.item.binary.data.data, 'base64').toString('utf8')) || $input.item.json.rawBody || JSON.stringify($input.item.json.body || {});\nconst parts = Object.fromEntries(header.split(',').map(s => s.split('=', 2).map(x => x && x.trim())));\nconst ts = Number(parts.t);\nconst sent = parts.v1 || '';\nif (!Number.isFinite(ts) || !sent) { throw new Error('malformed signature'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - ts) > 300) { throw new Error('stale signature'); }\nconst expected = crypto.createHmac('sha256', secret).update(`${ts}.${raw}`).digest('hex');\nconst a = Buffer.from(expected, 'hex');\nconst b = Buffer.from(sent, 'hex');\nif (a.length !== b.length || !crypto.timingSafeEqual(a, b)) { throw new Error('signature mismatch'); }\nconst payload = JSON.parse(raw);\nreturn [{ json: { ...payload, _verifiedAt: new Date().toISOString() } }];"
+      }
+    },
+    {
+      "id": "structure-claude",
+      "name": "Structure with Claude",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [700, 320],
+      "parameters": {
+        "model": "claude-opus-4-7",
+        "messages": {
+          "values": [
+            {
+              "role": "user",
+              "content": "Restructure this client request as a GitHub issue.\n\nReturn JSON with keys: title (<=80 chars), body_md (Markdown with sections: 'What the client said' verbatim, 'Acceptance criteria' as a checklist).\n\nClient title: {{$json.title}}\nClient body: {{$json.body}}"
+            }
+          ]
+        },
+        "options": { "responseFormat": "json_object", "maxTokens": 1024 }
+      }
+    },
+    {
+      "id": "create-issue",
+      "name": "Create GitHub Issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [940, 320],
+      "parameters": {
+        "resource": "issue",
+        "operation": "create",
+        "owner": "palimkarakshay",
+        "repository": "lumivara-site",
+        "title": "={{ $json.title }}",
+        "body": "={{ $json.body_md }}\n\n<!-- lumivara:source=web -->\n<!-- lumivara:reply-to={{$node[\"Verify HMAC\"].json.submittedBy}} -->\n\n---\n**Original request (verbatim):**\n\n> {{ $node[\"Verify HMAC\"].json.body.replace(/\\n/g, '\\n> ') }}",
+        "labels": ["source/web", "client/lumivara", "status/triage"]
+      }
+    },
+    {
+      "id": "magic-link",
+      "name": "Build magic link",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [1180, 320],
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "magicLink",
+              "value": "https://lumivara.ca/admin/sign-in?from=/admin"
+            },
+            {
+              "name": "issueUrl",
+              "value": "={{ $json.html_url }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "send-reply",
+      "name": "Reply with magic link",
+      "type": "n8n-nodes-base.resend",
+      "typeVersion": 1,
+      "position": [1420, 320],
+      "parameters": {
+        "fromEmail": "Lumivara <hello@lumivara.ca>",
+        "toEmail": "={{ $node[\"Verify HMAC\"].json.submittedBy }}",
+        "subject": "We got your request",
+        "html": "<p>Thanks — we&rsquo;ve logged your request and will reply as we make progress.</p><p><a href=\"{{$json.magicLink}}\">Open the dashboard →</a></p><p style=\"color:#666;font-size:12px\">Tracking: {{$json.issueUrl}}</p>"
+      }
+    },
+    {
+      "id": "respond-ok",
+      "name": "Respond 202",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1660, 320],
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": 202,
+        "responseBody": "={\n  \"ok\": true,\n  \"issue\": $node[\"Create GitHub Issue\"].json.html_url\n}"
+      }
+    },
+    {
+      "id": "respond-401",
+      "name": "Respond 401",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [460, 540],
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": 401,
+        "responseBody": "={\n  \"ok\": false,\n  \"error\": \"signature\"\n}"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook (web intake)": {
+      "main": [[{ "node": "Verify HMAC", "type": "main", "index": 0 }]]
+    },
+    "Verify HMAC": {
+      "main": [[{ "node": "Structure with Claude", "type": "main", "index": 0 }]],
+      "error": [[{ "node": "Respond 401", "type": "main", "index": 0 }]]
+    },
+    "Structure with Claude": {
+      "main": [[{ "node": "Create GitHub Issue", "type": "main", "index": 0 }]]
+    },
+    "Create GitHub Issue": {
+      "main": [[{ "node": "Build magic link", "type": "main", "index": 0 }]]
+    },
+    "Build magic link": {
+      "main": [[{ "node": "Reply with magic link", "type": "main", "index": 0 }]]
+    },
+    "Reply with magic link": {
+      "main": [[{ "node": "Respond 202", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "version": 1
   "name": "Lumivara · Admin · Intake (web)",
   "nodes": [
     {

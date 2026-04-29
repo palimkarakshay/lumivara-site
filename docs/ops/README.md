@@ -12,6 +12,7 @@ with `docs/mothership/` (strategy + architecture) and `docs/wiki/`
 | [`variable-registry.md`](variable-registry.md) | Canonical inventory of every named key (GitHub Actions secret/var, Vercel env, n8n credential, dashboard var, operator-vault entry). Source of truth for the audit cadence in `docs/mothership/03-secure-architecture.md §3.2`. |
 | [`platform-baseline.md`](platform-baseline.md) | Snapshot of the *expected* GitHub + Vercel deployment topology — secrets, vars, branch protection, Pages, webhooks, env-var scopes — that `audit-runbook.md` diffs the live configuration against. |
 | [`audit-runbook.md`](audit-runbook.md) | End-to-end procedure for reconciling live GitHub + Vercel configuration against the baseline + registry. Quarterly + on every secret rotation. Files mismatches via the `audit-mismatch` issue template. |
+| [`codex-fix-classify-fixtures.md`](codex-fix-classify-fixtures.md) | Spec doc + fixture catalogue pinning `scripts/codex-fix-classify.py`'s public contract (`EXCLUDED_PREFIXES`, `SPECULATIVE_MARKERS`, length cap, parser anchor). Source of truth for the negative-test runner wired into `ai-smoke-test.yml`. |
 
 Future entries in this folder (planned):
 

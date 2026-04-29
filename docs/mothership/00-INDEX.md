@@ -99,6 +99,7 @@ Existing context that this folder builds on (do not duplicate):
 - [`docs/ops/variable-registry.md`](../ops/variable-registry.md) — **canonical inventory of every named key** (GitHub Actions secrets/vars, Vercel env, n8n credentials, dashboard vars, operator-vault entries) with scope / owner / rotation / references. The audit cadence in `03-secure-architecture.md §3.2` walks this file. (#142)
 - [`docs/ops/platform-baseline.md`](../ops/platform-baseline.md) — **expected GitHub + Vercel deployment topology** (secrets, vars, branch protection, Pages, webhooks, env-var scopes) that the audit runbook diffs the live configuration against. (#145)
 - [`docs/ops/audit-runbook.md`](../ops/audit-runbook.md) — **end-to-end audit procedure**: export from GitHub + Vercel, compare against baseline + registry, file one issue per delta, bump `_Last verified_` stamps. Quarterly + on every secret rotation. (#145)
+- [`docs/ops/codex-fix-classify-fixtures.md`](../ops/codex-fix-classify-fixtures.md) — **fixture catalogue pinning the Codex hallucination-filter classifier** (`scripts/codex-fix-classify.py`). Spec the negative-test runner (`scripts/test-codex-fix-classify.py`, wired into `ai-smoke-test.yml`) iterates against; weakening any guard breaks a fixture. (#178)
 
 ---
 

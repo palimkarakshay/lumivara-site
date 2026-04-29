@@ -123,6 +123,15 @@ Things we do today, with pointers:
 - **Quality-first overrides documented in one place.** `AGENTS.md`
   Session charter tells every bot the same thing: prefer Opus + extended
   thinking; cost is not a constraint right now.
+- **Classifier negative tests.** A fixture catalogue at
+  [`docs/ops/codex-fix-classify-fixtures.md`](./ops/codex-fix-classify-fixtures.md)
+  pins `codex-fix-classify.py`'s public contract — every
+  `EXCLUDED_PREFIXES` entry, every `SPECULATIVE_MARKERS` entry, the
+  200-char cap, the `path-not-found` and `unparseable` paths, and the
+  parser anchor on `## Suggested fixes`. The test runner
+  (`scripts/test-codex-fix-classify.py`, wired into
+  `ai-smoke-test.yml`) iterates the catalogue; weakening any guard
+  fails the smoke test.
 
 Things worth adding next (rough priority order):
 
@@ -137,10 +146,11 @@ Things worth adding next (rough priority order):
 3. **PR template** that asks the contributor (human or bot) to confirm
    the plan was followed and lists the four DoD checks. Claude already
    includes them; humans don't. A template normalises both.
-4. **Negative tests for the Codex format.** Add fixtures to
+4. ~~**Negative tests for the Codex format.** Add fixtures to
    `scripts/test-routing.py` (or a sibling) that feed broken Codex
    outputs to `codex-fix-classify.py` and assert they're deferred,
-   not applied. Today the classifier is hand-tested.
+   not applied. Today the classifier is hand-tested.~~ _(landed; see
+   "Things we do today" → "Classifier negative tests")_
 5. **Per-provider feedback loop.** When Claude declines a Codex
    finding, log the (finding, reason) pair to a CSV in
    `docs/ops/codex-disagreements.md` so we can spot recurring

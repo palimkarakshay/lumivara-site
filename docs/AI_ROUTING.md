@@ -108,9 +108,40 @@ ready PR.
 | `plan-issues.yml` | every hour (offset 30 min) + after every triage |
 | `execute.yml` | every hour |
 | `deep-research.yml` | dispatched by execute.yml |
-| `codex-review.yml` | dispatched by execute.yml |
+| `codex-review.yml` | on every `pull_request` (open/reopen/synchronize/ready_for_review) + dispatched by execute.yml for issue reviews |
+| `codex-pr-fix.yml` | on `issue_comment` when Codex posts a review on a PR |
+| `codex-review-backlog.yml` | manual (operator-triggered) |
 | `execute-fallback.yml` | dispatched by execute.yml on Claude failure |
 | `ai-smoke-test.yml` | weekly (Mondays 12:00 UTC) |
+
+### Consistency gate (every PR)
+
+Every newly-opened PR triggers `codex-review.yml`, which posts a
+structured review and labels the PR `codex-reviewed`. If Codex flags
+blocker/major findings or returns a `request-changes` verdict, it
+additionally adds `codex-blockers` — both `auto-merge.yml` and the
+inline auto-merge in `execute.yml` refuse to enable auto-merge while
+that label is set. `codex-pr-fix.yml` then attempts to apply the
+mechanical, low-risk findings as a follow-up commit; the label clears
+only when codex-review.yml's next synchronize-trigger re-review comes
+back clean. Full design + hallucination guards: see
+[`AI_CONSISTENCY.md`](./AI_CONSISTENCY.md).
+
+For PRs merged BEFORE this loop existed, the operator runs
+`codex-review-backlog.yml` (workflow_dispatch, dry-run by default) to
+seed one issue per gap, which triage then routes back through the
+normal Codex review path.
+
+### Plan consistency review (every plan)
+
+`plan-issues.yml` now runs a two-pass loop: Claude Opus drafts the
+plan to a temp file, `scripts/codex-plan-review.py` asks gpt-5.5 to
+spot-check it for consistency, and Claude either applies the findings
+or justifies skipping them in a `### Codex review notes` subsection of
+the final comment. The Codex review is appended as a collapsible block
+in the issue comment for audit. Codex outage / missing key is
+non-fatal — the script returns a "skipped" marker and planning
+proceeds.
 
 ### Auto-merge → Vercel prod immediately follows execution
 
@@ -120,7 +151,8 @@ gate enables `gh pr merge --auto --squash` for any PR that is
 
 - labeled `auto-routine`, AND
 - linked to an issue with `complexity/trivial` or `complexity/easy`, AND
-- not labeled `type/design-cosmetic` or `area/design`.
+- not labeled `type/design-cosmetic` or `area/design`, AND
+- not labeled `codex-blockers` (consistency gate).
 
 GitHub then waits for Vercel's deploy-preview check, squash-merges to
 `main`, and Vercel auto-deploys to prod. No human round-trip.

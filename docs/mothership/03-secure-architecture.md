@@ -88,6 +88,8 @@ If a client device is lost, the client clicks "Sign out everywhere" in `/admin/s
 ## 3. Secret topology
 
 > **Canonical inventory: [`docs/ops/variable-registry.md`](../ops/variable-registry.md).** That file is the audited list with every name, scope, owner, rotation cadence, and source reference. The excerpt below keeps the *contextual prose* for the three secrets whose blast radius warrants a paragraph; for any secret not listed in the excerpt, treat the registry as authoritative.
+>
+> **Operator-side IP / business secrets** (artefacts not consumed by Vercel/n8n at runtime — recovery codes, draft contracts, vendor portal credentials, per-client correspondence) are out of scope here. They are governed by the vault ADR at [`21-vault-strategy-adr.md`](21-vault-strategy-adr.md). The boundary is enforced by that doc's §7 decision tree.
 
 | Secret | Why it gets prose here |
 |---|---|

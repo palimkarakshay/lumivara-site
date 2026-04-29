@@ -66,6 +66,10 @@ The two-branch overlay (`main` vs `operator/main`) is a **structural** security 
 
 The org-Owner principal is the *only* principal that can recover the autopilot if the bot account or the OAuth token are revoked. Document the recovery sequence in the operator's offline runbook (out-of-repo, in the operator's password manager). The break-glass procedure itself is the gap closed by Run B — see `docs/mothership/12-critique-security-secrets.md`.
 
+### Operator IP / business-secrets vault
+
+Operator-side artefacts that are not consumed by Vercel/n8n at runtime — recovery codes, draft contracts, vendor portal credentials, per-client correspondence, the second-Owner break-glass material — live in a dedicated vault, **not** in this repo and **not** in the per-client Vercel/n8n topology. The vault choice, structure (`Operator` / `Lumivara-Infotech-IP` / `Vendors` / `Per-client/<slug>` / `Break-glass`), access roles, rotation cadence, onboarding SOP, and the decision tree for "vaultable vs. ordinary repo content" are all in [`docs/mothership/21-vault-strategy-adr.md`](../mothership/21-vault-strategy-adr.md). The recurring monthly audit is row 8 of [`docs/mothership/03b-security-operations-checklist.md §1`](../mothership/03b-security-operations-checklist.md#1--monthly-checklist-first-monday-of-the-month).
+
 ---
 
 ## §B Client-repo security 🌐

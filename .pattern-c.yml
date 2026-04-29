@@ -73,6 +73,7 @@ lanes:
     - .github/PULL_REQUEST_TEMPLATE.md
     - .github/SECURITY.md
     - .claude/
+    - .pattern-c.yml
     - dashboard/
     - scripts/
     - docs/mothership/
@@ -109,6 +110,13 @@ lanes:
     - path: AGENTS.md
       transform: pipeline-only-after-spinout
       note: "Site repo doesn't host an AI-agent runtime charter once handed to the client."
+
+    - path: CODE_OF_CONDUCT.md
+      note: "Community standard; both repos carry the same Contributor Covenant + Pattern C addendum."
+
+    - path: LICENSE
+      transform: site-strips-pipeline-section
+      note: "Site repo gets a per-client `Proprietary — <Client Name>` LICENSE assigned at handover (per 21 §3.3); pipeline repo retains the operator's All-Rights-Reserved interim notice forever."
 
     - path: CLAUDE.md
       transform: pipeline-only-after-spinout

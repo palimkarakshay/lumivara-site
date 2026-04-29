@@ -1,5 +1,23 @@
+# .claudeignore — paths Claude Code agents must not read into context.
+#
+# This repo is pre-P5.6 spinout, so both Site and Pipeline lanes coexist
+# (see /.pattern-c.yml for the lane manifest, AGENTS.md for the agent
+# charter). Agents running on auto/issue-* branches sometimes need
+# Pipeline-lane context (workflow editing, runbook updates) and sometimes
+# need only Site-lane context (copy edits, MDX articles). The ACTIVE
+# exclusions below cover only build artefacts and obvious noise; the
+# Pattern C lane discipline is enforced by AGENTS.md hard rules + the
+# audit script (scripts/pattern-c-audit.sh §2), not by this file.
+#
+# Post-spinout, the site repo's .claudeignore (rendered by the spinout
+# script per docs/mothership/03-secure-architecture.md §2.3) MUST also
+# exclude every Pipeline-lane path. The reference block at the bottom
+# of this file is the canonical text the spinout uses; do not delete it.
+
+# ---- ACTIVE: build artefacts and noise ----
 node_modules/
 .next/
+.next/cache/
 dist/
 out/
 build/
@@ -19,3 +37,47 @@ tsconfig.tsbuildinfo
 *.min.css
 public/
 scripts/issues/
+dashboard/.next/
+dashboard/node_modules/
+
+# ---- POST-SPINOUT REFERENCE (commented; copies into <slug>-site/.claudeignore at Phase 4) ----
+# The spinout script (forge-spinout-dry-run.sh + the real spinout it gates)
+# uncomments the lines below when rendering the site-repo copy. Pre-spinout,
+# leaving them commented preserves Pipeline-lane agents' ability to read
+# operator-only context; uncommenting now would break the autopilot.
+#
+# # Pipeline-only paths — operator IP, never read into a Site-lane context.
+# .github/workflows/
+# scripts/triage-*
+# scripts/execute-*
+# scripts/gemini-*
+# scripts/codex-*
+# scripts/plan-issue*
+# scripts/test-routing*
+# scripts/forge-*
+# scripts/bootstrap-*
+# scripts/lib/
+# scripts/pattern-c-audit.sh
+# scripts/forge-spinout-dry-run.sh
+# scripts/recheck-*
+# scripts/seed-*
+# dashboard/
+# docs/mothership/
+# docs/storefront/
+# docs/decks/
+# docs/research/
+# docs/migrations/
+# docs/n8n-workflows/
+# docs/_deprecated/
+# docs/wiki/
+# docs/AI_CONSISTENCY.md
+# docs/AI_ROUTING.md
+# docs/GEMINI_TASKS.md
+# docs/MONITORING.md
+# docs/N8N_SETUP.md
+# docs/OPERATOR_SETUP.md
+# docs/TEMPLATE_REBUILD_PROMPT.md
+# docs/ops/
+# AGENTS.md
+# CLAUDE.md
+# .pattern-c.yml

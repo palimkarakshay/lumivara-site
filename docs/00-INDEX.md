@@ -2,7 +2,9 @@
 
 > _Lane: ⚪ Both — this index covers Site (Client #1) and Pipeline (Lumivara Forge) docs co-housed in this repo until the P5.6 spinout._
 
-This file is the front-door for everything under `docs/**`. Every doc is stamped with a Pattern C lane (🛠 Pipeline / 🌐 Site / ⚪ Both) so a reader can tell, at a glance, which of the two co-housed entities it belongs to. After the P5.6 spinout (`docs/migrations/lumivara-people-advisory-spinout.md`), only 🌐 and ⚪ docs travel to the client repo; 🛠 docs stay in the operator-private pipeline repo.
+This file is the **human-readable** doc-by-doc front-door for `docs/**`. The **machine-readable** lane assignment for every tracked file in the repo lives at [`/.pattern-c.yml`](../.pattern-c.yml); the dry-run that proves the manifest covers everything is [`scripts/forge-spinout-dry-run.sh`](../scripts/forge-spinout-dry-run.sh); the daily watcher that flags drift is [`pattern-c-watcher.yml`](../.github/workflows/pattern-c-watcher.yml). Together they make the P5.6 spinout (`docs/migrations/lumivara-people-advisory-spinout.md`) mechanical: only 🌐 and ⚪ docs travel to the client site repo; 🛠 docs stay in the operator-private pipeline repo.
+
+Every doc in this index is stamped with a Pattern C lane (🛠 Pipeline / 🌐 Site / ⚪ Both) so a reader can tell, at a glance, which of the two co-housed entities it belongs to.
 
 For the locked architecture itself, read [`mothership/02b-pattern-c-architecture.md`](./mothership/02b-pattern-c-architecture.md). For the locked terminology (`mothership` → `platform`, `agent` → `pipeline`/`run`/`bot`, etc.) read [`mothership/15-terminology-and-brand.md §1`](./mothership/15-terminology-and-brand.md). For the file/folder naming policy read [`mothership/15b-naming-conventions.md`](./mothership/15b-naming-conventions.md).
 

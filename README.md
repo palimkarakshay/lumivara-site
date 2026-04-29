@@ -20,6 +20,15 @@ This repo currently hosts **two logically separate entities** that will split in
 
 Until the spinout, every doc in `docs/**` carries a one-line lane banner (`> _Lane: 🛠 Pipeline / 🌐 Site / ⚪ Both._`). Operator-scope docs follow the terminology policy in [`docs/mothership/15-terminology-and-brand.md §6`](./docs/mothership/15-terminology-and-brand.md); the legitimate-Client-#1-example appendix is `§7`. Spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](./docs/migrations/lumivara-people-advisory-spinout.md). Pattern C in-repo enforcement checklist: [`docs/mothership/pattern-c-enforcement-checklist.md`](./docs/mothership/pattern-c-enforcement-checklist.md).
 
+**Spinout machinery (the day this repo splits in two):**
+
+| Artefact | Purpose |
+|---|---|
+| [`/.pattern-c.yml`](./.pattern-c.yml) | Machine-readable lane manifest — the single source of truth for which path goes where at the spinout. Every tracked file is classified (or fails the audit). |
+| [`scripts/forge-spinout-dry-run.sh`](./scripts/forge-spinout-dry-run.sh) | Reads the manifest; prints the per-lane file plan; exits non-zero if any tracked file is uncovered. Run before any structural PR. |
+| [`scripts/pattern-c-audit.sh`](./scripts/pattern-c-audit.sh) | Five-check sweep job: stale brand drift (§1), operator pitch on site repo (§2), forbidden Client #1 strings (§3), high-entropy committed secrets (§4), duplicate doc numbers (§5), manifest coverage (§6). Runs daily via [`pattern-c-watcher.yml`](./.github/workflows/pattern-c-watcher.yml); opens an issue on drift. |
+| [`docs/00-INDEX.md`](./docs/00-INDEX.md) | Doc-by-doc lane map (the human-readable index that complements the manifest). |
+
 ---
 
 ## 1. What this is

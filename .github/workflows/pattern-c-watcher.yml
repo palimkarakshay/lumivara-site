@@ -1,0 +1,180 @@
+name: Pattern C watcher
+
+# Daily watchdog over the Pattern C invariants. Runs the audit script and the
+# spinout dry-run; if either reports a hard failure (or if §3 / §5 advisory
+# counts move outside the allow-listed baseline), the workflow opens or
+# updates a single GitHub Issue tagged `area/pattern-c` + `status/needs-triage`
+# so the existing triage / execute loop picks it up.
+#
+# Why this workflow exists:
+#   The user-facing answer to "make the migration quick, painless and easy
+#   when it arrives" is the manifest at /.pattern-c.yml + the dry-run at
+#   scripts/forge-spinout-dry-run.sh + this watchdog. Together they make
+#   drift visible the day after it lands, not the day of the spinout.
+#
+# Behaviour:
+#   - Read-only by default: never auto-edits docs.
+#   - Single-issue-per-failure: if the issue already exists and is open,
+#     post a comment with the new audit output rather than spamming.
+#   - Closes the issue automatically once the next run goes green.
+#
+# Cross-references:
+#   - docs/mothership/02b-pattern-c-architecture.md — canonical Pattern C.
+#   - docs/mothership/pattern-c-enforcement-checklist.md — MUST / MUST-NOT.
+#   - scripts/pattern-c-audit.sh §1–§6 — the actual checks.
+#   - scripts/forge-spinout-dry-run.sh — the manifest validator.
+
+on:
+  schedule:
+    # Daily at 14:00 UTC (= 09:00 EST / 10:00 EDT) so the operator sees fresh
+    # results when they open the playbook in the morning.
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+    inputs:
+      strict:
+        description: "Treat advisory drift as failure (default: only §1, §2, §6 fail)"
+        required: false
+        default: "false"
+  pull_request:
+    paths:
+      - ".pattern-c.yml"
+      - "scripts/pattern-c-audit.sh"
+      - "scripts/forge-spinout-dry-run.sh"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: pattern-c-watcher
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run pattern-c-audit.sh
+        id: audit
+        env:
+          STRICT: ${{ inputs.strict || 'false' }}
+        run: |
+          set -uo pipefail
+          AUDIT_OUT=$(bash scripts/pattern-c-audit.sh 2>&1) || true
+          AUDIT_EXIT=$?
+          {
+            echo "=== pattern-c-audit.sh ==="
+            echo "$AUDIT_OUT"
+            echo
+            echo "(audit exit code: $AUDIT_EXIT)"
+          } > /tmp/audit.txt
+
+      - name: Run forge-spinout-dry-run.sh
+        id: dryrun
+        run: |
+          set -uo pipefail
+          DRY_OUT=$(bash scripts/forge-spinout-dry-run.sh 2>&1) || true
+          DRY_EXIT=$?
+          {
+            echo "=== forge-spinout-dry-run.sh ==="
+            echo "$DRY_OUT"
+            echo
+            echo "(dry-run exit code: $DRY_EXIT)"
+          } > /tmp/dryrun.txt
+          echo "exit_code=$DRY_EXIT" >> "$GITHUB_OUTPUT"
+
+      - name: Summarise + decide
+        id: decide
+        env:
+          STRICT: ${{ inputs.strict || 'false' }}
+          DRY_EXIT: ${{ steps.dryrun.outputs.exit_code }}
+        run: |
+          set -uo pipefail
+          AUDIT_FAILED=0
+          # Hard-fail rules: §1 brand, §2 contamination, §6 manifest coverage.
+          # §3 / §4 / §5 are advisory by design (see scripts/pattern-c-audit.sh).
+          if grep -qE '✗ [0-9]+ .Lumivara Infotech' /tmp/audit.txt; then AUDIT_FAILED=1; fi
+          if grep -qE '✗ operator pitch present on the site repo' /tmp/audit.txt; then AUDIT_FAILED=1; fi
+          if grep -qE '✗ [0-9]+ tracked file' /tmp/audit.txt; then AUDIT_FAILED=1; fi
+          if [ "$DRY_EXIT" != "0" ]; then AUDIT_FAILED=1; fi
+          if [ "$STRICT" = "true" ]; then
+            if grep -qE '! [0-9]+ occurrence' /tmp/audit.txt; then AUDIT_FAILED=1; fi
+            if grep -qE '! duplicate index row-numbers' /tmp/audit.txt; then AUDIT_FAILED=1; fi
+          fi
+          echo "failed=$AUDIT_FAILED" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Pattern C watcher — $(date -u +%Y-%m-%d)"
+            echo
+            echo "Triggered by: \`${{ github.event_name }}\`"
+            echo "Strict mode: \`$STRICT\`"
+            echo "Decision: $([ $AUDIT_FAILED -eq 0 ] && echo '✓ green' || echo '✗ failure')"
+            echo
+            cat /tmp/audit.txt
+            echo
+            cat /tmp/dryrun.txt
+          } > /tmp/issue-body.md
+
+      - name: Open or update tracking issue (on failure)
+        if: steps.decide.outputs.failed == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          TITLE="Pattern C watcher: drift detected"
+          # Find an existing open issue with this exact title (single-issue-per-failure).
+          EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number,title --jq '.[] | select(.title=="'"$TITLE"'") | .number' | head -n1)
+          if [ -n "$EXISTING" ]; then
+            echo "Updating existing issue #$EXISTING with a new comment."
+            gh issue comment "$EXISTING" --body-file /tmp/issue-body.md
+          else
+            echo "Opening new tracking issue."
+            gh issue create \
+              --title "$TITLE" \
+              --label "area/pattern-c" \
+              --label "status/needs-triage" \
+              --label "priority/P1" \
+              --body-file /tmp/issue-body.md \
+              || gh issue create \
+                   --title "$TITLE" \
+                   --body-file /tmp/issue-body.md
+            # Fallback (no labels) is in case the labels don't yet exist on
+            # the repo — we still want the issue surfaced.
+          fi
+
+      - name: Close tracking issue (on green)
+        if: steps.decide.outputs.failed == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          TITLE="Pattern C watcher: drift detected"
+          EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number,title --jq '.[] | select(.title=="'"$TITLE"'") | .number' | head -n1)
+          if [ -n "$EXISTING" ]; then
+            echo "Closing tracking issue #$EXISTING — audit is green."
+            gh issue comment "$EXISTING" --body "Pattern C watcher returned green on $(date -u +%Y-%m-%d). Closing this issue; the watcher will reopen on the next failure."
+            gh issue close "$EXISTING" --reason completed
+          fi
+
+      - name: Upload audit artefact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pattern-c-audit-${{ github.run_id }}
+          path: |
+            /tmp/audit.txt
+            /tmp/dryrun.txt
+            /tmp/issue-body.md
+          if-no-files-found: ignore
+
+      - name: Final exit
+        if: steps.decide.outputs.failed == '1' && github.event_name == 'pull_request'
+        run: |
+          # On PRs, fail the workflow so the PR check is red. On schedule, the
+          # tracking issue is the signal — workflow itself stays green so it
+          # doesn't spam the operator with email failures every morning.
+          echo "Pattern C drift detected on this PR — see the audit output above." >&2
+          exit 1

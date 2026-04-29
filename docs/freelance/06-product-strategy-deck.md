@@ -325,3 +325,67 @@ Honest answer: because the economics only work for **one operator running 25–3
 > The category is structurally hostile to anyone who isn't a senior engineer + one Claude Max subscription. That window is exactly the operator's profile.
 
 <span class="small">Source: `docs/freelance/03-cost-analysis.md` Part E, `docs/mothership/18-capacity-and-unit-economics.md` cliffs.</span>
+
+---
+
+<!-- _class: lead -->
+
+# 5 · The end goal
+## What "success" looks like at 12, 24, and 36 months
+
+---
+
+## The three-stage business
+
+<br/>
+
+| Stage | Window | Shape | Ceiling |
+|---|---|---|---|
+| **Stage 1 — Services + retainer** | Now → month 24 | One operator, 25–30 retainers, ~CAD $20k MRR | Operator hours |
+| **Stage 2 — Managed-services agency** | Months 24–48 | Operator + 1–2 hired engineers, ~80 retainers | Hiring + ops complexity |
+| **Stage 3 — Productised SaaS** | Month 48+ | Self-serve onboarding, customer-managed billing, founder-mode | Real PMF risk; uncapped |
+
+<br/>
+
+> **The decision rule for the next 12 months:**
+> If a feature, doc, or tool helps the operator serve **paid retainer clients** better — build it.
+> If it helps **prospects, hypothetical SaaS users, or other agencies** — defer it.
+
+<span class="small">Source: `docs/freelance/05-template-hardening-notes.md` "Long-term", `docs/mothership/01-business-plan.md §9`.</span>
+
+---
+
+## Stage-1 success metric
+
+<br/>
+
+By **month 12** of paid operations:
+
+- **25–32 active retainer clients**, mostly Tier 2.
+- **MRR ≈ CAD $8,500 – $10,000** + lumpy setup-fee revenue.
+- **Year-1 net (before personal income tax) ≈ CAD $170k.**
+- **Take-home ≈ CAD $100–110k** after Ontario sole-prop tax + the realistic 15% slow-month adjustment.
+- Day job replaced; runway > 6 months personal expenses.
+
+By **month 24**:
+
+- 40+ retainers, second engineer hired, operator drops to ~30 hrs/week on the practice.
+- Still no SaaS, no self-serve. The system stays operator-mediated until the numbers force the change.
+
+<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part D (12-month spreadsheet), Part C (milestones).</span>
+
+---
+
+## What we are deliberately *not* building
+
+<br/>
+
+- **Not a SaaS.** No public sign-up, no shared multi-tenant database, no marketing site funnel beyond `lumivara-forge.com`.
+- **Not an agency in the project-shop sense.** No PMs, no design team, no in-house copywriters.
+- **Not a white-label reseller** to other agencies (Tier 4 exists; we don't promote it).
+- **Not a hosting company.** The client owns the Vercel account, the domain, the Resend (or equivalent) billing — by month 1.
+- **Not an enterprise vendor.** No RFPs, no MSAs with procurement, no NDAs that take 6 weeks to negotiate.
+
+> Saying "no" to four of these every quarter is what keeps the operator's hours under 60 and the margins above 60%.
+
+<span class="small">Source: `docs/mothership/01-business-plan.md §6`, `docs/freelance/01-gig-profile.md` Part 8.</span>

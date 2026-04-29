@@ -24,7 +24,7 @@ The distinction matters because **migration runbooks are throwaway after they ru
 | `README.md` (this file) | Orientation. | — |
 | `_artifact-allow-deny.md` | Re-usable allow / deny / required-new tables that every spinout runbook embeds (Tables A, B, C). Marker comment `<!-- artifact-allow-deny:v1 -->` for future bulk-edits. | Canonical. |
 | `00-automation-readiness-plan.md` | Phase-by-phase sequencer (Phase 0 → Phase 6) for the proof-first, migrate-second approach. | Canonical. |
-| `01-poc-perfection-plan.md` | Dated 14-day plan (D-0 → D-14) that operationalises Phase 1's exit criterion and gates Phase 2 from starting until §1 is fully green. | Active during the POC window. |
+| `01-poc-perfection-plan.md` | Dated 14-day plan (D-0 → D-14) that operationalises Phase 1's exit criterion and gates Phase 2 (§1) — plus the parallel demo-readiness gate (§6), the operator drop-dead-date map (§7), the advisory-spinout sequencing decision (§8), and the first-demo audience playbook (§9). | Active during the POC + first-demo window. |
 | `lumivara-people-advisory-spinout.md` | Spin out *Lumivara People Advisory* (Beas's HR consulting practice) from the current `palimkarakshay/lumivara-site` into a clean per-client repo `palimkarakshay/lumivara-people-advisory-site`. | One-shot, run by the operator (Phase 4 of `00-…`). |
 
 ## Authoring conventions

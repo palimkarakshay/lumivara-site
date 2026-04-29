@@ -71,6 +71,8 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 14 | `14-critique-operations-sequencing.md` | "What sequencing/coherency gaps need closing?" — Tier-0 honesty, OAuth manual scope, rollback paths, backups, engagement-log schema | Operator | Once; closed by Run D in `16 §4` |
 | 15 | `15-terminology-and-brand.md` | "Better names for mothership/operator/agent and brand alternatives" | Operator | Once; rename ships via Run S1 in `16 §5` |
 | 16 | `16-automation-prompt-pack.md` | "Copy-paste prompts for Claude Code in the browser to close the critiques" | Operator | **Per critique-closure run** |
+| 18 | `18-provisioning-automation-matrix.md` | "Every per-engagement provisioning step keyed by Step ID, with system owner, automation status, blocking deps, validation command, and evidence artefact." | Operator | **Per engagement, every step** |
+| 19 | `19-engagement-evidence-log-template.md` | "Per-client evidence log the operator copies into `docs/clients/<slug>/evidence-log.md` and appends to as each provisioning step lands." | Operator | **Per engagement, appended throughout** |
 | 17 | `17-claude-issue-seeding-pack.md` | "Pre-built issue / prompt seeds for Claude Code Cloud agents to bootstrap the mothership repo" | Operator | **Per seeding run** |
 | 18 | `18-capacity-and-unit-economics.md` | "Single source of truth for Action minutes, AI cost envelopes, operator-time, scaling cliffs, and the assumption change log" | Operator | Once; update via §7 change log when any assumption moves |
 | — | `pattern-c-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
@@ -152,6 +154,9 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 - **Capacity / cost / cliffs (single source of truth):** `18-capacity-and-unit-economics.md` — §1 assumptions, §6 cliffs, §7 change log
 - New mothership repo bootstrap: `05-mothership-repo-buildout-plan.md`
 - Per-engagement playbook: `06-operator-rebuild-prompt-v3.md`
+- **Per-engagement provisioning matrix (Step IDs + validation + evidence): `18-provisioning-automation-matrix.md`**
+- **Per-engagement evidence-log template: `19-engagement-evidence-log-template.md`**
+- Gate-check / evidence-capture / rollback-path triad: `06 §2 / §3 / §4 / §5 / §6 / §7`
 - Client-facing pack template: `07-client-handover-pack.md`
 - Tier-based AI cadence: `04-tier-based-agent-cadence.md`
 - Cost firewall + zone isolation: `03-secure-architecture.md`

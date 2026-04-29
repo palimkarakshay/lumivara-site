@@ -103,6 +103,8 @@ Day 30 charge fails
 
 Costs nothing; saves a panicked Sunday afternoon at client #4.
 
+> **Closed by `06 §7`:** the rollback paths above now live in `06 §7`'s Day-table "Rollback if step fails" column, and the matrix Step IDs `D30-01`..`D30-05` (in `18 §7`) carry the validation commands. This `§4` remains the source-of-record for *why* the rollbacks exist; `06` is where the operator reads them on the day.
+
 ---
 
 ## §5 — 🟡 Doc-to-doc cross-references will rot
@@ -143,6 +145,8 @@ Costs 10 minutes once. Saves the next operator (or Future-You at 2am) from chasi
 A 30-line `forge log --client <slug> append --type milestone --summary "..."` makes the schema self-enforcing. Run a daily cron that generates `mothership/docs/operator/PRACTICE_LOG.md` aggregating all clients.
 
 This is what makes the practice review-able year-over-year.
+
+> **Sibling doc:** `19-engagement-evidence-log-template.md` adds a per-engagement *evidence* log (`docs/clients/<slug>/evidence-log.md`) covering the gated provisioning + first-30-days steps named in `18-provisioning-automation-matrix.md`. The engagement-log schema named here is unchanged; the evidence log is a sibling, not a replacement. See `19 §0` for the side-by-side.
 
 ---
 
@@ -230,7 +234,7 @@ These are smaller and can land alongside any of Run A / B / C:
     canonical (§2).
 [ ] Rewrite 06 §4 Prompt B2 to acknowledge OAuth manual scope (§3).
 [ ] Add cadence.json `auth_providers` flag.
-[ ] Add Day-1/7/14 rollback protocols to 06 §7 (§4).
+[ ] Add Day-1/7/14 rollback protocols to 06 §7 (§4).  ← scheduled by issue #137 (provisioning matrix PR series); `06 §7` now carries the rollback column.
 [ ] Add docs-link-check.yml to mothership repo (§5).
 [ ] Define ENGAGEMENT_LOG_SCHEMA.md (§6).
 [ ] Document the discovery → proposal → intake → provision sequence

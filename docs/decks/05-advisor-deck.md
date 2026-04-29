@@ -59,7 +59,7 @@ You don't need to push on these:
 
 - **The wedge exists.** The "missing middle" between $17/mo DIY and $4,995/mo DesignJoy is empirically real (verified competitor pricing in `docs/research/03 §B`).
 - **The buyer pain is documented.** 75% / 3,117 / 95.9% — all `[V]`. (`docs/research/03 §B-Outdated-75`, `§B-ADA-Lawsuits`, `§B-WebAIM`.)
-- **The technology is production-grade.** lumivara.com runs the full pipeline. Multi-AI fallback is wired, Pattern C is locked, evidence logs are templated.
+- **The technology is production-grade.** lumivara-forge.com runs the full pipeline. Multi-AI fallback is wired, Pattern C is locked, evidence logs are templated.
 - **The risk register is named and partially mitigated.** `docs/research/06-drawbacks-and-honest-risks.md`.
 
 If you find a hole in any of the above, please push — but the load-bearing question is below.

@@ -228,7 +228,7 @@ You edit from your phone. We ship improvements monthly. We meet quarterly to tal
 
 <br/>
 
-*Live reference site:* **lumivara.com**
+*Live reference site:* **lumivara-forge.com**
 
 *Contact:* **[your email]**
 

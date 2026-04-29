@@ -103,7 +103,7 @@ Source rows live in `docs/research/03-source-bibliography.md`. Voice / pitch lin
 
 The retainer model isn't more expensive. It's cheaper, predictable, and the site is *better* every month instead of degrading.
 
-Source: `docs/freelance/04-slide-deck.md` "What it costs at lumivara.com vs. an agency".
+Source: `docs/freelance/04-slide-deck.md` "What it costs at lumivara-forge.com vs. an agency".
 
 ---
 
@@ -741,7 +741,7 @@ Most of this is already wired up for Lumivara People Advisory; the work is to **
 
 > **Lumivara Forge** sells small-business websites that you edit from your phone and that quietly improve themselves every month — for a flat subscription fee, on a real codebase you own outright.
 
-Built on the **autopilot** that already runs lumivara.com. Packaged as a four-tier ladder (T0 / T1 / T2 / T3). Run by one operator, with a hire-ladder that kicks in at 25 / 35 / 50 clients.
+Built on the **autopilot** that already runs lumivara-forge.com. Packaged as a four-tier ladder (T0 / T1 / T2 / T3). Run by one operator, with a hire-ladder that kicks in at 25 / 35 / 50 clients.
 
 Year-1 destination: **30 active clients, ~$120k take-home, day job replaced.**
 

@@ -62,7 +62,7 @@ The TAM/SAM framing the investor deck uses is **deliberately conservative**. Hea
 
 ## §4 — Validated technical viability (used in investor + partner + employee decks)
 
-1. **The "Phone-as-CMS" architecture is real today.** n8n + Claude + GitHub Actions + Vercel previews are all production-grade primitives, not bleeding-edge research. Lumivara's own `lumivara.com` runs the full pipeline. `[S] §B-n8n-MCP` — vendor docs.
+1. **The "Phone-as-CMS" architecture is real today.** n8n + Claude + GitHub Actions + Vercel previews are all production-grade primitives, not bleeding-edge research. Lumivara's own `lumivara-forge.com` runs the full pipeline. `[S] §B-n8n-MCP` — vendor docs.
 2. **Multi-AI fallback (Claude → Gemini → OpenAI) is documented and live in this repo.** See `docs/AI_ROUTING.md`. `[V] §B-Self` — operator-internal, verified by inspection.
 3. **Pattern C two-repo isolation (Pattern C Architecture) is locked.** See `docs/mothership/02b-pattern-c-architecture.md`. `[V] §B-Self`.
 4. **AI hallucination is the single biggest engineering risk.** SWE-bench Bash Only stress test shows even strongest 2025/2026 models fail ~33% on real GitHub issues, and high-profile incidents have included an autonomous agent deleting a production database in seconds when staging boundaries were unclear. `[S] §B-SWE-bench` — secondary-source aggregation. The mitigation — Plan-then-Execute + tap-to-publish + Lighthouse/axe gates — is built in this repo.

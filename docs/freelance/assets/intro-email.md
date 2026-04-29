@@ -46,7 +46,7 @@ the relationship, not the offer.
 > (loading speed, accessibility, SEO) without you needing to ask. No
 > developer phone calls, no $200-per-typo invoices.
 >
-> The whole thing runs on my own site (lumivara.com) — that's the proof. I'm
+> The whole thing runs on my own site (lumivara-forge.com) — that's the proof. I'm
 > looking for a few first clients in the network before I open it up wider,
 > because the feedback loop with people I trust is more useful than a stranger
 > on Fiverr.
@@ -81,11 +81,11 @@ expressed interest** — name it back to them.
 > The system I posted about does three things: builds a custom small-business
 > site, lets you edit it from a phone shortcut (preview link → tap publish),
 > and ships small improvements every month for a flat fee. I run my own site
-> on it — lumivara.com — so the demo is a real, live one rather than a
+> on it — lumivara-forge.com — so the demo is a real, live one rather than a
 > screenshot.
 >
 > If the timing makes sense, the easiest next step is a 15-minute walkthrough
-> on a screen-share. I'll show you the shortcut on lumivara.com, you tell me
+> on a screen-share. I'll show you the shortcut on lumivara-forge.com, you tell me
 > what your current site situation looks like, and we'll know quickly whether
 > it's a fit.
 >
@@ -120,7 +120,7 @@ proposal is what gets read.
 > launch, a flat monthly fee covers small improvements, fixes, and the
 > phone-edit pipeline staying running. No per-edit invoices.
 >
-> The clearest demo is my own site — lumivara.com — built and run on this
+> The clearest demo is my own site — lumivara-forge.com — built and run on this
 > exact system. Every change you'd see ship there, ships through the same
 > pipeline I'd put on yours.
 >
@@ -144,7 +144,7 @@ proposal is what gets read.
 - **Don't name the stack** ("Next.js", "Vercel", "Claude") in any cold
   outbound. The Upwork template is the only context where naming "modern
   stack" is appropriate, because the job post requires it.
-- **Always link lumivara.com** — it is the strongest single piece of proof
+- **Always link lumivara-forge.com** — it is the strongest single piece of proof
   available before client #1.
 - **Track replies.** Spreadsheet or Notion table; we want reply-rate per
   template by W6 to inform whether to refresh the language.

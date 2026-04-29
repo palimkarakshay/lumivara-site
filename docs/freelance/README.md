@@ -1,9 +1,15 @@
-# Freelance Go-to-Market — Working Folder
+# Storefront — Outward-facing operator pack
 
-A self-contained pack for turning the Lumivara repo's architecture into a
-sellable service. Optimised for an operator who **vibe-coded the system**
-and now wants to sell the *outcome* of that system to clients without
-having to explain the tech behind it.
+> _Lane: 🛠 Pipeline — operator-only storefront pack; never copied to a client repo._
+>
+> **Folder rename pending.** Per [`docs/mothership/15b-naming-conventions.md §2`](../mothership/15b-naming-conventions.md), this folder is locked to rename to `docs/storefront/` (the name above already uses the post-rename term in prose); the directory rename + cross-link sweep is its own commit in PR #200. Until that lands, the path is still `docs/freelance/`.
+>
+> **Brand domain banner.** Operator-brand domain `lumivara-forge.com` is **pending registration** (see [`docs/mothership/15-terminology-and-brand.md §5`](../mothership/15-terminology-and-brand.md)). References inside this pack treat it as the locked operator domain; until registration completes the URL will not resolve. The interim demo URL the operator stands up under [`palimkarakshays-projects` on Vercel](https://vercel.com/palimkarakshays-projects) is the working live link.
+
+A self-contained pack for turning the Lumivara Forge repo's architecture
+into a sellable service. Optimised for an operator who **vibe-coded the
+system** and now wants to sell the *outcome* of that system to clients
+without having to explain the tech behind it.
 
 > **New here?** Read `00-quick-start.md` first — it's a 5-minute orientation
 > with the 30-day launch checklist and a map of what's in every other file.

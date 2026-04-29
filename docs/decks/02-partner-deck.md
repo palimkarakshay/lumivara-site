@@ -160,7 +160,7 @@ You would *not* be choosing into:
 
 A blunt list. Things that sometimes worry partners about new ventures, that aren't issues here:
 
-- **Product-market fit on the existing client.** lumivara.com runs the full pipeline daily.
+- **Product-market fit on the existing client.** lumivara-forge.com runs the full pipeline daily.
 - **Pricing has a defensible floor and ceiling.** `docs/freelance/02-pricing-tiers.md` four-tier ladder, validated against verified competitor pricing in `docs/research/03 §B`.
 - **Provider risk is mitigated.** Multi-AI fallback ladder in `docs/AI_ROUTING.md`. We don't pause when Anthropic hiccups.
 - **Operator IP is protected.** Pattern C (`docs/mothership/02b-pattern-c-architecture.md`) is locked. The client's repo is genuinely vanilla; the pipeline never crosses over.

@@ -27,7 +27,7 @@ A working system you can put your business name on.
 <br/>
 <br/>
 
-*Built once on lumivara.com. Now ready to roll out to small businesses, solo practices, and indie founders.*
+*Built once on lumivara-forge.com. Now ready to roll out to small businesses, solo practices, and indie founders.*
 
 <span class="small">Prepared by [your name] · 2026</span>
 
@@ -104,7 +104,7 @@ Your laptop was off the entire time. Your developer was on a plane.
 
 ---
 
-## A live case study: lumivara.com
+## A live case study: lumivara-forge.com
 
 <br/>
 
@@ -119,9 +119,9 @@ What the system has done so far:
 
 ---
 
-## What it costs at lumivara.com vs. the alternatives
+## What it costs at lumivara-forge.com vs. the alternatives
 
-|   | Traditional agency | DIY builder | DesignJoy-class | WP Buffs maintenance | The lumivara.com system |
+|   | Traditional agency | DIY builder | DesignJoy-class | WP Buffs maintenance | The lumivara-forge.com system |
 |---|---|---|---|---|---|
 | Initial build | $6,000 – $12,000 | included in sub | included | not included | $1,200 – $7,500 |
 | Each edit after launch | $75 – $150/hr | owner's time | unlimited (in queue) | basic edits only | included in subscription |
@@ -164,7 +164,7 @@ Below that: proof — testimonials, logos, or numbers.
 
 Footer: contact, social, search-engine essentials handled automatically.
 
-> Open the lumivara.com homepage on your phone right now. Your site will feel like that — but for *your* business, in *your* voice.
+> Open the lumivara-forge.com homepage on your phone right now. Your site will feel like that — but for *your* business, in *your* voice.
 
 ---
 
@@ -290,7 +290,7 @@ You edit from your phone. I ship improvements monthly. We meet quarterly to talk
 <br/>
 
 - **10+ years in production software**, including enterprise systems work and modern web.
-- **A working, live, public reference site** — lumivara.com — running this exact stack.
+- **A working, live, public reference site** — lumivara-forge.com — running this exact stack.
 - **A 30-minute commitment to discovery before either of us signs anything.**
 - **A no-tire-kicker policy** — I'd rather have 20 great clients than 50 stressful ones.
 - **A monthly improvement run that is a real product feature, not a billable upsell.**
@@ -324,7 +324,7 @@ You edit from your phone. I ship improvements monthly. We meet quarterly to talk
 
 <br/>
 
-*Live reference site:* **lumivara.com**
+*Live reference site:* **lumivara-forge.com**
 
 *Contact:* **[your email]**
 

@@ -2,6 +2,10 @@
 
 # Stakeholder Deck Pack — Master Index
 
+> _Lane: 🛠 Pipeline — operator-only stakeholder decks; never copied to a client repo._
+>
+> **Brand domain banner.** Operator-brand domain `lumivara-forge.com` is **pending registration** (see [`docs/mothership/15-terminology-and-brand.md §5`](../mothership/15-terminology-and-brand.md)). Decks reference it as the locked operator domain; until registration completes the URL will not resolve. The interim demo URL lives under [`palimkarakshays-projects` on Vercel](https://vercel.com/palimkarakshays-projects).
+
 Five decks, one per audience, plus this index. Every deck cites `docs/research/03-source-bibliography.md` for its load-bearing claims and follows the verification posture set in `docs/research/00-INDEX.md`.
 
 > **Audience-fit rule.** Every deck is written *to* one audience and *from* one voice. Never mix audiences in a single deck — make a new deck instead.

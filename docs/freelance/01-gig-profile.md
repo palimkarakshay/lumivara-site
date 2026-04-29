@@ -137,7 +137,7 @@ For prospects who already have a Next.js or React site (or are willing to migrat
 > Each package includes a defined number of revisions. If we use them up and you're still not happy, I'd rather refund the unused portion than ship something neither of us is proud of.
 
 > **Q: Can I see live examples of your work?**  
-> Yes — my own consulting site, lumivara.com, was built and is run on the exact same system I'm offering. The fact that I use it myself is the strongest proof I can give you.
+> Yes — my own consulting site, lumivara-forge.com, was built and is run on the exact same system I'm offering. The fact that I use it myself is the strongest proof I can give you.
 
 ---
 

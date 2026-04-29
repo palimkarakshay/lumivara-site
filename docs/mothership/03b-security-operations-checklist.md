@@ -23,6 +23,7 @@ A 30-minute pass. Block it on the calendar; do not skip it. If anything fails, o
 | 5 | GitHub App installations | `https://github.com/organizations/{{BRAND_SLUG}}/settings/installations/<APP_ID>` | Installation list ≡ active-client roster + the mothership repo. Any unexpected repo is an incident. |
 | 6 | Org-secret scoping | Org Settings → Secrets and variables → Actions | Each secret's "Selected repositories" list = the pipeline repos for active clients. No orphans. |
 | 7 | Deprecated PAT exception | `03 §3` row + n8n credential | The PAT row in `03 §3` still names the n8n exception; the PAT itself is within its 90-day expiry. Track the retirement issue from `16 §7`. |
+| 8 | Vault audit (operator IP / business secrets) | 1Password admin → Vaults (`Operator`, `Lumivara-Infotech-IP`, `Vendors`, `Per-client/<slug>` × active clients, `Break-glass`); membership and time-box columns per `21-vault-strategy-adr.md §3` + `§4` | No orphan `Per-client/<slug>` vaults (count = active clients ±0); no contractor membership past its time-box; no entry in the vault duplicates a row in the `03 §3` per-client runtime table; `Break-glass` Recovery Kit envelope state matches §2 row 7. Skip rows 8a–8c if the vault has not yet been provisioned (per `21 §10` open question 5) — but log the deferral in `SECURITY_OPS_LOG.md` so the gap is visible. |
 
 After the pass: append a one-line entry to `docs/operator/SECURITY_OPS_LOG.md` — date, who, "pass / N issues opened".
 

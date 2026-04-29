@@ -1,0 +1,93 @@
+name: Codex review recheck (catch missed reviews)
+
+# A scheduled safety net. Two cases it covers:
+#
+#   A. Open PRs labelled `review-deferred`
+#      These are PRs that hit codex-review.yml while BOTH OpenAI and
+#      Gemini were unavailable. Re-dispatch codex-review.yml with the
+#      PR number; the fallback ladder will retry now that quota may
+#      have refilled.
+#
+#   B. Merged PRs in the last 14 days that lack `codex-reviewed`
+#      A merged PR == a deploy on Vercel. If the consistency review
+#      never ran (an outage during PR-open, or the gate was off when
+#      the PR was opened), seed a backlog issue so the bot picks it up
+#      via the `model/codex` execute path.
+#
+# This is the "deploys that went through without the check, re-review
+# the missed checks" workflow.
+#
+# Schedule: every 4 hours. The 5-hour rolling window for any single
+# provider is shorter than 4h, so by the time we retry, at least one
+# provider's quota has typically reset.
+
+on:
+  schedule:
+    - cron: '17 */4 * * *'   # every 4h, offset 17 min from the hour
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Actually dispatch / create issues (default dry-run)"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      max_dispatch:
+        description: "Max open `review-deferred` PRs to re-dispatch"
+        required: false
+        default: "5"
+      since:
+        description: "Lookback for merged PRs (YYYY-MM-DD; blank = 14d)"
+        required: false
+        default: ""
+      max_create:
+        description: "Cap on backlog issues to seed"
+        required: false
+        default: "10"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  actions: write       # needed to workflow_dispatch codex-review.yml
+
+concurrency:
+  group: codex-review-recheck-runtime
+  cancel-in-progress: false
+
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Recheck missed reviews
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APPLY: ${{ inputs.apply || 'true' }}
+          MAX_DISPATCH: ${{ inputs.max_dispatch || '5' }}
+          SINCE: ${{ inputs.since || '' }}
+          MAX_CREATE: ${{ inputs.max_create || '10' }}
+        run: |
+          set -euo pipefail
+          ARGS=(--max-dispatch "$MAX_DISPATCH" --max-create "$MAX_CREATE")
+          if [ -n "$SINCE" ]; then ARGS+=(--since "$SINCE"); fi
+          if [ "$APPLY" = "true" ]; then ARGS+=(--apply); fi
+          echo "Invoking: python3 scripts/recheck-missed-reviews.py ${ARGS[@]}"
+          python3 scripts/recheck-missed-reviews.py "${ARGS[@]}" \
+            | tee /tmp/recheck.log
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Codex review recheck"
+            echo ""
+            echo "Mode: ${{ inputs.apply == 'false' && 'dry-run (preview only)' || 'APPLY' }}"
+            echo ""
+            echo '```'
+            cat /tmp/recheck.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

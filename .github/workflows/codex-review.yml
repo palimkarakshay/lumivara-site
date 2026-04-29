@@ -25,8 +25,11 @@ on:
   workflow_dispatch:
     inputs:
       issue:
-        description: "Issue number"
-        required: true
+        description: "Issue number (omit if dispatching for a PR)"
+        required: false
+      pr:
+        description: "PR number to re-review (used by codex-review-recheck.yml)"
+        required: false
       model:
         description: "OpenAI model id (default gpt-5.5)"
         required: false
@@ -58,16 +61,19 @@ jobs:
         run: npm install -g @openai/codex
 
       # ── Resolve target ────────────────────────────────────────────────────
-      # The workflow runs in two modes:
-      #   - mode=pr     → triggered by `pull_request`; review the PR diff.
-      #   - mode=issue  → triggered by `workflow_dispatch`; review an issue
-      #                   (and any PR it references in its body).
+      # The workflow runs in three modes:
+      #   - mode=pr     → triggered by `pull_request`, OR by
+      #                   `workflow_dispatch` with `pr=N` (recheck cron).
+      #                   Review the PR diff directly.
+      #   - mode=issue  → triggered by `workflow_dispatch` with `issue=N`;
+      #                   review an issue (and any PR it references).
       # All later steps key off `steps.target.outputs.mode`.
       - name: Resolve target (PR vs issue)
         id: target
         env:
           GH_TOKEN: ${{ github.token }}
           INPUT_ISSUE: ${{ inputs.issue }}
+          INPUT_PR: ${{ inputs.pr }}
           INPUT_MODEL: ${{ inputs.model }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           EVENT_NAME: ${{ github.event_name }}
@@ -79,12 +85,21 @@ jobs:
             echo "issue=" >> "$GITHUB_OUTPUT"
             echo "model=$MODEL" >> "$GITHUB_OUTPUT"
             echo "Resolved target: PR #$PR_NUMBER (model=$MODEL)"
-          else
+          elif [ -n "$INPUT_PR" ]; then
+            echo "mode=pr" >> "$GITHUB_OUTPUT"
+            echo "pr=$INPUT_PR" >> "$GITHUB_OUTPUT"
+            echo "issue=" >> "$GITHUB_OUTPUT"
+            echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+            echo "Resolved target: PR #$INPUT_PR (workflow_dispatch, model=$MODEL)"
+          elif [ -n "$INPUT_ISSUE" ]; then
             echo "mode=issue" >> "$GITHUB_OUTPUT"
             echo "pr=" >> "$GITHUB_OUTPUT"
             echo "issue=$INPUT_ISSUE" >> "$GITHUB_OUTPUT"
             echo "model=$MODEL" >> "$GITHUB_OUTPUT"
             echo "Resolved target: issue #$INPUT_ISSUE (model=$MODEL)"
+          else
+            echo "::error::workflow_dispatch needs either \`issue\` or \`pr\` input."
+            exit 1
           fi
 
       # The review pass walks a small provider ladder:

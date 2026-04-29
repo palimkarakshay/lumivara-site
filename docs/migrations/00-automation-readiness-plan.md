@@ -139,4 +139,103 @@ as optional.)
 - ❌ Do **not** disable the existing autopilot in this repo. It runs
   through Phase 1.
 
+---
+
+## §3 — Phase 1: Prove the autopilot in this repo
+
+**Audience:** bot drives, operator reviews. The point of this phase is
+to pile up a **green-streak audit trail** that proves the autopilot is
+trustworthy enough to go drive the migration in Phases 2–5.
+
+**Estimated wall-clock:** ~2 weeks of bot cron runs + ~3 hours of
+operator review per week.
+
+### §3.1 — Exit criterion (the only thing that matters)
+
+```
+[ ] 10 consecutive auto-routine issues land green:
+    triage → plan → execute → review → auto-merge → Vercel preview → prod,
+    with zero operator intervention beyond merge approval.
+
+[ ] Each of the seven cron paths (triage, execute, execute-complex,
+    execute-single, codex-review, deep-research, auto-merge) has fired
+    at least once in the streak.
+
+[ ] No P1 issues opened during the streak by the codex-review,
+    deep-research, or smoke-test workflows.
+
+[ ] The kanban board (Inbox → Triaged → In Progress → Review → Done)
+    correctly mirrors GitHub state with no manual moves.
+```
+
+If any condition slips, the streak resets to zero. This is intentional
+— we are buying confidence, not throughput.
+
+### §3.2 — Kanban hygiene before counting starts
+
+Before the green streak begins, the operator (or the bot, via the
+prompt in §3.4) walks the open issue list and:
+
+1. Confirms every issue has `priority/`, `complexity/`, `area/` labels.
+2. Closes obsolete issues (anything blocked on Pattern C migration —
+   tag `status/post-migration` and close).
+3. Files a fresh tracking issue: **"Phase 1 green streak — counter at
+   0/10"**, label `meta/automation-readiness`, pinned. Body holds the
+   live tally; one comment per landed issue.
+
+### §3.3 — Per-cron-path smoke seeds
+
+To exercise every workflow at least once during the streak, file these
+synthetic but real-work issues (each becomes a green streak row):
+
+| Cron path | Seed issue title (file these as real issues) |
+|---|---|
+| triage | "chore: rerun triage on issues #X..#Y after label rename" |
+| execute (routine) | "docs: fix three typos in `docs/freelance/00-quick-start.md`" |
+| execute-complex | "feat: add a 'Forge' badge to the homepage hero" |
+| execute-single | "fix: rerun execute on #N with model override `claude-opus-4-7`" (uses `workflow_dispatch`) |
+| codex-review | (auto — fires on every PR opened by the streak above) |
+| deep-research | "research: summarise PIPEDA breach-notification windows for our risk register" |
+| auto-merge | (auto — fires on green Vercel + low-complexity PRs in the streak) |
+
+The deep-research seed is deliberately a **document-only** task — it
+exercises the path without spending compute on code that will be thrown
+away in Phase 4.
+
+### §3.4 — Bot prompt for Phase 1
+
+Paste this into Claude Code (Opus, extended thinking on, in this repo)
+when you're ready to begin the streak:
+
+```
+Phase 1 of docs/migrations/00-automation-readiness-plan.md.
+
+You are the operator-side reviewer for the next 10 days. Your job is
+to walk the open issue list, normalise labels, file the seven seed
+issues from §3.3, and append progress to the meta/automation-readiness
+tracking issue. You do NOT modify .github/workflows/, scripts/, .env*,
+package.json, or src/app/api/contact/* — those remain operator-manual.
+
+At each step:
+1. Read the tracking issue body for the current counter value.
+2. List open auto-routine issues that have landed since the last entry.
+3. For each one that landed cleanly (PR merged, Vercel green,
+   no follow-up issues opened), increment the counter and append a row.
+4. If the counter reaches 10, comment "READY FOR PHASE 2" on the
+   tracking issue and stop.
+5. If a row breaks the streak (Vercel red, follow-up P1 opened,
+   manual intervention needed), reset the counter to 0 and document
+   the reason in a comment.
+
+Do not start Phase 2 work even if asked — Phase 2 is a separate
+session.
+```
+
+### §3.5 — Hard exit gate
+
+The exit gate is `READY FOR PHASE 2` on the tracking issue **plus** a
+manual operator review of the streak's PRs. If the operator can't say
+"I would have approved every one of these without changes," the streak
+doesn't count — start over with stricter triage.
+
 

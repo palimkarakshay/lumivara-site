@@ -209,10 +209,163 @@ outage) is reset to 0/10 — that is intentional and matches `00 §3.5`.
 
 ## §4 — Hard exit checks
 
-(filled in subsequent commit)
+The bot drafts these as a single comment on the streak tracking issue
+during D-11 PM (`§3` row D-11 PM). Operator countersigns the comment
+before the gate flips to **MIGRATION READY**. Each command runs from
+the operator's local clone of `palimkarakshay/lumivara-site`; no row is
+acceptable as "presumed green."
+
+### §4.1 — Streak counter
+
+```bash
+gh issue list --repo palimkarakshay/lumivara-site \
+  --label meta/automation-readiness --state open \
+  --json number,title,body --jq '.[].body' \
+  | grep -E '^\| *(10/10) *\|' || echo "STREAK NOT AT 10/10 — DO NOT PROCEED"
+```
+
+Expected: a row matching `10/10` exists in the tracking issue body.
+
+### §4.2 — Cron-path coverage
+
+```bash
+gh run list --repo palimkarakshay/lumivara-site \
+  --limit 200 \
+  --json conclusion,name,createdAt \
+  --jq '[.[] | select(.conclusion=="success")] | group_by(.name) | map({name: .[0].name, runs: length})'
+```
+
+Expected: each of `triage`, `execute`, `execute-complex`, `execute-single`,
+`codex-review`, `deep-research`, `auto-merge` appears with `runs >= 1`
+in the streak window (≥ D-4 timestamp).
+
+### §4.3 — No stray P1 issues
+
+```bash
+gh issue list --repo palimkarakshay/lumivara-site \
+  --state open --label priority/P1 --label auto-routine \
+  --search "created:>=2026-05-04" \
+  --json number,title --jq 'length'
+```
+
+Expected: `0` (no P1 issues opened during the streak window — `00 §3.1`
+condition 3).
+
+### §4.4 — Drift integrity
+
+```bash
+# Live production SHA must equal tip of main on the operator's clone.
+PROD_SHA=$(curl -s -H "Authorization: Bearer $VERCEL_API_TOKEN" \
+  "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_TEAM_ID&state=READY&target=production&limit=1" \
+  | jq -r '.deployments[0].meta.githubCommitSha')
+git fetch origin main >/dev/null
+[[ "$(git rev-parse origin/main)" == "$PROD_SHA" ]] && echo "DRIFT = 0" || echo "DRIFT > 0 — DO NOT PROCEED"
+```
+
+Expected: `DRIFT = 0`.
+
+### §4.5 — Stale-promote refusal evidence
+
+```bash
+gh issue view <streak-tracking-issue> --repo palimkarakshay/lumivara-site \
+  --comments --json comments --jq '.comments[] | .body' \
+  | grep -c 'would_overwrite_newer'
+```
+
+Expected: at least `1` (the screenshot/log line attached during D-8 PM
+contains the literal `would_overwrite_newer` token).
+
+### §4.6 — End-to-end auto-promote loop evidence
+
+```bash
+gh issue list --repo palimkarakshay/lumivara-site \
+  --state closed --label deploy-drift --search "closed:2026-05-12" \
+  --json number,closedAt --jq 'length'
+```
+
+Expected: at least `1` drift issue **opened and closed** by the watcher
+on D-12 (the rolling drift issue from `production-integrity.md §5`).
+
+### §4.7 — Pattern C readiness
+
+```bash
+# C-MUST-3 — no high-entropy strings
+git -C . grep -E '[A-Za-z0-9+/=]{32,}' main \
+  -- ':!package-lock.json' ':!*.svg' ':!*.png' ':!*.jpg' ':!*.webp' \
+  | grep -v '^\.next/' | wc -l        # expect: 0
+
+# C-MUST-5 — .claudeignore parity
+diff <(git show main:.claudeignore) <(awk '/^```$/{flag=!flag; next} flag' \
+  docs/mothership/03-secure-architecture.md) | head -5   # expect: empty diff
+
+# G10 — _artifact-allow-deny.md mirrors live tree
+ls docs/migrations/_artifact-allow-deny.md && \
+  echo "OK"          # expect: file present and reviewed (manual diff)
+```
+
+Expected: each command reports the success line above.
+
+### §4.8 — Operator sign-off
+
+The streak tracking issue carries a **/lgtm** comment from the operator
+with the literal text:
+
+```
+LGTM — POC perfection plan §1 fully green. Phase 2 (Run S1) unblocked.
+Ten PRs reviewed in detail; would have approved every one without changes.
+```
+
+This is the only path that satisfies §1.1 row 1.5. The bot **must not**
+post this comment under any circumstance.
 
 ## §5 — Risks and resume protocol
 
-(filled in subsequent commit)
+### §5.1 — Top risks specific to this POC
+
+These extend `00 §9`'s risk register; rank-1 there ("S1 rename misses a
+hit") doesn't apply yet because Phase 2 hasn't started.
+
+| #   | Risk                                                                                                                                                                                                                                                                | Likelihood | Impact   | Mitigation                                                                                                                                                                                                                                            |
+|-----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| R1  | Operator misses a Vercel mirror row on D-2 → drift watcher is silent → §1.2 row 2.3 cannot be ticked → false-green gate.                                                                                                                                            | Medium     | High     | §4.4 + §4.6 are run **on the operator's machine**, not from CI; an unwired watcher can't fake a closed drift issue. Operator countersign on D-11 PM is the second layer.                                                                              |
+| R2  | A streak row breaks at 9/10 because Codex-review opens a P1 the operator believes is a false positive.                                                                                                                                                              | Medium     | Medium   | The streak resets, intentionally. The remediation is to fix the prompt/rubric (file an issue against `scripts/codex-review-fallback.py`, not against this plan). `00 §9` row 4.                                                                       |
+| R3  | A natural-backlog issue picked for streak rows 5–10 turns out to need design discussion mid-flight, so the bot opens a `needs-clarification` PR. That counts as operator intervention → row resets.                                                                  | Medium     | Low      | Operator's D-1 walk excludes anything `area/design`/`type/design-cosmetic` from the eligible pool. If the bot still trips on one, the row is replaced with another `auto-routine` row from the queue, not skipped.                                    |
+| R4  | The drift-watcher cron's first scheduled run after D-2 mirror happens **before** the D-3 AM backfill promote → it opens a P1 drift issue that *was* expected and therefore looks ambiguous to triage.                                                                | High       | Low      | Operator fires the backfill **immediately** after the mirror sitting on D-2 PM; the next watcher run after the mirror should see drift = 0. If the watcher beats the operator to it, close the issue with a "expected — pre-backfill" comment.       |
+| R5  | Quota: 14 days of bot work on Opus across all paths exceeds the Max 20x rolling 5-h quota at peak hours.                                                                                                                                                            | Low        | Medium   | The plan deliberately spreads streak rows over 8 wall-clock days, never more than two rows per day. `AGENTS.md` 80%/95% self-pacing rules apply unchanged.                                                                                            |
+| R6  | A late-arriving production critical bug forces an emergency P0 PR mid-streak. The PR is good, but it didn't come through `auto-routine`.                                                                                                                            | Low        | Medium   | P0/P1 emergency PRs **do not count** towards or against the streak (they're outside `auto-routine`). Document the merge in the tracking issue but leave the counter unchanged.                                                                       |
+| R7  | Operator reviews the 10 PRs on D-11 and finds one minor nit — wants to count the streak with the disclaimer "I would have approved with this small comment."                                                                                                        | High       | Medium   | The §1.1 row 1.5 wording is **deliberately strict**: "would have approved every one without changes." A nit is a change. Reset to 0/10 and rerun from D-4 with the rubric tightened. This is the only way the gate stays meaningful.                  |
+
+### §5.2 — Resume protocol (cold restart)
+
+If a session is interrupted mid-plan:
+
+1. `git fetch origin claude/poc-plan-migration-OFV54` and read the last
+   commit's subject — it names the most recent §-row touched.
+2. Open the streak tracking issue (search:
+   `is:issue label:meta/automation-readiness`). The body holds the live
+   counter and the per-row evidence; the next row to work on is the
+   first `pending` row.
+3. Run §4 commands locally to confirm what's actually green vs. what
+   the tracking issue claims. The issue body trusts the bot; §4 trusts
+   the world.
+4. If the two disagree, the world wins — reset the relevant counter
+   and document the divergence in a comment.
+5. If §4.4 says `DRIFT > 0` at any point, **pause the streak**, open
+   `/admin/deployments`, and resolve drift before counting any further
+   rows (the gate is built on drift = 0; counting rows on top of drift
+   is meaningless).
+
+### §5.3 — When the gate refuses to go green
+
+If two consecutive 14-day windows fail to clear §1, that is a signal to
+**reduce streak size** before reducing rigour. Cut from 10/10 to 7/7
+only by *amending this document* and getting operator countersign in a
+PR, never by quietly counting fewer rows. The gate's value is its
+public, dated, hard-edged definition; loosening it informally collapses
+the value to zero.
+
+If the gate is still red at D-14, the schedule slips by exactly two
+weeks (next rev: D-0 = Wed 2026-05-13, D-14 = Wed 2026-05-27). Don't
+"compress" the schedule by skipping evidence rows.
 
 *Last updated: 2026-04-29.*

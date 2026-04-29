@@ -13,6 +13,7 @@ with `docs/mothership/` (strategy + architecture) and `docs/wiki/`
 | [`platform-baseline.md`](platform-baseline.md) | Snapshot of the *expected* GitHub + Vercel deployment topology — secrets, vars, branch protection, Pages, webhooks, env-var scopes — that `audit-runbook.md` diffs the live configuration against. |
 | [`audit-runbook.md`](audit-runbook.md) | End-to-end procedure for reconciling live GitHub + Vercel configuration against the baseline + registry. Quarterly + on every secret rotation. Files mismatches via the `audit-mismatch` issue template. |
 | [`codex-fix-classify-fixtures.md`](codex-fix-classify-fixtures.md) | Spec doc + fixture catalogue pinning `scripts/codex-fix-classify.py`'s public contract (`EXCLUDED_PREFIXES`, `SPECULATIVE_MARKERS`, length cap, parser anchor). Source of truth for the negative-test runner wired into `ai-smoke-test.yml`. |
+| [`github-project-layout.md`](github-project-layout.md) | Spec for the single user-level GitHub Project (`Lumivara Forge — operator hub`, free tier) that visualises every workstream — POC, GTM, comms, operator-manual, technical, functional, research, advisory, dummy-client, prospect-client, legal/vault — via custom fields + saved views. Includes web-UI runbook, scripted bootstrap (`scripts/bootstrap-forge-project.sh`), and the Phase 4 transfer playbook. |
 
 Future entries in this folder (planned):
 

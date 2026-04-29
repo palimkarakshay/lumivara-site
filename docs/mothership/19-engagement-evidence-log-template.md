@@ -4,6 +4,8 @@
 
 Per-client provisioning evidence log. The operator copies this file to `docs/clients/<slug>/evidence-log.md` at engagement start, fills the engagement-metadata header once, and appends one entry per provisioning step as the work happens.
 
+> **Risk-disclosure step (data, IP, payment).** The PRE-01..PRE-08 entries below are the *technical* provisioning trail. The matching *risk-disclosure* trail (NDA, Engagement Confirmation Memo, MSA, SOW, deposit) is owned by [`22-engagement-risk-protection.md §6`](22-engagement-risk-protection.md#6--onboarding--signing-flow-with-explicit-confirmations) and lives in `engagement-log.md` (steps 1, 2, 7, 8) and this evidence log (PRE-01..PRE-03 for MSA / SOW / deposit). Both trails must exist for an engagement to be considered onboarded.
+
 The schema below is what the gate-checks in `06` read literally. A step is "✅" when its entry has both a non-empty `proof_link` (or `screenshot_path`) and a `validation_output` matching the validation column for that Step ID in `18-provisioning-automation-matrix.md`.
 
 ---

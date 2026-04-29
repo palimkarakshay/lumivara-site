@@ -46,6 +46,18 @@ The build is never the problem. **The neglect is.**
 
 ---
 
+## Why this is happening *now*
+
+Three numbers, independently verified in 2026:
+
+- **75% of consumers have abandoned a purchase or inquiry because of an outdated/unprofessional-looking website.** (HostingAdvice 2024 survey, 500 U.S. consumers, via PRNewswire.) 71% of those same consumers say they spot a DIY site at first click.
+- **3,117 federal-court website-accessibility lawsuits were filed in 2025**, +27% over 2024 (Seyfarth Shaw / ADA Title III Tracker). For a regulated practice — medical, dental, legal — this is a real liability surface.
+- **95.9% of the WebAIM Million top-million home pages** had detected WCAG failures in 2024, with an average of 56.8 accessibility errors per page. The "I'll fix it later" path is statistically the path everyone is on.
+
+Source detail: `docs/research/03-source-bibliography.md` rows `§B-Outdated-75`, `§B-ADA-Lawsuits`, `§B-WebAIM`.
+
+---
+
 ## What if the site simply… didn't decay?
 
 Imagine a marketing site where:
@@ -107,17 +119,20 @@ What the system has done so far:
 
 ---
 
-## What it costs at lumivara.com vs. an agency
+## What it costs at lumivara.com vs. the alternatives
 
-|   | Traditional agency | The lumivara.com system |
-|---|---|---|
-| Initial build | $5,000 – $15,000 | $1,200 – $7,500 |
-| Each edit after launch | $150 – $300 / change | included in subscription |
-| Time per edit | 1 – 3 weeks | 1 – 4 hours |
-| Site-quality maintenance | "phase 2" upsell | included monthly |
-| Total cost over 24 months (active small biz) | $15,000 – $30,000+ | $7,500 – $14,000 |
+|   | Traditional agency | DIY builder | DesignJoy-class | WP Buffs maintenance | The lumivara.com system |
+|---|---|---|---|---|---|
+| Initial build | $6,000 – $12,000 | included in sub | included | not included | $1,200 – $7,500 |
+| Each edit after launch | $75 – $150/hr | owner's time | unlimited (in queue) | basic edits only | included in subscription |
+| Time per edit | 1 – 3 weeks | minutes (owner) | 48 h | 1 – 5 days | 1 – 4 hours |
+| Site-quality maintenance | "phase 2" upsell | owner's job | optional | included | included monthly |
+| Monthly fee | $50 – $250 | $17 – $139 | $4,995 – $7,995 | $79 – $447 | $99 – $599 |
+| **24-month all-in (active SMB)** | **$15,000 – $30,000+** | $400 – $3,300 + owner-time | $120,000+ | $1,900 – $10,700 | **$7,500 – $14,000** |
 
-The retainer model isn't more expensive. It's cheaper, predictable, and the site is *better* every month instead of degrading.
+Pricing sources: agency edit rates and upfront builds from industry guides; DIY platform pricing direct from vendor pages; DesignJoy from `designjoy.co`; WP Buffs from `wpbuffs.com/plans`. Verified 2026-04-29; details in `docs/research/03-source-bibliography.md`.
+
+The retainer model isn't more expensive. It's cheaper than the agency you'd otherwise hire, predictable in a way the agency can't match, and the site is *better* every month instead of degrading.
 
 ---
 

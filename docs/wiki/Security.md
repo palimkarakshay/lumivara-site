@@ -39,6 +39,10 @@ The autopilot has more attack surface than a client repo because it stores crede
 
 Every named key — GitHub Actions secrets and variables, Vercel env vars, n8n credentials, dashboard vars, operator-vault entries — is enumerated in [`docs/ops/variable-registry.md`](../ops/variable-registry.md) with scope, owner, rotation cadence, and source references. **The registry is the audit surface**; the rest of this page links into it rather than duplicating names. When a new key is introduced anywhere in the system, add a row to the registry in the same PR.
 
+### Periodic GitHub + Vercel audit
+
+Quarterly (and on every secret rotation, branch-protection change, or new client repo onboarded), walk [`docs/ops/audit-runbook.md`](../ops/audit-runbook.md) end-to-end. The runbook diffs the live `gh api` / Vercel API exports against [`docs/ops/platform-baseline.md`](../ops/platform-baseline.md) (the *expected* topology — secrets, vars, branch protection, Pages, webhooks, env-var scopes) and files one issue per delta via the [`audit-mismatch`](../../.github/ISSUE_TEMPLATE/audit-mismatch.md) template. The runbook ends by bumping the `_Last verified_` stamps in the baseline + registry. Audits are operator-attested (`human-only`), not auto-merged.
+
 ### Vendor PAT
 
 The bot account's classic PAT (used to open PRs and apply labels) is a fine-grained token scoped to: `contents:write`, `issues:write`, `pull_requests:write` on the operator's org only. Rotate every 90 days; the rotation runbook is in `docs/mothership/03-secure-architecture.md §6`.

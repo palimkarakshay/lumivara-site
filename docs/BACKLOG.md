@@ -100,6 +100,7 @@ If a future phase needs to dial usage back:
 
 - [ ] **Pattern C audit** — quarterly cadence, plus on every secret rotation and every new client repo onboarded. Walk every MUST / MUST-NOT row in [`docs/mothership/pattern-c-enforcement-checklist.md`](mothership/pattern-c-enforcement-checklist.md) (see §6 of that file for the procedure and §5 for the per-client verification commands).
 - [ ] **Variable registry audit** — quarterly cadence, plus on every secret rotation. Walk [`docs/ops/variable-registry.md`](ops/variable-registry.md) §1–§6 row by row, re-confirm rotation dates, then update §7 (Last verified). Procedure is the audit cadence in [`docs/mothership/03-secure-architecture.md §3.2`](mothership/03-secure-architecture.md#32-audit-cadence).
+- [ ] **GitHub + Vercel platform audit** — quarterly cadence, plus on every secret rotation, branch-protection change, or new client repo onboarded. Walk [`docs/ops/audit-runbook.md`](ops/audit-runbook.md) end-to-end: export live `gh api` / Vercel API state, diff against [`docs/ops/platform-baseline.md`](ops/platform-baseline.md) and the variable registry, file one issue per delta via the [`audit-mismatch`](../.github/ISSUE_TEMPLATE/audit-mismatch.md) template, bump `_Last verified_` stamps. Audits are operator-attested (`human-only`). #145.
 
 ## Deferred follow-ups (auto-routine + scripts/.github exclusions)
 

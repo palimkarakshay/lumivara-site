@@ -62,3 +62,66 @@ Three things in one offer:
 3. **The "always-improving" subscription** — the site gets quietly better every month.
 
 <span class="small">Source: `docs/mothership/01-business-plan.md §2`, `docs/freelance/01-gig-profile.md` Part 2.</span>
+
+---
+
+<!-- _class: lead -->
+
+# 1 · Benefits for the customer
+## What does the client actually get?
+
+---
+
+## Outcomes the client feels
+
+<br/>
+
+| Outcome | What that looks like in their week |
+|---|---|
+| **No more decay between updates** | Typos, prices, new pages — fixed the same day, not "next quarter." |
+| **Edits in 30 seconds, from a phone** | Change request sent from the airport; preview link arrives before they land. |
+| **A flat monthly fee, not per-edit invoices** | No surprise $200 invoice for a one-line copy fix. |
+| **Always 90+ Lighthouse** | Speed, accessibility, SEO are the baseline — not an upsell. |
+| **Full ownership, no lock-in** | Code, domain, hosting are in the client's name from day one. |
+| **Every change waits for their tap** | The bot proposes, the owner publishes. Nothing surprises them live. |
+| **Multi-channel intake** | Phone shortcut, email, or SMS — whichever is in front of them. |
+
+<span class="small">Source: `docs/freelance/01-gig-profile.md` Parts 2 & 6, `docs/freelance/04-slide-deck.md` slides 4–7.</span>
+
+---
+
+## Why the *retainer* is the real benefit
+
+<br/>
+
+A traditional agency build is "delivered and forgotten." Within 12 months the site decays:
+
+- Stale prices, old team list, broken booking link, slipping Lighthouse score.
+- Every fix is a $150–$300 invoice and a 1–3 week wait.
+
+Lumivara Forge **inverts** that:
+
+- The site **gets better** month over month — the operator ships 3–5 unprompted improvements per month on Tier 2 (loading speed, accessibility, SEO polish).
+- The client's *own* requested edits are unlimited within fair-use on Tier 2.
+- Total cost over 24 months is **$7.5–$14k vs. $15–$30k+ for an agency.**
+
+<span class="small">Source: `docs/freelance/02-pricing-tiers.md` Tier 2, `docs/freelance/04-slide-deck.md` "What it costs … vs. an agency."</span>
+
+---
+
+## Quantified value (24-month view)
+
+<br/>
+
+| Line item | Traditional agency | Lumivara Forge (Tier 2) |
+|---|---|---|
+| Initial build | CAD $5,000 – $15,000 | CAD $4,500 |
+| Each edit after launch | $150 – $300 / change | included |
+| Time to ship a typo fix | 1 – 3 weeks | 1 – 4 hours |
+| Monthly improvement run | "phase 2" upsell | included |
+| 24-month total (active small biz) | $15,000 – $30,000+ | ≈ $10,500 |
+| Site quality after 24 months | degrading | improving |
+
+> The retainer model isn't more expensive. It's cheaper, predictable, and the site is *better* every month instead of degrading.
+
+<span class="small">Source: `docs/freelance/04-slide-deck.md` cost-comparison slide; `docs/freelance/02-pricing-tiers.md`.</span>

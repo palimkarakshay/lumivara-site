@@ -503,8 +503,9 @@ shifts with it.
 | O1  | **File the streak tracking issue + walk open issues** (POC §3 D-1)       | Thu 2026-04-30             | Mon 2026-05-04             | The streak cannot start counting until the issue exists. Each day past L is a day the streak doesn't accrue. | Streak start slips by exactly that many days; demo slips with it. |
 | O2  | **Vercel mirror sitting** (POC §3 D-2; G4–G6)                            | Fri 2026-05-01             | Mon 2026-05-04             | The drift watcher cannot run cleanly without it; §1.2 row 2.3 cannot tick. | Streak resets on the first false-green watcher run. |
 | O3  | **First-time backfill promote** (POC §3 D-3 AM; G7)                      | Mon 2026-05-04 AM          | Mon 2026-05-04 PM          | Drift starts double-digit; every watcher run opens a P1 issue until promoted. | False P1 issues poison the streak's "no P1 issues opened" condition (§1.1 row 1.3). |
-| O4  | **Trademark search filed** (CIPO Class 35 + 42 + USPTO; `01-business-plan §1`, `15-terminology-and-brand §2`)  | Today (2026-04-29)         | Fri 2026-05-08             | CIPO turnaround is 6–12 weeks on a clean filing, longer on conflicts. Brand-lock without a trademark answer is gambling that nobody else has the name. The brand-lock audit (§6.2 row 6.5) cannot tick green if the trademark answer hasn't returned. | If a conflict surfaces post-rename, Run S1 must be re-run to a new brand. Re-run is bot-cheap (~1 session) but every doc/deck/asset citing the old brand has to be re-rendered, including any decks already shared with advisors. **This is the single longest-lead operator task and the one most often deferred.** |
-| O5  | **Buy `lumivara-forge.com` + `.ca` domains** (Phase 0 row 1)             | Mon 2026-05-11             | Mon 2026-06-08             | Cheap ($30 / yr each); registrar of record matters more than timing. Earliest sensible is **after** trademark returns clean (O4). | If domain is squatted by someone else between O4 and O5, brand pivots and Run S1 re-runs. Same cost as O4 slip but compounds. |
+| O4a | **Trademark knock-out availability search** (CIPO Trademarks Database, USPTO TESS, Class 35 + 42; `01-business-plan §1`, `15-terminology-and-brand §2`) — same-day, free, **does not** require a filing. The deliverable is a written one-page memo with screenshots of every search result for `lumivara-forge`, `lumivara forge`, and the closest 3 phonetic neighbours, plus a verdict: **clear** / **likely-conflict** / **needs-counsel**. | Today (2026-04-29)         | Fri 2026-05-01             | Same-day work; the L date exists only because every later row (O5 domains, O6 GitHub org slug, the entire Run S1 brand lock) depends on the verdict. A `likely-conflict` or `needs-counsel` verdict triggers a brand re-pick **before** any of those happen. | Operator burns a week of Phase 0 work and a Run S1 session on a brand they then have to abandon. |
+| O4b | **Full trademark filing** (CIPO Class 35 + 42 + USPTO, post-O4a-clean) — engages registration agent or `Trademarkia`/equivalent.        | After O4a returns **clear** | Fri 2026-08-15             | CIPO turnaround is 6–12 weeks on a clean filing, longer on conflicts. The L date is demo + ~16 weeks; the §6.4 row 6.14 (public-demo legal & risk) cannot tick green until the filing is at least *submitted* (not necessarily registered). Private demos to a single named advisor (§9.2 #1) may proceed on O4a-clean alone. | If a registration-stage conflict surfaces, Run S1 has to be re-run to a new brand. Re-run is bot-cheap (~1 session) but every doc/deck/asset citing the old brand has to be re-rendered, including any decks already shared with advisors. **O4a is the today-or-this-week task; O4b is the file-it-before-public-demo task.** |
+| O5  | **Buy `lumivara-forge.com` + `.ca` domains** (Phase 0 row 1)             | After O4a returns **clear** (≥ Mon 2026-05-04) | Mon 2026-06-08             | Cheap ($30 / yr each); registrar of record matters more than timing. **Gated by O4a, not O4b** — the same-day knock-out search is enough to commit a $60 domain spend; waiting for the full O4b registration would push every Phase 0 task out by 6–12 weeks. | If a domain is squatted between O4a and O5, brand pivots and Run S1 re-runs. Compounds with the O4b cost if O4b has already been filed. |
 | O6  | **Phase 0 GitHub org + App + secrets bootstrap** (`00 §2.2`)             | Wed 2026-05-13 (POC §3 D-13) | Fri 2026-05-22             | Phase 2 (Run S1) cannot be merged into the platform org until the org exists. Phase 0 itself is one focused day; the L date is two weeks later because Phase 2 tolerates that slack. | Phase 2 doesn't start; Phase 3 doesn't start; demo slips. |
 | O7  | **Empty target client repos created** (`palimkarakshay/lumivara-people-advisory-site`, `*-pipeline`, plus a demo dummy repo for §6.3) | Wed 2026-05-13 | Fri 2026-05-29             | Slug-locking only. Push a one-line README, do nothing else. Reserves the slugs against squatting and lets the bot validate URLs in dry-runs. | If a slug is taken (unlikely on a personal account), §6.13 cannot point the demo at the right URL pre-Phase-4. |
 | O8  | **Vercel team account on `Forge` business email** (Phase 0 row 9)        | Wed 2026-05-13             | Fri 2026-06-05             | Today's Vercel project is on the operator's personal email. The new client + demo Vercel projects must live on the business email or the eventual transfer back to the client (catalog promise: "you own the hosting account") is theatrical. | Hosting-transfer story breaks; the catalog claim becomes false. **Soft slip:** the demo can run on the personal Vercel account; the L date is what matters for the eventual client #1 transfer. |
@@ -520,17 +521,23 @@ shifts with it.
 The dates **rank** the operator's procrastination cost. Reading down
 the L column:
 
-1. **O4 (trademark)** is today-or-this-week. Single longest lead time;
-   single most expensive to defer. **Start this Monday.**
+1. **O4a (trademark knock-out search)** is today-or-this-week. Same-day
+   work; gates the entire downstream brand-locked schedule. **Do this
+   first.**
 2. **O1 / O2 / O3** are this-week. They're inside the POC plan
    already; this section just makes them harder to forget.
-3. **O5–O11** are mid-May to late-June. Phase 0 day clusters them;
+3. **O4b (full trademark filing)** is start-after-O4a-clears,
+   submit-before-public-demo. Single longest *external* lead time
+   (6–12 weeks at CIPO), but does **not** gate Phase 0 — only public
+   demos and first contract.
+4. **O5–O11** are mid-May to late-June. Phase 0 day clusters them;
    the operator does them in one focused sitting per
    `00 §2.2`. **Don't do them earlier** — operator action during the
-   streak resets the streak counter (§5.1 R3).
-4. **O12 (DNS cutover)** is the only late-June item that the operator
+   streak resets the streak counter (§5.1 R3). O5 specifically is
+   gated on **O4a clear**, not on O4b registration.
+5. **O12 (DNS cutover)** is the only late-June item that the operator
    should *deliberately* delay until Phase 4 acceptance is green.
-5. **O13 + O14 (insurance + lawyer)** are post-demo. They're listed
+6. **O13 + O14 (insurance + lawyer)** are post-demo. They're listed
    here because the operator's "delay until necessary" instinct will
    try to defer them past first contract — and signing without them
    is the single biggest non-technical risk in the whole plan
@@ -539,10 +546,16 @@ the L column:
 ### §7.3 — The single calendar entry the operator actually needs
 
 If the operator only schedules one thing this week, it is **the
-trademark filing (O4)**. It is the only row whose deadline is set by
-an external party (CIPO + USPTO turnaround) rather than by the
-operator's own pace, and it is the only row whose miss cascades into
-re-running Run S1 across every doc, deck, and asset.
+trademark knock-out search (O4a)**. Same-day, free, and the gate on
+every downstream brand-locked decision (domains, GitHub org slug,
+Run S1). The full registration filing (O4b) is the longest external
+lead in the whole plan, but it does *not* gate Phase 0 — it gates the
+public demo and the first contract.
+
+Sequenced together: O4a this week → O5 + O6 once O4a returns clear →
+O4b filed in the same sitting as O5/O6 if the operator wants to
+parallelise → O4b registration completes invisibly during the next
+6–12 weeks while every other line item progresses normally.
 
 Everything else can be sequenced inside the POC plan and Phase 0 day
 without external coordination.

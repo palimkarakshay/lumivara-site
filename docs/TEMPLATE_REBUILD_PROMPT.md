@@ -184,6 +184,13 @@ across every client.
 > steps with screenshots, troubleshooting, and the security rationale.
 > This section is the dense checklist; the runbook is the manual.
 
+> **Variable registry pointer.** Every named key referenced anywhere in
+> §2 (org secrets, Vercel env vars, n8n credentials, dashboard vars) is
+> enumerated in [`docs/ops/variable-registry.md`](ops/variable-registry.md)
+> with scope, owner, and rotation cadence. When this checklist asks you
+> to "set X" or "rotate Y", that file is the canonical list — keep them
+> in sync when adding a new variable to any zone.
+
 ### A. One-time operator practice setup (do this once, before client #1)
 
 #### A1. Operator GitHub organisation

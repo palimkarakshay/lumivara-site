@@ -88,6 +88,7 @@ Existing context that this folder builds on (do not duplicate):
 - `docs/ADMIN_PORTAL_PLAN.md` — admin-portal architecture (5 phases)
 - `docs/N8N_SETUP.md` — n8n on Railway
 - `docs/wiki/Home.md` — **dual-lane wiki** (🛠 Operator / 🌐 Client / ⚪ Both). The wiki is the working summary of this pack for the operator and is the source from which per-client wikis are scaffolded; only the 🌐 and ⚪ pages are copied into a client repo (see `docs/wiki/_partials/lane-key.md` and `docs/wiki/_partials/do-not-copy.md`).
+- [`docs/ops/variable-registry.md`](../ops/variable-registry.md) — **canonical inventory of every named key** (GitHub Actions secrets/vars, Vercel env, n8n credentials, dashboard vars, operator-vault entries) with scope / owner / rotation / references. The audit cadence in `03-secure-architecture.md §3.2` walks this file. (#142)
 
 ---
 
@@ -160,6 +161,7 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 - Client-facing pack template: `07-client-handover-pack.md`
 - Tier-based AI cadence: `04-tier-based-agent-cadence.md`
 - Cost firewall + zone isolation: `03-secure-architecture.md`
+- **Canonical variable inventory: [`docs/ops/variable-registry.md`](../ops/variable-registry.md)**
 - **Security operations cadence (monthly / quarterly / drill / rotation matrix / anti-patterns): `03b-security-operations-checklist.md`**
 - **Pattern C enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `pattern-c-enforcement-checklist.md`**
 - **Terminology policy + forbidden strings: `15-terminology-and-brand.md §6`** — what may appear where, with the audit-grep recipe.

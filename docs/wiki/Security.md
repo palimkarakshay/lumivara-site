@@ -35,6 +35,10 @@ The autopilot has more attack surface than a client repo because it stores crede
 - **Operator secrets** (`CLAUDE_CODE_OAUTH_TOKEN`, vendor PATs, n8n HMAC keys) live as **org-level GitHub secrets** on the operator's GitHub org and are scoped per repo.
 - The mothership repo is the only repo that holds the OAuth token referenced by the autopilot workflows. Per-client repos pull it from the org scope at workflow runtime — never as a repo-level secret.
 
+### Variable registry (canonical inventory)
+
+Every named key — GitHub Actions secrets and variables, Vercel env vars, n8n credentials, dashboard vars, operator-vault entries — is enumerated in [`docs/ops/variable-registry.md`](../ops/variable-registry.md) with scope, owner, rotation cadence, and source references. **The registry is the audit surface**; the rest of this page links into it rather than duplicating names. When a new key is introduced anywhere in the system, add a row to the registry in the same PR.
+
 ### Vendor PAT
 
 The bot account's classic PAT (used to open PRs and apply labels) is a fine-grained token scoped to: `contents:write`, `issues:write`, `pull_requests:write` on the operator's org only. Rotate every 90 days; the rotation runbook is in `docs/mothership/03-secure-architecture.md §6`.
@@ -81,6 +85,7 @@ A client repo is a clean Next.js site — no autopilot machinery, no operator cr
 - Never commit `.env.local` or any file containing API keys, tokens, or credentials.
 - Production env vars live in **Vercel → Settings → Environment Variables** for the client's project; never in the repo.
 - `.env.local.example` lists *names* and *purpose* only — never values.
+- The full canonical inventory of every named key (with scope, owner, rotation, and references) is at [`docs/ops/variable-registry.md`](../ops/variable-registry.md). Keep that file in sync with `.env.local.example` whenever a new env var is introduced.
 
 ### Contact form trust boundary (`/api/contact`)
 

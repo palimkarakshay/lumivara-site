@@ -64,8 +64,9 @@ print_section "§1 — Stale brand: 'Lumivara Infotech' should be 'Lumivara Forg
 mapfile -t INFOTECH_HITS < <(
   git grep -nIE 'Lumivara[ -]Infotech' \
     -- ':!scripts/pattern-c-audit.sh' \
-       ':!docs/freelance/04-slide-deck.pdf' \
-       ':!docs/freelance/04-slide-deck.html' \
+       ':!CHANGELOG.md' \
+       ':!docs/storefront/04-slide-deck.pdf' \
+       ':!docs/storefront/04-slide-deck.html' \
     2>/dev/null
 )
 if [ "${#INFOTECH_HITS[@]}" -eq 0 ]; then
@@ -78,9 +79,10 @@ else
     # Safe scope: markdown and TypeScript files; exclude file paths and URL slugs.
     git grep -lIE 'Lumivara[ -]Infotech' \
       -- '*.md' '*.ts' '*.tsx' \
-         ':!docs/freelance/04-slide-deck.pdf' \
-         ':!docs/freelance/04-slide-deck.html' \
+         ':!docs/storefront/04-slide-deck.pdf' \
+         ':!docs/storefront/04-slide-deck.html' \
          ':!scripts/pattern-c-audit.sh' \
+         ':!CHANGELOG.md' \
       | while read -r f; do
           # Replace display strings only; keep URL slugs and filenames intact.
           sed -i 's/Lumivara Infotech/Lumivara Forge/g' "$f"

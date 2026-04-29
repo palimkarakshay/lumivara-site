@@ -160,7 +160,7 @@ Billing_surcharge_year1 ≈ 46,000 × 0.005 ≈ $230 CAD/year
 | Fiverr Pro listing fee | $0 | $0 | Free to list; takes 20% of completed orders (counted as a contra-revenue, not a cost line — see breakeven note below). |
 | Upwork Connects | $20 | $240 | Per-bid currency; ~$20/mo for steady proposing. |
 | Demo site hosting (10 verticals on Vercel free) | $0 | $0 | All under [`18 §1 vercel_free_bandwidth`](./18-capacity-and-unit-economics.md#1--assumptions-table). |
-| Demo site password protection (Vercel Pro) | $0 | $0 | Defer; rely on obscure preview URLs per [`10-lumivara-infotech-setup-plan.md §6`](./10-lumivara-infotech-setup-plan.md). |
+| Demo site password protection (Vercel Pro) | $0 | $0 | Defer; rely on obscure preview URLs per [`09b-lumivara-forge-setup-plan.md §6`](./09b-lumivara-forge-setup-plan.md). |
 | Paid ads (Google / Meta) | $0–$200 | $0–$2,400 | Defer to Year-2; organic + Fiverr is sufficient at sub-30 client scale. |
 | Brand-domain email (Google Workspace, 1 user) | $9 | $108 | Required for `hello@{{BRAND_SLUG}}.com`; alternative is Zoho free for 1 user ($0). |
 | **Subtotal** (Year-1, lean) | **$69** | **$828** | LinkedIn Premium + Upwork + Workspace. |

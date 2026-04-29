@@ -75,6 +75,18 @@ jobs:
                     "blocked until codex-blockers is removed.")
               sys.exit(0)
 
+          # Both review engines were unavailable when this PR opened
+          # (OpenAI quota + Gemini quota or missing keys). The hourly
+          # recheck cron (codex-review-recheck.yml) will retry. Until a
+          # successful review posts and removes this label, do NOT
+          # auto-merge — shipping unreviewed code is exactly what the
+          # consistency gate is meant to prevent.
+          if 'review-deferred' in pr_labels:
+              print("Review deferred (both review engines were unavailable). "
+                    "Auto-merge blocked until codex-review-recheck.yml retries "
+                    "and the review-deferred label is cleared.")
+              sys.exit(0)
+
           pr = os.environ['PR_NUMBER']
           print(f"Enabling auto-merge (squash) on PR #{pr} for issue #{issue_num}.")
           subprocess.run(

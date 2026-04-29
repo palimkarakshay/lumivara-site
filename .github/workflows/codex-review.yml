@@ -87,39 +87,54 @@ jobs:
             echo "Resolved target: issue #$INPUT_ISSUE (model=$MODEL)"
           fi
 
-      - name: Verify Codex CLI + key
+      # The review pass walks a small provider ladder:
+      #   OpenAI gpt-5.5  →  Gemini 2.5 Pro  →  defer
+      # so a Codex outage no longer silently skips the consistency check.
+      # We only short-circuit when BOTH `OPENAI_API_KEY` and
+      # `GEMINI_API_KEY` are missing — at that point there's no second
+      # opinion available at all and the workflow defers via a label.
+      - name: Verify review-engine availability
         id: verify
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
           MODE: ${{ steps.target.outputs.mode }}
           ISSUE: ${{ steps.target.outputs.issue }}
           PR: ${{ steps.target.outputs.pr }}
         run: |
-          if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP missing — Codex review skipped."
+          if [ -z "$OPENAI_API_KEY" ] && [ -z "$GEMINI_API_KEY" ]; then
+            echo "::warning::Both OPENAI_API_KEY and GEMINI_API_KEY missing — review skipped."
             if [ "$MODE" = "issue" ] && [ -n "$ISSUE" ]; then
               gh issue comment "$ISSUE" \
                 --repo palimkarakshay/lumivara-site \
-                --body "Codex review requested but neither OPENAI_API_KEY nor OPENAI_API_KEY_BACKUP is configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
+                --body "Code review requested but neither OPENAI nor GEMINI keys are configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
               gh issue edit "$ISSUE" \
                 --repo palimkarakshay/lumivara-site \
                 --remove-label "model/codex" || true
             elif [ "$MODE" = "pr" ] && [ -n "$PR" ]; then
+              gh label create "review-deferred" --repo palimkarakshay/lumivara-site \
+                --color "fbca04" --description "Codex/Gemini review unavailable; will be re-tried by codex-review-recheck.yml" 2>/dev/null || true
+              gh pr edit "$PR" --repo palimkarakshay/lumivara-site \
+                --add-label "review-deferred" || true
               gh pr comment "$PR" \
                 --repo palimkarakshay/lumivara-site \
-                --body "_Codex auto-review skipped: OPENAI_API_KEY not configured. Re-run after the operator wires the key, or have a human reviewer assess consistency._" || true
+                --body "_Auto-review deferred: no OPENAI or GEMINI key configured. \`codex-review-recheck.yml\` will retry once a key is available._" || true
             fi
             echo "ok=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          # Codex CLI is only required for the OpenAI path; absent that key
+          # we still continue with Gemini, so a missing CLI is non-fatal.
           codex --version || true
           echo "ok=true" >> "$GITHUB_OUTPUT"
 
-      - name: Run Codex review pass
+      - name: Run code review pass (OpenAI → Gemini → defer)
         if: steps.verify.outputs.ok == 'true'
+        id: review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
           MODE: ${{ steps.target.outputs.mode }}
           ISSUE: ${{ steps.target.outputs.issue }}
@@ -160,13 +175,13 @@ jobs:
             DIFF=$(cat /tmp/diff.txt)
           fi
 
-          # ── Build prompt + call OpenAI ────────────────────────────────────
-          # Keep the prompt structured so apply-codex-fixes.yml can reliably
-          # find blocker/major findings and propose code-level fixes for them.
-          export MODE TITLE BODY DIFF MODEL OPENAI_API_KEY PR_NUM ISSUE_REF
-          python3 - <<'PY' > /tmp/review.md
-          import json, os, sys, urllib.request, urllib.error
-
+          # ── Build prompt (engine-agnostic; required structure lives here) ──
+          # Keep it structured so apply-codex-fixes.yml can reliably find
+          # blocker/major findings and propose code-level fixes for them,
+          # regardless of which engine produced the review.
+          export MODE TITLE BODY DIFF MODEL PR_NUM ISSUE_REF
+          python3 - <<'PY' > /tmp/prompt.txt
+          import os
           mode = os.environ["MODE"]
           parts = [
               "You are the Codex consistency reviewer for the Lumivara site",
@@ -204,38 +219,29 @@ jobs:
               parts += ["", "## Diff under review", "```diff", diff, "```"]
           else:
               parts += ["", "_No diff available; review the described change against the current codebase._"]
-          prompt = "\n".join(parts)
-
-          key = os.environ["OPENAI_API_KEY"].strip()
-          model = os.environ.get("MODEL", "gpt-5.5")
-          req = urllib.request.Request(
-              "https://api.openai.com/v1/chat/completions",
-              data=json.dumps({
-                  "model": model,
-                  "messages": [{"role": "user", "content": prompt}],
-                  "temperature": 0.2,
-              }).encode(),
-              headers={"Authorization": f"Bearer {key}",
-                       "Content-Type": "application/json"},
-              method="POST",
-          )
-          try:
-              with urllib.request.urlopen(req, timeout=90) as r:
-                  resp = json.loads(r.read())
-              print(resp["choices"][0]["message"]["content"])
-          except urllib.error.HTTPError as e:
-              body = e.read().decode()[:500]
-              if e.code == 429:
-                  print("::warning::OpenAI quota exhausted — review skipped.",
-                        file=sys.stderr)
-                  print(f"_Codex review unavailable (HTTP 429): {body}_")
-                  sys.exit(0)
-              print(f"::error::OpenAI HTTP {e.code}: {body}", file=sys.stderr)
-              sys.exit(1)
+          print("\n".join(parts))
           PY
 
+          # Run the OpenAI → Gemini → defer ladder. The script always exits
+          # 0 and prints `ENGINE=<openai|gemini|deferred>` to stdout, which
+          # we capture into a step output for downstream labelling.
+          PROMPT_FILE=/tmp/prompt.txt \
+          REVIEW_OUT=/tmp/review.md \
+          OPENAI_MODEL="$MODEL" \
+          python3 scripts/codex-review-fallback.py \
+            | tee /tmp/engine.txt
+          ENGINE=$(grep -oE 'ENGINE=[a-z]+' /tmp/engine.txt | tail -n1 | cut -d= -f2)
+          ENGINE="${ENGINE:-deferred}"
+          echo "engine=$ENGINE" >> "$GITHUB_OUTPUT"
+
+          case "$ENGINE" in
+            openai)  ENGINE_LABEL="Codex $MODEL" ;;
+            gemini)  ENGINE_LABEL="Gemini 2.5 Pro (OpenAI unavailable)" ;;
+            deferred) ENGINE_LABEL="DEFERRED — both OpenAI and Gemini unavailable" ;;
+            *) ENGINE_LABEL="$ENGINE" ;;
+          esac
           {
-            echo "## Code review (Codex $MODEL)"
+            echo "## Code review ($ENGINE_LABEL)"
             echo ""
             cat /tmp/review.md
             echo ""
@@ -257,36 +263,52 @@ jobs:
           fi
 
           # ── PR labelling ──────────────────────────────────────────────────
-          # Tag the PR `codex-reviewed` (so we don't re-review every push to
-          # an already-reviewed PR unnecessarily — synchronize will still
-          # re-run for new commits, but humans can filter on this label).
-          # If the verdict is `request-changes` OR any blocker/major finding
-          # exists, additionally label `codex-blockers` so auto-merge.yml
-          # gates the merge.
+          # Labels we apply (idempotent creates with `|| true`):
+          #   codex-reviewed         — review posted (any engine)
+          #   codex-reviewed-by-gemini — Gemini fallback ran instead of OpenAI
+          #   codex-blockers         — review surfaced blocker/major findings
+          #   review-deferred        — both engines unavailable; recheck cron
+          #                            will retry once a key/quota returns
           if [ -n "$PR_NUM" ]; then
-            # Ensure the labels exist (idempotent — `|| true` swallows
-            # "already exists" errors). Without this, the very first PR
-            # this workflow runs against would `gh pr edit --add-label`
-            # against a non-existent label and silently fail.
             gh label create "codex-reviewed" --repo "$REPO" \
               --color "0e8a16" --description "Codex consistency review posted" 2>/dev/null || true
+            gh label create "codex-reviewed-by-gemini" --repo "$REPO" \
+              --color "5319e7" --description "Review posted by Gemini fallback (OpenAI unavailable)" 2>/dev/null || true
             gh label create "codex-blockers" --repo "$REPO" \
               --color "b60205" --description "Codex flagged blocker/major findings — gates auto-merge" 2>/dev/null || true
-            gh pr edit "$PR_NUM" --repo "$REPO" --add-label "codex-reviewed" || true
-            BLOCKERS=$(grep -ciE '\[(blocker|major)\]' /tmp/review.md || true)
-            VERDICT=$(grep -iE '^## Verdict' -A 2 /tmp/review.md | tail -n +2 | head -n 1 || true)
-            if [ "${BLOCKERS:-0}" -gt 0 ] || echo "$VERDICT" | grep -qiE 'request-changes'; then
-              echo "Codex flagged blocker/major findings (count=$BLOCKERS, verdict=$VERDICT). Labelling \`codex-blockers\`."
-              gh pr edit "$PR_NUM" --repo "$REPO" --add-label "codex-blockers" || true
+            gh label create "review-deferred" --repo "$REPO" \
+              --color "fbca04" --description "Codex/Gemini review unavailable; will be re-tried by codex-review-recheck.yml" 2>/dev/null || true
+
+            if [ "$ENGINE" = "deferred" ]; then
+              echo "Both engines unavailable; labelling PR #$PR_NUM \`review-deferred\`."
+              gh pr edit "$PR_NUM" --repo "$REPO" --add-label "review-deferred" || true
+              # Don't apply codex-reviewed in this case — the recheck cron
+              # uses its absence to detect work that still needs reviewing.
             else
-              echo "No blocker/major findings; not adding \`codex-blockers\`."
-              gh pr edit "$PR_NUM" --repo "$REPO" --remove-label "codex-blockers" || true
+              gh pr edit "$PR_NUM" --repo "$REPO" --add-label "codex-reviewed" || true
+              gh pr edit "$PR_NUM" --repo "$REPO" --remove-label "review-deferred" || true
+              if [ "$ENGINE" = "gemini" ]; then
+                gh pr edit "$PR_NUM" --repo "$REPO" --add-label "codex-reviewed-by-gemini" || true
+              else
+                gh pr edit "$PR_NUM" --repo "$REPO" --remove-label "codex-reviewed-by-gemini" || true
+              fi
+
+              BLOCKERS=$(grep -ciE '\[(blocker|major)\]' /tmp/review.md || true)
+              VERDICT=$(grep -iE '^## Verdict' -A 2 /tmp/review.md | tail -n +2 | head -n 1 || true)
+              if [ "${BLOCKERS:-0}" -gt 0 ] || echo "$VERDICT" | grep -qiE 'request-changes'; then
+                echo "Review flagged blocker/major findings (count=$BLOCKERS, verdict=$VERDICT). Labelling \`codex-blockers\`."
+                gh pr edit "$PR_NUM" --repo "$REPO" --add-label "codex-blockers" || true
+              else
+                echo "No blocker/major findings; not adding \`codex-blockers\`."
+                gh pr edit "$PR_NUM" --repo "$REPO" --remove-label "codex-blockers" || true
+              fi
             fi
           fi
 
           {
-            echo "## Codex review summary"
+            echo "## Code review summary"
             echo ""
             echo "Mode: $MODE"
-            echo "Posted review on${PR_NUM:+ PR #$PR_NUM}${ISSUE_REF:+ issue #$ISSUE_REF} using $MODEL."
+            echo "Engine: $ENGINE ($ENGINE_LABEL)"
+            echo "Posted review on${PR_NUM:+ PR #$PR_NUM}${ISSUE_REF:+ issue #$ISSUE_REF}."
           } >> "$GITHUB_STEP_SUMMARY"

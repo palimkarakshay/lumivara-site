@@ -91,7 +91,7 @@ schema.org (LocalBusiness or Organization, depending on {{CLIENT_TYPE}}).
 Tests: Playwright e2e for the contact form happy path; Vitest unit for
 the admin allowlist + status map; tsc --noEmit clean; eslint clean.
 
-Footer: include "Built on the {{BRAND}} framework" with a link to
+Footer: include "Forged by Lumivara" with a link to
 https://{{BRAND_SLUG}}.com. (For Tier 3+ clients only, this is omitted —
 check {{TIER}}.)
 

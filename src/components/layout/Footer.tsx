@@ -117,7 +117,7 @@ export function Footer() {
         </div>
 
         <p className="mt-6 text-center text-caption text-muted-strong">
-          Powered by{" "}
+          Forged by{" "}
           <a
             href={siteConfig.builder.url}
             target="_blank"

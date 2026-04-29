@@ -27,16 +27,15 @@ export const siteConfig = {
     success: "You're in — look out for the next issue.",
   } as const,
   builder: {
-    // Brand locked 2026-04-28: "Lumivara Forge" per docs/mothership/15-terminology-and-brand.md §4.
-    // URL: lumivara-forge.com is pending domain registration (15 §5); until it
-    // resolves, this points at lumivara.ca (the Client #1 domain, where the
-    // footer is rendered) so the link is not broken in production. Swap to
-    // https://lumivara-forge.com — or to the interim Vercel demo URL the
-    // operator stands up under palimkarakshays-projects — in the same PR
-    // that registers the domain.
-    name: "Lumivara Forge",
+    // Footer credit updated 2026-04-29: renders as
+    // "Forged by Lumivara — Sites built for advisors who lead with clarity."
+    // The operator brand "Lumivara" links to the parent brand site; the
+    // "Forge" sub-brand stays implicit in the verb. URL points at
+    // lumivara.ca until lumivara-forge.com is registered (15 §5) — swap to
+    // https://lumivara-forge.com in the same PR that registers the domain.
+    name: "Lumivara",
     url: "https://lumivara.ca",
-    cta: "Want a site like this? Get started.",
+    cta: "Sites built for advisors who lead with clarity.",
   } as const,
 } as const;
 

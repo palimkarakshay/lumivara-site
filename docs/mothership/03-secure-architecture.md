@@ -294,7 +294,7 @@ Before any push to a client repo's `main`, the operator (or the `provision` CLI)
 - [ ] No env var names starting with `VENDOR_`, `OPERATOR_`, `MOTHERSHIP_`, or `CLAUDE_`.
 - [ ] No org-secret names referenced in any workflow that's about to land on `main`.
 - [ ] `.claudeignore` from §2.3 is present.
-- [ ] Footer credit `Built on the {{BRAND}} framework` is present (Tier 0/1/2; removable on Tier 3+).
+- [ ] Footer credit `Forged by Lumivara` is present (Tier 0/1/2; removable on Tier 3+).
 - [ ] No reference to `VENDOR_GITHUB_PAT` outside the Deprecated callout in §3 — the canonical vendor identity is the GitHub App (`§3.X`). A re-introduced PAT reference is the policy hit a future doc-lint pass flags.
 
 The CLI's `validate-client-zone` step does this automatically; the operator does it by eye on any manual push.

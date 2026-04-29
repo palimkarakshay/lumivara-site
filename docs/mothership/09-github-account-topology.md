@@ -24,7 +24,7 @@ So the topology is: **2 GitHub identities + 1 organisation**, all on free tier.
 
 GitHub Free tier includes — for organisations on private repos — everything the autopilot needs:
 - Unlimited private repos
-- 2,000 Actions minutes/month per org (free Linux runners)
+- Free Linux Actions minutes/month per org — see `18 §1` row [`gh_free_action_minutes`](18-capacity-and-unit-economics.md#1--assumptions-table)
 - 500 MB Packages storage
 - Org-level Actions secrets with "Selected repositories" scoping
 - Branch protection rulesets on private repos
@@ -32,11 +32,11 @@ GitHub Free tier includes — for organisations on private repos — everything 
 - Code review, issues, projects, discussions — all included
 
 **You only need to upgrade if/when:**
-- You cross ~2,000 Actions minutes/month (≈ 25 active T2 clients with current cron) → **Team at $4/user/month**, gives 3,000 min + extra paid.
+- You cross the org's free Action-minute envelope. The previous draft of this doc claimed "≈ 25 active T2 clients" fit in the free tier; the corrected math lives in [`18 §2 #practice-min-saturation`](18-capacity-and-unit-economics.md#2--per-tier-action-minute-envelopes) (a realistic mix of ~30 clients consumes ~85% of the free tier, but a T2-heavy mix trips Cliff 2 at ~client #4). Trigger and upgrade path are [`18 §6` Cliff 2](18-capacity-and-unit-economics.md#6--scale-thresholds-and-trigger-points).
 - You want SAML SSO, audit-log API, IP allow-lists → **Team or Enterprise**.
 - You want "Internal" repo visibility (a 3rd visibility between public and private, scoped to org members) → **Team**.
 
-None of those apply for months 1–6 of paid operations. Stay free.
+The first applies as soon as you have a T2-heavy book; the latter two don't apply for months 1–6 of paid operations.
 
 ---
 
@@ -99,15 +99,18 @@ A future-you joining as a real second engineer? You'd add their personal GitHub 
 
 ## 5. When (if ever) to upgrade
 
-| Trigger | Upgrade | New cost |
-|---|---|---|
-| Cross 2,000 Actions minutes/month | Team plan | $4/seat/mo (1–2 seats) |
-| Need SAML SSO for client compliance | Team or Enterprise | $4–$21/seat/mo |
-| Need 3rd "Internal" visibility for shared component libraries | Team | $4/seat/mo |
-| Hire a second operator | Add seat to Team | +$4/mo |
-| Cross 30 clients OR FY revenue > CAD $200k | Enterprise (with audit log API + IP allow-lists) | $21/seat/mo |
+The five scaling cliffs (Claude plan, GitHub Actions, Railway, second Anthropic seat) are owned by [`18 §6` `#cliffs-table`](18-capacity-and-unit-economics.md#6--scale-thresholds-and-trigger-points). The two that involve the GitHub org specifically:
 
-Set a calendar reminder month-3 of paid ops to check Actions minutes; upgrade reactively, not preemptively.
+- **Cliff 2** — Free → Team plan, triggered when org Action-minutes cross ~75% of [`gh_free_action_minutes`](18-capacity-and-unit-economics.md#1--assumptions-table). Cost delta: see `18 §1` row [`gh_team_seat_cost`](18-capacity-and-unit-economics.md#1--assumptions-table). Calendar action: book the upgrade the first time the org passes the warning threshold (`18 §6` Cliff 2 row).
+- **Cliff 5** — second-operator hire crosses the GitHub seat at the same time it crosses the Anthropic seat; the +1 seat on Team is `gh_team_seat_cost` per month, additive to the Anthropic cost in `18 §6` Cliff 5.
+
+Operational add-ons not in `18` (because they're not capacity cliffs, just feature unlocks):
+
+- **SAML SSO for client compliance** → Team or Enterprise.
+- **3rd "Internal" repo visibility** for shared component libraries → Team.
+- **Audit-log API + IP allow-lists** at FY revenue > CAD $200k → Enterprise.
+
+Set a calendar reminder month-3 of paid ops to check Actions minutes against `gh_free_action_minutes`; upgrade reactively, not pre-emptively.
 
 ---
 

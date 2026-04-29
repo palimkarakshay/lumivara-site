@@ -60,6 +60,8 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 06 | `06-operator-rebuild-prompt-v3.md` | "Per-client engagement: what do I run, in what order, to spin up a new client site?" | Operator | **Per engagement** |
 | 07 | `07-client-handover-pack.md` | "What do I send to the client?" — includes dummy intake forms | Operator → Client | **Per engagement** (rendered per client) |
 | 08 | `08-future-work.md` | "What's deferred? Legal, vault, market research, contracts, payments." | Operator | Once, revisit before each big milestone |
+| 09 | `09-github-account-topology.md` | "Should I create a new GitHub org/account, and what are the three identities?" | Operator | Once |
+| 10 | `10-lumivara-infotech-setup-plan.md` | "How do I actually set up the Lumivara Infotech GitHub org with real slugs?" | Operator | Once (at brand-lock time) |
 | 09 | `09-github-account-topology.md` | "Should I create a new GitHub org? Free vs paid? Bot account?" | Operator | Once |
 | 10 | `10-critique-executive-summary.md` | "Is the pack viable? What are the top 10 issues?" | Operator | Read first when revisiting the pack |
 | 11 | `11-critique-architectural-issues.md` | "What structural problems block production?" — names the cron-on-default-branch bug + three pick-one fix patterns. **Pattern C chosen 2026-04-28; canonical statement now in `02b`.** | Operator | Once; closed in canonical docs by Pattern C propagation (this PR series) |

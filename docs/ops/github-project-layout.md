@@ -244,3 +244,56 @@ the operator marked yes in §4.5. If it shows zero rows but you
 marked some, the filter is wrong — tap **Filter** and confirm it's
 `Demo-Day Critical: yes` (case-sensitive on the *field* name; the
 *value* dropdown is case-insensitive).
+
+## §5 — Scripted runbook (Termux on phone)
+
+Faster than §4 for the eleven-field create step (it's idempotent and
+runs in seconds), and the only sensible path if 50+ issues need to be
+bulk-classified later.
+
+### §5.1 — One-time Termux setup
+
+1. Install **Termux** from F-Droid (the Play Store build is stale and
+   cannot install packages — F-Droid only).
+2. In Termux:
+   ```
+   pkg update && pkg install gh git
+   gh auth login                                 # opens device-code flow
+   gh auth refresh -s project,read:project       # adds the project scope
+   ```
+3. Clone the repo (if not already cloned):
+   ```
+   gh repo clone palimkarakshay/lumivara-site
+   cd lumivara-site
+   ```
+
+This is a **one-time** setup. Subsequent runs are just step 5.2.
+
+### §5.2 — Run the bootstrap
+
+```
+PROJECT_TITLE="Lumivara Backlog" bash scripts/bootstrap-forge-project.sh
+```
+
+(Override `PROJECT_TITLE` only if you renamed the project per §4.1.)
+
+The script is idempotent: it skips fields that already exist, so it's
+safe to re-run after a partial failure or after the spec changes. It
+creates only the ten custom fields from §3.1 — saved views (§3.2)
+remain a §4.3 manual step because GitHub's GraphQL API does not yet
+expose ProjectV2View creation.
+
+### §5.3 — Bulk classification (deferred)
+
+Once §3.1 stabilises and the operator has settled on default values
+per existing label combo (e.g. `type/business-lumivara` →
+`Workstream: Advisory` 80% of the time, `area/forge` →
+`Workstream: Technical` AND `Phase: 3-platform` 90% of the time),
+a `bulk-classify-forge-items.sh` script can apply those defaults
+across all 46 open issues in one pass. **That script is intentionally
+not yet committed**: bulk-misclassification is hard to undo, and the
+mapping rules deserve a quiet day of operator review before they ship.
+
+For now, bulk classification is the §4.5 tap-through. The
+single-highest-leverage column to fill on this pass is
+`Repo-Destination-Post-Migration` — see §6.

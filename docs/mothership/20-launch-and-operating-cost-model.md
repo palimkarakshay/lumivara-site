@@ -8,9 +8,9 @@
 ================================================================================
 -->
 
-# 20 — Launch & Operating Cost Model (Lumivara Infotech)
+# 20 — Launch & Operating Cost Model (Lumivara Forge)
 
-Practice-wide cost model for the freelance entity (provisional brand: **Lumivara Forge**, see [`01-business-plan.md §1`](./01-business-plan.md)). Owns:
+Practice-wide cost model for the operator practice (brand locked 2026-04-28: **Lumivara Forge**, see [`01-business-plan.md §1`](./01-business-plan.md) and [`15-terminology-and-brand.md §4`](./15-terminology-and-brand.md)). Owns:
 
 1. Every recurring operating cost the practice incurs that is *not* a per-client cost-of-goods.
 2. Every one-time launch / setup cost (legal, incorporation, brand, vault, accountancy onboarding).

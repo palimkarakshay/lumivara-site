@@ -5,12 +5,12 @@
 > locked. Until that happens, every tagline, ICP slice, and channel decision below
 > is a *recommendation*, not a commitment.
 >
-> **Brand-name caveat.** This doc uses **Lumivara Forge** as the working slug for
-> the freelance practice (per `docs/mothership/01-business-plan.md §1` and
-> `docs/mothership/15-terminology-and-brand.md`). The public-facing brand name
-> lock — "Lumivara Forge" vs. "Lumivara Infotech" vs. another candidate — is
-> tracked in a separate issue and will be reconciled before launch. Do not
-> ship public assets that name the brand without checking that lock first.
+> **Brand-name caveat.** Brand locked 2026-04-28 to **Lumivara Forge** (see
+> `docs/mothership/15-terminology-and-brand.md §4`). The retired working
+> name from earlier drafts (the "-Infotech" variant) must not appear in
+> any public asset. Trademark availability check (CIPO Class 42 + USPTO)
+> is still pending in `15 §5` and is the only remaining gate before
+> registering `lumivara-forge.com` and `lumivara-forge.ca`.
 
 This doc is the **canonical source** for how we sell Lumivara Forge: the locked
 pitch + tagline, the ICP, the positioning matrix vs. competitors, the ranked
@@ -220,7 +220,7 @@ before treating any of these as locked.
 
 - [ ] **Tagline lock.** Confirm the recommended tagline (*"Modern websites that update from your phone, not your inbox."*) — or pick a named alternative from § 1 — and use that one **everywhere**. No per-channel variants.
 - [ ] **Long pitch lock.** Confirm the recommended pitch (Part-1 from `01-gig-profile.md`) or replace with the `00-quick-start.md` short version.
-- [ ] **Brand-name lock.** Decide whether the public-facing brand is "Lumivara Forge" (current `mothership` working slug), "Lumivara Infotech" (this issue's title), or another candidate. Track the decision in a separate issue and update this doc + `15-terminology-and-brand.md` in the same PR.
+- [x] **Brand-name lock.** Locked 2026-04-28 to **Lumivara Forge** in `docs/mothership/15-terminology-and-brand.md §4`. Trademark availability check (CIPO Class 42 + USPTO) per `15 §5` is the only remaining pre-launch gate.
 - [ ] **Geo-priority lock.** Confirm Ontario / GTA primary, US east coast secondary, Quebec deferred until French-language pages exist. (Per `06-positioning-slide-deck.md` § Strategic risks.)
 - [ ] **Channel #1 lock.** Confirm LinkedIn organic + warm DMs is the primary channel. The alternative is to lead with Fiverr; the recommendation is LinkedIn because the warm-network signal is stronger for the first 5 closes.
 - [ ] **Pricing posture in cold outreach.** Confirm we **do not** mention price in cold outreach (intro emails, Upwork first-touch). Price is a discovery-call topic. (See `02-pricing-tiers.md` § "How to handle the price objection".)

@@ -12,7 +12,7 @@
 
 # 21 — Vault Strategy ADR (operator IP & business secrets)
 
-> **ADR scope.** This file decides *which* vault Lumivara Infotech uses for the operator's own business and IP secrets, *what goes in it*, *who can see what*, *how rotation works*, and *what does NOT belong in the vault*. It is the formalisation of the stub at [`08-future-work.md §4`](08-future-work.md#4-ip--business-secrets-vault).
+> **ADR scope.** This file decides *which* vault Lumivara Forge uses for the operator's own business and IP secrets, *what goes in it*, *who can see what*, *how rotation works*, and *what does NOT belong in the vault*. It is the formalisation of the stub at [`08-future-work.md §4`](08-future-work.md#4-ip--business-secrets-vault).
 >
 > **Out of scope.** Per-client runtime secrets (Vercel env, n8n credentials, the `AUTH_*` family). Those are governed by [`03-secure-architecture.md §3`](03-secure-architecture.md#3-secret-topology) and the rotation matrix at [`03b-security-operations-checklist.md §4`](03b-security-operations-checklist.md#4--secret-rotation-schedule-matrix). The boundary is enforced by the decision tree in [§7](#7--what-counts-as-vaultable-vs-ordinary-repo-content) below.
 
@@ -20,7 +20,7 @@
 
 ## §1 — Context
 
-Lumivara Infotech today runs a single-operator security posture: `pass` (passwordstore.org) on the operator's laptop, encrypted with a YubiKey-backed PGP subkey. That works for one operator, but three forces are pulling against it:
+Lumivara Forge today runs a single-operator security posture: `pass` (passwordstore.org) on the operator's laptop, encrypted with a YubiKey-backed PGP subkey. That works for one operator, but three forces are pulling against it:
 
 1. **Successor / contractor onboarding.** [`12 §1`](12-critique-security-secrets.md#1----critical-single-owner-github-topology-has-no-break-glass) and the second-Owner topology at [`09 §1.5`](09-github-account-topology.md#15-break-glass-topology-single-owner-is-not-survivable) both require shareable credential paths the operator does not have today. `pass` is fundamentally a one-laptop tool; sharing one entry means re-encrypting the entire tree under another GPG key.
 2. **Topology gap.** The `03 §3` per-client topology covers *runtime* secrets — anything a Vercel project or n8n workflow consumes at request time. It does not cover product-strategy decks not yet in the repo, pricing-model variants, partnership term sheets, draft contracts, vendor account credentials that are not Vercel/n8n env (payroll, accounting software, domain registrar, financial accounts), or operator-side per-client correspondence that lives outside the engagement evidence log.
@@ -66,12 +66,12 @@ The vault is a flat list of *vaults* (1Password's term for sharable scopes). Eac
 | Vault | Scope | Membership | Holds |
 |---|---|---|---|
 | `Operator` | Operator-only | `operator` only | GitHub recovery codes, Apple ID recovery, domain registrar (today: the registrar that owns `lumivara.ca`), financial accounts (operating bank account, business credit card), `palimkarakshay` GitHub account password, master vault recovery sheet (sealed; cross-referenced from the [`08 §4`](08-future-work.md#4-ip--business-secrets-vault) envelope). |
-| `Lumivara-Infotech-IP` | Operator-only | `operator` only | Product-strategy decks not in repo, pricing-model variants, partnership term sheets, draft contracts pre-execution, internal cost-model sheets that contain margin assumptions, the operator's own market-research raw notes (the published synthesis lives in `docs/research/`). |
+| `Lumivara-Forge-IP` | Operator-only | `operator` only | Product-strategy decks not in repo, pricing-model variants, partnership term sheets, draft contracts pre-execution, internal cost-model sheets that contain margin assumptions, the operator's own market-research raw notes (the published synthesis lives in `docs/research/`). |
 | `Vendors` | Operator-only | `operator` only | Vendor account credentials **not** in Vercel/n8n env: payroll provider, accounting software (QuickBooks / Wave), insurance broker portal, professional liability insurance portal, the operator's accountant's portal, GST/HST filing portal. |
 | `Per-client/<slug>` | Per-engagement | `operator` + the named contractors on that engagement (time-boxed) | Operator-side records for one client: client correspondence threads not captured in [`19-engagement-evidence-log-template.md`](19-engagement-evidence-log-template.md), recovery contact details, client-provided assets that fall outside the client repo (e.g. brand-guideline PDFs the client emailed), the client's primary contact's mobile (for the SMS escalation lane in [`12 §2`](12-critique-security-secrets.md#2----high-auth_resend_key-shared-across-every-client-breaks-the-cost-firewall)). **Does not** hold Vercel env, n8n credentials, or the per-client `AUTH_*` family — those are governed by [`03 §3`](03-secure-architecture.md#3-secret-topology) and never duplicated here. |
 | `Break-glass` | Sealed (operator-only at vault level; physical envelope at recovery-time level) | `operator` only | Printed recovery envelope contents (cross-reference, not duplicate, of [`08 §4`](08-future-work.md#4-ip--business-secrets-vault) and [`09 §2.5`](09-github-account-topology.md#25-adding-the-second-owner-break-glass-setup)), second-Owner credentials per [`12 §1`](12-critique-security-secrets.md#1----critical-single-owner-github-topology-has-no-break-glass), vault master-password recovery sheet, YubiKey reset codes. |
 
-The `Operator`, `Lumivara-Infotech-IP`, `Vendors`, and `Break-glass` vaults are durable. The `Per-client/<slug>` vaults are created when a client is added to `src/lib/admin/clients.ts` (see [§6](#6--onboardinguse-sop) for the day-zero ceremony) and archived (not deleted) when the engagement terminates.
+The `Operator`, `Lumivara-Forge-IP`, `Vendors`, and `Break-glass` vaults are durable. The `Per-client/<slug>` vaults are created when a client is added to `src/lib/admin/clients.ts` (see [§6](#6--onboardinguse-sop) for the day-zero ceremony) and archived (not deleted) when the engagement terminates.
 
 ---
 
@@ -79,7 +79,7 @@ The `Operator`, `Lumivara-Infotech-IP`, `Vendors`, and `Break-glass` vaults are 
 
 Roles are defined per-vault, not globally. The matrix below is the canonical role list; any new role lands here first.
 
-| Role | `Operator` | `Lumivara-Infotech-IP` | `Vendors` | `Per-client/<slug>` | `Break-glass` |
+| Role | `Operator` | `Lumivara-Forge-IP` | `Vendors` | `Per-client/<slug>` | `Break-glass` |
 |---|---|---|---|---|---|
 | `operator` | RW | RW | RW | RW | RW |
 | `contractor` | — | — | — | RW (named engagement only, time-boxed; default 90 days) | — |
@@ -103,7 +103,7 @@ Rotation cadences are categorised, not per-secret. The categories below mirror t
 |---|---|---|---|
 | Vendor credentials (operator portal logins for QuickBooks, Wave, payroll, insurance broker, Stripe operator portal) | 90 days if vendor allows; 12 months if vendor caps shorter | Instant (sign in, change password, update vault entry) | Sign in to the portal post-rotation; confirm 2FA still enrolled |
 | Recovery codes (GitHub, Apple ID, domain registrar, primary email, vault master) | When used or every 12 months, whichever first | Instant (regenerate, reseal envelope, update break-glass entry) | Confirm new codes redeem on the issuing surface; reseal the [`08 §4`](08-future-work.md#4-ip--business-secrets-vault) envelope |
-| Draft contracts, term sheets, decks | Versioned, never rotated | n/a (versioning, not rotation) | Append-only history within the `Lumivara-Infotech-IP` vault |
+| Draft contracts, term sheets, decks | Versioned, never rotated | n/a (versioning, not rotation) | Append-only history within the `Lumivara-Forge-IP` vault |
 | Financial credentials (operating bank, business credit card portal) | Every 6 months OR after every contractor offboard, whichever first | Instant (rotate at issuing bank's portal, update vault) | Confirm a low-value transaction succeeds with the rotated credential |
 | `Per-client/<slug>` contents | At engagement termination (archive, do not delete); on contractor offboard within 24 h | Instant (archive vault → contractor revoked from membership) | Vault archival event in 1Password audit log; contractor confirms no active access |
 | Break-glass envelope contents | Once per quarter alongside the [`03b §3`](03b-security-operations-checklist.md#3--recovery-drill-template) recovery drill | Instant (regen, reseal) | The drill itself is the validation |
@@ -116,10 +116,10 @@ Rotation events log to `docs/operator/SECURITY_OPS_LOG.md` (operator-only file; 
 
 ### §6.1 Day-zero (operator)
 
-1. Create the 1Password Business account; pick the `lumivara-infotech` slug. Set the operator's email to a non-`palimkarakshay` address (e.g. `operator+vault@lumivara.ca`) so the vault account survives if the personal email is compromised.
+1. Create the 1Password Business account; pick the `lumivara-forge` slug (matches the locked brand-slug from `15 §4`). Set the operator's email to a non-`palimkarakshay` address (e.g. `operator+vault@lumivara-forge.com` once the domain is registered, or a Gmail+alias until then) so the vault account survives if the personal email is compromised.
 2. Generate the Secret Key. Print the 1Password Recovery Kit. Place a copy of the Recovery Kit, sealed, in the [`08 §4`](08-future-work.md#4-ip--business-secrets-vault) break-glass envelope alongside the printed GitHub recovery codes.
 3. Enrol the operator's primary YubiKey (passkey/WebAuthn) and a secondary YubiKey (kept offline in the [`08 §4`](08-future-work.md#4-ip--business-secrets-vault) envelope) on the 1Password account.
-4. Create the four durable vaults from [§3](#3--vault-structure): `Operator`, `Lumivara-Infotech-IP`, `Vendors`, `Break-glass`.
+4. Create the four durable vaults from [§3](#3--vault-structure): `Operator`, `Lumivara-Forge-IP`, `Vendors`, `Break-glass`.
 5. Import existing `pass` entries into the matching vault. Use `pass` → CSV → `op item create` (the `op` CLI accepts `op item create --vault <vault> --template <template>`); do not paste secrets through the clipboard for any value that can be piped.
 6. Run a smoke read: from a fresh shell, `op item get "GitHub recovery code"` against the `Operator` vault, confirm decryption.
 7. Append a `SECURITY_OPS_LOG.md` entry: `YYYY-MM-DD — Vault provisioned (1Password Business); Recovery Kit sealed in [§4 envelope]; primary + secondary YubiKey enrolled.`
@@ -136,7 +136,7 @@ Triggered when a new client is added to `src/lib/admin/clients.ts` (the canonica
 ### §6.3 Per-contractor
 
 1. Invite the contractor via SCIM (1Password Business → Provisioning → SCIM bridge). The SCIM identity provider is the operator's choice; for solo-operator scale, 1Password's built-in directory is sufficient.
-2. Scope the contractor to exactly the `Per-client/<slug>` vault for the engagement. Never grant access to `Operator`, `Lumivara-Infotech-IP`, `Vendors`, or `Break-glass`.
+2. Scope the contractor to exactly the `Per-client/<slug>` vault for the engagement. Never grant access to `Operator`, `Lumivara-Forge-IP`, `Vendors`, or `Break-glass`.
 3. Set the membership time-box. Default: 90 days; shorter if the engagement is shorter; longer requires an explicit `SECURITY_OPS_LOG.md` entry justifying the deviation.
 4. On engagement termination, archive the `Per-client/<slug>` vault (do not delete — the audit trail and the client's own records may need retrieval). 1Password's archive preserves contents read-only; the contractor's membership lapses automatically.
 
@@ -156,7 +156,7 @@ Is the artefact a runtime secret consumed by a Vercel project or n8n workflow?
 └── No
     │
     Would a competitor learn anything strategically by reading it?
-    ├── Yes → Vault (Lumivara-Infotech-IP).
+    ├── Yes → Vault (Lumivara-Forge-IP).
     └── No
         │
         Would a client suffer reputational, legal, or financial harm
@@ -181,9 +181,9 @@ Concrete examples:
 |---|---|---|
 | `AUTH_RESEND_KEY` for client X | Repo (`03 §3` row) — vault NO | Runtime secret; per-client Vercel env. Vault would duplicate. |
 | Operator's GitHub recovery codes | Vault (`Operator`) | Not runtime; not in repo; recovery code. |
-| Pricing-model spreadsheet with margin assumptions for T1/T2/T3 | Vault (`Lumivara-Infotech-IP`) | Strategic; competitor would learn. |
+| Pricing-model spreadsheet with margin assumptions for T1/T2/T3 | Vault (`Lumivara-Forge-IP`) | Strategic; competitor would learn. |
 | Published cost analysis at `docs/freelance/03-cost-analysis.md` | Repo | Already public-ish; mothership audience. |
-| Draft MSA before signing | Vault (`Lumivara-Infotech-IP`) | Strategic + legal-pre-execution. |
+| Draft MSA before signing | Vault (`Lumivara-Forge-IP`) | Strategic + legal-pre-execution. |
 | Signed MSA with Client #1 | Vault (`Per-client/lumivara-people-advisory`) | Per-client legal record. |
 | Client primary contact's mobile (used for SMS escalation per `12 §2`) | Vault (`Per-client/<slug>`) | Per-client contact data; not in repo. |
 | Client design files emailed pre-engagement | Vault (`Per-client/<slug>`) | Per-client asset; not in repo. |
@@ -203,7 +203,7 @@ Two-phase migration, dual-run for 14 days. The migration is operator-time, ~one 
 1. Run §6.1 day-zero ceremony.
 2. Export `pass` entries to a temporary CSV with `pass git log -p > /tmp/pass-export-YYYY-MM-DD.txt` (do not commit to the repo).
 3. Categorise each entry against the §3 vault list.
-4. Import in priority order: `Break-glass` first (recovery codes), `Operator` second (GitHub credentials), `Vendors` third, `Lumivara-Infotech-IP` last (often manual; many of these are not in `pass` today).
+4. Import in priority order: `Break-glass` first (recovery codes), `Operator` second (GitHub credentials), `Vendors` third, `Lumivara-Forge-IP` last (often manual; many of these are not in `pass` today).
 5. Securely delete the temporary export: `shred -u /tmp/pass-export-YYYY-MM-DD.txt` (or platform equivalent).
 
 ### §8.2 Phase 2 — Dual-run (Days 1–14)

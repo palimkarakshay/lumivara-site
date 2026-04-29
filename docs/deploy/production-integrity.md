@@ -222,7 +222,7 @@ list is for the first-time backfill burndown of issue #50.
 | 18    | #81   | #17   | Color palette switcher                     |                                    |
 | 19    | #97   | #91   | Admin portal Phase 1                       | Adds /admin route — auth required. |
 | 20    | #132  | —     | Shared admin lib + design primitives       | No-op without the consumers below. |
-| 21    | #133  | #107  | "Powered by Lumivara Infotech" footer      |                                    |
+| 21    | #133  | #107  | "Powered by Lumivara Forge" footer         | Brand updated 2026-04-29 per `15 §4` lock; previously tracked under the retired working name. |
 | 22    | #146  | —     | Vercel KV adapter (magic-link verification) | Required env: `KV_REST_API_*`.    |
 
 Promoting `main` once now lands all 22 simultaneously (Vercel always builds

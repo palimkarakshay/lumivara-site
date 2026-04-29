@@ -68,7 +68,7 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 12 | `12-critique-security-secrets.md` | "Where do the secrets / cost-firewall leaks come from?" — single-Owner break-glass, per-client Resend keys, two-phase HMAC rotation, GitHub-App swap | Operator | Once; closed by Run B in `16 §2` |
 | 13 | `13-critique-ai-and-scaling.md` | "Do the maths reconcile? Where are the scaling cliffs?" — Action minutes, AI cost, Claude/Actions/n8n cliffs, model-rubric notes | Operator | Once; closed by Run C in `16 §3` |
 | 14 | `14-critique-operations-sequencing.md` | "What sequencing/coherency gaps need closing?" — Tier-0 honesty, OAuth manual scope, rollback paths, backups, engagement-log schema | Operator | Once; closed by Run D in `16 §4` |
-| 15 | `15-terminology-and-brand.md` | "Better names for mothership/operator/agent and brand alternatives" | Operator | Once; rename ships via Run S1 in `16 §5` |
+| 15 | `15-terminology-and-brand.md` | "Better names for mothership/operator/agent, brand alternatives, terminology policy (§6), and the client-example appendix (§7) that anchors all legitimate Client #1 references" | Operator | Once; rename ships via Run S1 in `16 §5`; §6 + §7 enforced reviewer-side until a CI lint lands |
 | 16 | `16-automation-prompt-pack.md` | "Copy-paste prompts for Claude Code in the browser to close the critiques" | Operator | **Per critique-closure run** |
 | — | `pattern-c-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
 | — | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) | "How do I spin Lumivara People Advisory out into its own client repo, end-to-end?" — phased one-shot runbook with allow/deny tables (`docs/migrations/_artifact-allow-deny.md`), per-phase dry-run / rollback / acceptance, and Pattern C §4/§5 as gate / acceptance set | Operator | **Once (per Client #1 spinout)** |
@@ -153,6 +153,8 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 - Cost firewall + zone isolation: `03-secure-architecture.md` (partially deprecated — Run B rewrites)
 - Cost firewall + zone isolation: `03-secure-architecture.md`
 - **Pattern C enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `pattern-c-enforcement-checklist.md`**
+- **Terminology policy + forbidden strings: `15-terminology-and-brand.md §6`** — what may appear where, with the audit-grep recipe.
+- **Client example appendix: `15-terminology-and-brand.md §7`** — the single canonical home for legitimate Client #1 references in operator-scoped docs.
 - **Client #1 spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)**
 - Future legal / vault work: `08-future-work.md`
 

@@ -599,3 +599,87 @@ By week 4, success looks like:
 > If you have those, the market exists. If you don't, the bottleneck is **reach**, not product — fix is more posting, not more features.
 
 <span class="small">Source: `docs/freelance/03-cost-analysis.md` Part G.</span>
+
+---
+
+<!-- _class: lead -->
+
+# 9 · Resources required
+## What it takes to actually run this
+
+---
+
+## People
+
+<br/>
+
+| Role | Who | When | Cost |
+|---|---|---|---|
+| **Operator** (engineer + sales + ops) | The user (you) | Day 0 | Replaces day-job income; ramp plan in `03 §C`. |
+| **Canadian small-business lawyer** (one-off) | Vetted referral | Before client #2 | CAD $1,500–2,500 flat for MSA + SOW templates. |
+| **Accountant + bookkeeping** (recurring) | CPA + Wave / QBO | Before $30k revenue (HST registration) | CAD $1,000–2,000/year. |
+| **Part-time VA** | Hired | At ~25 active clients | ~$300/mo CAD (5 hrs/week). |
+| **Second engineer** (part-time) | Hired | At ~35 active clients | Negotiable; second Anthropic seat unlocks parallel work. |
+| **Logo / branding designer** (referral, not employee) | External | When a client needs it | Pass-through cost; you don't middleman. |
+
+<span class="small">Source: `docs/mothership/08-future-work.md §2`, `docs/freelance/03-cost-analysis.md` Part E.</span>
+
+---
+
+## Tools + subscriptions (operator-side)
+
+<br/>
+
+| Tool | Purpose | Cost |
+|---|---|---|
+| **Claude Pro → Max 5x → Max 20x → 2nd seat** | Primary AI for triage / plan / execute | ~$20 → $100 → $200 → $400/mo USD across cliffs |
+| **Gemini API (free tier)** | Deep research + triage fallback | $0 (under 500 RPD) |
+| **OpenAI API (gpt-5.5 via ChatGPT Plus)** | Codex review + triage final fallback | $20/mo USD (already-paid Plus tier) |
+| **GitHub** (org plan when free runs out) | Repos + Actions + Project board | $0 → ~$4/user/mo at Cliff 2 |
+| **Vercel team** | Hosting until per-client transfer | Free tier covers ops; per-client transferred to client by month 1 |
+| **n8n on Railway** | Automation hub (one instance, all clients) | ~$5–10/mo |
+| **Twilio** | Per-client SMS phone number | ~$1.15/mo USD per client |
+| **Resend** | Magic-link auth + transactional email | Free tier covers ~3,000 emails/mo |
+| **Cloudflare DNS** | DNS proxy | $0 |
+| **1Password Business + Bitwarden self-host** | Vault redundancy | ~CAD $100/mo (after client #5) |
+| **Pro-liability insurance** | Once revenue > $50k | ~$400/yr CAD |
+
+<span class="small">Source: `docs/mothership/01-business-plan.md §3.1`, `docs/freelance/03-cost-analysis.md` Part A, `docs/mothership/08-future-work.md §4`.</span>
+
+---
+
+## Capital + cash
+
+<br/>
+
+| Stage | Cash needed | Why |
+|---|---|---|
+| **Months 0–3** | ~CAD $500/mo (tools + AI) | While day-job is still active. |
+| **Pre-launch one-off** | ~CAD $2,500 | Lawyer (MSA + SOW), Stripe setup, vault subscriptions. |
+| **Quitting milestone** | **6 months of personal expenses saved** | Mortgage / rent + utilities + groceries + insurance, fully covered. |
+| **Year 1 ops** | Roughly self-funding from Month 3 onward | Setup fees + MRR cover Claude upgrades, second-seat trigger, VA. |
+
+> **Recurring monthly burn at 30 clients ≈ CAD $700–900** (Claude Max 20x + 2nd seat + Twilio + Railway + 1Password). Against MRR ~$8.5k that's a 10% cost ratio.
+
+<span class="small">Source: `docs/freelance/03-cost-analysis.md` Parts C & D, `docs/mothership/18-capacity-and-unit-economics.md` cost envelopes.</span>
+
+---
+
+## Knowledge + IP assets
+
+<br/>
+
+These already exist; the value is in keeping them updated:
+
+- **`docs/mothership/`** — 18+ operator-side docs (canonical architecture, security, cadence, engagement playbooks, critique closures).
+- **`docs/freelance/`** — public-facing storefront (gigs, pricing, cost analysis, prospect deck).
+- **`workflows-template/`** — 12 GitHub Actions workflows ready to push to per-client pipeline repos.
+- **`scripts/`** — triage prompts, execute prompts, multi-AI router, plan-issue, bootstrap-kanban.
+- **`n8n/`** — workflow JSON exports (intake-web/email/sms, notify, record, deploy-confirmed).
+- **`client-template/`** — Next.js 16 scaffold with admin portal, Auth.js v5, design tokens.
+- **`pattern-c-enforcement-checklist.md`** — MUST / MUST-NOT rows that gate every client spinout.
+- **`docs/wiki/`** — dual-lane operator/client wiki, scaffolded into each client repo at engagement time.
+
+> **The IP isn't the codebase. It's the runbooks + the cadence + the licensed system around the codebase.** That's what we license per engagement and reverts on termination.
+
+<span class="small">Source: `docs/mothership/00-INDEX.md` quick links, `docs/freelance/05-template-hardening-notes.md`.</span>

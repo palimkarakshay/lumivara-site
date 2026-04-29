@@ -556,4 +556,117 @@ NOT yet move Client #1's site code anywhere. That's Phase 4.
 - The platform repo's own kanban shows P5.1 → P5.5 issues all in
   Done.
 
+---
+
+## §6 — Phase 4: Spin Client #1 out (Lumivara People Advisory)
+
+**Audience:** bot drives the doc edits and pipeline-repo population;
+operator does the GitHub UI clicks (rename, App install, branch
+protection, Vercel project move) — and signs off the cutover.
+
+**Estimated wall-clock:** ~3 days, of which ~3 hours is operator
+clicking and ~1 day is wall-clock waiting on Vercel + DNS propagation.
+
+### §6.1 — The runbook this phase calls
+
+[`docs/migrations/lumivara-people-advisory-spinout.md`](lumivara-people-advisory-spinout.md)
+is the canonical, step-by-step procedure. This phase is essentially
+"run that runbook, with the operator's hand on the rename button."
+
+> **Drift fix needed before running.** That runbook still describes
+> the deprecated `operator/main` overlay branch (line 5). It must be
+> rewritten to the two-repo model from `02b-pattern-c-architecture.md`
+> before this phase starts. File this as the first issue of Phase 4:
+> "fix(docs): align spinout runbook with 02b two-repo Pattern C".
+> Same applies to `pattern-c-enforcement-checklist.md §1` — see §10
+> of this file.
+
+### §6.2 — Operator action set (manual, ~3 hours total)
+
+Each row is a single click sequence. The runbook's prose owns the
+detail; this list exists so the operator can budget the day.
+
+| # | Action | Where | Owner | Reversible? |
+|---|---|---|---|---|
+| 1 | Pre-flight: walk every row of pattern-c-enforcement-checklist §4 against this repo's state | Local terminal | Operator | n/a |
+| 2 | Capture issue tracker + project-board snapshot | `gh issue list … > /tmp/lps-issues.json` | Operator | n/a (capture only) |
+| 3 | Create new repo `palimkarakshay/lumivara-people-advisory-site` (private) | github.com/new | Operator | Easy (delete repo) |
+| 4 | Create new repo `palimkarakshay/lumivara-people-advisory-pipeline` (private) | github.com/new | Operator | Easy (delete repo) |
+| 5 | Bot pushes site-only files to `*-site/main` (per Table A in `_artifact-allow-deny.md`) | Local + bot prompt §6.4 | Bot | Yes (delete branch) |
+| 6 | Bot pushes workflows + scripts to `*-pipeline/main` | Same | Bot | Yes |
+| 7 | Install GitHub App on `*-site` only | App settings → Install on selected repo | Operator | Yes (uninstall) |
+| 8 | Capture installation_id into `docs/clients/lumivara-people-advisory/cadence.json` (in platform repo) | Bot prompt §6.4 | Bot | Yes |
+| 9 | Apply branch protection on `*-site/main` per `03 §2.2` and `pattern-c-enforcement-checklist §C-MUST-4` (post-fix) | Repo Settings → Branches | Operator | Yes |
+| 10 | Apply branch protection on `*-pipeline/main` per `02b §7` | Same | Operator | Yes |
+| 11 | Create new Vercel project linked to `*-site/main`; copy env vars (`RESEND_API_KEY`, `CONTACT_EMAIL`, `NEXT_PUBLIC_*`) from the old project | Vercel UI | Operator | Yes (delete project) |
+| 12 | DNS cutover: point `lumivara.ca` to the new Vercel project | DNS provider | Operator | **Hard** — propagation lag |
+| 13 | Add Beas as a Read collaborator on `*-site` only | Repo settings → Collaborators | Operator | Yes |
+| 14 | Run post-migration acceptance set (`pattern-c-enforcement-checklist §5`) | Local terminal | Operator + bot | n/a (audit) |
+| 15 | Archive (don't delete) `palimkarakshay/lumivara-site` once production is verified green for 24h | Repo Settings → Archive | Operator | Yes (unarchive) |
+
+The DNS cutover (row 12) is the only **hard-to-reverse** action. Plan
+it for a low-traffic window. Budget 1 h for propagation.
+
+### §6.3 — Bot prompt for the doc + pipeline-repo population
+
+```
+Phase 4 of docs/migrations/00-automation-readiness-plan.md.
+
+You are running docs/migrations/lumivara-people-advisory-spinout.md
+end-to-end against the post-S1, post-Phase-3 state.
+
+Pre-flight (HARD STOP if any fails):
+  1. The spinout runbook itself has been updated to the two-repo
+     Pattern C model (no operator/main overlay) — verify by:
+       grep -n "operator/main" docs/migrations/lumivara-people-advisory-spinout.md
+     must return zero matches outside an explicit "deprecated" callout.
+  2. pattern-c-enforcement-checklist.md §1 + §C-MUST-2 + §C-MUST-4 +
+     §C-MUST-8 reference the pipeline repo, not the overlay branch.
+  3. Phase 3 P5.4b–d is done (forge provision exists and dry-run
+     prints the plan).
+  4. The operator has confirmed in writing on the spinout runbook's
+     §0 "fresh repo + selective copy chosen" checkbox.
+
+Then run:
+  - §1 of the runbook (mirror Client #1 into platform repo) — bot.
+  - §2–§3 of the runbook (selective copy from this repo into the new
+    site-repo per Table A; pipeline-repo population per Table C) —
+    bot, with the operator manually creating the empty repos first
+    (Phase 4 row 3+4 above).
+  - §4 (secrets and Vercel) — operator-manual; bot drafts the env
+    var inventory diff for the operator to apply.
+  - §5 (branch protection) — operator-manual; bot drafts the JSON
+    payload.
+  - §6 (smoke tests) — bot runs them and reports.
+  - §7 (operator sign-off + DNS cutover) — operator-manual.
+  - §8 (post-migration verification = pattern-c §5) — bot runs every
+    verify command and posts results to the spinout issue.
+  - §9 (acceptance) — bot opens the "spinout complete" issue with
+    the captured evidence trail.
+
+Budget: at 70% of max-turns, commit + push + exit cleanly. The
+runbook is structured so that any phase boundary is a safe stop.
+```
+
+### §6.4 — Hard exit criterion
+
+```bash
+# Site repo: zero operator artefacts on main
+git -C lumivara-people-advisory-site ls-tree main -r --name-only \
+  | grep -E '(^docs/(platform|storefront|operator|migrations|ops)/|^n8n/|^dashboard/|^scripts/(triage|execute|gemini|codex|plan-issue|test-routing|bootstrap-kanban)|^scripts/lib/)' \
+  | wc -l
+# expect: 0
+
+# Pipeline repo: cron fires from main and the App-token PR-opener works
+gh workflow run smoke.yml --repo palimkarakshay/lumivara-people-advisory-pipeline
+# expect: green within 5 minutes; opens a no-op PR on the site repo
+
+# Production: visitor traffic unchanged
+curl -sI https://lumivara.ca | head -1
+# expect: HTTP/2 200
+```
+
+All three rows green, plus every row of `pattern-c-enforcement-checklist §5`
+ticked.
+
 

@@ -5,11 +5,41 @@ All notable changes to this project are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+> **Pattern C readiness.** This repo is the proof-of-concept for the Pattern C two-repo trust model (locked 2026-04-28; canonical statement in [`docs/mothership/02b-pattern-c-architecture.md`](docs/mothership/02b-pattern-c-architecture.md)). Until the P5.6 spinout, both Site (Client #1: Lumivara People Advisory) and Pipeline (operator: **Lumivara Forge**) artefacts coexist in this tree — see [`docs/00-INDEX.md`](docs/00-INDEX.md) for the lane map.
+
 ---
 
 ## [Unreleased]
 
-### Changed
+### Added — architecture & planning
+- **Pattern C architecture (locked 2026-04-28).** Two-repo trust model (Site + Pipeline per engagement, plus the operator's Platform repo) replaces the deprecated `operator/main` overlay-branch design. Canonical statement: [`docs/mothership/02b-pattern-c-architecture.md`](docs/mothership/02b-pattern-c-architecture.md). Enforcement: [`docs/mothership/pattern-c-enforcement-checklist.md`](docs/mothership/pattern-c-enforcement-checklist.md). Decision history in `11 §1`.
+- **Brand locked 2026-04-28: Lumivara Forge.** Decision recorded in [`docs/mothership/15-terminology-and-brand.md §4`](docs/mothership/15-terminology-and-brand.md). Slug `lumivara-forge`; trademark availability check (CIPO Class 42 + USPTO) per `15 §5` is the only remaining pre-launch gate.
+- **POC perfection plan + automation-readiness plan.** Phase 1 (prove the autopilot in this repo) → Phase 2 (Run S1 mechanical rename) → Phase 3 (bootstrap platform repo) → Phase 4 (Client #1 spinout) → Phase 5 (clean-slate Client #2) → Phase 6 (hardening). [`docs/migrations/00-automation-readiness-plan.md`](docs/migrations/00-automation-readiness-plan.md), [`docs/migrations/01-poc-perfection-plan.md`](docs/migrations/01-poc-perfection-plan.md). (#186, #187)
+- **Spinout runbook for Client #1.** Phased one-shot at [`docs/migrations/lumivara-people-advisory-spinout.md`](docs/migrations/lumivara-people-advisory-spinout.md) with allow/deny tables and Pattern C §4/§5 as gate / acceptance set. (#141, #155)
+
+### Added — operator runbooks & business pack
+- **Operator daily playbook + shareable progress tracker.** Front-door doc the operator opens every session ([`docs/ops/operator-playbook.md`](docs/ops/operator-playbook.md)) plus a 60-second status anyone (advisor / partner / Beas / future hire) can scan ([`docs/ops/progress-tracker.md`](docs/ops/progress-tracker.md)). (#194)
+- **Mothership business pack** — 30+ docs at [`docs/mothership/`](docs/mothership/) covering business plan (01), architecture (02 + 02b), secure architecture (03 + 03b), tier cadence (04), platform-repo buildout plan (05), per-engagement playbook (06), client handover pack (07), future work (08), GitHub topology (09), Lumivara Forge setup plan (09b — renamed from 10-lumivara-infotech-setup-plan), critique series (10–14), terminology policy + client-example appendix (15 + 15b), automation prompt pack (16), Claude issue seeding pack (17), capacity / unit economics (18), provisioning automation matrix (18-provisioning), engagement evidence log template (19), launch & operating cost model (20), IP protection strategy (21), vault strategy ADR (21-vault), engagement risk protection (22). (#113, #114, #115, #116, #117, #121, #134, #135, #136, #137, #138, #140, #141, #142, #143)
+- **Storefront pack** at [`docs/storefront/`](docs/storefront/) (renamed from `docs/freelance/` 2026-04-29) — quick start, gig profile, four-tier pricing, cost analysis, slide deck (md/html/pdf), template-hardening notes, positioning + product-strategy decks, client-migration strategy, marketing strategy + 90-day calendar.
+- **Stakeholder deck pack** at [`docs/decks/`](docs/decks/) — investor, partner (co-operator), employee (engineer / VA), prospective-client (persona-tailored), advisor (pressure-test). All claims trace back to the evidentiary layer at [`docs/research/`](docs/research/).
+- **Research evidentiary layer** — two raw Gemini Deep Research outputs + three synthesis docs + `[V]/[S]/[C]`-flagged source bibliography + client personas + switch reasons + honest drawbacks. (#172)
+- **Operations docs** — audit runbook, platform baseline, variable registry, GitHub Project v2 layout, codex-fix classifier fixtures, Gemini deep audit operator contract. (#142, #145, #178, #179, #189, #190, #192)
+
+### Added — automation & code
+- **`/admin` portal Phase 1 + deployments/promote-selected.** Auth.js v5 (magic link / Google / Entra), allowlist gating, per-deployment promote button gated by Codex review. (#66, #91, #97, #156)
+- **Codex review workflow** with Gemini 2.5 Pro fallback when OpenAI is unavailable. Auto-run on every PR; gates auto-merge on findings. (#175, #183)
+- **Multi-channel intake n8n workflows** — `intake-web.json`, `intake-email.json`, `intake-sms.json`, `client-input-record.json`, `client-input-notify.json`, `deploy-confirmed.json`. ([`docs/n8n-workflows/admin-portal/`](docs/n8n-workflows/admin-portal/))
+- **Vercel production-integrity** — anti-overwrite guard, `/admin/deployments`, drift watcher, [`docs/deploy/production-integrity.md`](docs/deploy/production-integrity.md). (#151)
+- **Restaurant content prompt pack + vertical template index.** First fully-spec'd vertical; plumber/realtor/recruiter remain stubs. ([`docs/mothership/templates/`](docs/mothership/templates/)) (#106)
+- **Pattern C audit script** at [`scripts/pattern-c-audit.sh`](scripts/pattern-c-audit.sh) — five-check sweep job (stale brand drift, operator pitch on site repo, forbidden Client #1 strings, high-entropy committed secrets, duplicate doc numbers). Runnable with `--fix-brand-drift` for safe auto-rewrites. (PR #200)
+- **`docs/00-INDEX.md`** master index — labels every top-level doc + folder by Pattern C lane (🛠 Pipeline / 🌐 Site / ⚪ Both). (PR #200)
+
+### Renamed
+- `docs/freelance/` → `docs/storefront/` (PR #200, 2026-04-29) — per [`docs/mothership/15b-naming-conventions.md §2`](docs/mothership/15b-naming-conventions.md). The new name fits the post-brand-lock positioning (productised tiered MSP, not hourly contractor work).
+- `docs/mothership/10-lumivara-infotech-setup-plan.md` → `docs/mothership/09b-lumivara-forge-setup-plan.md` (PR #200) — fixes a numeric collision with `10-critique-executive-summary.md` and replaces the retired "Infotech" working name with the locked Lumivara Forge brand. Companion-to-09 relationship now expressed by the `09b` prefix.
+- `PHONE_SETUP.md` → `docs/_deprecated/PHONE_SETUP.md` (PR #200) — the v1 phone-PAT deprecation notice was tidied off the repo root into a dedicated archive folder.
+
+### Changed — quality-first phase
 - **Quality-first phase** for the operator's **Claude Max 20x** subscription. Best-possible outcome is now the gating priority; cost optimisation is deferred to a future client-onboarding milestone. See `AGENTS.md` for the active session charter.
 - Claude routing: every triage / plan / implement step defaults to `claude-opus-4-7`. Per-tier mapping (`trivial|easy → haiku`, `medium → sonnet`, `complex → opus`) is preserved in comments and reserved for the future cost-optimisation phase.
 - OpenAI / Codex paths upgraded to `gpt-5.5` (ChatGPT Plus tier) across `codex-review.yml`, `triage.yml` Codex fallback, `scripts/codex-triage.py`, `scripts/plan-issue.py`, `scripts/lib/routing.py`, and the smoke-test ping.
@@ -19,7 +49,25 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Cron cadence: triage `30m → 15m`, execute `2h → 1h`, plan-issues `2h → 1h` (offset 30 min).
 - `.claude/settings.json`: thinking `budget_tokens 10000 → 32000`, `compactContextThreshold 0.5 → 0.9`, `subagentModel haiku → claude-opus-4-7`.
 - AI Ops dashboard: `DEFAULT_AI_MODEL` documented initial value `sonnet → opus` to match the new default.
-- Documentation refreshed: `README.md`, `docs/BACKLOG.md`, `docs/AI_ROUTING.md`, `docs/MONITORING.md`, `docs/wiki/Bot-Workflow.md` now describe the quality-first phase and the gpt-5.5 / Gemini-free-tier routing.
+
+### Changed — security topology
+- **GitHub App** replaces long-lived `VENDOR_GITHUB_PAT` for cross-repo writes; per-client HMAC secret rotation is now two-phase. (#135, #159)
+- Per-client Resend keys; org-level secrets scoped per pipeline repo via "Selected repositories." [`docs/mothership/03-secure-architecture.md`](docs/mothership/03-secure-architecture.md), [`docs/mothership/03b-security-operations-checklist.md`](docs/mothership/03b-security-operations-checklist.md).
+
+### Changed — brand drift sweep (PR #200)
+- "Lumivara Infotech" → "Lumivara Forge" across 12 files (docs prose, [`src/lib/site-config.ts`](src/lib/site-config.ts) `builder.name` shown in the site footer, the operator-pitch page metadata + content). The retired working name now appears only inside `scripts/pattern-c-audit.sh` (the regex it greps for).
+- `lumivara.com` → `lumivara-forge.com` literal across 13 files (decks, storefront pack, research, slide deck `.md`/`.html`). Domain is pending registration per `15 §5`; the storefront and decks indexes carry a "domain pending" banner explaining the gap.
+- Vault structure references: `Lumivara-Infotech-IP` vault → `Lumivara-Forge-IP` (across [`21-vault-strategy-adr.md`](docs/mothership/21-vault-strategy-adr.md), [`03b-security-operations-checklist.md`](docs/mothership/03b-security-operations-checklist.md), [`docs/wiki/Security.md`](docs/wiki/Security.md)).
+
+### Deprecated
+- **v1 phone-PAT capture path** (HTTP Shortcuts / Apple Shortcuts → GitHub PAT on the operator's phone). Superseded by the `/admin` portal + n8n email/SMS/web pipeline. Historical notice kept at [`docs/_deprecated/PHONE_SETUP.md`](docs/_deprecated/PHONE_SETUP.md). (#139, #150)
+- **`operator/main` overlay-branch architecture.** Replaced 2026-04-28 by Pattern C two-repo trust model. Surviving references appear only in the critique series (`10`, `11`, `12`) and the migration prompt-pack (`16`, `17`) under "Historical / decision record" banners.
+
+### Flagged for follow-up (not addressed in current PRs)
+- **Pattern C contamination** — `src/app/lumivara-infotech/` + `src/content/lumivara-infotech.ts` ship the operator's pitch on the Client #1 marketing site. Per Pattern C `02b §6` / `C-MUST-1`, operator brand should not occupy a site-repo URL tree. Tracked on PR #200 description; needs operator decision (delete / rename to `/forge` / move to a separate operator-brand Vercel project). The `pattern-c-audit.sh §2` keeps the violation visible at every audit run.
+- **Sibling-number collisions** in `docs/mothership/`: `18-capacity` + `18-provisioning`, and `21-ip` + `21-vault`. Same fix pattern as the `09b` rename that landed in PR #200; deferred to a focused rename PR.
+- **`docs/n8n-workflows/` → `docs/n8n/`** rename per [`15b §2`](docs/mothership/15b-naming-conventions.md). Smaller blast radius than the freelance rename; deferred.
+- **Mothership prose terminology sweep** (`mothership` noun → `platform` / `control plane` per `15 §1`) — ~426 hits across 50 files. Folder name retained per the 2026-04-29 operator decision; prose sweep proceeds incrementally and is tracked by `pattern-c-audit.sh`.
 
 ---
 

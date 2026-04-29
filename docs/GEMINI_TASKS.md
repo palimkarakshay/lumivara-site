@@ -37,7 +37,9 @@ Free tier: Gemini 2.5 Pro, 60 requests/minute, 1,500 requests/day. No credit car
 ## Assigned Gemini tasks
 
 ### 1. Bulk insights article generation
-When the backlog has multiple article issues, batch them into one Gemini call:
+When the backlog has multiple article issues, batch them into one Gemini call. The brand-voice paragraph is **per-client** — swap it with the matched client's intake before invoking the CLI.
+
+> _Client example — verbatim usage requires the matched client. See `docs/mothership/15-terminology-and-brand.md §7`._ The block below shows the brand-voice prompt for **Client #1 (Lumivara People Advisory)**; for any other client, replace the entire `"You are writing for ..."` paragraph with that client's brand voice from their intake YAML (`docs/mothership/07-client-handover-pack.md §A` is the template).
 
 ```powershell
 gemini "You are writing for Lumivara People Advisory (lumivara.ca) — a boutique HR consulting firm in Toronto run by Beas Banerjee (MBA, CHRL, PROSCI). Services: talent acquisition, succession planning, fractional HR, leadership development, compensation design, HR compliance (PIPEDA, Ontario employment standards). Voice: direct, advisory, evidence-led. No filler. No listicle format.

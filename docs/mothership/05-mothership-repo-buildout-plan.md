@@ -131,12 +131,14 @@ The existing `lumivara-site` repo is *de facto* Client #1's repo today. Make it 
 3. Add `cadence.json` ({"tier": 2, "triage_cron": "*/30 * * * *", ...}).
 4. Add `secrets.md.age` (encrypted; lists which org secrets, n8n creds, Vercel envs are scoped to this client).
 5. Add `runbook.md` (anything specific to Beas's preferences, contact details, monthly call cadence).
-6. Add an `engagement-log.md` — start it from CHANGELOG.md of `lumivara-site`.
+6. Add an `engagement-log.md` — start it from CHANGELOG.md of `lumivara-site`. Schema lives at `14 §6` / `docs/operator/ENGAGEMENT_LOG_SCHEMA.md`.
+7. Add an `evidence-log.md` from the template in `19-engagement-evidence-log-template.md`. Backfill the `PRE-*`, `A-*`, `B1-*`, `B2-*`, `C-*`, `H-*` rows from `lumivara-site`'s known-good provisioning state at the time of mirror — even retro entries are useful as the audit trail and the reference shape for the next client. Add the `evidence/` subdirectory containing the artefact files referenced from the log.
 
 **DOD:**
-- `docs/clients/lumivara-people-advisory/` has the six files.
+- `docs/clients/lumivara-people-advisory/` has the seven files plus the `evidence/` directory.
 - `cadence.json` validates against `schema/cadence.schema.json`.
 - `secrets.md.age` decrypts cleanly with the operator's PGP key.
+- `evidence-log.md` has at minimum the engagement-metadata header (per `19 §1`) and one entry per `PRE-*` Step ID from `18 §1`.
 
 ---
 

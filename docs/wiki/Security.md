@@ -2,7 +2,9 @@
 
 > **Lane:** ⚪ Both — split into §A 🛠 Operator and §B 🌐 Client below. See [[_partials/lane-key]] for the badge legend.
 >
-> The canonical security policy is in [`.github/SECURITY.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/.github/SECURITY.md). This page provides supplementary context for both lanes.
+> The canonical security policy is in `.github/SECURITY.md` at the root of `<client-repo>`. This page provides supplementary context for both lanes.
+>
+> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ For Client #1 today the file is at [`.github/SECURITY.md` on `palimkarakshay/lumivara-site`](https://github.com/palimkarakshay/lumivara-site/blob/main/.github/SECURITY.md).
 
 ## Reporting a vulnerability ⚪
 
@@ -115,4 +117,6 @@ The autopilot opens PRs against `auto/issue-*` branches and never pushes to `mai
 ## Pattern C compliance (operator-side)
 
 The two-repo / two-branch trust model that keeps operator IP and per-client costs invisible to clients is enforced by an explicit checklist in the mothership pack: [`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md). Walk that file before any spinout (its §4 pre-migration gate) and immediately after (its §5 post-migration verification). The checklist is the single MUST / MUST-NOT control surface; the architecture rationale lives in `docs/mothership/02-architecture.md` and `docs/mothership/03-secure-architecture.md`.
-See [`.github/SECURITY.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/.github/SECURITY.md) for the canonical policy.
+See `.github/SECURITY.md` at the root of `<client-repo>` for the canonical policy.
+
+> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ For Client #1: [`.github/SECURITY.md` on `palimkarakshay/lumivara-site`](https://github.com/palimkarakshay/lumivara-site/blob/main/.github/SECURITY.md).

@@ -54,7 +54,8 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 01 | `01-business-plan.md` | "What is the business, what does it sell, and what name does it operate under?" | Operator | Once, revisit quarterly |
 | 02 | `02-architecture.md` | "How is the mothership repo structured, and how do the per-client site + pipeline repos relate to it?" — Pattern C canonical | Operator | Once |
 | 02b | `02b-pattern-c-architecture.md` | "What is Pattern C, in one self-contained file?" — the canonical architecture statement (locked 2026-04-28) | Operator | Once; cross-linked from every doc that touches architecture |
-| 03 | `03-secure-architecture.md` | "How do I keep client zones, secrets, and costs strictly isolated from the mothership?" — partially deprecated; Run B (`16 §2`) rewrites it to match Pattern C and adds `03b-github-app-spec.md` | Operator | Once, revisit on every secret rotation |
+| 03 | `03-secure-architecture.md` | "How do I keep client zones, secrets, and costs strictly isolated from the mothership?" — Pattern C aligned; canonical App identity model at `§3.X`, two-phase HMAC rotation at `§3.Y` | Operator | Once, revisit on every secret rotation |
+| 03b | `03b-security-operations-checklist.md` | "What does the operator do, and how often, to keep the security posture from drifting?" — monthly + quarterly cadences, recovery drill template, secret rotation schedule matrix, anti-pattern detection | Operator | **Per monthly + quarterly pass** |
 | 04 | `04-tier-based-agent-cadence.md` | "How often does the AI bot run for a Tier 0 / 1 / 2 / 3 client, and which models does it use?" | Operator | Once, revisit when pricing tiers change |
 | 05 | `05-mothership-repo-buildout-plan.md` | "What are the phases I run Claude through to build the new mothership repo from scratch?" | Operator (run with Claude) | Once |
 | 06 | `06-operator-rebuild-prompt-v3.md` | "Per-client engagement: what do I run, in what order, to spin up a new client site?" | Operator | **Per engagement** |
@@ -68,8 +69,12 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 12 | `12-critique-security-secrets.md` | "Where do the secrets / cost-firewall leaks come from?" — single-Owner break-glass, per-client Resend keys, two-phase HMAC rotation, GitHub-App swap | Operator | Once; closed by Run B in `16 §2` |
 | 13 | `13-critique-ai-and-scaling.md` | "Do the maths reconcile? Where are the scaling cliffs?" — Action minutes, AI cost, Claude/Actions/n8n cliffs, model-rubric notes | Operator | Once; closed by Run C in `16 §3` |
 | 14 | `14-critique-operations-sequencing.md` | "What sequencing/coherency gaps need closing?" — Tier-0 honesty, OAuth manual scope, rollback paths, backups, engagement-log schema | Operator | Once; closed by Run D in `16 §4` |
-| 15 | `15-terminology-and-brand.md` | "Better names for mothership/operator/agent and brand alternatives" | Operator | Once; rename ships via Run S1 in `16 §5` |
+| 15 | `15-terminology-and-brand.md` | "Better names for mothership/operator/agent, brand alternatives, terminology policy (§6), and the client-example appendix (§7) that anchors all legitimate Client #1 references" | Operator | Once; rename ships via Run S1 in `16 §5`; §6 + §7 enforced reviewer-side until a CI lint lands |
 | 16 | `16-automation-prompt-pack.md` | "Copy-paste prompts for Claude Code in the browser to close the critiques" | Operator | **Per critique-closure run** |
+| 18 | `18-provisioning-automation-matrix.md` | "Every per-engagement provisioning step keyed by Step ID, with system owner, automation status, blocking deps, validation command, and evidence artefact." | Operator | **Per engagement, every step** |
+| 19 | `19-engagement-evidence-log-template.md` | "Per-client evidence log the operator copies into `docs/clients/<slug>/evidence-log.md` and appends to as each provisioning step lands." | Operator | **Per engagement, appended throughout** |
+| 17 | `17-claude-issue-seeding-pack.md` | "Pre-built issue / prompt seeds for Claude Code Cloud agents to bootstrap the mothership repo" | Operator | **Per seeding run** |
+| 18 | `18-capacity-and-unit-economics.md` | "Single source of truth for Action minutes, AI cost envelopes, operator-time, scaling cliffs, and the assumption change log" | Operator | Once; update via §7 change log when any assumption moves |
 | — | `pattern-c-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
 | — | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) | "How do I spin Lumivara People Advisory out into its own client repo, end-to-end?" — phased one-shot runbook with allow/deny tables (`docs/migrations/_artifact-allow-deny.md`), per-phase dry-run / rollback / acceptance, and Pattern C §4/§5 as gate / acceptance set | Operator | **Once (per Client #1 spinout)** |
 
@@ -147,14 +152,20 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 ## Quick links
 
 - **Canonical architecture (Pattern C):** `02b-pattern-c-architecture.md`
+- **Capacity / cost / cliffs (single source of truth):** `18-capacity-and-unit-economics.md` — §1 assumptions, §6 cliffs, §7 change log
 - New mothership repo bootstrap: `05-mothership-repo-buildout-plan.md`
 - Per-engagement playbook: `06-operator-rebuild-prompt-v3.md`
+- **Per-engagement provisioning matrix (Step IDs + validation + evidence): `18-provisioning-automation-matrix.md`**
+- **Per-engagement evidence-log template: `19-engagement-evidence-log-template.md`**
+- Gate-check / evidence-capture / rollback-path triad: `06 §2 / §3 / §4 / §5 / §6 / §7`
 - Client-facing pack template: `07-client-handover-pack.md`
 - Tier-based AI cadence: `04-tier-based-agent-cadence.md`
-- Cost firewall + zone isolation: `03-secure-architecture.md` (partially deprecated — Run B rewrites)
 - Cost firewall + zone isolation: `03-secure-architecture.md`
 - **Canonical variable inventory: [`docs/ops/variable-registry.md`](../ops/variable-registry.md)**
+- **Security operations cadence (monthly / quarterly / drill / rotation matrix / anti-patterns): `03b-security-operations-checklist.md`**
 - **Pattern C enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `pattern-c-enforcement-checklist.md`**
+- **Terminology policy + forbidden strings: `15-terminology-and-brand.md §6`** — what may appear where, with the audit-grep recipe.
+- **Client example appendix: `15-terminology-and-brand.md §7`** — the single canonical home for legitimate Client #1 references in operator-scoped docs.
 - **Client #1 spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)**
 - Future legal / vault work: `08-future-work.md`
 

@@ -6,6 +6,8 @@ How often the autopilot runs, which models it uses, and how aggressive its revie
 
 This is implemented as **per-client labels** read by the workflows in each `<slug>-pipeline` repo (Pattern C — see `02b`), plus a single per-client config file `docs/operator/clients/<slug>/cadence.json` in the mothership repo.
 
+> **Numbers in this doc are owned by `18-capacity-and-unit-economics.md`** (the single source of truth for capacity / cost / cliffs). Cells in §1 that quote a minute count, dollar figure, or upgrade threshold reference an anchor in `18`; this doc does not redefine them. If a number here disagrees with `18`, `18` wins — open a fix in `18 §7` (change log) and propagate.
+
 ---
 
 ## 1. Cadence matrix
@@ -24,10 +26,12 @@ This is implemented as **per-client labels** read by the workflows in each `<slu
 | **Default model (`DEFAULT_AI_MODEL`)** | n/a | `haiku` | `sonnet` | `sonnet`, with `opus` for `area/architecture` |
 | **Model override discipline** | n/a | Operator-only via dashboard | Operator-only via dashboard | Operator-only via dashboard, plus per-client variable `<SLUG>_NEXT_RUN_MODEL_OVERRIDE` |
 | **Concurrency cap (per client per hour)** | 0 bot runs | 1 plan + 1 execute | 2 plan + 2 execute | 4 plan + 4 execute |
-| **Action minutes budget / month** | 0 | 100 | 250 | 600 |
-| **Claude turn budget / day** | 0 | 200 | 500 | 1,500 |
+| **Action minutes budget / month** | See `18 §2` row T0 | See `18 §2` row T1 | See `18 §2` row T2 | See `18 §2` row T3 |
+| **Claude turn budget / day** | See `18 §3` formula | See `18 §3` formula | See `18 §3` formula | See `18 §3` formula |
 
-These values are starting points. Tune per client based on observed activity; document the change in `docs/clients/<slug>/cadence-changes.md`.
+> The two rows above used to hard-code per-tier ceilings (`0 / 100 / 250 / 600` minutes; `0 / 200 / 500 / 1500` turns). Those numbers now live exclusively in [`18-capacity-and-unit-economics.md §2`](18-capacity-and-unit-economics.md#2--per-tier-action-minute-envelopes) and [`18 §3`](18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes) so they reconcile with the practice-level totals and the GitHub Free-tier cliff. Operator allocations (the budget ceilings) and observed-typical run cost are both there.
+
+These values are starting points. Tune per client based on observed activity; document the change in `docs/clients/<slug>/cadence-changes.md` **and** add a §7 row in `18` so the assumption-change log captures the new ceiling.
 
 ---
 
@@ -106,10 +110,11 @@ The operator runs on **one** Claude Pro/Max subscription. The 5-hour rolling quo
 | T2 | 10% per client (max ~6 active T2 clients before saturation) |
 | T3 | 20% per client (max ~3 T3 clients before saturation) |
 
-If the operator approaches saturation, they:
-1. Bump Claude Pro → Max 5x ($100/mo) — gives ~5x quota.
-2. Bump Max 5x → Max 20x ($200/mo) — gives ~4x more.
-3. Beyond Max 20x, hire a second operator with their own Anthropic seat (`docs/freelance/03-cost-analysis.md §E`).
+If the operator approaches saturation, they walk the cliffs in [`18 §6`](18-capacity-and-unit-economics.md#6--scale-thresholds-and-trigger-points):
+
+1. Cliff 1 — Claude Pro → Max 5x. Plan-cost numbers in [`18 §1`](18-capacity-and-unit-economics.md#1--assumptions-table) (`claude_pro_cost`, `claude_max5x_cost`).
+2. Cliff 4 — Max 5x → Max 20x. Plan-cost number in `18 §1` (`claude_max20x_cost`).
+3. Cliff 5 — beyond Max 20x, hire a second operator with their own Anthropic seat (`docs/freelance/03-cost-analysis.md §E` and `18 §6` Cliff 5).
 
 The dashboard's "Quota usage" panel charts this in real time (P5 deliverable; not yet built — track in `docs/mothership/05-mothership-repo-buildout-plan.md §P5.4`).
 

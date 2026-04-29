@@ -21,7 +21,8 @@ npm install
 ```
 
 For the mothership: replace `<org>/<client-repo>` with `palimkarakshay/{{BRAND_SLUG}}-mothership`.
-For the current Client #1: `palimkarakshay/lumivara-site`.
+
+> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ For the current Client #1 the placeholder resolves to `palimkarakshay/lumivara-site` (and to `palimkarakshay/lumivara-people-advisory-site` after the P5.6 spinout).
 
 ### Run locally
 

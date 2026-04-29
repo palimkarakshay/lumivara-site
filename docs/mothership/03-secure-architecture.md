@@ -2,7 +2,7 @@
 
 # 03 — Secure Architecture: Zone Isolation & Cost Firewall
 
-> **⚠️ Historical / partially deprecated as of 2026-04-28.** The branch-overlay description in this file (`operator/main` overlay; `VENDOR_GITHUB_PAT` as vendor identity) was superseded when the operator chose **Pattern C** in `11 §1`. The four "never" rules (§1) and the secret-handling principles (§3) still apply; the *mechanics* (which branch, which token) are replaced by the two-repo + GitHub App model in `02b-pattern-c-architecture.md`. The full rewrite of this file lands via Run B (`16 §2`), which adds the GitHub App spec at `03b-github-app-spec.md` and rewrites §2.1/§2.2/§2.5 + §3 to match. Until that PR merges, treat the overlay-branch text below as **historical context describing the deprecated pattern** — apply the principles, ignore the branch mechanics. Cross-reference `02b` for canonical mechanics.
+> **⚠️ Mixed canonical / historical as of 2026-04-29.** §3 (secret topology, App identity model `§3.X`, two-phase HMAC rotation `§3.Y`), §7 (client-zone checklist), and §8 (incident response) are **canonical** — Pattern C aligned, App-first, per-client Resend. The branch-overlay text in §2.1, §2.2, and §2.4 (`operator/main` overlay as a branch within a single client repo) is **deprecated**; the two-repo Pattern C statement is canonical in [`02b-pattern-c-architecture.md`](02b-pattern-c-architecture.md), and the §2.x rewrite is owned by the Pattern C propagation issue, not this file. Until that propagation lands, treat §2.1–§2.4 as historical context describing the deprecated pattern; apply §1 / §3 / §4 / §5 / §6 / §7 / §8 as written, and cross-reference `02b` whenever the §2.x mechanics conflict with Pattern C. The recurring operator cadence lives in [`03b-security-operations-checklist.md`](03b-security-operations-checklist.md).
 
 The single most important property of this practice: **a curious client cannot see the operator's secrets, costs, or tools, even by inspecting their own repo.** This document is the rule-set that makes that true.
 
@@ -94,6 +94,23 @@ If a client device is lost, the client clicks "Sign out everywhere" in `/admin/s
 | `CLAUDE_CODE_OAUTH_TOKEN` | The single OAuth token that bills every autopilot run against the operator's Claude Pro/Max subscription. Org-scoped; never a per-repo secret in the canonical Pattern C model. Rotation = re-run `claude setup-token`; no expiry. The blast radius is "every client repo's autopilot stops" — visible failure, not silent compromise, which is why no expiry is acceptable. |
 | `VENDOR_GITHUB_PAT` | The bot account's fine-grained PAT used by n8n for issue / comment / label writes. 90-day rotation; the calendar reminder lives in the operator's pass tree. Blast radius if leaked = anyone can open / close issues across every client repo (no code write); recovery = revoke in GitHub → Tokens, regenerate, update every n8n credential row. |
 | `N8N_HMAC_SECRET` | Per-client. Signs every Vercel ↔ n8n webhook over `${unixTimestamp}.${rawBody}`. Two-phase rotation (issue new → both accepted → retire old) — see §4. The HMAC + the vendor PAT together are what gates the autopilot from accepting a forged webhook; either one alone is useless. |
+| Secret | Lives in | Used by | Rotation |
+|---|---|---|---|
+| `CLAUDE_CODE_OAUTH_TOKEN` | `{{BRAND_SLUG}}` org secrets | Every client repo's workflows on `operator/main` | When `claude setup-token` is re-run (no expiry) |
+| `GEMINI_API_KEY` | `{{BRAND_SLUG}}` org secrets | Same | 12 months |
+| `OPENAI_API_KEY` | `{{BRAND_SLUG}}` org secrets | Same (codex-review fallback only) | 6 months |
+| `APP_ID` | `{{BRAND_SLUG}}` org secrets (public ID; safe to log) | `actions/create-github-app-token@v1` in pipeline-repo workflows | Stable; only changes if the App is rebuilt |
+| `APP_PRIVATE_KEY` | `{{BRAND_SLUG}}` org secrets (PEM) | Same | 12 months (regenerate the App's private key; the App itself is durable) |
+| `INSTALLATION_TOKEN` | **Generated per workflow run; never stored** | Pipeline-repo workflows pushing branches / opening PRs / commenting on the matched site repo | ≤ 1 h TTL by GitHub; auto-expires |
+| `VENDOR_GITHUB_PAT` | _DEPRECATED — superseded by §3.X GitHub App identity._ Retained only as the n8n credential that writes issues/comments until n8n picks up App-based auth in `05 §P5.4f`. | n8n issue/comment/label writes (final remaining caller) | 90 days; calendar reminder. Track this row's removal under issue "Operator: install GitHub App in place of VENDOR_GITHUB_PAT" (see `16 §7`). |
+| `N8N_HMAC_SECRET` (per-client) | client Vercel env + n8n credential for that client | `/admin` Server Actions ↔ n8n webhooks | 12 months — rotate via the §3.Y two-phase pattern |
+| `AUTH_SECRET` (per-client) | client Vercel env | Auth.js JWT signing | 12 months |
+| `AUTH_RESEND_KEY` (per-client) | client Vercel env (per-client; one Resend API key per client, scoped to `sending_access` on the operator's verified domain) | Magic-link emails | 6 months (rotation is per-client; no fan-out across other clients) |
+| `AUTH_GOOGLE_*`, `AUTH_MICROSOFT_*` | client Vercel env (per-client OAuth app) | OAuth sign-in | Until OAuth app is deleted |
+| Twilio account SID / auth token (per-client sub-account) | n8n credentials (operator-only) | Per-client SMS lane — verify the n8n credential maps **1:1** with the per-client Twilio number, never many:1 (`12 §2`). | 12 months |
+| IMAP password / app password | n8n credentials | Email lane | 6 months |
+| Vercel API token | operator's vault → CLI calls | `provision` CLI | 6 months |
+| Stripe / Lemon Squeezy keys | operator's vault → invoicing scripts | Subscription billing | 12 months |
 
 ### 3.1 The operator vault
 
@@ -118,6 +135,93 @@ file. The walk-through:
 4. List every collaborator on every client repo. Remove anyone not actively engaged.
 5. Run `npx forge audit-secrets` (P5 deliverable) — prints a single pass/fail; data source is the registry.
 6. Update the **Last verified** date in `docs/ops/variable-registry.md §7`.
+
+### 3.X GitHub App identity model (canonical vendor auth)
+
+The vendor identity is a **GitHub App**, not a personal-access token. The App lives at the `{{BRAND_SLUG}}` org level; each engagement gets a fresh **installation** of that App scoped to its `<slug>-site` repo. Pipeline-repo workflows mint a short-lived installation token at run time and discard it on exit.
+
+**Why an App, not a PAT.** PATs expire silently every 90 days, are scoped only as narrowly as a human can be bothered to configure, and stamp every action with a personal user identity. An App has:
+
+- No user-facing expiry — the App is durable; only its private key has a rotation policy.
+- A narrow, declared permission set (see below) that cannot be widened by accident.
+- A clean audit trail in `Org settings → Audit log → app/...` events distinct from human pushes.
+- Cross-repo authority — the App is the **only** identity that can simultaneously read pipeline-repo state and write to a site repo without putting a vendor PAT into either side. This is what makes Pattern C's two-repo split architecturally enforceable.
+
+**Permissions the App requests** (per `02b §3` and `09 §2 step 5`; granted at install time per repo):
+
+| Permission | Level | Why |
+|---|---|---|
+| Issues | Read & write | Triage labels, plan comments, status comments |
+| Pull requests | Read & write | Open PRs, post review comments, request reviews |
+| Contents | Read & write | Push `auto/issue-N` branches; never to the site-repo `main` directly |
+| Metadata | Read | Required by every App (mandatory) |
+| Workflows | Read | Read pipeline-repo workflow files for the smoke-test gate |
+
+The App **does not** request `Administration`, `Secrets`, `Members`, or any org-level mutating scope. A leaked installation token can write to the matched site repo for ≤ 1 h; it cannot exfiltrate other clients' data and cannot escalate to the org.
+
+**Installation procedure.** One-time per org (`09 §2 step 5–7`); per-repo at provision time:
+
+1. `forge provision …` → step 7 calls the App's installation API to install the App on the new `<slug>-site` repo only.
+2. Capture the `installation_id` into the per-client `cadence.json` so workflows can resolve "which installation matches this engagement" without listing all installations.
+3. The App is **not** installed on the pipeline repo — pipeline-repo workflows are the *callers*, not the *targets*.
+
+**Workflow auth pattern.** Every pipeline-repo workflow that touches the site repo opens with:
+
+```yaml
+- name: Mint installation token
+  id: app-token
+  uses: actions/create-github-app-token@v1
+  with:
+    app-id: ${{ secrets.APP_ID }}
+    private-key: ${{ secrets.APP_PRIVATE_KEY }}
+    owner: ${{ vars.SITE_REPO_OWNER }}
+    repositories: ${{ vars.SITE_REPO_NAME }}
+
+- name: Use the token
+  env:
+    GH_TOKEN: ${{ steps.app-token.outputs.token }}
+  run: gh issue list --repo ${{ vars.SITE_REPO_OWNER }}/${{ vars.SITE_REPO_NAME }}
+```
+
+The token is scoped to a single repo, lives ≤ 1 h, and is auto-redacted in workflow logs. Workflows must never write the token to a file, an artefact, or a comment body.
+
+**Migration from `VENDOR_GITHUB_PAT`.** Two-phase, no autopilot downtime:
+
+- **Phase 1 — install the App** alongside the existing PAT. Add `APP_ID` + `APP_PRIVATE_KEY` to org secrets. Pick one low-stakes workflow (e.g. `mothership-smoke.yml`) and switch it to the App-token pattern. Verify a green run.
+- **Phase 2 — switch one workflow at a time.** Replace `${{ secrets.VENDOR_GITHUB_PAT }}` with the `app-token` pattern in each workflow. Watch for green for 48 h before moving on.
+- **Phase 3 — retire the PAT.** When the only remaining caller is the n8n credential (see the §3 table), revoke the PAT in GitHub Settings → Tokens. The n8n credential exception persists until `forge` ships an App-based n8n token-refresh helper (`05 §P5.4f`); that exception is the single named row in the §3 table, not an oversight.
+
+**Audit-log location.** All App actions appear at `https://github.com/organizations/{{BRAND_SLUG}}/settings/audit-log?q=action:integration_installation+OR+action:installation`. Diff this monthly against the active-client roster (`03b §1`) — any installation on a repo you don't recognise is an incident.
+
+**Pattern C dependency.** Pattern C (`11 §1`) is locked but the cross-repo write requirement that the App's `Contents:RW` enables only matters once Pattern C ships per client. Until then, the App's installation scope is the mothership repo + Client #1's site repo; the App-first model is still the strict upgrade vs. PAT regardless. See `02b §3` for the canonical Pattern C statement and `09 §2.5` for the second-Owner requirement that protects the App's private key.
+
+**GitHub plan tier.** GitHub Apps are free at every plan tier. The App does **not** trigger any of the Team/Enterprise upgrade paths in `09 §5`.
+
+### 3.Y Two-phase rotation pattern for HMAC-style secrets
+
+Every HMAC-signed handshake (`N8N_HMAC_SECRET`, the Vercel deploy hook, any future Twilio webhook signing) rotates with a **prepare → commit → cleanup** sequence so there is no window in which the two sides of the handshake disagree about the active key. This is the doc-side of `forge rotate-hmac` (`05 §P5.4f` future work); until that CLI ships, the operator runs the procedure by hand.
+
+**Applies to.** `N8N_HMAC_SECRET` (per-client), the Vercel deploy hook signing secret, and any HMAC-signed webhook the operator adds later. Does **not** apply to bearer credentials like `AUTH_RESEND_KEY` or `APP_PRIVATE_KEY` — those have their own rotation flows.
+
+**Phase 1 — prepare** (no client-visible change):
+
+1. Generate `NEW_HMAC` (`openssl rand -hex 32`).
+2. In n8n, add a **second** credential entry that accepts both `OLD || NEW` for a 24 h grace.
+3. Probe the verifier with a request signed by `NEW_HMAC`; expect HTTP 200.
+
+**Phase 2 — commit** (the cutover):
+
+1. `vercel env update <SECRET_NAME>` with the new value, on the affected client's Vercel project.
+2. `vercel deploy --prod` (env vars require redeploy).
+3. Verify a real Server Action submission signed by `NEW_HMAC` reaches n8n and round-trips correctly. For magic-link rotation, send one to the operator's address and confirm receipt.
+
+**Phase 3 — cleanup, ≥ 24 h later** (close the grace window):
+
+1. Remove the `OLD_HMAC` credential from n8n.
+2. Append the rotation event to `docs/clients/<slug>/secrets-log.md` (rotation date, who rotated, why, validation evidence).
+3. Update the row's "rotation due" date in the operator's vault.
+
+If anything goes wrong in Phase 2, **revert by deleting the new credential** in n8n; the OLD credential stays valid until Phase 3 cleanup, so the handshake never breaks. This is the property the two-phase pattern buys: the operator can dread rotation and still execute it cleanly.
 
 ---
 
@@ -189,6 +293,7 @@ Before any push to a client repo's `main`, the operator (or the `provision` CLI)
 - [ ] No org-secret names referenced in any workflow that's about to land on `main`.
 - [ ] `.claudeignore` from §2.3 is present.
 - [ ] Footer credit `Built on the {{BRAND}} framework` is present (Tier 0/1/2; removable on Tier 3+).
+- [ ] No reference to `VENDOR_GITHUB_PAT` outside the Deprecated callout in §3 — the canonical vendor identity is the GitHub App (`§3.X`). A re-introduced PAT reference is the policy hit a future doc-lint pass flags.
 
 The CLI's `validate-client-zone` step does this automatically; the operator does it by eye on any manual push.
 
@@ -198,7 +303,11 @@ The CLI's `validate-client-zone` step does this automatically; the operator does
 
 If a leak is suspected:
 
-1. **Stop**: disable the relevant secret at its issuer (e.g. revoke `VENDOR_GITHUB_PAT` in GitHub Settings → Tokens). The autopilot will fail loudly; that's fine.
+0. **Identify the secret class** before you touch anything. The class picks the rotation procedure:
+   - **HMAC-style** (`N8N_HMAC_SECRET`, Vercel deploy hook, Twilio webhook signing): follow the §3.Y two-phase rotation. Skipping the prepare phase guarantees a broken handshake.
+   - **GitHub App** (`APP_ID`, `APP_PRIVATE_KEY`, or a leaked installation token): rotate per §3.X (regenerate the App's private key in `Org settings → Developer settings → GitHub Apps`; existing installation tokens auto-expire within 1 h).
+   - **Bearer key** (`AUTH_RESEND_KEY`, `AUTH_SECRET`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `CLAUDE_CODE_OAUTH_TOKEN`, `VENDOR_GITHUB_PAT` while it survives): straight revoke + reissue at the provider, then update the consuming env. No grace window; the handshake is single-sided.
+1. **Stop**: disable the relevant secret at its issuer (e.g. regenerate the App's private key, revoke the Resend API key, revoke `VENDOR_GITHUB_PAT` in GitHub Settings → Tokens for the deprecated row). The autopilot will fail loudly; that's fine.
 2. **Quarantine**: `npx forge pause --all` — disables all client workflows by setting an org secret to a dummy value.
 3. **Rotate**: regenerate every secret in the affected category (use the table in §3).
 4. **Audit**: search every client repo for the leaked value with `gh search code --owner palimkarakshay <leaked-prefix>`. If anything matches, force-push the cleaned history.
@@ -207,4 +316,6 @@ If a leak is suspected:
 
 The dashboard's "Recent runs" panel + the operator's "Friday cost check" + this list = the operator's whole security posture. It's small because the surface area is small. Keep it that way.
 
-*Last updated: 2026-04-28.*
+The recurring operator cadences (monthly checklist, quarterly recovery drill, secret-rotation schedule matrix) live in [`03b-security-operations-checklist.md`](03b-security-operations-checklist.md). This file owns the *principles*; `03b` owns the *cadence*.
+
+*Last updated: 2026-04-29.*

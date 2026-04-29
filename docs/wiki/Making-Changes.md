@@ -10,15 +10,15 @@ The simplest way to request a site change is to create a GitHub Issue. No coding
 
 Sign in to `/admin` (magic-link email via Resend, Google, or Microsoft Entra) and use the in-portal capture form. Email-to-issue and SMS-to-issue lanes route through n8n — see `docs/ADMIN_PORTAL_PLAN.md` and `docs/N8N_SETUP.md` at the root of `<client-repo>`.
 
-If you have the HTTP Shortcuts app set up (see `PHONE_SETUP.md` at the root of `<client-repo>`):
+If you have the HTTP Shortcuts app set up (see `docs/_deprecated/PHONE_SETUP.md`):
 
-> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ For Client #1 today, `<client-repo>` resolves to `palimkarakshay/lumivara-site`, so the deprecation notice lives at [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md).
+> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ For Client #1 today, `<client-repo>` resolves to `palimkarakshay/lumivara-site`, so the historical deprecation notice lives at [docs/_deprecated/PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/_deprecated/PHONE_SETUP.md).
 
 1. Tap the shortcut
 2. Type what you want changed
 3. Submit
 
-> **Deprecated:** the previous HTTP Shortcuts / Apple Shortcuts + GitHub PAT path is no longer supported. Setup steps are removed from [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md), which is now a deprecation notice; the v1→v2 migration matrix lives in [`docs/TEMPLATE_REBUILD_PROMPT.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/TEMPLATE_REBUILD_PROMPT.md) §1.4.
+> **Deprecated:** the previous HTTP Shortcuts / Apple Shortcuts + GitHub PAT path is no longer supported. Setup steps were removed from [docs/_deprecated/PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/_deprecated/PHONE_SETUP.md), which is now a deprecation notice (relocated 2026-04-29 from the repo root to `docs/_deprecated/`); the v1→v2 migration matrix lives in [`docs/TEMPLATE_REBUILD_PROMPT.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/TEMPLATE_REBUILD_PROMPT.md) §1.4.
 
 Each captured submission lands as a GitHub Issue with `status/needs-triage`.
 

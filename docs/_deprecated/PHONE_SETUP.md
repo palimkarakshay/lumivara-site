@@ -1,4 +1,8 @@
+> _Lane: 🛠 Pipeline (deprecated history)._
+>
 > ## ⚠️ Deprecated — replaced by n8n webhook + admin portal pipeline
+>
+> **Relocated 2026-04-29** from `/PHONE_SETUP.md` to `docs/_deprecated/PHONE_SETUP.md` — kept as a historical reference; do not follow its setup steps.
 >
 > This document described the **v1 phone-PAT** capture mechanism: a
 > fine-grained GitHub Personal Access Token stored on the operator's phone,
@@ -13,10 +17,10 @@
 >
 > | Topic | Canonical doc |
 > |---|---|
-> | n8n on Railway — install, credentials, webhook workflows | [`docs/N8N_SETUP.md`](docs/N8N_SETUP.md) |
-> | `/admin` portal architecture, trust zones, Auth.js v5 setup, env vars | [`docs/ADMIN_PORTAL_PLAN.md`](docs/ADMIN_PORTAL_PLAN.md) |
-> | Operator-side rebuild prompt, trust-zone rules, security migration matrix | [`docs/TEMPLATE_REBUILD_PROMPT.md`](docs/TEMPLATE_REBUILD_PROMPT.md) |
-> | Day-to-day bot pipeline (capture → triage → execute → review → deploy) | [`docs/wiki/Bot-Workflow.md`](docs/wiki/Bot-Workflow.md) |
+> | n8n on Railway — install, credentials, webhook workflows | [`docs/N8N_SETUP.md`](../N8N_SETUP.md) |
+> | `/admin` portal architecture, trust zones, Auth.js v5 setup, env vars | [`docs/ADMIN_PORTAL_PLAN.md`](../ADMIN_PORTAL_PLAN.md) |
+> | Operator-side rebuild prompt, trust-zone rules, security migration matrix | [`docs/TEMPLATE_REBUILD_PROMPT.md`](../TEMPLATE_REBUILD_PROMPT.md) |
+> | Day-to-day bot pipeline (capture → triage → execute → review → deploy) | [`docs/wiki/Bot-Workflow.md`](../wiki/Bot-Workflow.md) |
 >
 > The migration is tracked under [issue #135](https://github.com/palimkarakshay/lumivara-site/issues/135)
 > (App-auth + per-client-keys topology) and the deprecation under

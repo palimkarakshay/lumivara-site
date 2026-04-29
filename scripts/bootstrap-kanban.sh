@@ -110,7 +110,7 @@ echo "       Name: Lumivara Backlog"
 echo "       Columns: Inbox, Triaged, In Progress, Review, Done"
 echo "     Then: Project → ⋯ → Workflows → 'Auto-add to project' → enable for this repo."
 echo
-echo "  3. Update the phone shortcut per docs/BACKLOG.md or PHONE_SETUP.md."
+echo "  3. Update the phone capture path per docs/BACKLOG.md (the historical PHONE_SETUP.md notice now lives at docs/_deprecated/PHONE_SETUP.md)."
 echo
 echo "  4. First test run:"
 echo "       gh workflow run triage.yml --repo $REPO_SLUG"

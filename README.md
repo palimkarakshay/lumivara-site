@@ -166,7 +166,7 @@ From your desk:
 gh issue create --title "Short description" --body "Full details"
 ```
 
-From your phone: sign in to `/admin` (Auth.js v5 magic link / Google / Entra) and use the capture form. Email and SMS lanes route through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./docs/ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./docs/N8N_SETUP.md). The previous HTTP Shortcuts / phone-PAT path is **deprecated** — see [PHONE_SETUP.md](./PHONE_SETUP.md) for the deprecation notice.
+From your phone: sign in to `/admin` (Auth.js v5 magic link / Google / Entra) and use the capture form. Email and SMS lanes route through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./docs/ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./docs/N8N_SETUP.md). The previous HTTP Shortcuts / phone-PAT path is **deprecated** — see [`docs/_deprecated/PHONE_SETUP.md`](./docs/_deprecated/PHONE_SETUP.md) for the historical deprecation notice.
 
 ### Lifecycle
 
@@ -205,7 +205,7 @@ git push
 ## 7. Mobile capture
 
 > ⚠️ **Deprecated-doc policy.** The previous phone-PAT + HTTP Shortcuts /
-> Apple Shortcuts mechanism in [`PHONE_SETUP.md`](./PHONE_SETUP.md) is
+> Apple Shortcuts mechanism in [`docs/_deprecated/PHONE_SETUP.md`](./docs/_deprecated/PHONE_SETUP.md) is
 > retained as a deprecation notice only — **do not follow its setup
 > steps**. Canonical replacements:
 >

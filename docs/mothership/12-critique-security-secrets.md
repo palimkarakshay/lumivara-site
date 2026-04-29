@@ -10,6 +10,8 @@ The security posture in `03-secure-architecture` gets the *concept* right (org-l
 
 ## §1 — 🔴 Critical: single-Owner GitHub topology has no break-glass
 
+> **Status (2026-04-29):** addressed in canonical docs. Break-glass topology lives at [`09 §1.5`](09-github-account-topology.md#15-break-glass-topology-single-owner-is-not-survivable); the second-Owner setup procedure at [`09 §2.5`](09-github-account-topology.md#25-adding-the-second-owner-break-glass-setup); the quarterly drill template at [`03b §3`](03b-security-operations-checklist.md#3--recovery-drill-template). The text below remains as the original critique that motivated those sections; do not tick the §8 checkboxes here — the rotation logbook is the source of truth, and the operator-side ceremony (inviting the second Owner, sealing the envelope) is tracked separately under the `16 §7` issues.
+
 `09 §1` makes `palimkarakshay` the only Owner of the org. If that account is compromised (phishing, lost MFA recovery codes, hospitalisation), every client repo, every org-level secret, and every workflow is gone. There is no second Owner, no "successor protocol" wired into GitHub itself, and the operator vault (today: `pass` + YubiKey) does not include a GitHub recovery path.
 
 ### Fix
@@ -29,6 +31,8 @@ The cost is one extra free GitHub identity and one envelope. The blast radius wi
 ---
 
 ## §2 — 🟠 High: `AUTH_RESEND_KEY` shared across every client breaks the cost firewall
+
+> **Status (2026-04-29):** addressed in canonical docs. The `AUTH_RESEND_KEY` row in [`03 §3`](03-secure-architecture.md#3-secret-topology) now reads "client Vercel env (per-client; one Resend API key per client, scoped to `sending_access` on the operator's verified domain)". The CLI integration in `02 §3` step 6 + the per-client validation in [`03b §1`](03b-security-operations-checklist.md#1--monthly-checklist-first-monday-of-the-month) row 2 close the operational side. The historical critique below remains for the audit trail.
 
 `03 §3` says:
 
@@ -68,6 +72,8 @@ The same logic applies to:
 
 ## §3 — 🟠 High: HMAC secret rotation is documented but not automated
 
+> **Status (2026-04-29):** the doc-side fix is canonical at [`03 §3.Y`](03-secure-architecture.md#3y-two-phase-rotation-pattern-for-hmac-style-secrets) (two-phase prepare/commit/cleanup pattern, applied to `N8N_HMAC_SECRET` and any future HMAC-signed webhook). The CLI implementation (`forge rotate-hmac --client <slug>`) remains future work in `05 §P5.4f`. The critique below is the source the §3.Y pattern was lifted from.
+
 `02 §5` defines the per-client `N8N_HMAC_SECRET` and says:
 
 > Rotation: every 12 months, re-run `cli/rotate-hmac.ts`.
@@ -105,6 +111,8 @@ This is the standard zero-downtime secret rotation pattern. Without it, the oper
 
 ## §4 — 🟡 Medium: VENDOR_GITHUB_PAT 90-day expiry is a silent fail
 
+> **Status (2026-04-29):** addressed. The canonical vendor identity is now the GitHub App, documented at [`03 §3.X`](03-secure-architecture.md#3x-github-app-identity-model-canonical-vendor-auth) and operationalised in [`09 §2`](09-github-account-topology.md#2-setup-order-do-this-once-before-any-client-2-work) step 5 + the deprecated-fallback callout. The PAT survives only as the named n8n exception in `03 §3`, scheduled for retirement in the issue tracked under `16 §7`. The "90-day silent fail" failure mode is explicitly the anti-pattern detected in [`03b §5`](03b-security-operations-checklist.md#5--anti-pattern-detection-doc-side-policy).
+
 `03 §3`: PAT rotation = "90 days; calendar reminder."
 
 What happens on day 91 if the operator missed the reminder? Every workflow on every client repo that uses `VENDOR_GITHUB_PAT` returns 401 from the GitHub API. The autopilot stops. No alert fires unless `mothership-smoke.yml` happens to be the first thing to run after expiry.
@@ -120,6 +128,8 @@ GitHub App is the strict upgrade — recommend it.
 ---
 
 ## §5 — 🟡 Medium: secret discovery is by-eye
+
+> **Status (2026-04-29):** partially addressed. The doc-side anti-pattern table at [`03b §5`](03b-security-operations-checklist.md#5--anti-pattern-detection-doc-side-policy) defines exactly which strings + contexts trigger review; it is the spec a future doc-lint script encodes. Implementation of the CI script is **deferred** — `scripts/` and `.github/workflows/` are hard-excluded from the issue that landed `03b`, so the lint pass is its own follow-up. The §1 monthly + §2 quarterly cadences in `03b` cover the operator-eye side until the CI lands.
 
 `03 §7`'s "client zone file checklist" is a manual checklist. Real secret-leak detection wants automated tooling:
 

@@ -4,7 +4,7 @@ The backlog lives in GitHub Issues, grouped in a Project v2 board called **Lumiv
 
 ## Source of truth
 
-- **Capture**: new items → `gh issue create` (from desk) or HTTP Shortcuts → `POST /repos/.../issues` (from phone). See [PHONE_SETUP.md](../PHONE_SETUP.md).
+- **Capture**: new items → `gh issue create` (from desk) or the `/admin` portal capture form (from phone), with email + SMS fallbacks through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./N8N_SETUP.md). The previous phone-PAT / HTTP Shortcuts path is **deprecated**; the deprecation notice and v1→v2 migration matrix live at [`PHONE_SETUP.md`](../PHONE_SETUP.md) and [`docs/TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) §1.4.
 - **Triage**: `.github/workflows/triage.yml` runs daily at 06:00 UTC. It classifies new issues (priority, complexity, area) using the rubric in [`scripts/triage-prompt.md`](../scripts/triage-prompt.md), adds labels, comments with rationale, moves the issue into the right Project column.
 - **Execute**: `.github/workflows/execute.yml` runs every 8 hours. It picks the top-ranked `auto-routine` open issue, implements it on a branch `auto/issue-<n>`, opens a PR. Never merges. See [`scripts/execute-prompt.md`](../scripts/execute-prompt.md).
 - **Ship**: you review the PR on phone via GitHub Mobile, merge when happy. Merge closes the referenced issue.
@@ -52,7 +52,7 @@ Bad example (bot will flag `needs-clarification`):
 
 > **Title:** Make the hero better
 
-For phone capture, prefix the title with `[P1]` / `[P2]` / `[P3]` if you already know the urgency — triage respects hints from the title. Otherwise the bot picks.
+When capturing from the `/admin` portal, prefix the title with `[P1]` / `[P2]` / `[P3]` if you already know the urgency — triage respects hints from the title. Otherwise the bot picks.
 
 ## Reverting a change
 
@@ -66,9 +66,11 @@ git push
 
 If you want to abandon an issue mid-flight, close it (or add `human-only`) — the bot checks status labels on every run and won't re-pick a closed one.
 
-## Manual triggers (from your desk or phone)
+## Manual triggers (from your desk)
 
-Any of these can be fired via the Actions tab, `gh workflow run`, or an HTTP Shortcuts request to `POST /repos/.../actions/workflows/<name>.yml/dispatches`:
+Any of these can be fired via the Actions tab or `gh workflow run`. (The
+phone-side HTTP Shortcuts trigger described in v1 is deprecated — see
+[`PHONE_SETUP.md`](../PHONE_SETUP.md) and [`docs/TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) §1.4.)
 
 | Workflow | When you'd manually run it |
 |----------|-----------------------------|

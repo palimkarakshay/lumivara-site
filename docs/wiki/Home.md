@@ -3,6 +3,17 @@
 <!-- legacy redirect: title was "Lumivara Site Wiki"; old [[Home]] links resolve here. -->
 > **Legacy redirect note.** This page used to be titled *Lumivara Site Wiki* and assumed the repository was a single-purpose Next.js site. It is now a **dual-lane wiki** — the same source serves the operator's mothership and the per-client repos that ship the autopilot's product. Old `[[Home]]` links keep resolving to this file; the table-of-contents below replaces the previous "Quick links" table for one cycle.
 
+> ⚠️ **Deprecated-doc policy.** Mobile capture via the operator's phone-PAT
+> + HTTP Shortcuts / Apple Shortcuts is **deprecated**. The canonical
+> capture path is the `/admin` portal plus n8n-routed email + SMS
+> fallbacks. Do not follow the setup steps formerly in `PHONE_SETUP.md` —
+> that file is retained as a deprecation notice only. Canonical reading:
+> [`docs/N8N_SETUP.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/N8N_SETUP.md),
+> [`docs/ADMIN_PORTAL_PLAN.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/ADMIN_PORTAL_PLAN.md),
+> and the v1→v2 migration matrix in
+> [`docs/TEMPLATE_REBUILD_PROMPT.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/TEMPLATE_REBUILD_PROMPT.md) §1.4.
+
+## Quick links
 This wiki documents two related but distinct codebases:
 
 - **🛠 Operator lane (Forge mothership)** — the operator's autopilot: triage → plan → execute → review → auto-merge, n8n workflows, the multi-AI router, the dashboard, the engagement playbooks. Lives in `palimkarakshay/{{BRAND_SLUG}}-mothership` (private) and on the `operator/main` overlay branch of every client repo.

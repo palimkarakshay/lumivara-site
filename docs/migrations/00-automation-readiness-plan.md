@@ -150,6 +150,12 @@ trustworthy enough to go drive the migration in Phases 2–5.
 **Estimated wall-clock:** ~2 weeks of bot cron runs + ~3 hours of
 operator review per week.
 
+> **Sequencing companion.** This section gives the *exit criterion*;
+> [`docs/migrations/01-poc-perfection-plan.md`](./01-poc-perfection-plan.md)
+> gives the **dated, day-by-day** plan to satisfy it. Read this section
+> for "what counts as Phase 1 done"; read `01-…` for "what to do on
+> 2026-05-04."
+
 ### §3.1 — Exit criterion (the only thing that matters)
 
 ```

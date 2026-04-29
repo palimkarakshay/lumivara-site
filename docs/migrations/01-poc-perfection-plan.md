@@ -101,7 +101,63 @@ existing and so will be tested in their own runbooks.
 
 ## §2 — Gap inventory (what's between today and the gate)
 
-(filled in subsequent commit)
+Each row names a concrete deliverable, the file/workflow that owns it,
+the gate row in §1 it unblocks, and the owner. **Bot** = an
+auto-routine issue executed via the existing pipeline; **operator** =
+a manual UI click or vault edit.
+
+### §2.1 — Tracking + kanban hygiene
+
+| #   | Gap                                                                                                                                                                                                | Owner    | Unblocks | Cite                                                                       |
+|-----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|----------------------------------------------------------------------------|
+| G1  | The "Phase 1 green streak — counter at 0/10" tracking issue does not yet exist (pinned, label `meta/automation-readiness`, body holds the live tally).                                             | Operator | 1.1, 1.4 | `00 §3.2`                                                                  |
+| G2  | The seven seed issues from `00 §3.3` are not yet filed; without them the streak cannot exercise every cron path.                                                                                   | Operator | 1.2      | `00 §3.3`                                                                  |
+| G3  | A small handful of pre-Pattern-C issues are still open without `priority/` × `complexity/` × `area/` triples (see the open-issue scan in §2.4 below); they need to be normalised or `status/post-migration`-closed before counting starts. | Operator+bot | 1.4 | `00 §3.2` |
+
+### §2.2 — Production-integrity wiring
+
+| #   | Gap                                                                                                                                                                                                                                | Owner    | Unblocks | Cite                                            |
+|-----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|-------------------------------------------------|
+| G4  | Vercel env vars (`VERCEL_API_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_TEAM_ID`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `N8N_DEPLOY_WEBHOOK_URL`, `N8N_HMAC_SECRET`) present in **all three** environments (Production, Preview, Development).                                 | Operator | 2.1      | `production-integrity.md §9` row 1              |
+| G5  | Vercel webhook for `deployment.succeeded` and `deployment.error` pointing at `${N8N_BASE_URL}/webhook/vercel-deploy-status`.                                                                                                       | Operator | 2.1      | `production-integrity.md §9` row 2              |
+| G6  | GitHub Actions repo secrets (`VERCEL_API_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_TEAM_ID`) so `deploy-drift-watcher.yml` can call the Vercel API.                                                                                      | Operator | 2.1, 2.3 | `production-integrity.md §9` row 3              |
+| G7  | First-time backfill promote — click **Promote tip of main** on `/admin/deployments`. Until this fires, drift starts in the double digits and the watcher will keep opening P1 issues.                                              | Operator | 2.2      | `production-integrity.md §6` 22-row inventory   |
+| G8  | Capture evidence of `would_overwrite_newer` rejection — fire the deploy hook against an old SHA via the per-issue `confirmDeploy` flow and screenshot/log the refusal. Attach to the streak tracking issue.                        | Bot      | 2.4      | `production-integrity.md §3` condition 2        |
+| G9  | Capture evidence of an end-to-end drift→triage→execute auto-promote during the streak. Drift watcher opens issue → triage classifies → execute promotes → drift returns to zero. One occurrence is enough.                          | Bot      | 2.5      | `production-integrity.md §5`                    |
+
+### §2.3 — Pattern C readiness
+
+| #    | Gap                                                                                                                                                                                                                                                | Owner    | Unblocks | Cite                                                  |
+|------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|-------------------------------------------------------|
+| G10  | `docs/migrations/_artifact-allow-deny.md` exists; confirm it is current vs. the actual `docs/`/`scripts/`/`n8n-workflows/`/`dashboard/` shape on `main` so the spinout's selective-copy table is unambiguous.                                      | Bot      | 3.1      | `pattern-c-enforcement-checklist §4` row 1            |
+| G11  | Run the high-entropy grep weekly and on every secret rotation (`git grep -E '[A-Za-z0-9+/=]{32,}' main`). Today this is implicit; the streak counter explicitly checks it after each merge.                                                        | Bot      | 3.2      | `pattern-c-enforcement-checklist §2` C-MUST-3         |
+| G12  | `.claudeignore` byte-for-byte parity with `03-secure-architecture.md §2.3`. Verify in CI as part of the streak (single grep is enough; promote to a script in Phase 3).                                                                            | Bot      | 3.3      | `pattern-c-enforcement-checklist §2` C-MUST-5         |
+| G13  | Invoice / handover-pack templates: confirm no third-party vendor names. This is **non-gating** today (no client invoices yet) but flagged so it isn't skipped during Client #1 spinout pre-flight.                                                  | Bot      | 3.4      | `pattern-c-enforcement-checklist §3` C-MUST-NOT-3     |
+
+### §2.4 — Existing-automation surface inventory
+
+For grounding only — the items below already exist in `main` and must
+not regress during the streak. Listing them so a regression in any one
+**resets the streak counter**.
+
+| Surface                    | Path                                                                                       | Last confirmed live |
+|----------------------------|--------------------------------------------------------------------------------------------|----------------------|
+| Triage cron                | `.github/workflows/triage.yml` + `scripts/triage-prompt.md`                                | (operator to fill)   |
+| Execute (routine)          | `.github/workflows/execute.yml` + `scripts/execute-prompt.md`                              | (operator to fill)   |
+| Execute (complex / single) | `execute-complex.yml`, `execute-single.yml`, `execute-multi.yml`, `execute-fallback.yml`   | (operator to fill)   |
+| Forge lane                 | `forge-execute.yml`, `forge-triage.yml`, `forge-smoke-test.yml` + `scripts/forge-*.md`     | (operator to fill)   |
+| Codex review               | `codex-review.yml`, `codex-pr-fix.yml`, `codex-review-recheck.yml`, `codex-review-backlog.yml` + `scripts/codex-*.py` | (operator to fill) |
+| Deep research              | `deep-research.yml` + `scripts/gemini-triage.py`                                           | (operator to fill)   |
+| Auto-merge                 | `auto-merge.yml`                                                                           | (operator to fill)   |
+| Plan issues                | `plan-issues.yml` + `scripts/plan-issue.py`                                                | (operator to fill)   |
+| Bot-usage monitor          | `bot-usage-monitor.yml` + `scripts/bot-usage-report.py`                                    | (operator to fill)   |
+| Project sync               | `project-sync.yml`                                                                         | (operator to fill)   |
+| Dashboard deploy           | `deploy-dashboard.yml`                                                                     | (operator to fill)   |
+| AI smoke test              | `ai-smoke-test.yml`                                                                        | (operator to fill)   |
+| Setup CLI                  | `setup-cli.yml`                                                                            | (operator to fill)   |
+| Drift watcher              | `deploy-drift-watcher.yml` + `scripts/lib/inventory_backfill.py`                           | (operator to fill)   |
+
+§3 below converts the gaps into a dated worklist.
 
 ## §3 — Dated 14-day plan
 

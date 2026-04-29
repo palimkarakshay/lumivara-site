@@ -1,0 +1,241 @@
+# .pattern-c.yml — Pattern C migration manifest (canonical, machine-readable)
+#
+# This file is the single source of truth for which path goes where when the
+# P5.6 spinout splits this single repo into the two-repo Pattern C topology
+# defined in docs/mothership/02b-pattern-c-architecture.md.
+#
+# Every tracked file in this repo MUST be covered by exactly one entry below
+# (most precise prefix wins). The validation that enforces "every tracked
+# file is classified" lives in scripts/pattern-c-audit.sh §6.
+#
+# Read by:
+#   - scripts/forge-spinout-dry-run.sh — simulates the spinout and prints
+#     a per-lane file count + any uncovered files (the dry-run gate).
+#   - scripts/pattern-c-audit.sh §6 — fails the audit if a tracked file
+#     is uncovered or if a contamination row matches a real path.
+#
+# Lanes:
+#   site         Copies to <slug>-site repo at spinout. The Next.js app + admin
+#                portal client surface; everything the client owns post-handover.
+#   pipeline     Copies to <slug>-pipeline repo at spinout (operator-only). The
+#                autopilot, runbooks, decks, storefront pack — never visible to
+#                the client.
+#   both         Copies to BOTH repos. May carry a `transform` declaring how
+#                the file is reduced for each side (e.g., README strips the
+#                pipeline-only section before landing in the site repo).
+#   drop         Stays in this repo's history only; not copied at spinout.
+#                Build artefacts, local CLI state.
+#   contamination  Tracks Pattern C violations the operator hasn't decided how
+#                  to fix yet. Audit prints them but doesn't fail; they DO NOT
+#                  imply a lane assignment.
+#
+# Path conventions:
+#   - Trailing slash means "directory" (every file under it is covered).
+#   - Most-specific (longest) prefix wins.
+#   - Use the path AS IT APPEARS in `git ls-files` output (forward slashes,
+#     no leading dot-slash).
+
+version: 1
+locked: 2026-04-29
+canonical-architecture: docs/mothership/02b-pattern-c-architecture.md
+enforcement: docs/mothership/pattern-c-enforcement-checklist.md
+
+lanes:
+
+  # ============================================================
+  # SITE — Client #1 marketing site (Lumivara People Advisory)
+  # Becomes palimkarakshay/lumivara-people-advisory-site
+  # ============================================================
+  site:
+    - 404.html
+    - index.html
+    - assets/
+    - e2e/
+    - mdx-components.tsx
+    - next.config.ts
+    - next-env.d.ts
+    - public/
+    - src/
+    - vercel.json
+    - components.json
+    - postcss.config.mjs
+    - eslint.config.mjs
+    - playwright.config.ts
+    - vitest.config.ts
+
+  # ============================================================
+  # PIPELINE — Operator framework (Lumivara Forge)
+  # Becomes palimkarakshay/lumivara-forge-pipeline (operator-private)
+  # ============================================================
+  pipeline:
+    - .github/workflows/
+    - .github/ISSUE_TEMPLATE/
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - .github/SECURITY.md
+    - .claude/
+    - .pattern-c.yml
+    - dashboard/
+    - scripts/
+    - docs/mothership/
+    - docs/storefront/
+    - docs/decks/
+    - docs/research/
+    - docs/migrations/
+    - docs/n8n-workflows/
+    - docs/_deprecated/
+    - docs/wiki/
+    - docs/AI_CONSISTENCY.md
+    - docs/AI_ROUTING.md
+    - docs/GEMINI_TASKS.md
+    - docs/MONITORING.md
+    - docs/N8N_SETUP.md
+    - docs/OPERATOR_SETUP.md
+    - docs/TEMPLATE_REBUILD_PROMPT.md
+
+  # ============================================================
+  # BOTH — Cross-cutting hygiene; copies to both repos with optional transform
+  # ============================================================
+  both:
+    - path: README.md
+      transform: site-strips-pipeline-section
+      note: "README's `Two entities, one repo` section is pipeline-only history once the repos are split."
+
+    - path: CHANGELOG.md
+      note: "Both repos start a fresh changelog at spinout but inherit this one's history as `[Pre-spinout]` block."
+
+    - path: CONTRIBUTING.md
+      transform: site-strips-pipeline-section
+      note: "The two-co-housed-entities section is pipeline-only history once split."
+
+    - path: AGENTS.md
+      transform: pipeline-only-after-spinout
+      note: "Site repo doesn't host an AI-agent runtime charter once handed to the client."
+
+    - path: CODE_OF_CONDUCT.md
+      note: "Community standard; both repos carry the same Contributor Covenant + Pattern C addendum."
+
+    - path: LICENSE
+      transform: site-strips-pipeline-section
+      note: "Site repo gets a per-client `Proprietary — <Client Name>` LICENSE assigned at handover (per 21 §3.3); pipeline repo retains the operator's All-Rights-Reserved interim notice forever."
+
+    - path: CLAUDE.md
+      transform: pipeline-only-after-spinout
+      note: "Companion to AGENTS.md; same fate."
+
+    - path: .claudeignore
+      transform: pipeline-only-after-spinout
+      note: "Site repo has no Claude pipeline running on its main."
+
+    - path: docs/00-INDEX.md
+      transform: site-strips-pipeline-rows
+      note: "The site copy keeps only Site + Both rows; the pipeline copy keeps everything."
+
+    - path: docs/ADMIN_PORTAL_PLAN.md
+      note: "Admin portal lives on Site, but the implementation playbook is operator-authored. Both copies appropriate."
+
+    - path: docs/BACKLOG.md
+      transform: site-strips-pipeline-rows
+      note: "Site repo's backlog tracks site-relevant issues only post-spinout."
+
+    - path: docs/ops/
+      kind: directory
+      transform: pipeline-only-after-spinout
+      note: "Operator ops docs (audit runbook, platform baseline, variable registry, operator playbook, progress tracker, GitHub Project layout, codex-fix fixtures, gemini deep audit) are operator-only at spinout."
+
+    - path: docs/deploy/
+      kind: directory
+      note: "Production-integrity notes touch the site repo's deploy; relevant to both sides at spinout."
+
+    - path: package.json
+      transform: site-strips-pipeline-scripts
+      note: "Reserved: when pipeline-only npm scripts arrive, the site copy strips them."
+
+    - path: package-lock.json
+    - path: tsconfig.json
+    - path: tsconfig.tsbuildinfo
+    - path: .gitignore
+    - path: .prettierrc
+
+    - path: .env.local.example
+      transform: site-strips-pipeline-vars
+      note: "Reserved: pipeline-only env vars (e.g., dashboard build) are stripped from the site copy."
+
+  # ============================================================
+  # DROP — Not copied to either spinout target (history only)
+  # ============================================================
+  drop:
+    # No tracked entries today; .next/ and .vercel/ are .gitignore'd.
+
+# ============================================================
+# CONTAMINATION — known Pattern C violations awaiting operator decision
+# Listed here so pattern-c-audit.sh §2 keeps them visible at every audit run.
+# A path being listed here does NOT classify its lane; the audit treats it
+# as "no lane yet — operator decides."
+# ============================================================
+contamination:
+  - path: src/app/lumivara-infotech/
+    rule: "Operator pitch on Site repo per Pattern C 02b §6 / C-MUST-1; needs operator decision (delete / rename to /forge / move to a separate operator-brand Vercel project)."
+    tracking: "PR #200 description; pattern-c-audit.sh §2."
+
+  - path: src/content/lumivara-infotech.ts
+    rule: "Content backing src/app/lumivara-infotech/. Same fate as the route."
+    tracking: "PR #200 description."
+
+# ============================================================
+# TRANSFORMS — named reductions applied at spinout time
+# Each transform names how a `both`-lane file is reduced for one side.
+# The forge-spinout script uses these to render the per-side copy.
+# ============================================================
+transforms:
+
+  site-strips-pipeline-section:
+    description: |
+      Strip the section between
+        <!-- BEGIN:pipeline-only -->
+        ...
+        <!-- END:pipeline-only -->
+      markers when the file copies into the site repo. Pipeline copy keeps
+      everything verbatim. Used when a doc is mostly-shared but has a
+      pipeline-history paragraph (e.g., the "Two entities, one repo" block
+      in README and CONTRIBUTING).
+    applies-to:
+      - README.md
+      - CONTRIBUTING.md
+
+  site-strips-pipeline-rows:
+    description: |
+      In a markdown table-of-contents file, drop the rows whose lane is
+      `pipeline` (and whose lane is `both` only when the row points to a
+      pipeline-only target). Used for docs/00-INDEX.md and docs/BACKLOG.md
+      so the site repo's index lists only site-relevant rows.
+    applies-to:
+      - docs/00-INDEX.md
+      - docs/BACKLOG.md
+
+  pipeline-only-after-spinout:
+    description: |
+      Do not copy this file to the site repo. The pipeline repo gets it
+      verbatim. Used for AGENTS.md, CLAUDE.md, .claudeignore, and the
+      docs/ops/ directory — the site repo doesn't run agents or operator
+      ops post-handover.
+    applies-to:
+      - AGENTS.md
+      - CLAUDE.md
+      - .claudeignore
+      - docs/ops/
+
+  site-strips-pipeline-scripts:
+    description: |
+      In package.json, drop scripts that only the pipeline uses (none
+      today; reserved for future pipeline-only npm scripts like
+      `gen:dashboard` or `audit:pipeline`). The script names that count as
+      pipeline-only are listed in the spinout script.
+    applies-to:
+      - package.json
+
+  site-strips-pipeline-vars:
+    description: |
+      In .env.local.example, drop variables only used by pipeline workflows
+      (none today; reserved for future pipeline-only vars).
+    applies-to:
+      - .env.local.example

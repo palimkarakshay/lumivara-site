@@ -64,8 +64,10 @@ print_section "§1 — Stale brand: 'Lumivara Infotech' should be 'Lumivara Forg
 mapfile -t INFOTECH_HITS < <(
   git grep -nIE 'Lumivara[ -]Infotech' \
     -- ':!scripts/pattern-c-audit.sh' \
-       ':!docs/freelance/04-slide-deck.pdf' \
-       ':!docs/freelance/04-slide-deck.html' \
+       ':!.github/workflows/pattern-c-watcher.yml' \
+       ':!CHANGELOG.md' \
+       ':!docs/storefront/04-slide-deck.pdf' \
+       ':!docs/storefront/04-slide-deck.html' \
     2>/dev/null
 )
 if [ "${#INFOTECH_HITS[@]}" -eq 0 ]; then
@@ -78,9 +80,10 @@ else
     # Safe scope: markdown and TypeScript files; exclude file paths and URL slugs.
     git grep -lIE 'Lumivara[ -]Infotech' \
       -- '*.md' '*.ts' '*.tsx' \
-         ':!docs/freelance/04-slide-deck.pdf' \
-         ':!docs/freelance/04-slide-deck.html' \
+         ':!docs/storefront/04-slide-deck.pdf' \
+         ':!docs/storefront/04-slide-deck.html' \
          ':!scripts/pattern-c-audit.sh' \
+         ':!CHANGELOG.md' \
       | while read -r f; do
           # Replace display strings only; keep URL slugs and filenames intact.
           sed -i 's/Lumivara Infotech/Lumivara Forge/g' "$f"
@@ -215,6 +218,23 @@ else
   printf '    > Rename one of each sibling pair per `15b §3` (e.g. `18b-`, `21b-`)\n'
   printf '      and update cross-links. The `09b-lumivara-forge-setup-plan.md` rename\n'
   printf '      shipped on 2026-04-29 is the worked example.\n'
+fi
+
+# ----- §6 — Manifest coverage: every tracked file lane-classified -----
+print_section "§6 — Manifest coverage (every tracked file classified by .pattern-c.yml)"
+DRY_RUN="${ROOT}/scripts/forge-spinout-dry-run.sh"
+if [ ! -x "$DRY_RUN" ]; then
+  print_fail "scripts/forge-spinout-dry-run.sh missing or not executable."
+else
+  mapfile -t UNCOVERED < <(bash "$DRY_RUN" --uncovered 2>/dev/null | grep -v '^$')
+  if [ "${#UNCOVERED[@]}" -eq 0 ]; then
+    print_pass "all tracked files have a lane assignment in .pattern-c.yml."
+  else
+    print_fail "${#UNCOVERED[@]} tracked file(s) lack a lane assignment in .pattern-c.yml:"
+    printf '      %s\n' "${UNCOVERED[@]}"
+    printf '    > Add each to .pattern-c.yml `lanes:` (or `drop:`) so the spinout\n'
+    printf '      knows which side of the Pattern C split they go on.\n'
+  fi
 fi
 
 printf '\n'

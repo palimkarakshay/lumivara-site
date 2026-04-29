@@ -1,6 +1,6 @@
 # Development Setup ⚪
 
-> **Lane:** ⚪ Both. The "Both lanes" sections below apply equally on the mothership and on every per-client repo. The "🛠 Operator-only setup" section applies only on the mothership. See [[_partials/lane-key]] for the badge legend.
+> **Lane:** ⚪ Both. The "Both lanes" sections below apply equally on the platform repo and on every per-client `<slug>-site` / `<slug>-pipeline` repo. The "🛠 Operator-only setup" section applies only on operator-owned repos. See [[_partials/lane-key]] for the badge legend.
 
 ## Prerequisites
 
@@ -59,15 +59,16 @@ docs/            # Project documentation
 CONTRIBUTING.md
 ```
 
-> A clean per-client repo has nothing under `scripts/` or `.github/workflows/` on `main` — that machinery lives on the operator's overlay branch (`operator/main`) and is invisible to the client. See `docs/mothership/02-architecture.md §1`.
+> A clean per-client `<slug>-site` repo has nothing under `scripts/` or `.github/workflows/` on `main` — under [Pattern C](../mothership/02b-pattern-c-architecture.md) that machinery lives in the matched `<slug>-pipeline` repo (operator-private; client has no Read access). The site repo is autopilot-free for the entire engagement, not just at handover.
 
 ## 🛠 Operator-only setup
 
-> <!-- do-not-copy:v1 -->
+<!-- do-not-copy:v1 -->
 > **🛠 Do not copy to client repos.** This section describes operator-side machinery that
-> lives on the mothership repo or on the `operator/main` overlay branch of a client
-> repo. A client cloning their `main` will never see this content. If you are the
-> operator scaffolding a new client repo, **omit this section from the per-client wiki**.
+> lives in the platform repo or in a per-client pipeline repo (`<brand-slug>/<client-slug>-pipeline`).
+> Under [Pattern C (locked 2026-04-28)](../mothership/02b-pattern-c-architecture.md), a client cloning
+> their `<client-slug>-site` repo cannot reach the pipeline repo at all. If you are the operator
+> scaffolding a new client repo, **omit this section from the per-client wiki**.
 
 The setup in this section is what the *operator* runs to drive the autopilot. None of it ships in a client's `main`.
 
@@ -78,7 +79,7 @@ npm install -g @anthropic-ai/claude-code
 claude login    # OAuth flow against the operator's Max 20x subscription
 ```
 
-The OAuth token is later mirrored into the **mothership** repo's secret `CLAUDE_CODE_OAUTH_TOKEN`. Per-client repos never receive this secret directly — the workflows that consume it run on `operator/main`.
+The OAuth token is stored as an **org-level GitHub Actions secret** (`CLAUDE_CODE_OAUTH_TOKEN`) on the operator's GitHub org with `Repository access: Selected` enumerating each `<slug>-pipeline` repo. The site repos never receive this secret directly — the workflows that consume it run in the matched pipeline repo (per [`docs/mothership/02b-pattern-c-architecture.md §3`](../mothership/02b-pattern-c-architecture.md)).
 
 ### n8n locally
 
@@ -86,7 +87,7 @@ Follow `docs/N8N_SETUP.md`. The local n8n instance is what wires the multi-AI ro
 
 ### Operator dashboard
 
-The dashboard build (operator-only UI for triage queue, run health, cost telemetry) lives in `dashboard/` on the mothership repo. See `docs/ADMIN_PORTAL_PLAN.md` and `docs/MONITORING.md`.
+The dashboard build (operator-only UI for triage queue, run health, cost telemetry) lives in `dashboard/` and ships with the platform repo post-spinout (operator-private). It is **not** the same surface as the per-client `/admin` portal in `src/app/admin/` — that portal is the client-facing capture surface and lives in the site repo. See [`docs/ADMIN_PORTAL_PLAN.md`](../ADMIN_PORTAL_PLAN.md) for the admin portal and [`docs/MONITORING.md`](../MONITORING.md) for the operator dashboard.
 
 ### Per-engagement runbook
 

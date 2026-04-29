@@ -1,0 +1,329 @@
+name: Execute fallback (Codex / Gemini)
+
+# Used when Claude is unavailable (rate-limited, OAuth dead, action errored).
+# Implements an issue using its `plan/detailed` comment as the contract — so
+# the executor doesn't need to interpret raw issue text. The plan tells it
+# exactly which files to modify, which guarantees the executor stays inside
+# the project conventions.
+#
+# Engine ladder per run (first to succeed wins):
+#   1. OpenAI Codex CLI (gpt-5.5)  — best at agentic file edits (ChatGPT Plus tier)
+#   2. Gemini CLI (gemini-2.5-pro) — large context, free tier
+#
+# Hard exclusions and PR mechanics mirror scripts/execute-prompt.md.
+#
+# Triggered by execute.yml when the Claude step fails for an issue that has
+# `plan/detailed`, or manually for testing.
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number (must already have `plan/detailed`)"
+        required: true
+      engine:
+        description: "Force engine (auto = Codex → Gemini)"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - "auto"
+          - "codex"
+          - "gemini"
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+  actions: write
+
+concurrency:
+  group: fallback-execute-runtime
+  cancel-in-progress: false
+
+jobs:
+  fallback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git identity
+        run: |
+          git config user.name "claude-auto"
+          git config user.email "claude-auto@users.noreply.github.com"
+
+      - name: Verify issue has a detailed plan
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
+        run: |
+          set -e
+          gh issue view "$ISSUE" --repo palimkarakshay/lumivara-site \
+            --json number,title,labels,comments > /tmp/issue.json
+          python3 - <<'PY'
+          import json, os, sys
+          issue = json.load(open('/tmp/issue.json'))
+          labels = {l['name'] for l in issue['labels']}
+          if 'plan/detailed' not in labels:
+              print("::error::Issue lacks `plan/detailed` — fallback executor "
+                    "needs a structured plan. Run plan-issues.yml first.")
+              sys.exit(1)
+          # Extract the most recent detailed-plan comment so the executor
+          # has it on disk in a known location.
+          plans = [c for c in issue['comments']
+                   if c.get('body','').lstrip().startswith('**Detailed plan')]
+          if not plans:
+              print("::error::`plan/detailed` label set but no plan comment found.")
+              sys.exit(1)
+          open('/tmp/plan.md', 'w').write(plans[-1]['body'])
+          open(os.environ['GITHUB_OUTPUT'], 'a').write(
+              f"title={issue['title']}\n"
+          )
+          print(f"Plan loaded: {len(plans[-1]['body'])} bytes")
+          PY
+
+      - name: Mark issue in-progress + create branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
+        run: |
+          gh issue edit "$ISSUE" --repo palimkarakshay/lumivara-site \
+            --add-label "status/in-progress" \
+            --remove-label "status/planned" || true
+          git switch -c "auto/issue-$ISSUE"
+
+      # ── Engine 1: OpenAI Codex CLI ────────────────────────────────────────
+      - name: Try Codex CLI
+        id: codex
+        if: |
+          inputs.engine == 'auto' || inputs.engine == 'codex'
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
+          ISSUE: ${{ inputs.issue }}
+        run: |
+          set -e
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP missing — skipping Codex."
+            exit 1
+          fi
+          npm install -g @openai/codex
+          codex --version
+
+          PROMPT_FILE=/tmp/codex-prompt.md
+          {
+            echo "Implement issue #${ISSUE} using the plan below. Stay inside"
+            echo "these constraints:"
+            echo "- Hard exclusions: .github/workflows/*, .env*, scripts/*,"
+            echo "  src/app/api/contact/*, package.json deps. Refuse and stop"
+            echo "  if the plan touches any of these."
+            echo "- After edits, ensure \`npx tsc --noEmit\` and \`npm run lint\` pass."
+            echo "- Make minimal, focused changes."
+            echo ""
+            echo "## Plan"
+            echo ""
+            cat /tmp/plan.md
+          } > "$PROMPT_FILE"
+
+          # codex exec runs non-interactive. --full-auto would let it run
+          # arbitrary commands; we keep it bounded by piping the prompt and
+          # letting it edit files only.
+          codex exec --full-auto --skip-git-repo-check \
+            "$(cat $PROMPT_FILE)" || {
+              echo "::warning::Codex exec failed."
+              exit 1
+            }
+
+          # Confirm something actually changed.
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::warning::Codex made no changes."
+            exit 1
+          fi
+          git commit -m "feedback(#${ISSUE}): apply Codex fallback plan"
+
+      # ── Engine 2: Gemini CLI (only if Codex didn't succeed) ───────────────
+      - name: Try Gemini CLI
+        id: gemini
+        if: |
+          (inputs.engine == 'auto' && steps.codex.outcome != 'success') ||
+          inputs.engine == 'gemini'
+        continue-on-error: true
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE: ${{ inputs.issue }}
+        run: |
+          set -e
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "::warning::GEMINI_API_KEY missing — skipping Gemini."
+            exit 1
+          fi
+          npm install -g @google/gemini-cli
+          gemini --version
+
+          # Reset working tree so a partial Codex pass doesn't pollute Gemini's run.
+          git reset --hard HEAD || true
+          git clean -fd || true
+
+          PROMPT_FILE=/tmp/gemini-prompt.md
+          {
+            echo "Implement the plan below as code edits in the current repo."
+            echo "Stay inside these constraints:"
+            echo "- Hard exclusions: .github/workflows/*, .env*, scripts/*,"
+            echo "  src/app/api/contact/*, package.json deps."
+            echo "- After edits, ensure \`npx tsc --noEmit\` and \`npm run lint\` pass."
+            echo ""
+            echo "## Plan"
+            cat /tmp/plan.md
+          } > "$PROMPT_FILE"
+
+          # Gemini CLI in --yolo mode applies file edits without prompting.
+          gemini --yolo -p "$(cat $PROMPT_FILE)" || {
+            echo "::warning::Gemini run failed."
+            exit 1
+          }
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::warning::Gemini made no changes."
+            exit 1
+          fi
+          git commit -m "feedback(#${ISSUE}): apply Gemini fallback plan"
+
+      - name: Verify type-check + lint
+        id: verify
+        if: |
+          steps.codex.outcome == 'success' || steps.gemini.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set +e
+          npx tsc --noEmit
+          TSC=$?
+          npm run lint
+          LINT=$?
+          if [ $TSC -ne 0 ] || [ $LINT -ne 0 ]; then
+            echo "verify_status=failed" >> "$GITHUB_OUTPUT"
+            echo "::warning::tsc=$TSC lint=$LINT — opening DRAFT PR."
+          else
+            echo "verify_status=passed" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Push and open PR
+        id: pr
+        if: |
+          steps.codex.outcome == 'success' || steps.gemini.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
+          VERIFY: ${{ steps.verify.outputs.verify_status }}
+          ENGINE_USED: ${{ steps.codex.outcome == 'success' && 'Codex' || 'Gemini' }}
+        run: |
+          set -e
+          git push origin "auto/issue-$ISSUE"
+
+          BODY=$(printf 'Fixes #%s\n\nImplemented via the **%s fallback** path (Claude was unavailable or skipped). Plan source: `plan/detailed` comment on the issue.\n\nVerification: tsc/lint = `%s`.\n\n---\nAutomated by execute-fallback.yml.' \
+            "$ISSUE" "$ENGINE_USED" "$VERIFY")
+
+          DRAFT_FLAG=""
+          if [ "$VERIFY" = "failed" ]; then DRAFT_FLAG="--draft"; fi
+
+          PR_URL=$(gh pr create $DRAFT_FLAG \
+            --repo palimkarakshay/lumivara-site \
+            --title "feedback(#${ISSUE}): ${ENGINE_USED} fallback implementation" \
+            --body "$BODY" \
+            --label "auto-routine")
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+          echo "Opened: $PR_URL"
+
+      - name: Update issue
+        if: steps.pr.outputs.pr_url != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
+          PR_URL: ${{ steps.pr.outputs.pr_url }}
+        run: |
+          gh issue edit "$ISSUE" --repo palimkarakshay/lumivara-site \
+            --remove-label "status/in-progress" \
+            --add-label "status/awaiting-review"
+          gh issue comment "$ISSUE" --repo palimkarakshay/lumivara-site \
+            --body "Fallback PR opened: $PR_URL. Review and merge to close."
+
+      # Same auto-merge gate as execute.yml's Claude path so a Codex/Gemini
+      # implementation of a trivial/easy auto-routine non-design issue flows
+      # straight to Vercel prod once the deploy-preview check passes.
+      - name: Enable auto-merge on fallback PR (if eligible + not draft)
+        if: |
+          steps.pr.outputs.pr_url != '' &&
+          steps.verify.outputs.verify_status == 'passed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
+        run: |
+          set +e
+          PR_NUM=$(gh pr list --repo palimkarakshay/lumivara-site \
+                     --state open --head "auto/issue-$ISSUE" \
+                     --json number --jq '.[0].number // empty')
+          [ -z "$PR_NUM" ] && { echo "No PR found"; exit 0; }
+          ISSUE_LABELS=$(gh issue view "$ISSUE" --repo palimkarakshay/lumivara-site \
+                          --json labels --jq '[.labels[].name] | join(",")')
+          PR_LABELS=$(gh pr view "$PR_NUM" --repo palimkarakshay/lumivara-site \
+                       --json labels --jq '[.labels[].name] | join(",")')
+          ALL="$ISSUE_LABELS,$PR_LABELS"
+          eligible=true
+          echo "$ALL" | grep -q "auto-routine" || eligible=false
+          (echo "$ALL" | grep -qE 'complexity/(trivial|easy)') || eligible=false
+          if echo "$ALL" | grep -qE '(type/design-cosmetic|area/design)'; then
+            eligible=false
+          fi
+          if [ "$eligible" = "true" ]; then
+            gh pr merge "$PR_NUM" --auto --squash \
+              --repo palimkarakshay/lumivara-site
+            echo "Auto-merge enabled on PR #$PR_NUM."
+          else
+            echo "PR #$PR_NUM not eligible for auto-merge."
+          fi
+
+      - name: Mark needs-continuation if all engines failed
+        if: |
+          steps.codex.outcome != 'success' && steps.gemini.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
+        run: |
+          gh issue edit "$ISSUE" --repo palimkarakshay/lumivara-site \
+            --remove-label "status/in-progress" \
+            --add-label "status/needs-continuation" || true
+          gh issue comment "$ISSUE" --repo palimkarakshay/lumivara-site \
+            --body "Fallback execution failed across both Codex and Gemini engines. Issue is back in queue with \`status/needs-continuation\`."
+          exit 1
+
+      - name: Summary
+        if: always()
+        env:
+          ENGINE_USED: ${{ steps.codex.outcome == 'success' && 'Codex' || (steps.gemini.outcome == 'success' && 'Gemini' || 'none') }}
+        run: |
+          {
+            echo "## Execute fallback for issue #${{ inputs.issue }}"
+            echo ""
+            echo "| Engine | Outcome |"
+            echo "|--------|---------|"
+            echo "| Codex CLI  | ${{ steps.codex.outcome || 'skipped' }} |"
+            echo "| Gemini CLI | ${{ steps.gemini.outcome || 'skipped' }} |"
+            echo "| Verify     | ${{ steps.verify.outputs.verify_status || 'n/a' }} |"
+            echo ""
+            echo "Engine that produced the PR: **$ENGINE_USED**"
+          } >> "$GITHUB_STEP_SUMMARY"

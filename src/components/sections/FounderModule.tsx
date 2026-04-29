@@ -1,30 +1,21 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { homeContent } from "@/content/home";
 import { siteConfig } from "@/lib/site-config";
 import { SectionShell } from "@/components/primitives/SectionShell";
 import { NumberedSection } from "@/components/primitives/NumberedSection";
+import { FounderPortrait } from "@/components/sections/FounderPortrait";
 
 export function FounderModule() {
   const { founder } = homeContent;
-  const [num, label] = founder.monoLabel.split(" / ");
   return (
     <SectionShell variant="canvas">
       <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-14">
         <div className="md:col-span-5">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-lg border border-border-subtle bg-parchment">
-            <Image
-              src="/images/founder-placeholder.svg"
-              alt="Portrait of Beas Banerjee — coming soon"
-              fill
-              sizes="(min-width: 768px) 40vw, 100vw"
-              className="object-cover"
-            />
-          </div>
+          <FounderPortrait />
         </div>
         <div className="md:col-span-7 md:pt-8">
-          <NumberedSection number={num} label={label} />
+          <NumberedSection number="—" label={founder.monoLabel} />
           <h2 className="text-display-md text-ink mt-5 mb-1">{founder.name}</h2>
           <p className="text-label text-muted-strong mb-8">{founder.subtitle}</p>
           <div className="flex flex-col gap-5 text-body text-ink-soft leading-relaxed">
@@ -61,6 +52,7 @@ export function FounderModule() {
               className="text-label text-muted-strong hover:text-ink transition-colors"
             >
               LinkedIn →
+              <span className="sr-only">(opens in new tab)</span>
             </a>
           </div>
         </div>

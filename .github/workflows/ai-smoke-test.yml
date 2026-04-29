@@ -48,23 +48,23 @@ jobs:
               sys.exit(1)
           PY
 
-      - name: Test OpenAI API (REST) — Codex/gpt-4o-mini
+      - name: Test OpenAI API (REST) — Codex/gpt-5.5
         id: openai
         if: always()
         continue-on-error: true
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
         run: |
           python3 - <<'PY'
           import json, os, sys, urllib.request, urllib.error
           key = os.environ.get("OPENAI_API_KEY","").strip()
           if not key:
-              print("::warning::OPENAI_API_KEY not set — OpenAI/Codex fallback unavailable")
+              print("::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP not set — OpenAI/Codex fallback unavailable")
               sys.exit(0)
           req = urllib.request.Request(
               "https://api.openai.com/v1/chat/completions",
               data=json.dumps({
-                  "model":"gpt-4o-mini",
+                  "model":"gpt-5.5",
                   "messages":[{"role":"user","content":"reply with the single word: pong"}],
                   "max_tokens":10
               }).encode(),
@@ -75,12 +75,12 @@ jobs:
               r = urllib.request.urlopen(req, timeout=20)
               text = json.loads(r.read())["choices"][0]["message"]["content"].strip()
               ok = "pong" in text.lower()
-              print(f"OpenAI gpt-4o-mini: {'OK' if ok else 'UNEXPECTED'} — response: {text[:80]}")
+              print(f"OpenAI gpt-5.5: {'OK' if ok else 'UNEXPECTED'} — response: {text[:80]}")
               sys.exit(0 if ok else 1)
           except urllib.error.HTTPError as e:
               body = e.read().decode()[:200]
               if e.code == 429:
-                  # Free tier / no credit is common — flag as warning, not error.
+                  # Quota / rate-limit is recoverable — flag as warning, not error.
                   # Gemini is the primary free fallback; OpenAI is a nice-to-have.
                   print(f"::warning::OpenAI quota/rate limit: {body}")
                   print("OpenAI key is valid but lacks quota. Codex fallback will not work until credits are added at platform.openai.com/settings/billing. Gemini remains the primary free fallback.")
@@ -108,23 +108,47 @@ jobs:
           fi
           echo "Claude OAuth token: present (length $(echo -n '${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}' | wc -c))"
 
+      - name: Checkout for routing smoke test
+        if: always()
+        uses: actions/checkout@v4
+
+      - name: Install external CLIs (Codex + Gemini)
+        id: clis
+        if: always()
+        continue-on-error: true
+        run: |
+          npm install -g @openai/codex @google/gemini-cli
+          codex --version
+          gemini --version
+
+      - name: Routing smoke test (10 sample issues, no model calls)
+        id: routing
+        if: always()
+        run: python3 scripts/test-routing.py
+
       - name: Summary
         if: always()
         run: |
           echo "### AI provider smoke test — $(date -u +%Y-%m-%d)" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Provider | Status | Role |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|----------|--------|------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Provider / check | Status | Role |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|------------------|--------|------|" >> "$GITHUB_STEP_SUMMARY"
           echo "| Gemini 2.5 Flash (REST) | ${{ steps.gemini.outcome }} | Primary free fallback for triage |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| OpenAI gpt-4o-mini (REST) | ${{ steps.openai.outcome }} | Optional Codex fallback (needs credits) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| OpenAI gpt-5.5 (REST) | ${{ steps.openai.outcome }} | Codex / second-opinion review (ChatGPT Plus tier) |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Claude Code OAuth token | ${{ steps.claude.outcome }} | Primary for triage + execute |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Codex + Gemini CLIs install | ${{ steps.clis.outcome }} | Required by deep-research.yml + codex-review.yml |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Routing rubric (10 sample issues) | ${{ steps.routing.outcome }} | Multi-model dispatch correctness |" >> "$GITHUB_STEP_SUMMARY"
 
-          # Only fail the job if Gemini OR Claude OAuth is broken.
-          # OpenAI is optional — a warning in the step is enough.
-          if [ "${{ steps.gemini.outcome }}" != "success" ] || [ "${{ steps.claude.outcome }}" != "success" ]; then
+          # Only fail the job if Gemini OR Claude OAuth OR routing is broken.
+          # OpenAI + CLI install are optional — warnings only.
+          fail=0
+          if [ "${{ steps.gemini.outcome }}" != "success" ]; then fail=1; fi
+          if [ "${{ steps.claude.outcome }}" != "success" ]; then fail=1; fi
+          if [ "${{ steps.routing.outcome }}" != "success" ]; then fail=1; fi
+          if [ "$fail" = "1" ]; then
             echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "❌ **Critical provider failed.** Gemini and Claude OAuth are required." >> "$GITHUB_STEP_SUMMARY"
+            echo "❌ **Critical check failed.** Gemini, Claude OAuth, and the routing rubric are all required." >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "✅ Primary providers healthy." >> "$GITHUB_STEP_SUMMARY"
+          echo "✅ Primary providers healthy and router routes 10/10 sample issues correctly." >> "$GITHUB_STEP_SUMMARY"

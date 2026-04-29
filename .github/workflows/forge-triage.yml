@@ -1,0 +1,151 @@
+name: Forge triage (high cadence)
+
+# High-cadence triage lane scoped to Lumivara Forge / Pattern C / mothership
+# work. Runs every 10 minutes (vs. the general triage's 15) so freshly-opened
+# Forge issues are ready for forge-execute on its next 30-min tick.
+#
+# This workflow does NOT replace `triage.yml` — it complements it. The general
+# triage owns everything else; this one only touches issues that match the
+# Forge heuristic in `scripts/forge-triage-prompt.md`.
+#
+# Quality-first phase: classification runs on Claude Opus. There is no
+# fallback ladder here — if Opus is down, the next 10-min run retries.
+# (The general triage.yml retains its full Claude → Gemini → Codex ladder
+# for the rest of the queue.)
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print plan only — do not modify any issue"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+  issues:
+    types: [opened, reopened, labeled]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: forge-triage-runtime
+  cancel-in-progress: false
+
+jobs:
+  forge-triage:
+    runs-on: ubuntu-latest
+    # Skip the `issues:labeled` event unless the label that fired it is one we
+    # care about — otherwise every label tweak the general triage makes would
+    # re-fire this workflow and double-triage.
+    if: |
+      github.event_name != 'issues' ||
+      github.event.label.name == 'area/forge' ||
+      github.event.label.name == 'status/needs-triage' ||
+      github.event.action == 'opened' ||
+      github.event.action == 'reopened'
+    steps:
+      - uses: actions/checkout@v4
+
+      # Idempotently ensure `area/forge` exists before the agent tries to
+      # add it. `gh label create --force` upserts (creates or updates) so
+      # this is safe to call every run.
+      - name: Ensure area/forge label exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create area/forge \
+            --repo palimkarakshay/lumivara-site \
+            --description "Lumivara Forge / Pattern C / mothership lane" \
+            --color "5319E7" \
+            --force
+          echo "Label area/forge upserted."
+
+      - name: Forge triage — Claude Opus
+        id: forge_triage
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Cron-triggered runs are initiated by github-actions[bot]; the action
+          # blocks bot actors unless they are explicitly allow-listed.
+          allowed_bots: "github-actions"
+          settings: |
+            {
+              "permissions": {
+                "allow": ["Bash", "Read", "Grep", "Glob"]
+              }
+            }
+          prompt: |
+            Read `scripts/forge-triage-prompt.md` and follow it exactly.
+            The `gh` CLI is authenticated. When done, print the summary.
+
+            ${{ inputs.dry_run == 'true' && 'DRY-RUN MODE: print the plan you WOULD apply (one line per issue) and exit without calling `gh issue edit` or `gh issue comment`.' || '' }}
+
+            IMPORTANT: this is the *Forge lane*. Only triage issues that match
+            the Forge heuristic in the prompt. Leave non-forge issues alone —
+            the general triage workflow (.github/workflows/triage.yml) owns
+            those. Do not remove `status/needs-triage` from non-forge issues.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash for each issue you classify so the operator can follow
+            your rubric application. Use a heredoc to keep multi-line content
+            intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            Issue #N — <title>
+            Forge heuristic match: ...
+            Priority/Complexity/Area/Type rationale: ...
+            Auto-routine? yes/no — why
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum: one block at the start (queue overview), one
+            block per issue (rubric trace), one block at the end (summary).
+            Keep blocks tight; never paste full issue bodies.
+          claude_args: |
+            --max-turns 120
+            --model claude-opus-4-7
+
+      - name: Forge triage outcome summary
+        if: always()
+        run: |
+          {
+            echo "## Forge triage outcome"
+            echo ""
+            echo "- Engine: Claude Opus (claude-opus-4-7)"
+            echo "- Cadence: every 10 minutes"
+            echo "- Outcome: ${{ steps.forge_triage.outcome }}"
+            echo ""
+            echo "_If outcome is failure, the next 10-min run retries automatically._"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Dispatch forge-execute as soon as triage finishes so a freshly-tagged
+  # `area/forge` + `status/planned` + `auto-routine` issue is picked up
+  # within minutes, not at the next 30-min tick.
+  kick-forge-execute:
+    needs: forge-triage
+    if: always() && (inputs.dry_run != 'true')
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch forge-execute.yml
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run forge-execute.yml \
+            --repo palimkarakshay/lumivara-site || true
+          echo "Dispatched forge-execute.yml (best-effort; errors ignored)."

@@ -10,16 +10,27 @@ export const siteConfig = {
   location: "Toronto, Canada",
   linkedin: "https://www.linkedin.com/company/lumivara-people-advisory/",
   founderLinkedin: "https://www.linkedin.com/in/beasbanerjee/",
-  calLink: process.env.NEXT_PUBLIC_CAL_LINK || "https://cal.com/lumivara/discovery",
+  calLink: process.env.NEXT_PUBLIC_CAL_LINK || "https://cal.com/akshaypalimkar",
   nav: [
-    { label: "How We Work", href: "/how-we-work" },
-    { label: "What We Do", href: "/what-we-do" },
+    { label: "Our Approach", href: "/how-we-work" },
+    { label: "Services", href: "/what-we-do" },
     { label: "Fractional HR", href: "/fractional-hr" },
     { label: "About", href: "/about" },
     { label: "Insights", href: "/insights" },
   ] as const,
   credentials: ["MBA", "CHRL", "PROSCI", "B.Eng", "10+ Years"] as const,
   engagementModes: ["Project-Based", "Advisory Retainer", "Fractional HR"] as const,
+  newsletterCta: {
+    headline: "Field notes on people strategy",
+    subhead: "Practical HR insights for leaders — monthly. No filler.",
+    button: "Subscribe",
+    success: "You're in — look out for the next issue.",
+  } as const,
+  builder: {
+    name: "Lumivara Infotech",
+    url: "https://lumivara.ca",
+    cta: "Want a site like this? Get started.",
+  } as const,
 } as const;
 
 export type SiteConfig = typeof siteConfig;

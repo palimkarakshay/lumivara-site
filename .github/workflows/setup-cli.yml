@@ -1,0 +1,114 @@
+name: Setup AI CLIs
+
+# Installs and verifies the external AI CLIs the multi-model router can dispatch
+# to: Codex (@openai/codex), Gemini (@google/gemini-cli). Run on demand from the
+# Actions tab whenever an operator wants a fresh confirmation that the CLIs +
+# their secrets are wired up correctly.
+#
+# This is a *verification* workflow, not a runtime dependency — execute.yml,
+# deep-research.yml, and codex-review.yml each install the CLI they need at
+# runtime so they don't depend on a previous run of this workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      kick_triage:
+        description: "Also kick off triage.yml after verification"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  contents: read
+  actions: write   # for `gh workflow run`
+  issues: read
+
+jobs:
+  verify-clis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Codex + Gemini CLIs
+        run: npm install -g @openai/codex @google/gemini-cli
+
+      - name: Verify CLI binaries
+        run: |
+          set -e
+          echo "── codex --version ──"
+          codex --version || { echo "::error::codex CLI did not install"; exit 1; }
+          echo "── gemini --version ──"
+          gemini --version || { echo "::error::gemini CLI did not install"; exit 1; }
+
+      - name: Check API keys
+        env:
+          OPENAI_API_KEY_PRIMARY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY_BACKUP: ${{ secrets.OPENAI_API_KEY_BACKUP }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CLAUDE_OAUTH: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          fail=0
+          OPENAI_API_KEY="${OPENAI_API_KEY_PRIMARY:-$OPENAI_API_KEY_BACKUP}"
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "::error::GEMINI_API_KEY missing — Gemini path will not work."
+            fail=1
+          else
+            echo "GEMINI_API_KEY: present (length ${#GEMINI_API_KEY})"
+          fi
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP missing — Codex path will fall back."
+          else
+            if [ -n "$OPENAI_API_KEY_PRIMARY" ]; then
+              echo "OPENAI_API_KEY (primary): present (length ${#OPENAI_API_KEY_PRIMARY})"
+            else
+              echo "OPENAI_API_KEY_BACKUP: present and selected (length ${#OPENAI_API_KEY_BACKUP})"
+            fi
+          fi
+          if [ -z "$CLAUDE_OAUTH" ]; then
+            echo "::error::CLAUDE_CODE_OAUTH_TOKEN missing — Claude path will not work."
+            fail=1
+          else
+            echo "CLAUDE_CODE_OAUTH_TOKEN: present (length ${#CLAUDE_OAUTH})"
+          fi
+          exit $fail
+
+      - name: Note about Cline
+        run: |
+          cat <<'NOTE'
+          Cline is a VS Code extension and ships no headless CLI. Issues
+          labeled `model/cline` are downgraded to Claude Sonnet by
+          scripts/lib/routing.py — see docs/AI_ROUTING.md for context.
+          NOTE
+
+      - name: Run routing smoke test
+        run: python3 scripts/test-routing.py
+
+      - name: Optionally kick triage.yml
+        if: ${{ inputs.kick_triage == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run triage.yml --repo palimkarakshay/lumivara-site
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Setup-CLIs verification"
+            echo ""
+            echo "| Tool | Status |"
+            echo "|------|--------|"
+            echo "| codex CLI | installed |"
+            echo "| gemini CLI | installed |"
+            echo "| GEMINI_API_KEY | ${{ secrets.GEMINI_API_KEY != '' && 'present' || 'MISSING' }} |"
+            echo "| OPENAI_API_KEY (primary) | ${{ secrets.OPENAI_API_KEY != '' && 'present' || 'missing (optional)' }} |"
+            echo "| OPENAI_API_KEY_BACKUP | ${{ secrets.OPENAI_API_KEY_BACKUP != '' && 'present (backup)' || 'missing (optional)' }} |"
+            echo "| CLAUDE_CODE_OAUTH_TOKEN | ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' && 'present' || 'MISSING' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

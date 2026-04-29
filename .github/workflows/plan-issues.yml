@@ -1,0 +1,223 @@
+name: Plan triaged issues
+
+# Post-triage stage: walks freshly-triaged auto-routine issues and writes a
+# structured implementation plan as a comment, labeled `plan/detailed`. Once
+# an issue has a detailed plan, ANY executor (Claude, Codex CLI, Gemini CLI)
+# can implement it deterministically — that's what makes Claude-down execute
+# fallback safe.
+#
+# Engine ladder per issue (quality-first phase):
+#   1. Claude Opus (preferred — strongest planning quality + tool use)
+#   2. Gemini 2.5 Pro     ← scripts/plan-issue.py
+#   3. OpenAI gpt-5.5     ← scripts/plan-issue.py
+#
+# If all three fail, the issue stays unplanned and the next run retries.
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Specific issue number (blank = scan queue, plan up to 5)"
+        required: false
+        default: ""
+  schedule:
+    # Every hour, offset 30 min from execute.yml so plans land just before
+    # the next execute pass. Quality-first phase keeps the executor from
+    # stalling on planless issues.
+    - cron: '30 * * * *'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: plan-runtime
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick planless issues
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_ISSUE: ${{ inputs.issue }}
+        run: |
+          if [ -n "$INPUT_ISSUE" ]; then
+            echo "issues=$INPUT_ISSUE" >> "$GITHUB_OUTPUT"
+            echo "Manual single-issue planning: #$INPUT_ISSUE"
+            exit 0
+          fi
+          # Pick up to 5 planless auto-routine issues.
+          NUMS=$(gh issue list --repo palimkarakshay/lumivara-site \
+                   --state open --label status/planned --label auto-routine \
+                   --json number,labels --limit 50 \
+                 | python3 -c '
+          import json, sys
+          xs = json.load(sys.stdin)
+          out = []
+          for i in xs:
+              names = {l["name"] for l in i["labels"]}
+              if "plan/detailed" in names:
+                  continue
+              if "human-only" in names or "status/on-hold" in names:
+                  continue
+              out.append(str(i["number"]))
+              if len(out) >= 5:
+                  break
+          print(" ".join(out))
+          ')
+          echo "issues=$NUMS" >> "$GITHUB_OUTPUT"
+          echo "Picked: ${NUMS:-(none)}"
+
+      - name: No issues to plan — exit
+        if: steps.pick.outputs.issues == ''
+        run: echo "Nothing to plan this run. Exiting cleanly."
+
+      # ── Preferred: Claude Opus writes the plan, Codex sanity-checks it ────
+      # Two-pass for consistency:
+      #   1. Claude drafts the plan to /tmp/plan-<N>.md (does NOT post yet).
+      #   2. scripts/codex-plan-review.py asks gpt-5.5 to spot-check the
+      #      draft for consistency with project conventions.
+      #   3. Claude reads the review, optionally revises the plan, and
+      #      posts the final version (with the Codex review appended as a
+      #      collapsible details block so the audit trail is preserved).
+      # If OPENAI_API_KEY is missing, the review script returns a graceful
+      # "skipped" marker and the planning pipeline continues unchanged.
+      - name: "Plan with Claude Opus (preferred) + Codex consistency review"
+        id: claude_plan
+        if: steps.pick.outputs.issues != ''
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          settings: |
+            {
+              "permissions": {
+                "allow": ["Bash", "Read", "Glob", "Grep", "Write", "Edit"]
+              }
+            }
+          prompt: |
+            You are the PLANNING stage. For each issue number in the list
+            below, draft a detailed implementation plan, get it reviewed by
+            Codex for consistency, then post the final plan as a comment
+            and label the issue `plan/detailed`. Do NOT touch source files
+            outside of `/tmp/` — planning only.
+
+            Issues to plan: ${{ steps.pick.outputs.issues }}
+
+            For each issue N:
+
+            1. Fetch it:
+               `gh issue view N --repo palimkarakshay/lumivara-site --json number,title,body,labels`
+            2. Skim relevant `src/` files to ground the plan in real paths.
+            3. Draft the plan into `/tmp/plan-N.md` in this exact format
+               (note: do NOT post yet — file only):
+
+               **Detailed plan (Claude Opus)**
+
+               _Posted by plan-issues.yml. Any executor (Claude, Codex,
+               Gemini) may implement this plan without further interpretation._
+
+               ## Implementation plan
+
+               ### Files to create or modify
+               - `path/to/file.ext` — what changes and why
+
+               ### Step-by-step
+               1. ...
+               2. ...
+
+               ### Risks / open questions
+               - ...
+
+               ### Definition of done
+               - [ ] `npx tsc --noEmit` passes
+               - [ ] `npm run lint` passes
+               - [ ] ...
+
+            4. **Codex consistency review** — run:
+               `python3 scripts/codex-plan-review.py N /tmp/plan-N.md > /tmp/codex-review-N.md`
+               This asks gpt-5.5 to spot-check the draft against project
+               conventions (file layout, label rubric, hard-exclusion list,
+               plan-format requirements). The script always exits 0; if
+               OpenAI is unreachable it writes a "skipped" marker.
+
+            5. **Read** `/tmp/codex-review-N.md`. For each non-speculative
+               finding at severity `blocker` or `major`, revise
+               `/tmp/plan-N.md` to address it (UNLESS the finding is wrong
+               — Codex hallucinations do happen). For `minor`/`nit`
+               findings, use judgement: apply when clearly correct, ignore
+               when not. Treat a `revise-before-posting` verdict as a
+               strong signal to re-draft.
+
+               If you ignore a finding, briefly note why at the top of the
+               final plan under a `### Codex review notes` subsection so
+               the audit trail is explicit. Do NOT silently skip Codex
+               recommendations — either fix or justify.
+
+            6. Compose the final comment by concatenating the (possibly
+               revised) plan with a collapsible Codex-review block:
+
+               ```
+               cat /tmp/plan-N.md > /tmp/comment-N.md
+               echo "" >> /tmp/comment-N.md
+               echo "<details><summary>Codex consistency review</summary>" >> /tmp/comment-N.md
+               echo "" >> /tmp/comment-N.md
+               cat /tmp/codex-review-N.md >> /tmp/comment-N.md
+               echo "" >> /tmp/comment-N.md
+               echo "</details>" >> /tmp/comment-N.md
+               ```
+
+            7. Post:
+               `gh issue comment N --repo palimkarakshay/lumivara-site --body-file /tmp/comment-N.md`
+
+            8. Label:
+               `gh issue edit N --repo palimkarakshay/lumivara-site --add-label plan/detailed`
+
+            Hard exclusions in plans: `.github/workflows/*`, `.env*`,
+            `scripts/*`, `src/app/api/contact/*`, `package.json` deps. If
+            an issue genuinely needs to touch one of those, list it in
+            "Risks / open questions" instead of planning the change.
+          claude_args: |
+            --max-turns 250
+            --model claude-opus-4-7
+
+      # ── Fallback: Gemini Pro / OpenAI gpt-5.5 via plan-issue.py ───────────
+      # Runs even if Claude succeeded, but plan-issue.py's --skip-existing
+      # logic (the `plan/detailed` label check) means it's a no-op for
+      # issues Claude already handled.
+      - name: "Fallback plan via Gemini → OpenAI"
+        if: steps.pick.outputs.issues != ''
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
+          GH_TOKEN: ${{ github.token }}
+          ISSUES: ${{ steps.pick.outputs.issues }}
+        run: |
+          set +e
+          for n in $ISSUES; do
+            echo "── Planning issue #$n via fallback ladder ──"
+            python3 scripts/plan-issue.py "$n"
+          done
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Planning stage"
+            echo ""
+            echo "Issues processed: \`${{ steps.pick.outputs.issues || '(none)' }}\`"
+            echo ""
+            echo "| Engine | Status |"
+            echo "|--------|--------|"
+            echo "| Claude Opus | ${{ steps.claude_plan.outcome || 'skipped' }} |"
+            echo "| Gemini → OpenAI fallback | ran best-effort |"
+          } >> "$GITHUB_STEP_SUMMARY"

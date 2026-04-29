@@ -1,6 +1,10 @@
 /**
  * Home page copy. Hero + section headings + principle bodies + founder intro.
  * Service cards pull from services.ts. Insights cards pull from MDX frontmatter.
+ *
+ * CONTENT RULES:
+ *   - hero, principles.items[].body, founder.bioParagraphs — treat as VERBATIM from lumivara.ca
+ *   - fractionalCta, finalCta, pulse, servicesGrid labels, comingSoonProof — authored for the rebuild
  */
 
 export const homeContent = {
@@ -19,7 +23,7 @@ export const homeContent = {
   },
 
   principles: {
-    monoLabel: "01 / Our Approach",
+    monoLabel: "Our Approach",
     heading: "A different kind of people strategy partner.",
     items: [
       {
@@ -42,7 +46,7 @@ export const homeContent = {
   },
 
   servicesGrid: {
-    monoLabel: "02 / What We Do",
+    monoLabel: "What We Do",
     heading: "Six focused practices. One integrated approach.",
     seeAll: { label: "See all services", href: "/what-we-do" },
   },
@@ -56,7 +60,7 @@ export const homeContent = {
   },
 
   founder: {
-    monoLabel: "03 / Founder",
+    monoLabel: "Founder",
     subtitle: "Founder & Principal Consultant",
     name: "Beas Banerjee",
     bioParagraphs: [
@@ -68,7 +72,7 @@ export const homeContent = {
   },
 
   insights: {
-    monoLabel: "04 / Latest Thinking",
+    monoLabel: "Latest Thinking",
     heading: "Perspectives on people strategy.",
     seeAll: { label: "See all insights", href: "/insights" },
   },

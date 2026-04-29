@@ -2,9 +2,21 @@ name: Triage backlog
 
 on:
   schedule:
-    # Every hour. Gemini fallback makes this cheap.
-    - cron: '0 * * * *'
+    # Every 15 minutes — quality-first phase keeps the Inbox fresh so new
+    # issues land in the planner queue with minimal latency.
+    - cron: '*/15 * * * *'
   workflow_dispatch:
+    inputs:
+      engine:
+        description: "Triage engine to start with (auto = Claude → Gemini → Codex ladder)"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - "auto"
+          - "claude"
+          - "gemini"
+          - "codex"
   issues:
     types: [opened, reopened]
 
@@ -15,7 +27,6 @@ permissions:
   id-token: write
 
 concurrency:
-  # Separate group from execute so triage + execute can run concurrently.
   group: triage-runtime
   cancel-in-progress: false
 
@@ -26,9 +37,68 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ── Primary: Claude Haiku ──────────────────────────────────────────
-      - name: Claude Haiku triage
+      # The engine selector decides which steps run. `auto` runs the full
+      # ladder (Claude → Gemini → Codex) so triage NEVER fails because one
+      # provider is down. Forced engines short-circuit to that single path.
+      #
+      # Resolution order (highest priority first):
+      #   1. workflow_dispatch input  (operator on the GitHub UI)
+      #   2. vars.NEXT_RUN_MODEL_OVERRIDE  (AI Ops dashboard, one-shot)
+      #   3. "auto"  (cron default — keeps the full fallback ladder)
+      #
+      # vars.DEFAULT_AI_MODEL is intentionally NOT consulted here. Pinning
+      # triage to a single engine on every run would disable the Claude →
+      # Gemini → Codex fallback that exists specifically so a single
+      # provider outage can't strand the Inbox. DEFAULT_AI_MODEL is
+      # execute-only (see execute.yml).
+      - name: Resolve engine
+        id: engine
+        env:
+          INPUT_ENGINE: ${{ inputs.engine || '' }}
+          OVERRIDE: ${{ vars.NEXT_RUN_MODEL_OVERRIDE }}
+        run: |
+          map_engine() {
+            case "$1" in
+              opus|sonnet|haiku|claude) echo "claude" ;;
+              gemini|gemini-pro|gemini-flash) echo "gemini" ;;
+              gpt4|codex) echo "codex" ;;
+              *) echo "" ;;
+            esac
+          }
+
+          if [ -n "$INPUT_ENGINE" ] && [ "$INPUT_ENGINE" != "auto" ]; then
+            ENGINE="$INPUT_ENGINE"
+            SOURCE="workflow_dispatch input"
+          elif [ -n "$OVERRIDE" ]; then
+            MAPPED=$(map_engine "$OVERRIDE")
+            if [ -n "$MAPPED" ]; then
+              ENGINE="$MAPPED"
+              SOURCE="vars.NEXT_RUN_MODEL_OVERRIDE=$OVERRIDE"
+            else
+              ENGINE="auto"
+              SOURCE="override '$OVERRIDE' not engine-mappable; using auto"
+            fi
+          else
+            ENGINE="auto"
+            SOURCE="default (full ladder)"
+          fi
+          echo "engine=$ENGINE" >> "$GITHUB_OUTPUT"
+          echo "Triage engine for this run: $ENGINE (source: $SOURCE)"
+          {
+            echo "## Triage engine resolution"
+            echo "- engine: \`$ENGINE\`"
+            echo "- source: $SOURCE"
+            echo ""
+            echo "_The dashboard does not auto-clear \`NEXT_RUN_MODEL_OVERRIDE\`._"
+            echo "_Clear it manually from AI Ops once you've confirmed the run._"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── Claude Opus triage (skipped if engine=gemini|codex) ────────────────
+      # Quality-first phase: Opus is the default for classification. The
+      # cost-optimisation phase will reconsider this in favour of Haiku.
+      - name: Claude Opus triage
         id: claude_triage
+        if: steps.engine.outputs.engine == 'auto' || steps.engine.outputs.engine == 'claude'
         continue-on-error: true
         uses: anthropics/claude-code-action@v1
         with:
@@ -49,19 +119,95 @@ jobs:
             means the operator deliberately parked the item. Add priority/
             complexity/area/type/model labels as usual so the hold item is
             navigable.
-          claude_args: |
-            --max-turns 40
-            --model claude-haiku-4-5-20251001
 
-      # ── Fallback: Gemini 2.5 Flash (REST API) ───────────────────────────
-      # Runs always (not conditional on Claude failure). The script itself
-      # exits early if no `status/needs-triage` items remain. This covers:
-      # (a) Claude hit quota mid-run and missed items, (b) Claude errored
-      # entirely, (c) issues arrived between Claude's scan and now.
-      # Uses REST API instead of gemini-cli to avoid non-interactive quirks.
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash for each issue you classify so the operator can follow
+            your rubric application without scrolling through every label
+            command. Use a heredoc to keep multi-line content intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            Issue #N — <title>
+            Priority/Complexity/Area/Type rationale: ...
+            Routing decision: ...
+            Auto-routine? yes/no — why
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum:
+              1. One block at the start summarising the queue you'll work on.
+              2. One block per issue before applying labels (the rubric trace).
+              3. One block at the end with the queue-level summary.
+            Keep blocks tight; never paste full issue bodies or label lists.
+          claude_args: |
+            --max-turns 150
+            --model claude-opus-4-7
+
+      # ── Gemini Flash fallback (skipped if engine=claude|codex) ─────────────
+      # Always runs in `auto` mode (not conditional on Claude failure). The
+      # script itself exits early if no `status/needs-triage` items remain.
       - name: Gemini Flash triage fallback
-        if: always()
+        id: gemini_triage
+        if: |
+          always() && (
+            steps.engine.outputs.engine == 'auto' ||
+            steps.engine.outputs.engine == 'gemini'
+          )
+        continue-on-error: true
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/gemini-triage.py
+
+      # ── Codex final fallback (skipped if engine=claude|gemini) ─────────────
+      # Catches the case where Claude is rate-limited AND Gemini's free tier
+      # is exhausted. Exits cleanly when OPENAI_API_KEY is missing so a repo
+      # without OpenAI credits doesn't fail triage.
+      - name: Codex (gpt-5.5) triage fallback
+        id: codex_triage
+        if: |
+          always() && (
+            steps.engine.outputs.engine == 'auto' ||
+            steps.engine.outputs.engine == 'codex'
+          )
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/codex-triage.py
+
+      - name: Triage outcome summary
+        if: always()
+        run: |
+          {
+            echo "## Triage outcome — engine=${{ steps.engine.outputs.engine }}"
+            echo ""
+            echo "| Stage | Status |"
+            echo "|-------|--------|"
+            echo "| Claude Opus | ${{ steps.claude_triage.outcome || 'skipped' }} |"
+            echo "| Gemini Flash | ${{ steps.gemini_triage.outcome || 'skipped' }} |"
+            echo "| Codex gpt-5.5 | ${{ steps.codex_triage.outcome || 'skipped' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ── Kick the planning stage so newly-triaged issues get a detailed plan ───
+  # comment, regardless of which engine actually classified them. This is
+  # what makes Claude-down execute fallback safe — the plan exists already.
+  kick-planner:
+    needs: triage
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch plan-issues.yml
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run plan-issues.yml \
+            --repo palimkarakshay/lumivara-site || true
+          echo "Dispatched plan-issues.yml (best-effort; errors ignored)."

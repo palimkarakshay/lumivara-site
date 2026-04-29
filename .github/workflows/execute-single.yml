@@ -69,15 +69,18 @@ jobs:
               "model/sonnet": "claude-sonnet-4-6",
               "model/opus":   "claude-opus-4-7",
           }
+          # Quality-first phase: every complexity tier defaults to Opus. The
+          # explicit `model/haiku` and `model/sonnet` labels still work via
+          # MODEL_FOR above when an operator opts in.
           MODEL_FROM_COMPLEXITY = {
-              "complexity/trivial": "claude-haiku-4-5-20251001",
-              "complexity/easy":    "claude-haiku-4-5-20251001",
-              "complexity/medium":  "claude-sonnet-4-6",
+              "complexity/trivial": "claude-opus-4-7",
+              "complexity/easy":    "claude-opus-4-7",
+              "complexity/medium":  "claude-opus-4-7",
               "complexity/complex": "claude-opus-4-7",
           }
           model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), None)
           if not model:
-              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-sonnet-4-6")
+              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-opus-4-7")
           override = os.environ.get("INPUT_MODEL", "").strip()
           if override:
               model = override
@@ -114,7 +117,32 @@ jobs:
             gate (including status/awaiting-review or human-only). Still respect
             the hard exclusions (no touching workflows, env files, contact API).
             The `gh` CLI is authenticated. Node + dependencies are installed.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash at every meaningful decision point so the operator can
+            follow what you're doing. Use a heredoc to keep multi-line content
+            intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            <one or more lines of reasoning>
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum:
+              1. One block at the start: how you read the issue, the plan, risks.
+              2. One before each significant action (branch creation, large
+                 edit, type/lint run, PR open).
+              3. One before exit summarising what you changed and why.
+            Keep each block tight (a few short paragraphs). Do not include
+            secrets, full file contents, or generated diffs inside a block.
+
             When done, print the summary and exit.
           claude_args: |
-            --max-turns 120
+            --max-turns 500
             --model ${{ steps.pick.outputs.model }}

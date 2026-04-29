@@ -1,0 +1,72 @@
+name: Deploy AI Ops dashboard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dashboard/**"
+      - ".github/workflows/deploy-dashboard.yml"
+  workflow_dispatch:
+
+# Pages-native deploy: builds in one job, hands a static artifact to the
+# `actions/deploy-pages` action. No `gh-pages` branch, no PAT required —
+# the built-in GITHUB_TOKEN with `pages: write` is sufficient.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Pages allows one in-flight deploy at a time. Cancel queued duplicates so
+# rapid pushes don't fight; let the in-progress one finish.
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Build
+        # VITE_BASE matches the Pages project URL path. Override via repo
+        # variable if you ever move the dashboard to a custom domain.
+        env:
+          VITE_BASE: ${{ vars.DASHBOARD_BASE_PATH || '/lumivara-site/' }}
+        run: npm run build
+
+      - name: SPA fallback (404 = index)
+        # GitHub Pages doesn't natively rewrite unknown paths; cloning
+        # index.html to 404.html gives the SPA a deep-link safety net.
+        run: cp dist/index.html dist/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

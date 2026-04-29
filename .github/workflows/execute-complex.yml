@@ -72,7 +72,8 @@ jobs:
               "model/sonnet": "claude-sonnet-4-6",
               "model/opus":   "claude-opus-4-7",
           }
-          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), "claude-sonnet-4-6")
+          # Quality-first default: Opus when no explicit model/* label set.
+          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), "claude-opus-4-7")
           override = os.environ.get("INPUT_MODEL", "").strip()
           if override:
               model = override
@@ -98,10 +99,11 @@ jobs:
               "model/sonnet": "claude-sonnet-4-6",
               "model/opus":   "claude-opus-4-7",
           }
+          # Quality-first phase: every complexity tier defaults to Opus.
           MODEL_FROM_COMPLEXITY = {
-              "complexity/trivial": "claude-haiku-4-5-20251001",
-              "complexity/easy":    "claude-haiku-4-5-20251001",
-              "complexity/medium":  "claude-sonnet-4-6",
+              "complexity/trivial": "claude-opus-4-7",
+              "complexity/easy":    "claude-opus-4-7",
+              "complexity/medium":  "claude-opus-4-7",
               "complexity/complex": "claude-opus-4-7",
           }
           eligible = []
@@ -186,12 +188,31 @@ jobs:
 
             Save the plan to /tmp/plan.md before posting. Do NOT touch any source files.
             Do NOT open a branch. Do NOT open a PR.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash at the major decision points (initial read of the issue,
+            shape of the plan, risks you considered, definition-of-done):
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            <one or more lines of reasoning>
+            <<< END THINKING
+            EOT
+            ```
+
+            Keep blocks tight; no full file contents, no secrets.
           claude_args: |
-            --max-turns 30
+            --max-turns 150
             --model claude-opus-4-7
 
-      # ── Phase 2: Sonnet implements ────────────────────────────────────────
-      - name: "Phase 2 — Sonnet: implement from plan"
+      # ── Phase 2: Opus implements ──────────────────────────────────────────
+      # Quality-first phase: implementation runs on Opus too. Cost-optimisation
+      # phase will revisit and likely move this back to Sonnet.
+      - name: "Phase 2 — Opus: implement from plan"
         if: steps.pick.outputs.issue != '0'
         uses: anthropics/claude-code-action@v1
         with:
@@ -220,7 +241,32 @@ jobs:
             Find the comment that starts with "## Implementation Plan (Opus)" and follow it.
             Then read scripts/execute-prompt.md for the full execution protocol.
             Implement the issue. The gh CLI is authenticated. Node + dependencies installed.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash at every meaningful decision point so the operator can
+            follow what you're doing. Use a heredoc to keep multi-line content
+            intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            <one or more lines of reasoning>
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum:
+              1. One block at the start: how you read the plan and the issue.
+              2. One before each significant action (branch creation, large
+                 edit, type/lint run, PR open).
+              3. One before exit summarising what you changed and why.
+            Keep each block tight (a few short paragraphs). Do not include
+            secrets, full file contents, or generated diffs inside a block.
+
             When done, print the summary and exit.
           claude_args: |
-            --max-turns 120
-            --model claude-sonnet-4-6
+            --max-turns 500
+            --model claude-opus-4-7

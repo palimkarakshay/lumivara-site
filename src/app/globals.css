@@ -86,6 +86,90 @@
   --ring: var(--accent);
 }
 
+/* ─────────────────────────────────────────────────────────────
+ * Alternate palettes — applied via [data-palette] on <html>.
+ * Only the brand tokens are overridden; shadcn semantic mappings
+ * (--background, --primary, etc.) inherit through var() chains.
+ * ────────────────────────────────────────────────────────────*/
+
+:root[data-palette="earth"] {
+  --canvas: #faf3e8;
+  --canvas-elevated: #fdf8ee;
+  --ink: #1a1310;
+  --ink-soft: #3d2e26;
+  --muted: #7a6a5e;
+  --parchment: #f0e4d2;
+  --accent: #b04e2e;
+  --accent-soft: #c8694a;
+  --accent-deep: #8a3a1f;
+  --border: #e6d8c4;
+}
+
+:root[data-palette="earth"].dark {
+  --canvas: #1a120e;
+  --canvas-elevated: #251a14;
+  --ink: #faf3e8;
+  --ink-soft: #d8c8b8;
+  --muted: #968570;
+  --parchment: #2a1f17;
+  --accent: #d97755;
+  --accent-soft: #e69477;
+  --accent-deep: #b04e2e;
+  --border: #3a2c22;
+}
+
+:root[data-palette="slate"] {
+  --canvas: #f4f6f9;
+  --canvas-elevated: #fafbfd;
+  --ink: #0f172a;
+  --ink-soft: #1e293b;
+  --muted: #64748b;
+  --parchment: #e2e8f0;
+  --accent: #4a6eaa;
+  --accent-soft: #6b8bc4;
+  --accent-deep: #345080;
+  --border: #d8dee8;
+}
+
+:root[data-palette="slate"].dark {
+  --canvas: #0c111c;
+  --canvas-elevated: #141a26;
+  --ink: #f4f6f9;
+  --ink-soft: #cbd5e1;
+  --muted: #94a3b8;
+  --parchment: #1e293b;
+  --accent: #7d9bd1;
+  --accent-soft: #9ab2dc;
+  --accent-deep: #4a6eaa;
+  --border: #2a3442;
+}
+
+:root[data-palette="forest"] {
+  --canvas: #f5f3ea;
+  --canvas-elevated: #faf8f0;
+  --ink: #0d1410;
+  --ink-soft: #1f2a23;
+  --muted: #5e6b62;
+  --parchment: #e6e2d2;
+  --accent: #2f6b3e;
+  --accent-soft: #4a8a59;
+  --accent-deep: #1f4a2a;
+  --border: #d8d3c0;
+}
+
+:root[data-palette="forest"].dark {
+  --canvas: #0e1410;
+  --canvas-elevated: #161e18;
+  --ink: #f5f3ea;
+  --ink-soft: #d2cfbe;
+  --muted: #7d8a82;
+  --parchment: #1c2620;
+  --accent: #5fa074;
+  --accent-soft: #7cb88e;
+  --accent-deep: #2f6b3e;
+  --border: #2a342d;
+}
+
 /* Expose tokens to Tailwind utility classes */
 @theme inline {
   --color-canvas: var(--canvas);

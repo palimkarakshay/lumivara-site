@@ -6,6 +6,7 @@ import { Menu, X, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { siteConfig } from "@/lib/site-config";
 import { Logo } from "./Logo";
+import { PaletteSwitcher } from "./PaletteSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/utils";
 
@@ -67,6 +68,7 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
                     "text-body-sm font-medium transition-colors",
                     active
@@ -88,6 +90,7 @@ export function Header() {
               <span>Book a call</span>
               <ArrowRight size={14} aria-hidden />
             </Link>
+            <PaletteSwitcher className="hidden md:inline-flex" />
             <ThemeToggle className="hidden md:inline-flex" />
             <button
               type="button"
@@ -119,6 +122,7 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex items-center justify-between border-b border-border-subtle py-4 font-display text-2xl",
                     active ? "text-accent" : "text-ink"
@@ -141,6 +145,10 @@ export function Header() {
             <div className="flex items-center justify-between pt-4">
               <div className="text-label text-muted-strong">Theme</div>
               <ThemeToggle />
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="text-label text-muted-strong">Palette</div>
+              <PaletteSwitcher />
             </div>
           </div>
         </div>

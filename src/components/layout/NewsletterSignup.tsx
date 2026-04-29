@@ -13,7 +13,7 @@ type NewsletterSignupProps = {
 
 export function NewsletterSignup({
   className,
-  pitch = "Field notes on people strategy — monthly.",
+  pitch = "Practical HR insights for leaders — monthly. No filler.",
   placeholder = "your@email.com",
   variant = "light",
 }: NewsletterSignupProps) {
@@ -28,10 +28,10 @@ export function NewsletterSignup({
     if (!email || status === "loading") return;
     setStatus("loading");
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "newsletter", email }),
+        body: JSON.stringify({ email }),
       });
       setStatus(res.ok ? "done" : "error");
     } catch {
@@ -52,14 +52,8 @@ export function NewsletterSignup({
       >
         <Check size={18} className="mt-0.5 text-accent" aria-hidden />
         <div>
-          <p className="text-body-sm font-medium">You're on the list.</p>
-          <p
-            className={cn(
-              "text-caption mt-1",
-              isDark ? "text-canvas/70" : "text-muted-strong"
-            )}
-          >
-            First field note ships soon.
+          <p className="text-body-sm font-medium">
+            You&rsquo;re in &mdash; look out for the next issue.
           </p>
         </div>
       </div>

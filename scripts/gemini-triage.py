@@ -14,11 +14,18 @@ import subprocess
 import sys
 import urllib.request
 import urllib.error
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from lib.routing import decide_from_classification  # noqa: E402
 
 REPO = "palimkarakshay/lumivara-site"
+# gemini-2.5-flash stays the triage default: 500 req/day free-tier headroom is
+# perfect for high-frequency classification. Deep work uses gemini-2.5-pro via
+# plan-issue.py / deep-research.yml.
 GEMINI_MODEL = "gemini-2.5-flash"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
-MAX_ISSUES = 10  # Match Haiku triage cap
+MAX_ISSUES = 25  # Quality-first phase: matches the bumped Claude triage cap
 
 RUBRIC = """You are triaging a GitHub issue for the Lumivara People Advisory site
 (an HR consulting site: Next.js + Tailwind + MDX). Classify and reformat the issue.
@@ -28,7 +35,8 @@ Return ONLY a JSON object, no prose, no markdown fences:
   "priority": "P1" | "P2" | "P3",
   "complexity": "trivial" | "easy" | "medium" | "complex",
   "area": "site" | "content" | "copy" | "design" | "infra" | "seo" | "a11y" | "perf",
-  "type": "claude-config" | "github" | "project-mgmt" | "tech-site" | "tech-vercel" | "business-lumivara" | "business-hr" | "design-cosmetic" | "cleanup" | "a11y",
+  "type": "claude-config" | "github" | "project-mgmt" | "tech-site" | "tech-vercel" | "business-lumivara" | "business-hr" | "design-cosmetic" | "cleanup" | "a11y" | "research" | "content-bulk" | "code-review",
+  "routing": "model/haiku" | "model/sonnet" | "model/opus" | "model/gemini-pro" | "model/codex" | "model/cline" | null,
   "auto_routine": true | false,
   "needs_clarification": true | false,
   "clarification_questions": ["question 1", "question 2"],
@@ -45,6 +53,14 @@ Rubric:
 - complex: Opus-planned + Sonnet-executed (many files, architectural, >3h)
 - auto_routine=true if self-contained with enough info; false if human judgement required
 - needs_clarification=true if the issue is ambiguous — list specific blocking questions
+
+Routing (pick ONE; null means use the complexity-tier Claude default):
+- model/gemini-pro: full-codebase audits, bulk MDX content generation, deep research
+  with multi-source synthesis. Uses Gemini's 1M-token context.
+- model/codex: code review / diff analysis / second-opinion on a PR.
+- model/cline: agentic-large-refactor flag (router will downgrade to Sonnet — no
+  headless Cline CLI exists). Use only if the operator's intent is clearly Cline-style.
+- null (default): Claude path; complexity tier picks Haiku/Sonnet/Opus.
 
 Title rules (if title_rewrite is non-null):
 - Start with a verb ("Add", "Fix", "Rename", "Remove", "Replace", "Audit")
@@ -102,13 +118,19 @@ def apply_labels(issue_num: int, classification: dict) -> None:
             f"type/{classification['type']}",
             "status/planned",
         ])
+        # Quality-first phase: every complexity tier maps to model/opus by
+        # default. Cost-optimisation phase will revert to per-tier mapping.
         complexity = classification["complexity"]
-        if complexity in ("trivial", "easy"):
-            labels_to_add.append("model/haiku")
-        elif complexity == "medium":
-            labels_to_add.append("model/sonnet")
-        else:
-            labels_to_add.extend(["model/opus", "manual-only"])
+        labels_to_add.append("model/opus")
+        if complexity == "complex":
+            labels_to_add.append("manual-only")
+
+        # Provider override (gemini-pro / codex / cline). When the rubric asks
+        # for a non-Claude path, that label takes precedence over the
+        # complexity-tier model label at routing time.
+        routing = (classification.get("routing") or "").strip()
+        if routing in {"model/gemini-pro", "model/codex", "model/cline"}:
+            labels_to_add.append(routing)
 
         if classification.get("auto_routine"):
             labels_to_add.append("auto-routine")
@@ -136,12 +158,17 @@ def apply_labels(issue_num: int, classification: dict) -> None:
         questions = "\n".join(f"- {q}" for q in classification.get("clarification_questions", []))
         comment = f"**Triaged by Gemini (fallback) — needs clarification**\n\n{questions}"
     else:
+        decision = decide_from_classification(classification)
+        routing_line = f"{decision.provider} ({decision.model})"
+        if decision.downgraded_from:
+            routing_line += f" — downgraded from {decision.downgraded_from}"
         comment = (
             f"**Triaged by Gemini (fallback)**\n"
             f"- Priority: {classification['priority']}\n"
-            f"- Complexity: {classification['complexity']} → model/{classification['complexity'] if classification['complexity'] in ('haiku','sonnet','opus') else ('haiku' if classification['complexity'] in ('trivial','easy') else 'sonnet' if classification['complexity'] == 'medium' else 'opus')}\n"
+            f"- Complexity: {classification['complexity']}\n"
             f"- Area: {classification['area']}\n"
             f"- Type: {classification['type']}\n"
+            f"- Routing: {routing_line}\n"
             f"- Auto-routine: {'yes' if classification.get('auto_routine') else 'no (human-only)'}\n"
             f"- Rationale: {classification.get('rationale', '')}"
         )
@@ -149,6 +176,16 @@ def apply_labels(issue_num: int, classification: dict) -> None:
         ["gh", "issue", "comment", str(issue_num), "--repo", REPO, "--body", comment],
         check=True, capture_output=True,
     )
+
+
+def thinking(msg: str) -> None:
+    """Emit a THINKING block in the format the AI Ops dashboard's LogViewer
+    parses (`>>> THINKING` … `<<< END THINKING`). The dashboard pulls these
+    from raw run logs, so anything we want surfaced to the operator must
+    travel through this helper."""
+    print(">>> THINKING")
+    print(msg)
+    print("<<< END THINKING", flush=True)
 
 
 def main():
@@ -161,19 +198,36 @@ def main():
     )
     issues = json.loads(result.stdout)
     if not issues:
+        thinking("Gemini fallback: no needs-triage issues remain — Claude handled the queue.")
         print("Gemini fallback: no needs-triage issues remain. Claude handled everything.")
         return 0
 
+    thinking(
+        f"Gemini fallback engaged. Model={GEMINI_MODEL}. "
+        f"Queue size={len(issues)} (cap={MAX_ISSUES}). "
+        f"Triaging in order, one classification per item."
+    )
     print(f"Gemini fallback: triaging {len(issues)} remaining issue(s).")
     success = 0
     for i in issues:
         try:
             cls = gemini_classify(i["title"], i.get("body") or "")
+            thinking(
+                f"Issue #{i['number']} — {i['title']}\n"
+                f"Priority: {cls.get('priority')} | Complexity: {cls.get('complexity')}\n"
+                f"Area: {cls.get('area')} | Type: {cls.get('type')}\n"
+                f"Routing label: {cls.get('routing') or '(default Claude tier)'}\n"
+                f"Auto-routine: {cls.get('auto_routine')}\n"
+                f"Needs clarification: {cls.get('needs_clarification')}\n"
+                f"Rationale: {cls.get('rationale', '')}"
+            )
             apply_labels(i["number"], cls)
             print(f"  #{i['number']} → {cls.get('priority')}/{cls.get('complexity')} ({cls.get('rationale','')[:60]})")
             success += 1
         except Exception as e:
+            thinking(f"Issue #{i['number']} FAILED during Gemini classification: {e}")
             print(f"  #{i['number']} FAILED: {e}", file=sys.stderr)
+    thinking(f"Gemini fallback finished. Triaged {success}/{len(issues)}.")
     print(f"\nTriaged {success}/{len(issues)} via Gemini.")
     return 0 if success > 0 else 1
 

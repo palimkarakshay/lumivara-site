@@ -15,7 +15,7 @@ export function PartnershipTimeline({
   heading = "What working together actually looks like.",
 }: PartnershipTimelineProps) {
   return (
-    <SectionShell variant="canvas">
+    <SectionShell variant="canvas" id="process">
       <NumberedSection number={monoNumber} label={monoLabel} />
       <h2 className="text-display-lg text-ink mt-6 mb-10 max-w-[760px]">{heading}</h2>
       <ol className="grid grid-cols-1 gap-5 md:grid-cols-5">

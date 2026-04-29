@@ -12,7 +12,7 @@ export function Logo({ className, showWordmark = true }: LogoProps) {
         "inline-flex items-baseline gap-2 font-display text-ink transition-colors",
         className
       )}
-      aria-label="Lumivara"
+      aria-label="Lumivara People Advisory"
     >
       <span className="text-accent text-xl leading-none" aria-hidden>
         ●

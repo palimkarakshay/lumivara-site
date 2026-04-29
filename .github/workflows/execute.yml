@@ -2,8 +2,9 @@ name: Execute backlog item
 
 on:
   schedule:
-    # Every 4 hours — 6 runs/day. Cadence raised after AI-routing optimizations.
-    - cron: '0 */4 * * *'
+    # Every hour — quality-first phase. Max 20x quota gives ample headroom,
+    # and most runs still find nothing to do, so the cron is cheap.
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -11,6 +12,7 @@ permissions:
   issues: write
   pull-requests: write
   id-token: write
+  actions: write   # needed to dispatch sibling workflows for non-Claude routes
 
 concurrency:
   group: claude-runtime
@@ -39,10 +41,20 @@ jobs:
           git config user.name "claude-auto"
           git config user.email "claude-auto@users.noreply.github.com"
 
-      - name: Pick eligible issue and model
+      # ── Pick eligible issue + emit detailed routing audit ──────────────────
+      # Uses scripts/lib/routing.py so triage / execute / smoke-test all agree
+      # on the same rubric. Audit log goes to stdout AND $GITHUB_STEP_SUMMARY
+      # so the operator can see *why* an issue went to a given model.
+      - name: Pick eligible issue and route
         id: pick
         env:
           GH_TOKEN: ${{ github.token }}
+          # Read by the inline Python step below to override the Claude
+          # implementation tier. Both come from the AI Ops dashboard.
+          # NEXT_RUN_MODEL_OVERRIDE wins if set; otherwise DEFAULT_AI_MODEL;
+          # otherwise the previous hardcoded "sonnet".
+          DASHBOARD_OVERRIDE: ${{ vars.NEXT_RUN_MODEL_OVERRIDE }}
+          DASHBOARD_DEFAULT: ${{ vars.DEFAULT_AI_MODEL }}
         run: |
           gh issue list --repo palimkarakshay/lumivara-site \
             --label auto-routine --state open \
@@ -50,29 +62,17 @@ jobs:
 
           python3 - <<'PY'
           import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path("scripts").resolve()))
+          from lib.routing import decide
 
           issues = json.load(open('/tmp/candidates.json'))
 
-          # Cron path: skip manual-only. (manual path is execute-complex.yml)
-          # status/awaiting-review = bot already opened a PR for it; don't re-pick.
           EXCLUDE = {"human-only", "manual-only", "status/blocked",
                      "status/in-progress", "status/needs-clarification",
                      "status/awaiting-review", "status/on-hold"}
           PRIO_RANK = {"priority/P1": 0, "priority/P2": 1, "priority/P3": 2}
           COMP_RANK = {"complexity/trivial": 0, "complexity/easy": 1, "complexity/medium": 2}
-
-          MODEL_FOR = {
-              "model/haiku":  "claude-haiku-4-5-20251001",
-              "model/sonnet": "claude-sonnet-4-6",
-              "model/opus":   "claude-opus-4-7",
-          }
-          # Fallback if model label missing: derive from complexity
-          MODEL_FROM_COMPLEXITY = {
-              "complexity/trivial": "claude-haiku-4-5-20251001",
-              "complexity/easy":    "claude-haiku-4-5-20251001",
-              "complexity/medium":  "claude-sonnet-4-6",
-              "complexity/complex": "claude-opus-4-7",
-          }
 
           eligible = []
           for i in issues:
@@ -82,43 +82,153 @@ jobs:
               prio = min((PRIO_RANK.get(l, 99) for l in labels), default=99)
               comp = min((COMP_RANK.get(l, 99) for l in labels), default=99)
               if prio == 99 or comp == 99:
-                  # missing required triage labels — wait for next triage run
                   continue
-              eligible.append((prio, comp, i["createdAt"], i["number"], labels))
+              eligible.append((prio, comp, i["createdAt"], i["number"], i["title"], labels))
 
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
           out = open(os.environ["GITHUB_OUTPUT"], "a")
+
+          def emit(line: str):
+              print(line)
+              if summary_path:
+                  with open(summary_path, "a") as fh:
+                      fh.write(line + "\n")
+
+          emit("## Execute — routing audit")
+          # Mirror the audit into a THINKING block so the dashboard's LogViewer
+          # surfaces the routing reasoning (not just the per-issue Claude
+          # narrative) to operators reading the run.
+          print(">>> THINKING")
+          print("Routing audit (execute.yml)")
+          print(f"Scanned {len(issues)} candidate(s); {len(eligible)} eligible after filters.")
+          print("<<< END THINKING", flush=True)
+          emit(f"Scanned {len(issues)} candidate(s); {len(eligible)} eligible after filters.")
+
           if not eligible:
-              out.write("issue=0\n")
-              out.write("model=\n")
-              print("No eligible issues this run.")
+              out.write("issue=0\nworkflow=none\nmodel=\nprovider=\n")
+              emit("No eligible issues this run. Exiting cleanly.")
               sys.exit(0)
 
           eligible.sort()
-          _, _, _, num, labels = eligible[0]
+          _, _, _, num, title, labels = eligible[0]
+          decision = decide(labels)
 
-          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), None)
-          if not model:
-              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-sonnet-4-6")
+          emit(f"\nSelected issue #{num} — {title}")
+          emit("```")
+          emit(decision.audit())
+          emit("```")
 
-          # Implementation always runs on Sonnet. Haiku is for triage/identification only.
-          # Opus is reserved for the planning pass in execute-complex.yml.
-          impl_model = "claude-sonnet-4-6"
-
-          out.write(f"issue={num}\n")
-          out.write(f"model={impl_model}\n")
-          print(f"Selected issue #{num} — implementing with {impl_model}")
+          # Code-edit workflows always run on Claude. Gemini and Codex
+          # paths produce research / review artefacts, not code commits.
+          # Cline is downgraded to Sonnet by the router itself.
+          # The Claude *tier* (haiku/sonnet/opus) is now operator-controlled
+          # via the AI Ops dashboard's DEFAULT_AI_MODEL / NEXT_RUN_MODEL_OVERRIDE
+          # repo variables. Friendly names map to concrete model ids below.
+          # Non-Claude friendly names (gpt4/codex) are accepted but downgraded
+          # to sonnet here, with a logged warning, because execute.yml can't
+          # switch *providers* mid-run — that's what the codex-review.yml /
+          # deep-research.yml dispatch paths above are for.
+          if decision.workflow == "claude":
+              CLAUDE_TIER = {
+                  "opus":   "claude-opus-4-7",
+                  "sonnet": "claude-sonnet-4-6",
+                  "haiku":  "claude-haiku-4-5-20251001",
+              }
+              friendly = (
+                  os.environ.get("DASHBOARD_OVERRIDE", "").strip()
+                  or os.environ.get("DASHBOARD_DEFAULT", "").strip()
+                  or "opus"
+              )
+              impl_model = CLAUDE_TIER.get(friendly)
+              if impl_model is None:
+                  emit(
+                      f"\n⚠️  Dashboard requested provider '{friendly}', but "
+                      "execute.yml's Claude path can't switch providers mid-run. "
+                      "Falling back to claude-opus-4-7 (quality-first default). "
+                      "For OpenAI/Gemini paths, label the issue accordingly so "
+                      "the router dispatches the right workflow."
+                  )
+                  impl_model = "claude-opus-4-7"
+                  friendly = "opus"
+              source = (
+                  "NEXT_RUN_MODEL_OVERRIDE" if os.environ.get("DASHBOARD_OVERRIDE", "").strip()
+                  else "DEFAULT_AI_MODEL" if os.environ.get("DASHBOARD_DEFAULT", "").strip()
+                  else "fallback default"
+              )
+              emit(
+                  f"\n→ Implementation will run on {impl_model} "
+                  f"(friendly={friendly}, source={source}). "
+                  "Override via the AI Ops dashboard."
+              )
+              out.write(f"issue={num}\n")
+              out.write(f"workflow=claude\n")
+              out.write(f"provider={decision.provider}\n")
+              out.write(f"model={impl_model}\n")
+          elif decision.workflow == "gemini-research":
+              emit(
+                  f"\n→ Dispatching deep-research.yml for issue #{num} "
+                  f"(Gemini {decision.model})."
+              )
+              out.write(f"issue={num}\n")
+              out.write(f"workflow=gemini-research\n")
+              out.write(f"provider={decision.provider}\n")
+              out.write(f"model={decision.model}\n")
+          elif decision.workflow == "codex-review":
+              emit(
+                  f"\n→ Dispatching codex-review.yml for issue #{num} "
+                  f"(Codex {decision.model})."
+              )
+              out.write(f"issue={num}\n")
+              out.write(f"workflow=codex-review\n")
+              out.write(f"provider={decision.provider}\n")
+              out.write(f"model={decision.model}\n")
+          else:
+              # Future-proof: unknown workflow -> exit cleanly so cron doesn't loop.
+              emit(f"\n⚠️  Unknown workflow `{decision.workflow}` — skipping.")
+              out.write("issue=0\nworkflow=none\nmodel=\nprovider=\n")
           PY
 
       - name: No eligible issue — exiting
         if: steps.pick.outputs.issue == '0'
         run: echo "No eligible issues this cron run. Exiting cleanly."
 
+      # ── Dispatch non-Claude routes to their dedicated workflows ────────────
+      # Keeps execute.yml's runtime stable and lets each provider's path own
+      # its own permissions / CLI install / failure handling.
+      - name: Dispatch deep-research.yml (Gemini Pro)
+        if: steps.pick.outputs.workflow == 'gemini-research'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run deep-research.yml \
+            --repo palimkarakshay/lumivara-site \
+            -f issue=${{ steps.pick.outputs.issue }} \
+            -f model=${{ steps.pick.outputs.model }}
+          echo "Dispatched deep-research.yml for issue #${{ steps.pick.outputs.issue }}."
+
+      - name: Dispatch codex-review.yml (OpenAI Codex)
+        if: steps.pick.outputs.workflow == 'codex-review'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run codex-review.yml \
+            --repo palimkarakshay/lumivara-site \
+            -f issue=${{ steps.pick.outputs.issue }} \
+            -f model=${{ steps.pick.outputs.model }}
+          echo "Dispatched codex-review.yml for issue #${{ steps.pick.outputs.issue }}."
+
+      # ── Claude path (default code implementation) ──────────────────────────
       - name: Export ISSUE_NUMBER to job env
-        if: steps.pick.outputs.issue != '0'
+        if: steps.pick.outputs.workflow == 'claude'
         run: echo "ISSUE_NUMBER=${{ steps.pick.outputs.issue }}" >> "$GITHUB_ENV"
 
-      - uses: anthropics/claude-code-action@v1
-        if: steps.pick.outputs.issue != '0'
+      # continue-on-error so a Claude outage triggers the fallback path below
+      # instead of failing the whole job. The downstream "outcome" check is
+      # what wires the dispatch.
+      - id: claude_run
+        if: steps.pick.outputs.workflow == 'claude'
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           settings: |
@@ -135,12 +245,141 @@ jobs:
               }
             }
           prompt: |
-            Issue #${{ steps.pick.outputs.issue }} has been pre-selected for you.
+            Issue #${{ steps.pick.outputs.issue }} has been pre-selected for you
+            by the multi-model router (provider=${{ steps.pick.outputs.provider }},
+            model=${{ steps.pick.outputs.model }}). The full routing audit was
+            printed in the previous step's log and step summary.
             ISSUE_NUMBER=${{ steps.pick.outputs.issue }} is available in your env.
             Read `scripts/execute-prompt.md` and follow it to implement that
             specific issue. Skip any issue-selection logic — it's already done.
             The `gh` CLI is authenticated. Node + dependencies are installed.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash at every meaningful decision point so the operator can
+            follow what you're doing. Use a heredoc to keep multi-line content
+            intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            <one or more lines of reasoning>
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum:
+              1. One block at the start: how you read the issue, the plan, risks.
+              2. One before each significant action (branch creation, large
+                 edit, type/lint run, PR open).
+              3. One before exit summarising what you changed and why.
+            Keep each block tight (a few short paragraphs). Do not include
+            secrets, full file contents, or generated diffs inside a block.
+
             When done, print the summary and exit.
           claude_args: |
-            --max-turns 80
+            --max-turns 400
             --model ${{ steps.pick.outputs.model }}
+
+      # ── Claude failed → fall through to Codex/Gemini if a plan exists ─────
+      # The fallback executor refuses to run without a `plan/detailed`
+      # comment, so this is safe even on issues we'd otherwise skip.
+      - name: Detect Claude failure + dispatch fallback
+        if: |
+          always() &&
+          steps.pick.outputs.workflow == 'claude' &&
+          steps.claude_run.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ steps.pick.outputs.issue }}
+        run: |
+          set +e
+          # Only dispatch if the issue has a detailed plan — otherwise the
+          # fallback executor would refuse anyway and we'd burn a workflow run.
+          LABELS=$(gh issue view "$ISSUE" --repo palimkarakshay/lumivara-site \
+                     --json labels --jq '[.labels[].name] | join(",")')
+          if echo "$LABELS" | grep -q "plan/detailed"; then
+            echo "Claude step did not succeed (outcome=${{ steps.claude_run.outcome }})."
+            echo "Issue #$ISSUE has plan/detailed — dispatching execute-fallback.yml."
+            gh workflow run execute-fallback.yml \
+              --repo palimkarakshay/lumivara-site \
+              -f issue="$ISSUE" -f engine=auto
+          else
+            echo "Claude step did not succeed AND issue lacks plan/detailed."
+            echo "Dispatching plan-issues.yml so the next execute can fall back."
+            gh workflow run plan-issues.yml \
+              --repo palimkarakshay/lumivara-site \
+              -f issue="$ISSUE" || true
+          fi
+
+      # ── Auto-merge → Vercel prod, immediately following execution ─────────
+      # If Claude opened a PR for an auto-merge-eligible issue, enable
+      # auto-merge right here so we don't depend on the auto-merge.yml
+      # workflow_run trigger lag. Auto-merge waits for Vercel's deploy-preview
+      # check to pass, then squash-merges to main, which Vercel then deploys
+      # to prod automatically.
+      - name: Enable auto-merge on the just-opened PR (if eligible)
+        if: |
+          always() &&
+          steps.pick.outputs.workflow == 'claude' &&
+          steps.claude_run.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ steps.pick.outputs.issue }}
+        run: |
+          set +e
+          # Find the PR that closes this issue. Claude opens it via gh pr
+          # create with body "Fixes #N", so we search by head branch first.
+          PR_NUM=$(gh pr list --repo palimkarakshay/lumivara-site \
+                     --state open --head "auto/issue-$ISSUE" \
+                     --json number --jq '.[0].number // empty')
+          if [ -z "$PR_NUM" ]; then
+            echo "No PR found for issue #$ISSUE — skipping auto-merge."
+            exit 0
+          fi
+          echo "Found PR #$PR_NUM for issue #$ISSUE."
+
+          # Pull the union of issue + PR labels and apply the same auto-merge
+          # rules as auto-merge.yml so behavior is consistent.
+          ISSUE_LABELS=$(gh issue view "$ISSUE" --repo palimkarakshay/lumivara-site \
+                          --json labels --jq '[.labels[].name] | join(",")')
+          PR_LABELS=$(gh pr view "$PR_NUM" --repo palimkarakshay/lumivara-site \
+                       --json labels --jq '[.labels[].name] | join(",")')
+          ALL="$ISSUE_LABELS,$PR_LABELS"
+
+          eligible=true
+          echo "$ALL" | grep -q "auto-routine" || eligible=false
+          (echo "$ALL" | grep -qE 'complexity/(trivial|easy)') || eligible=false
+          if echo "$ALL" | grep -qE '(type/design-cosmetic|area/design)'; then
+            eligible=false
+          fi
+          # Codex consistency gate — same rule as auto-merge.yml.
+          if echo "$ALL" | grep -q 'codex-blockers'; then
+            eligible=false
+            echo "PR #$PR_NUM has codex-blockers — skipping auto-merge until resolved."
+          fi
+
+          if [ "$eligible" = "true" ]; then
+            echo "PR #$PR_NUM is auto-merge eligible. Enabling auto-merge (squash)."
+            gh pr merge "$PR_NUM" --auto --squash \
+              --repo palimkarakshay/lumivara-site
+            echo "Auto-merge enabled. Vercel deploy preview will gate the merge;"
+            echo "after merge, Vercel auto-deploys to prod."
+          else
+            echo "PR #$PR_NUM is NOT auto-merge eligible. Human review required."
+          fi
+
+      # ── Final fail-safe: if Claude AND fallback both got skipped/failed,
+      # surface that loudly in the run summary so the operator can act.
+      - name: Surface terminal status
+        if: always() && steps.pick.outputs.workflow == 'claude'
+        run: |
+          {
+            echo "## Execute outcome — issue #${{ steps.pick.outputs.issue }}"
+            echo ""
+            echo "| Stage | Outcome |"
+            echo "|-------|---------|"
+            echo "| Claude implementation | ${{ steps.claude_run.outcome || 'skipped' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

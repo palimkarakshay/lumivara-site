@@ -4,6 +4,8 @@ import "./globals.css";
 import { siteConfig } from "@/lib/site-config";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { SiteChrome } from "@/components/layout/SiteChrome";
+import { CrispChat } from "@/components/primitives/CrispChat";
 
 const fraunces = Fraunces({
   variable: "--font-display",
@@ -76,7 +78,19 @@ const themeInitScript = `
 (function() {
   try {
     var t = localStorage.getItem('lumivara-theme');
-    if (t === 'dark') document.documentElement.classList.add('dark');
+    if (t === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else if (t === 'light') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    }
+    var p = localStorage.getItem('lumivara-palette');
+    if (p === 'earth' || p === 'slate' || p === 'forest') {
+      document.documentElement.dataset.palette = p;
+    }
   } catch (e) {}
 })();
 `;
@@ -100,11 +114,16 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <Header />
+        <SiteChrome>
+          <Header />
+        </SiteChrome>
         <main id="main" className="flex-1">
           {children}
         </main>
-        <Footer />
+        <SiteChrome>
+          <Footer />
+          <CrispChat />
+        </SiteChrome>
       </body>
     </html>
   );

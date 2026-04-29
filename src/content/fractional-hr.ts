@@ -136,7 +136,7 @@ export const fractionalHrContent = {
       id: "coordination",
       question: "How do you coordinate with our existing team?",
       answer:
-        "We meet weekly with whoever owns HR internally (if anyone), attend the leadership meetings where people decisions are made, and use your team's tools — we don't introduce new stacks unless they're solving a real problem. The goal is to strengthen the muscle you have, not replace it.",
+        "We meet weekly with whoever owns HR internally (if anyone), attend the leadership meetings where people decisions are made, and use your team's tools — we don't introduce new stacks unless they address a real need. The goal is to strengthen the muscle you have, not replace it.",
     },
   ],
 

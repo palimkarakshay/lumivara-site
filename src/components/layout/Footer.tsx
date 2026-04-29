@@ -2,6 +2,8 @@ import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
 import { Logo } from "./Logo";
 import { NewsletterSignup } from "./NewsletterSignup";
+import { TorontoTime } from "./TorontoTime";
+import { CarbonBadge } from "./CarbonBadge";
 
 function LinkedInIcon({ size = 14 }: { size?: number }) {
   return (
@@ -82,7 +84,7 @@ export function Footer() {
                     {siteConfig.phone}
                   </a>
                 </li>
-                <li>{siteConfig.location}</li>
+                <li><TorontoTime /></li>
                 <li>
                   <a
                     href={siteConfig.linkedin}
@@ -92,6 +94,7 @@ export function Footer() {
                   >
                     <LinkedInIcon />
                     LinkedIn
+                    <span className="sr-only">(opens in new tab)</span>
                   </a>
                 </li>
               </ul>
@@ -110,7 +113,21 @@ export function Footer() {
               </span>
             ))}
           </div>
+          <CarbonBadge />
         </div>
+
+        <p className="mt-6 text-center text-caption text-muted-strong">
+          Powered by{" "}
+          <a
+            href={siteConfig.builder.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline transition-colors hover:text-ink"
+          >
+            {siteConfig.builder.name}
+          </a>
+          {" "}— {siteConfig.builder.cta}
+        </p>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 text-caption text-muted-strong sm:flex-row">
           <p>

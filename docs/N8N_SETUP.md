@@ -43,6 +43,8 @@ If the template isn't available, deploy manually:
 
 ## Step 4 — Set up credentials
 
+> **Variable registry.** Every n8n credential name referenced below is mirrored as a row in [`docs/ops/variable-registry.md §4`](ops/variable-registry.md#4-n8n-credentials), with scope, owner, and rotation cadence. The registry is the source of truth — when you add a new credential here, add the row there in the same PR.
+
 In n8n, go to **Credentials** (left sidebar) → **Add Credential** for each:
 
 ### GitHub credential

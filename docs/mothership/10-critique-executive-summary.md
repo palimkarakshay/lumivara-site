@@ -1,6 +1,8 @@
-<!-- OPERATOR-ONLY. External review of 00–09. -->
+<!-- OPERATOR-ONLY. External review of 00–09. Historical / decision-record context. -->
 
 # 10 — Critique: Executive Summary
+
+> **Historical context (read order: this file is part of the critique series).** This file enumerates problems identified before Pattern C was chosen on 2026-04-28. The `operator/main` references below describe the *deprecated* pattern that the critique rejected. The canonical architecture is `02b-pattern-c-architecture.md`; the full architectural decision history is in `11 §1`.
 
 A senior-architect + business-partner review of the pack in `00-INDEX` through `09-github-account-topology`. Read this once, then dive into the topical critiques (`11`–`14`), the naming review (`15`), and the automation prompt-pack (`16`).
 

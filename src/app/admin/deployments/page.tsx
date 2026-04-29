@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { Card } from "@/components/admin/Card";
 import { DeploymentTimeline } from "@/components/admin/DeploymentTimeline";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { PromoteCommitButton } from "@/components/admin/PromoteCommitButton";
 import { PromoteTipButton } from "@/components/admin/PromoteTipButton";
 import { Section } from "@/components/admin/Section";
 import { isAdminEmail } from "@/lib/admin-allowlist";
@@ -222,33 +223,49 @@ async function ClientDeploymentBlock({
               {walk.error}
             </p>
           ) : driftCount === 0 ? null : (
-            <ul className="mt-3 flex flex-col gap-2">
-              {drift!.deployableCommits.slice(0, 8).map((c) => (
-                <li
-                  key={c.sha}
-                  className="rounded-md border border-border-subtle bg-canvas-elevated px-3 py-2 text-body-sm"
-                >
-                  <p className="font-medium text-ink">
-                    {c.prNumber ? `#${c.prNumber} ` : ""}
-                    {c.prTitle ?? c.subject}
-                  </p>
-                  <p className="text-caption text-muted-strong font-mono">
-                    {c.shortSha} · {relativeTime(c.authoredAt)}
-                    {c.linkedIssueNumber
-                      ? ` · closes #${c.linkedIssueNumber}`
-                      : ""}
-                  </p>
-                </li>
-              ))}
-              {drift!.deployableCommits.length > 8 ? (
-                <li className="text-caption text-muted-strong">
-                  …and {drift!.deployableCommits.length - 8} more.
-                </li>
-              ) : null}
-            </ul>
+            <>
+              <p className="text-caption text-muted-strong mt-3">
+                Promote a single change ↓ — picks one drift row, leaves the
+                rest pending. The forward-only guard refuses any SHA older
+                than current production.
+              </p>
+              <ul className="mt-2 flex flex-col gap-2">
+                {drift!.deployableCommits.slice(0, 8).map((c) => (
+                  <li
+                    key={c.sha}
+                    className="flex flex-col gap-2 rounded-md border border-border-subtle bg-canvas-elevated px-3 py-2 text-body-sm"
+                  >
+                    <div>
+                      <p className="font-medium text-ink">
+                        {c.prNumber ? `#${c.prNumber} ` : ""}
+                        {c.prTitle ?? c.subject}
+                      </p>
+                      <p className="text-caption text-muted-strong font-mono">
+                        {c.shortSha} · {relativeTime(c.authoredAt)}
+                        {c.linkedIssueNumber
+                          ? ` · closes #${c.linkedIssueNumber}`
+                          : ""}
+                      </p>
+                    </div>
+                    <PromoteCommitButton
+                      clientSlug={slug}
+                      candidateSha={c.sha}
+                      issueNumber={c.linkedIssueNumber ?? c.prNumber}
+                      commitSubject={c.prTitle ?? c.subject}
+                    />
+                  </li>
+                ))}
+                {drift!.deployableCommits.length > 8 ? (
+                  <li className="text-caption text-muted-strong">
+                    …and {drift!.deployableCommits.length - 8} more — use the
+                    bundle promote below to flush.
+                  </li>
+                ) : null}
+              </ul>
+            </>
           )}
 
-          <div className="mt-4">
+          <div className="mt-4 flex flex-col gap-2">
             <PromoteTipButton
               clientSlug={slug}
               candidateSha={candidateSha}
@@ -262,6 +279,12 @@ async function ClientDeploymentBlock({
                     : undefined
               }
             />
+            {driftCount > 0 ? (
+              <p className="text-caption text-muted-strong">
+                Promote tip of main bundles every pending change above into
+                one production deploy.
+              </p>
+            ) : null}
           </div>
         </Card>
       </div>

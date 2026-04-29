@@ -52,8 +52,9 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 |---|---|---|---|---|
 | 00 | `00-INDEX.md` (this file) | "Where do I find X?" | Operator | Once |
 | 01 | `01-business-plan.md` | "What is the business, what does it sell, and what name does it operate under?" | Operator | Once, revisit quarterly |
-| 02 | `02-architecture.md` | "How is the mothership repo structured, and how does a client repo relate to it?" | Operator | Once |
-| 03 | `03-secure-architecture.md` | "How do I keep client zones, secrets, and costs strictly isolated from the mothership?" | Operator | Once, revisit on every secret rotation |
+| 02 | `02-architecture.md` | "How is the mothership repo structured, and how do the per-client site + pipeline repos relate to it?" — Pattern C canonical | Operator | Once |
+| 02b | `02b-pattern-c-architecture.md` | "What is Pattern C, in one self-contained file?" — the canonical architecture statement (locked 2026-04-28) | Operator | Once; cross-linked from every doc that touches architecture |
+| 03 | `03-secure-architecture.md` | "How do I keep client zones, secrets, and costs strictly isolated from the mothership?" — partially deprecated; Run B (`16 §2`) rewrites it to match Pattern C and adds `03b-github-app-spec.md` | Operator | Once, revisit on every secret rotation |
 | 04 | `04-tier-based-agent-cadence.md` | "How often does the AI bot run for a Tier 0 / 1 / 2 / 3 client, and which models does it use?" | Operator | Once, revisit when pricing tiers change |
 | 05 | `05-mothership-repo-buildout-plan.md` | "What are the phases I run Claude through to build the new mothership repo from scratch?" | Operator (run with Claude) | Once |
 | 06 | `06-operator-rebuild-prompt-v3.md` | "Per-client engagement: what do I run, in what order, to spin up a new client site?" | Operator | **Per engagement** |
@@ -61,6 +62,16 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 08 | `08-future-work.md` | "What's deferred? Legal, vault, market research, contracts, payments." | Operator | Once, revisit before each big milestone |
 | 09 | `09-github-account-topology.md` | "Should I create a new GitHub org/account, and what are the three identities?" | Operator | Once |
 | 10 | `10-lumivara-infotech-setup-plan.md` | "How do I actually set up the Lumivara Infotech GitHub org with real slugs?" | Operator | Once (at brand-lock time) |
+| 09 | `09-github-account-topology.md` | "Should I create a new GitHub org? Free vs paid? Bot account?" | Operator | Once |
+| 10 | `10-critique-executive-summary.md` | "Is the pack viable? What are the top 10 issues?" | Operator | Read first when revisiting the pack |
+| 11 | `11-critique-architectural-issues.md` | "What structural problems block production?" — names the cron-on-default-branch bug + three pick-one fix patterns. **Pattern C chosen 2026-04-28; canonical statement now in `02b`.** | Operator | Once; closed in canonical docs by Pattern C propagation (this PR series) |
+| 12 | `12-critique-security-secrets.md` | "Where do the secrets / cost-firewall leaks come from?" — single-Owner break-glass, per-client Resend keys, two-phase HMAC rotation, GitHub-App swap | Operator | Once; closed by Run B in `16 §2` |
+| 13 | `13-critique-ai-and-scaling.md` | "Do the maths reconcile? Where are the scaling cliffs?" — Action minutes, AI cost, Claude/Actions/n8n cliffs, model-rubric notes | Operator | Once; closed by Run C in `16 §3` |
+| 14 | `14-critique-operations-sequencing.md` | "What sequencing/coherency gaps need closing?" — Tier-0 honesty, OAuth manual scope, rollback paths, backups, engagement-log schema | Operator | Once; closed by Run D in `16 §4` |
+| 15 | `15-terminology-and-brand.md` | "Better names for mothership/operator/agent and brand alternatives" | Operator | Once; rename ships via Run S1 in `16 §5` |
+| 16 | `16-automation-prompt-pack.md` | "Copy-paste prompts for Claude Code in the browser to close the critiques" | Operator | **Per critique-closure run** |
+| — | `pattern-c-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
+| — | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) | "How do I spin Lumivara People Advisory out into its own client repo, end-to-end?" — phased one-shot runbook with allow/deny tables (`docs/migrations/_artifact-allow-deny.md`), per-phase dry-run / rollback / acceptance, and Pattern C §4/§5 as gate / acceptance set | Operator | **Once (per Client #1 spinout)** |
 
 Existing context that this folder builds on (do not duplicate):
 
@@ -134,13 +145,21 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 
 ## Quick links
 
+- **Canonical architecture (Pattern C):** `02b-pattern-c-architecture.md`
 - New mothership repo bootstrap: `05-mothership-repo-buildout-plan.md`
 - Per-engagement playbook: `06-operator-rebuild-prompt-v3.md`
 - Client-facing pack template: `07-client-handover-pack.md`
 - Tier-based AI cadence: `04-tier-based-agent-cadence.md`
+- Cost firewall + zone isolation: `03-secure-architecture.md` (partially deprecated — Run B rewrites)
 - Cost firewall + zone isolation: `03-secure-architecture.md`
 - **Pattern C enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `pattern-c-enforcement-checklist.md`**
 - **Client #1 spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)**
 - Future legal / vault work: `08-future-work.md`
+
+---
+
+## Pattern C canonical, as of 2026-04-28
+
+The architecture is locked. Each engagement gets two private repos in the operator's org — `<slug>-site` (client-readable) and `<slug>-pipeline` (operator-only) — with a single org-level GitHub App bridging them via short-lived installation tokens. The deprecated `operator/main` branch overlay and the legacy `VENDOR_GITHUB_PAT` are gone from the canonical docs (`02`, `02b`, `04`, `05`, `06`, `09`); they survive only inside the critique series (`10`, `11`, `12`) and the migration prompt-pack (`16`, `17`), where they appear under prominent **Historical / decision record** banners. When in doubt, `02b` is the source of truth.
 
 *Last updated: 2026-04-28.*

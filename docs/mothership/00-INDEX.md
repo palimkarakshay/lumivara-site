@@ -93,6 +93,8 @@ Existing context that this folder builds on (do not duplicate):
 - `docs/N8N_SETUP.md` — n8n on Railway
 - `docs/wiki/Home.md` — **dual-lane wiki** (🛠 Operator / 🌐 Client / ⚪ Both). The wiki is the working summary of this pack for the operator and is the source from which per-client wikis are scaffolded; only the 🌐 and ⚪ pages are copied into a client repo (see `docs/wiki/_partials/lane-key.md` and `docs/wiki/_partials/do-not-copy.md`).
 - [`docs/ops/variable-registry.md`](../ops/variable-registry.md) — **canonical inventory of every named key** (GitHub Actions secrets/vars, Vercel env, n8n credentials, dashboard vars, operator-vault entries) with scope / owner / rotation / references. The audit cadence in `03-secure-architecture.md §3.2` walks this file. (#142)
+- [`docs/ops/platform-baseline.md`](../ops/platform-baseline.md) — **expected GitHub + Vercel deployment topology** (secrets, vars, branch protection, Pages, webhooks, env-var scopes) that the audit runbook diffs the live configuration against. (#145)
+- [`docs/ops/audit-runbook.md`](../ops/audit-runbook.md) — **end-to-end audit procedure**: export from GitHub + Vercel, compare against baseline + registry, file one issue per delta, bump `_Last verified_` stamps. Quarterly + on every secret rotation. (#145)
 
 ---
 

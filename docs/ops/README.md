@@ -10,10 +10,11 @@ with `docs/mothership/` (strategy + architecture) and `docs/wiki/`
 | File | Purpose |
 |---|---|
 | [`variable-registry.md`](variable-registry.md) | Canonical inventory of every named key (GitHub Actions secret/var, Vercel env, n8n credential, dashboard var, operator-vault entry). Source of truth for the audit cadence in `docs/mothership/03-secure-architecture.md §3.2`. |
+| [`platform-baseline.md`](platform-baseline.md) | Snapshot of the *expected* GitHub + Vercel deployment topology — secrets, vars, branch protection, Pages, webhooks, env-var scopes — that `audit-runbook.md` diffs the live configuration against. |
+| [`audit-runbook.md`](audit-runbook.md) | End-to-end procedure for reconciling live GitHub + Vercel configuration against the baseline + registry. Quarterly + on every secret rotation. Files mismatches via the `audit-mismatch` issue template. |
 
 Future entries in this folder (planned):
 
-- `audit-runbook.md` — quarterly secret-rotation walkthrough (issue #145).
 - `incident-response.md` — flesh out the one-pager in `docs/mothership/03-secure-architecture.md §8`.
 
 Conventions for adding a doc here:

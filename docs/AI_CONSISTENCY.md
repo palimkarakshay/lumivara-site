@@ -132,6 +132,13 @@ Things we do today, with pointers:
   (`scripts/test-codex-fix-classify.py`, wired into
   `ai-smoke-test.yml`) iterates the catalogue; weakening any guard
   fails the smoke test.
+- **Gemini drift detection.** Weekly cron runs a full-tree read for
+  cross-tree naming/style drift, capped at ≤5 issues per run. See
+  [`docs/ops/gemini-deep-audit.md`](./ops/gemini-deep-audit.md) for the
+  runbook, cluster output contract, and hallucination guard. The Codex
+  per-PR review only sees the diff; this audit reads the whole tree on
+  Mondays 08:00 UTC and files `Drift: …` issues for clusters of 2+
+  files where one deviates from a pattern the others establish.
 
 Things worth adding next (rough priority order):
 
@@ -139,10 +146,11 @@ Things worth adding next (rough priority order):
    Tailwind class ordering, MDX frontmatter shape) that all three bots
    are pointed to. Today this is implicit in the codebase; making it
    explicit lets the Codex reviewer cite it instead of inferring.
-2. **A Gemini "deep audit" cron** that does a periodic full-tree read
+2. ~~**A Gemini "deep audit" cron** that does a periodic full-tree read
    for naming/style drift and files an issue when it finds inconsistency
    clusters. Gemini's 1M-context window is the right tool for this and
-   the free tier covers it.
+   the free tier covers it.~~ _(landed; see "Things we do today" →
+   "Gemini drift detection")_
 3. **PR template** that asks the contributor (human or bot) to confirm
    the plan was followed and lists the four DoD checks. Claude already
    includes them; humans don't. A template normalises both.

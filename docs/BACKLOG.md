@@ -99,7 +99,12 @@ If a future phase needs to dial usage back:
 ## Recurring backlog items
 
 - [ ] **Pattern C audit** — quarterly cadence, plus on every secret rotation and every new client repo onboarded. Walk every MUST / MUST-NOT row in [`docs/mothership/pattern-c-enforcement-checklist.md`](mothership/pattern-c-enforcement-checklist.md) (see §6 of that file for the procedure and §5 for the per-client verification commands).
+- [ ] **Variable registry audit** — quarterly cadence, plus on every secret rotation. Walk [`docs/ops/variable-registry.md`](ops/variable-registry.md) §1–§6 row by row, re-confirm rotation dates, then update §7 (Last verified). Procedure is the audit cadence in [`docs/mothership/03-secure-architecture.md §3.2`](mothership/03-secure-architecture.md#32-audit-cadence).
+
+## Deferred follow-ups (auto-routine + scripts/.github exclusions)
+
+- [ ] **`check-undocumented-vars` lint script + CI gate** — deferred from #142 because `scripts/` and `.github/workflows/` are hard-excluded from the auto-routine playbook. Requirements are pinned in [`docs/ops/variable-registry.md §8`](ops/variable-registry.md#8-deferred-ci-check--check-undocumented-vars). Owner: operator. Trigger: a follow-up issue tagged `infra-allowed` or implemented manually outside the auto-routine.
 
 ## One-shot operator runbooks
 
-- [ ] **Run [`docs/migrations/lumivara-people-advisory-spinout.md`](migrations/lumivara-people-advisory-spinout.md) end-to-end** — spin out Client #1 (Lumivara People Advisory) into `palimkarakshay/lumivara-people-advisory-site`. Target date: TBD by operator. Pre-flight gates: #140 (Pattern C checklist) ✅, #142 (variable registry) ☐. Issue #141 ships the *runbook*; running it is a separate operator action tracked here.
+- [ ] **Run [`docs/migrations/lumivara-people-advisory-spinout.md`](migrations/lumivara-people-advisory-spinout.md) end-to-end** — spin out Client #1 (Lumivara People Advisory) into `palimkarakshay/lumivara-people-advisory-site`. Target date: TBD by operator. Pre-flight gates: #140 (Pattern C checklist) ✅, #142 (variable registry) ✅. Issue #141 ships the *runbook*; running it is a separate operator action tracked here.

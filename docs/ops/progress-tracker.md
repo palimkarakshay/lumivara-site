@@ -19,7 +19,7 @@
 
 | Gate | What it unlocks | Status | Last moved |
 |---|---|---|---|
-| **§1 — Migration-ready** | Phase 2 (Run S1 mechanical rename) and every later phase | 🟥 RED — streak counter at 0/10, tracking issue not yet filed | n/a |
+| **§1 — Migration-ready** | Phase 2 (Run S1 mechanical rename) and every later phase | 🟥 RED — streak counter at 0/10 ([#195 pinned](https://github.com/palimkarakshay/lumivara-site/issues/195)), gate not yet started | 2026-04-29 (issue filed today) |
 | **§6 — Demo-ready** | First external prospect demo | 🟥 RED — none of the 4 sub-rows started | n/a |
 | **§7 — Operator drop-deads** | The "you didn't get blocked by your own delay" gate | 🟧 AMBER — O4a (trademark knock-out search) due Fri 2026-05-01, not yet started | 2026-04-29 (today) |
 
@@ -53,10 +53,10 @@ The high-level migration sequence from [`docs/migrations/00-automation-readiness
 
 **Operator carries (4 sittings, ~6 hours total):**
 
-- ☐ **D-0 Wed 04-29 — O4a trademark knock-out search.** PDF saved to `docs/legal/`. Verdict logged on issue. (~60 min)
-- ☐ **D-1 Thu 04-30 — file streak tracking issue + walk every open issue + bulk-classify project items.** (~90 min)
-- ☐ **D-2 Fri 05-01 — Vercel mirror sitting (env vars + webhook + repo secrets).** (~90 min)
-- ☐ **D-3 AM Mon 05-04 — first-time backfill promote on `/admin/deployments`.** (~30 min + 30 min wait)
+- ☐ **D-0 Wed 04-29 — O4a trademark knock-out search ([#196](https://github.com/palimkarakshay/lumivara-site/issues/196)).** PDF saved to `docs/legal/`. Verdict logged on issue. (~60 min)
+- ☐ **D-1 Thu 04-30 — open streak tracker [#195](https://github.com/palimkarakshay/lumivara-site/issues/195) + walk every open issue + bulk-classify project items.** (~90 min)
+- ☐ **D-2 Fri 05-01 — Vercel mirror sitting ([#197](https://github.com/palimkarakshay/lumivara-site/issues/197)).** (~90 min)
+- ☐ **D-3 AM Mon 05-04 — first-time backfill promote ([#198](https://github.com/palimkarakshay/lumivara-site/issues/198)).** (~30 min + 30 min wait)
 
 **Bot carries (autonomous; operator does nothing):**
 

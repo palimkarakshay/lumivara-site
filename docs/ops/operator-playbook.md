@@ -29,6 +29,8 @@ The playbook lies to you on purpose: it pretends there is only one thing to do t
 ## §1 — Today's hero task (D-0, Wed 2026-04-29)
 
 > **The one thing.** File the **trademark knock-out search** for `Lumivara Forge` (operator task O4a, [`01-poc-perfection-plan.md §7.1`](../migrations/01-poc-perfection-plan.md#71--the-map)).
+>
+> **Tracking issue:** [#196 — O4a — Trademark knock-out search (DUE Fri 2026-05-01)](https://github.com/palimkarakshay/lumivara-site/issues/196). Open this issue and follow its step-by-step before reading the rest of this section — the issue body is canonical, this section is the motivation.
 
 ### Why this and not something else
 
@@ -101,10 +103,10 @@ The dated plan from [`01-poc-perfection-plan.md §3`](../migrations/01-poc-perfe
 
 | Day | Date | Your task | Time | Status |
 |---|---|---|---|---|
-| **D-0** | Wed 04-29 | **§1 above (O4a trademark knock-out search)** + decision: streak counts only `auto-routine` issues (this is a 30-second ratification, just say yes). | 60 min | ☐ |
-| **D-1** | Thu 04-30 | (a) **File the streak tracking issue** — title `Phase 1 green streak — counter at 0/10`, label `meta/automation-readiness`, pinned, body = §1.1 + §1.2 + §1.3 of POC plan. (b) Walk every open issue and apply `priority/` × `complexity/` × `area/` triples or close as `status/post-migration`. (c) **Same sitting:** fill the `Repo-Destination-Post-Migration` field on every project item ([`github-project-layout.md §6.2`](./github-project-layout.md#62--the-single-most-important-bulk-classification-pass)). | 90 min | ☐ |
-| **D-2** | Fri 05-01 | **Vercel mirror sitting** — rows 1–3 of [`production-integrity.md §9`](../deploy/production-integrity.md). Add env vars in all three Vercel environments, add the `deployment.succeeded`/`error` webhook, add the GitHub repo secrets. Capture screenshots. **L date for O4a if not done D-0.** | 90 min | ☐ |
-| **D-3 AM** | Mon 05-04 | Click **Promote tip of main** on `/admin/deployments`. Wait 30 min for the watcher's first scheduled run; confirm it does **not** open a P1 issue. **Hard L date for O4a — do this morning if not yet done.** | 30 min + 30 min wait | ☐ |
+| **D-0** | Wed 04-29 | **§1 above (O4a trademark knock-out search) — [issue #196](https://github.com/palimkarakshay/lumivara-site/issues/196)** + decision: streak counts only `auto-routine` issues (this is a 30-second ratification, just say yes). | 60 min | ☐ |
+| **D-1** | Thu 04-30 | (a) Streak tracking issue is **already filed: [#195](https://github.com/palimkarakshay/lumivara-site/issues/195)** (pinned). Open it once, confirm the counter is at 0/10. (b) Walk every open issue and apply `priority/` × `complexity/` × `area/` triples or close as `status/post-migration`. (c) **Same sitting:** fill the `Repo-Destination-Post-Migration` field on every project item ([`github-project-layout.md §6.2`](./github-project-layout.md#62--the-single-most-important-bulk-classification-pass)). | 90 min | ☐ |
+| **D-2** | Fri 05-01 | **Vercel mirror sitting — [issue #197](https://github.com/palimkarakshay/lumivara-site/issues/197).** Add env vars in all three Vercel environments, add the `deployment.succeeded`/`error` webhook, add the GitHub repo secrets. Follow #197's step-by-step. **L date for O4a if not done D-0.** | 90 min | ☐ |
+| **D-3 AM** | Mon 05-04 | **First-time backfill promote — [issue #198](https://github.com/palimkarakshay/lumivara-site/issues/198).** Click **Promote tip of main** on `/admin/deployments`. Wait 30 min for the watcher's first scheduled run; confirm it does **not** open a P1 issue. **Hard L date for O4a — do this morning if not yet done.** | 30 min + 30 min wait | ☐ |
 | **D-3 PM** | Mon 05-04 | (Bot files seven seed issues. **Your job: do nothing.** Operator action mid-streak resets the counter. The hardest day of the playbook is the day you do nothing on purpose.) | 0 min | ☐ |
 | **D-4** | Tue 05-05 | (Bot work — your job: open `/admin/deployments` once, confirm drift = 0, close the tab.) | 5 min | ☐ |
 | **D-5** | Wed 05-06 | (Bot work — same.) | 5 min | ☐ |
@@ -146,7 +148,7 @@ The full table is [`01-poc-perfection-plan.md §7.1`](../migrations/01-poc-perfe
 
 ## §5 — Streak counter (mirror of the GitHub tracking issue)
 
-Mirror only — the **canonical** counter is the GitHub issue `Phase 1 green streak — counter at 0/10` (file it on D-1). This section refreshes Monday.
+Mirror only — the **canonical** counter is [GitHub issue #195 — Phase 1 green streak — counter at 0/10](https://github.com/palimkarakshay/lumivara-site/issues/195) (pinned). This section refreshes Monday.
 
 ```
 Streak: 0 / 10

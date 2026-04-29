@@ -54,7 +54,8 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 01 | `01-business-plan.md` | "What is the business, what does it sell, and what name does it operate under?" | Operator | Once, revisit quarterly |
 | 02 | `02-architecture.md` | "How is the mothership repo structured, and how do the per-client site + pipeline repos relate to it?" — Pattern C canonical | Operator | Once |
 | 02b | `02b-pattern-c-architecture.md` | "What is Pattern C, in one self-contained file?" — the canonical architecture statement (locked 2026-04-28) | Operator | Once; cross-linked from every doc that touches architecture |
-| 03 | `03-secure-architecture.md` | "How do I keep client zones, secrets, and costs strictly isolated from the mothership?" — partially deprecated; Run B (`16 §2`) rewrites it to match Pattern C and adds `03b-github-app-spec.md` | Operator | Once, revisit on every secret rotation |
+| 03 | `03-secure-architecture.md` | "How do I keep client zones, secrets, and costs strictly isolated from the mothership?" — Pattern C aligned; canonical App identity model at `§3.X`, two-phase HMAC rotation at `§3.Y` | Operator | Once, revisit on every secret rotation |
+| 03b | `03b-security-operations-checklist.md` | "What does the operator do, and how often, to keep the security posture from drifting?" — monthly + quarterly cadences, recovery drill template, secret rotation schedule matrix, anti-pattern detection | Operator | **Per monthly + quarterly pass** |
 | 04 | `04-tier-based-agent-cadence.md` | "How often does the AI bot run for a Tier 0 / 1 / 2 / 3 client, and which models does it use?" | Operator | Once, revisit when pricing tiers change |
 | 05 | `05-mothership-repo-buildout-plan.md` | "What are the phases I run Claude through to build the new mothership repo from scratch?" | Operator (run with Claude) | Once |
 | 06 | `06-operator-rebuild-prompt-v3.md` | "Per-client engagement: what do I run, in what order, to spin up a new client site?" | Operator | **Per engagement** |
@@ -150,8 +151,8 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 - Per-engagement playbook: `06-operator-rebuild-prompt-v3.md`
 - Client-facing pack template: `07-client-handover-pack.md`
 - Tier-based AI cadence: `04-tier-based-agent-cadence.md`
-- Cost firewall + zone isolation: `03-secure-architecture.md` (partially deprecated — Run B rewrites)
 - Cost firewall + zone isolation: `03-secure-architecture.md`
+- **Security operations cadence (monthly / quarterly / drill / rotation matrix / anti-patterns): `03b-security-operations-checklist.md`**
 - **Pattern C enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `pattern-c-enforcement-checklist.md`**
 - **Client #1 spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)**
 - Future legal / vault work: `08-future-work.md`

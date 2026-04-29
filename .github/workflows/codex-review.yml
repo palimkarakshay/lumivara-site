@@ -264,6 +264,14 @@ jobs:
           # exists, additionally label `codex-blockers` so auto-merge.yml
           # gates the merge.
           if [ -n "$PR_NUM" ]; then
+            # Ensure the labels exist (idempotent — `|| true` swallows
+            # "already exists" errors). Without this, the very first PR
+            # this workflow runs against would `gh pr edit --add-label`
+            # against a non-existent label and silently fail.
+            gh label create "codex-reviewed" --repo "$REPO" \
+              --color "0e8a16" --description "Codex consistency review posted" 2>/dev/null || true
+            gh label create "codex-blockers" --repo "$REPO" \
+              --color "b60205" --description "Codex flagged blocker/major findings — gates auto-merge" 2>/dev/null || true
             gh pr edit "$PR_NUM" --repo "$REPO" --add-label "codex-reviewed" || true
             BLOCKERS=$(grep -ciE '\[(blocker|major)\]' /tmp/review.md || true)
             VERDICT=$(grep -iE '^## Verdict' -A 2 /tmp/review.md | tail -n +2 | head -n 1 || true)

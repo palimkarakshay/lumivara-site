@@ -1,0 +1,39 @@
+All Rights Reserved — Proprietary and Confidential
+
+Copyright (c) 2026 Akshay Palimkar (operating as Lumivara Forge).
+All rights reserved.
+
+This repository (`palimkarakshay/lumivara-site`) and every artefact in
+it — source code, documentation, runbooks, prompts, design tokens,
+n8n workflow exports, scripts, manifests, decks, and research — is
+proprietary intellectual property. Unauthorised copying, redistribution,
+modification, sublicensing, public display, or any form of public
+disclosure of any part of this repository, in whole or in part, by any
+medium, is strictly prohibited without the prior written permission of
+the copyright holder.
+
+This file is an interim notice pending a lawyer-reviewed `LICENSE` per
+[`docs/mothership/21-ip-protection-strategy.md §2.1`](docs/mothership/21-ip-protection-strategy.md)
+(🜩 lawyer-review item, tracked at `21 §7`). The interim notice asserts
+the operator's intent ("never publish under a permissive licence without
+explicit decision") and is intentionally restrictive — every legitimate
+use case for this repository today (operator development, AI-agent CI
+runs, Vercel deployment) operates under that intent.
+
+For the Site repo entity (Lumivara People Advisory marketing site), the
+post-assignment licence at handover is `Proprietary — Lumivara People
+Advisory` per `21 §3.3` (the SOW assigns site code to the client at
+engagement completion). For the Pipeline repo entity (Lumivara Forge
+operator framework), the licence remains `All Rights Reserved` to the
+operator forever; that artefact set is the practice's competitive moat
+per `21 §1` row A and is technically protected by Pattern C's two-repo
+trust model.
+
+Third-party dependencies retain their own licences (MIT / Apache 2.0 for
+Next.js, Tailwind, shadcn, Base UI React, etc., bundled in
+`node_modules/`). This notice covers original work in this repository
+only.
+
+Contact: hello@lumivara.ca (Client #1 contact during the pre-spinout
+period; the operator-brand contact at hello@lumivara-forge.com lands
+once the domain is registered per `15 §5`).

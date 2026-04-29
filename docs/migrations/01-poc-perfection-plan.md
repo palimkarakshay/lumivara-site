@@ -521,4 +521,96 @@ re-running Run S1 across every doc, deck, and asset.
 Everything else can be sequenced inside the POC plan and Phase 0 day
 without external coordination.
 
+## §8 — Advisory spinout sequencing decision
+
+The operator asked, explicitly: *spin Lumivara People Advisory out
+before or after the POC and migration?*
+
+### §8.1 — Recommendation: **after.**
+
+`00-automation-readiness-plan.md §1` already orders this correctly:
+POC (Phase 1) → Run S1 rename (Phase 2) → platform repo (Phase 3) →
+Client #1 spinout (Phase 4) → green-field Client #2 (Phase 5). This
+plan affirms that ordering rather than re-deriving it. The rest of
+this section explains why the tempting alternative — spinning the
+advisory out earlier to "get it done" — is the wrong instinct.
+
+### §8.2 — Why "after" is right
+
+1. **The advisory site is the laboratory.** The whole POC streak
+   counts auto-routine PRs landing on `palimkarakshay/lumivara-site`,
+   which today *is* the advisory site. Spinning the site out
+   mid-streak moves the laboratory and invalidates the green-streak
+   audit trail. The operator paid 2 wall-clock weeks for that audit
+   trail; throwing it away to re-run on the new repo is the most
+   expensive form of "let's get this done early."
+2. **Pattern C is about git history hygiene.** The two-repo split
+   (`<slug>-site` clean, `<slug>-pipeline` operator-only) is durable
+   only if `<slug>-site/main` history starts clean. Spinning out
+   before Run S1 means every operator-internal commit message and
+   every `auto/issue-*` branch from the POC streak is preserved in the
+   site repo's history forever. `lumivara-people-advisory-spinout.md
+   §0` open question already settled this in favour of "fresh repo +
+   selective copy" precisely to avoid that bleed; spinning out
+   *before* the POC defeats the same protection from a different
+   angle.
+3. **DNS is the only hard-to-reverse step.** Phase 4 row 12 is the
+   only operator action in the entire plan whose rollback is bounded
+   by DNS propagation, not by `git reset`. Doing it before the
+   autopilot is proven means accepting the risk of doing it twice.
+   Risk-adjusted, "after" is strictly cheaper.
+4. **Beas-the-client and Beas-the-spouse are the same person.** The
+   "rollback if anything goes wrong" cost is socially asymmetric on
+   this engagement in a way it won't be on Client #2. Putting the
+   most-coupled-to-the-operator's-personal-life client through the
+   first-ever spinout is high-stress; putting them through it after
+   the green-field path (Phase 5) has been validated would be
+   strictly safer — but the runbook can't fully anticipate green-field
+   bugs without one real spinout first. So the advisory spinout
+   stays at Phase 4, but the demo (§9) explicitly does **not** depend
+   on the advisory; the demo runs on the dummy-vertical site (§6.3)
+   so the advisory cutover can be calmly scheduled for a low-traffic
+   weekend without demo-day pressure.
+
+### §8.3 — The one safe pre-commitment
+
+Operator task **O7 (§7.1)** — create the empty target repos — happens
+on Phase 0 day, not Phase 4 day. It's not "spinning out early"; it's
+slug-locking. One-line README, no code, no DNS, no Vercel project.
+This protects the only thing that's actually irreversible-by-default
+on a rename path: a slug taken by someone else between when the
+operator picks it and when they need it.
+
+### §8.4 — The "but I want to do it now" rebuttals
+
+Pre-empting the operator's own future arguments:
+
+- *"If I spin out now, the POC streak runs on the cleaner client repo
+  and the audit trail is even better."* — No. The streak's whole
+  point is that it counts on the **same** repo where the autopilot
+  has been vibe-coded. Switching repos mid-stream means re-proving
+  the autopilot on a never-tested repo + the original drift. Two
+  problems instead of one.
+- *"I can do the advisory rename in parallel with the POC streak."*
+  — No. The streak resets on operator action mid-stream
+  (§5.1 R3). A repo rename is the largest operator-action signal
+  available.
+- *"What if Beas wants the rename done sooner?"* — Reframe: the
+  rename's *visible* effect (DNS pointing at a new project, repo
+  showing new name) is invisible to her. The only thing she sees is
+  the URL bar. The site she's editing today on phone-edit will keep
+  working on `palimkarakshay/lumivara-site` until Phase 4 cutover; if
+  asked, the honest answer is "the rename is bookkeeping, not a
+  feature, and we're sequencing it where it can't break your site."
+- *"Phase 4 is more than a month away."* — Yes, intentionally. A
+  month is the calendar buffer that makes the rest of the plan robust.
+
+### §8.5 — Single-line summary
+
+> Spin out **after**: Phase 1 (POC) → Phase 2 (S1) → Phase 3
+> (platform) → Phase 4 (advisory). Pre-commit only the slug
+> reservation (O7) on Phase 0 day. Demo runs on the dummy vertical
+> (§6.3), not on the advisory, so the advisory cutover happens on its
+> own schedule without demo-day pressure.
+
 *Last updated: 2026-04-29.*

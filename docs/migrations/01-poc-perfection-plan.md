@@ -32,9 +32,31 @@
 3. `docs/deploy/production-integrity.md §3` (the integrity contract).
 4. `docs/mothership/pattern-c-enforcement-checklist.md §4` (the
    pre-migration gate — every row must resolve green from this POC).
+5. `docs/freelance/01-gig-profile.md` Parts 2 & 4, `docs/freelance/02-pricing-tiers.md`,
+   `docs/decks/04-prospective-client-deck.md`,
+   `docs/freelance/06-product-strategy-deck.md` (the product
+   catalog the §6 demo-readiness gate is auditing).
 
-If you only have 5 minutes: read §1 (the migration-blocked gate) and §4
-(the daily plan day-zero row), then come back.
+If you only have 5 minutes: read §1 (the migration-blocked gate), §6
+(the demo-readiness gate above migration), §7.3 (the single calendar
+entry the operator needs this week), §8.1 (advisory sequencing
+recommendation), and §9.6 (first-demo audience). Come back for the
+dated plan in §3 and the hard exit checks in §4.
+
+### §0.1 — What this file gates, end-to-end
+
+Three gates, three audiences, three independent flips:
+
+| Gate                                                  | Section | Audience that benefits         | Goes green when…                                                                                                                                                                                |
+|-------------------------------------------------------|---------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Migration-ready** (Phase 2 unblocked)               | §1      | The future Run S1 bot session  | 10/10 streak, production-integrity wired, Pattern C readiness rows all tick. The technical-trust gate.                                                                                          |
+| **Demo-ready** (first prospect demo unblocked)        | §6      | The first demo audience (§9)   | Phone-edit pipeline proven end-to-end, catalog consistency proven, dummy-vertical demo site live, optional public-demo legal/risk rows cleared. The product-trust gate.                         |
+| **Operator-ready** (operator hasn't missed a window)  | §7      | Future-operator (you, in July) | Trademark filed, slug-locking done, Phase 0 tasks sequenced inside their L dates. The "you didn't get blocked by your own delay" gate.                                                          |
+
+§1 and §6 can flip independently. §7 isn't really a "gate" — it's a
+**deadline sheet**. Reading order assumes the operator will optimise
+for §1 + §6 simultaneously and use §7 to keep §6 reachable in the
+demo window.
 
 ## §1 — Migration-blocked gate (highest priority)
 
@@ -98,6 +120,10 @@ existing and so will be tested in their own runbooks.
 > **Migration cannot start** until §1.1 + §1.2 + §1.3 are all green
 > simultaneously. The streak counter resets to 0/10 if any row in §1.2
 > or §1.3 regresses during the streak.
+>
+> §1 is the migration gate only; the **demo gate** is §6. The two are
+> independent — see §0.1 for the gate map and §9 for the audience the
+> demo gate serves.
 
 ## §2 — Gap inventory (what's between today and the gate)
 

@@ -12,21 +12,25 @@
 > **Audience.** Operator. Bots read this only when they need to know
 > which custom-field values to set on a new issue.
 >
-> **Status.** Drafted 2026-04-29 on branch
-> `claude/github-project-setup`. The ten custom fields in §3.1 were
-> created on the existing `Lumivara Backlog` project (user-level, ID
-> `PVT_kwHOARsRls4BVg_H`) on the same day via
-> `scripts/bootstrap-forge-project.sh`. No issue migration was
-> required — the 46 currently-open issues stay on the same project,
-> they just need bulk-classification.
+> **Status.** The project skeleton is fully live on the
+> `Lumivara Backlog` project (user-level, ID
+> `PVT_kwHOARsRls4BVg_H`): all ten custom fields were created on
+> 2026-04-29 via `scripts/bootstrap-forge-project.sh`, and all
+> twelve saved views were added in the web UI the same day. No
+> issue migration was required — the 46 then-open issues stay on
+> the same project, they just need bulk-classification (§6.2).
+> Outstanding operator work tracked by the §3 D-1 row in
+> `01-poc-perfection-plan.md` and by the audit routine scheduled
+> for ~2 weeks after rollout.
 
 ## §0 — Reading order
 
 1. §1 — the recommendation and why one project (not many).
 2. §2 — does the operator (or the bot) need new GitHub access?
-3. §3 — the field & view spec (what was created and what's still manual).
-4. §4 — web-UI runbook (Android browser, ~15 minutes) — used for the
-   12 saved views (the GraphQL API does not yet support view creation).
+3. §3 — the field & view spec (what was created, with live URLs).
+4. §4 — web-UI runbook (Android browser) — original walkthrough
+   for the views; preserved as reference even though the views are
+   already live.
 5. §5 — scripted runbook (Termux on phone, or Git Bash on Windows).
 6. §6 — migration safety: how the existing 46 issues survive the
    field rollout with no data loss and no manual re-add.
@@ -34,8 +38,9 @@
    org birth and per-client repo births in
    [`00-automation-readiness-plan.md`](../migrations/00-automation-readiness-plan.md).
 
-If you only have 5 minutes: read §1, §3.1 (the 10 fields), and §4.3
-(the views to add in the web UI).
+If you only have 5 minutes: read §1 and the §3.2 view-name + URL
+table. Open one or two views and confirm they work; the project is
+already wired for daily use.
 
 ## §1 — Recommendation
 
@@ -124,27 +129,65 @@ The five values `Inbox`, `Triaged`, `In Progress`, `Review`, `Done`
 come from `bootstrap-kanban.sh` and are read by the `triage`/`execute`
 cron paths.
 
-### §3.2 — Saved views (still manual)
+### §3.2 — Saved views (live)
 
-GitHub's GraphQL API does not currently expose `ProjectV2View`
-creation, so the twelve views below are added in the web UI per
-§4.3. Order matters: the view-strip on mobile scrolls left-to-right
-and the operator's most-used ones go first.
+All twelve views below were created on `Lumivara Backlog` on
+2026-04-29 in the web UI. GitHub's GraphQL API does not currently
+expose `ProjectV2View` creation — that is why they are not part of
+`scripts/bootstrap-forge-project.sh`.
 
-| # | View | Type | Filter | Group-by | Sort | Use |
-|---|---|---|---|---|---|---|
-| 1 | **Demo-Day Critical** | Board | `Demo-Day Critical: yes` AND `Status ≠ Done` | `Workstream` | `Drop-Dead Date asc` | The single board the operator opens before every working session until the first demo ships. |
-| 2 | **POC daily** | Board | `Phase: 1-poc` AND `Status ≠ Done` | `Status` | `priority/* desc` | Mirrors `01-poc-perfection-plan.md §3` day-by-day plan. |
-| 3 | **Operator drop-dead** | Roadmap | `Owner-Type: Operator` AND `Drop-Dead Date is not empty` | none | `Drop-Dead Date asc` | The §7 deadline sheet, visualised on a calendar strip. |
-| 4 | **By Workstream** | Table | `Status ≠ Done` | `Workstream` | `priority/* desc` | The "what's on every track at once" master table. |
-| 5 | **Demo-readiness** | Board | `Gate: section6-demo` AND `Status ≠ Done` | `Status` | `Drop-Dead Date asc` | Mirrors `01-poc-perfection-plan.md §6`. |
-| 6 | **Migration gate** | Board | `Gate: section1-migration` AND `Status ≠ Done` | `Status` | `priority/* desc` | The Phase-2-blocker view. |
-| 7 | **Phase 0–6 roadmap** | Roadmap | `Phase ≠ none` | `Phase` | `Drop-Dead Date asc` | Strategic-pacing view across all phases. |
-| 8 | **External / human-only** | Table | `Owner-Type: External` OR `Owner-Type: Operator` | `Owner-Type` | `Drop-Dead Date asc` | The "things bots cannot do" list. |
-| 9 | **Triage inbox** | Board | `Status: Inbox` | `Workstream` | `created asc` | First stop for new issues — operator assigns Workstream + Phase + Gate before bot triage. |
-| 10 | **Prospect CRM-lite** | Board | `Workstream: ProspectClient` | `Status` | `Drop-Dead Date asc` | Discovery → Proposal → Signed → Lost (re-using the kanban statuses; rename to those columns visually if it helps). |
-| 11 | **Advisory spinout** | Board | `Workstream: Advisory` OR `Repo-Destination-Post-Migration: advisory-site` OR `… advisory-pipeline` | `Phase` | `Drop-Dead Date asc` | Everything the Phase 4 advisory cutover will need to move. |
-| 12 | **Repo destinations (Phase 4 prep)** | Table | (no filter) | `Repo-Destination-Post-Migration` | `Workstream asc` | The bulk-classification audit view from §6. Empty rows in this view are the punch list for the §3 D-1 task in `01-poc-perfection-plan.md`. |
+The view-strip on mobile scrolls left-to-right; tab order in the UI
+matches the operator's chosen order, not the row order in this table.
+The view URLs below resolve to a specific view by its ProjectV2View
+node, not by name — bots and future-self should look up views by
+**name**, not by view-number, since reordering tabs in the UI does
+not change the underlying view IDs.
+
+Layout-specific fields:
+
+- **Board** layout splits the legacy "group-by" axis into **Column
+  by** (the kanban columns) and **Swimlanes** (horizontal slices,
+  optional).
+- **Roadmap** layout takes a **Group by** axis plus a **Dates**
+  field that becomes the bar on the timeline (single field for a
+  point, a pair like `Earliest-Sensible Date` + `Drop-Dead Date`
+  for a duration bar).
+- **Table** layout takes **Group by** and a **Fields** picker.
+
+| # | View name | URL | Layout | Filter | Column / Group by | Swimlanes | Dates | Sort | Use |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | `Demo-Day Critical` | [/views/6](https://github.com/users/palimkarakshay/projects/1/views/6) | Board | `"Demo-Day Critical":yes -status:Done` | Status | Workstream | — | `Drop-Dead Date` asc | The single board the operator opens before every working session until the first demo ships. |
+| 2 | `POC daily` | [/views/7](https://github.com/users/palimkarakshay/projects/1/views/7) | Board | `Phase:1-poc -status:Done` | Status | (none) | — | manual | Mirrors the day-by-day plan in `01-poc-perfection-plan.md §3`. |
+| 3 | `Operator drop-dead` | [/views/10](https://github.com/users/palimkarakshay/projects/1/views/10) | Roadmap | `"Owner-Type":Operator` | Workstream | — | `Drop-Dead Date` (single) | `Drop-Dead Date` asc | The §7.1 deadline sheet, visualised on a calendar strip. |
+| 4 | `By Workstream` | [/views/14](https://github.com/users/palimkarakshay/projects/1/views/14) | Table | `-status:Done` | Workstream | — | — | manual | The "what's on every track at once" master table. |
+| 5 | `Demo-readiness` | [/views/8](https://github.com/users/palimkarakshay/projects/1/views/8) | Board | `Gate:section6-demo -status:Done` | Status | (none) | — | `Drop-Dead Date` asc | Mirrors the §6 demo-readiness gate in `01-poc-perfection-plan.md`. |
+| 6 | `Migration gate` | [/views/9](https://github.com/users/palimkarakshay/projects/1/views/9) | Board | `Gate:section1-migration -status:Done` | Status | (none) | — | manual | The Phase-2-blocker view. |
+| 7 | `Phase 0-6 roadmap` | [/views/11](https://github.com/users/palimkarakshay/projects/1/views/11) | Roadmap | `-Phase:none` | Phase | — | `Earliest-Sensible Date` and `Drop-Dead Date` (span) | `Drop-Dead Date` asc | Strategic-pacing view across all six migration phases. |
+| 8 | `External / human-only` | [/views/13](https://github.com/users/palimkarakshay/projects/1/views/13) | Table | `"Owner-Type":External,Operator` | Owner-Type | — | — | `Drop-Dead Date` asc | The "things bots cannot do" list. |
+| 9 | `Triage inbox` | [/views/16](https://github.com/users/palimkarakshay/projects/1/views/16) | Board | `status:Inbox` | Workstream | (none) | — | manual | First stop for new issues — operator assigns Workstream + Phase + Gate before bot triage. |
+| 10 | `Prospect CRM-lite` | [/views/18](https://github.com/users/palimkarakshay/projects/1/views/18) | Board | `Workstream:ProspectClient` | Status | (none) | — | `Drop-Dead Date` asc | Discovery → Proposal → Signed → Lost (re-using the kanban statuses). |
+| 11 | `Advisory spinout` | [/views/19](https://github.com/users/palimkarakshay/projects/1/views/19) | Board | `Workstream:Advisory` | Phase | (none) | — | `Drop-Dead Date` asc | Everything the Phase 4 advisory cutover will need to move. |
+| 12 | `Repo destinations` | [/views/20](https://github.com/users/palimkarakshay/projects/1/views/20) | Table | (no filter) | Repo-Destination-Post-Migration | — | — | `Workstream` asc | The bulk-classification audit view from §6.2. Empty rows are the punch list for the corresponding §3 row in `01-poc-perfection-plan.md`. |
+
+#### §3.2.1 — Why no `priority/* desc` sort
+
+An earlier draft of this table specified `priority/* desc` as the
+default sort for the demo / migration / by-workstream views.
+ProjectV2 cannot sort by **labels** — only by fields. Three options
+considered, and the one taken:
+
+- **Drop-Dead Date asc** for the demo and migration boards. Closest
+  proxy to operator intent: items with the nearest deadline rise to
+  the top.
+- **manual** for boards that don't have meaningful deadlines yet
+  (POC daily, Migration gate without dates, Triage inbox, By
+  Workstream). Drag-to-reorder lets the operator pin top-of-mind
+  items without growing the field schema.
+- **Adding a `Priority` single-select field** (`P1`/`P2`/`P3`) was
+  rejected — the existing `priority/*` labels already drive triage
+  and execute filters, and duplicating into a project field would
+  drift unless wired into automation. Defer until the operator
+  actually wants the project to filter by priority numerically.
 
 ### §3.3 — Milestones
 
@@ -182,18 +225,35 @@ safe to re-run any time).
 
 ### §4.3 — Add the twelve saved views
 
+Already done on 2026-04-29 — left here as reference for re-creating
+a view if one is accidentally deleted, or for spinning up a sibling
+project later (e.g. a per-client repo project in Phase 4).
+
 In the project, top-left **+ New view** for each row in §3.2. For
 each view:
 
-1. Pick the **Type** column from §3.2 (Board / Table / Roadmap).
-2. Tap **Filter** → paste the filter expression.
-3. Tap **Group by** → pick the field.
-4. Tap **Sort** → pick the field + direction.
+1. Pick the **Layout** column from §3.2 (Board / Table / Roadmap).
+2. Tap **Filter** → paste the filter expression verbatim from §3.2.
+3. Set the layout-specific axes (the labels differ per layout):
+   - **Board** layout — set **Column by** (the kanban columns) and,
+     if §3.2 specifies one, **Swimlanes** (horizontal slices).
+     Board has no "Group by" option; that axis is split between
+     Column-by and Swimlanes.
+   - **Roadmap** layout — set **Group by** and **Dates** (the field
+     or pair of fields rendered as the timeline bar). For a
+     duration bar, pick two date fields; for a deadline marker,
+     one.
+   - **Table** layout — set **Group by** and use **Fields** to
+     pick which columns to show.
+4. Tap **Sort by** → pick the field + direction (or leave **manual**
+   if §3.2 says so).
 5. Top-left view tab → long-press → **Rename** to the view name in §3.2.
+   The name is what bots and future-self look up by, so type it
+   verbatim — view-numbers in the URL are not a stable identifier.
 6. Drag the tab into position — order matters for the mobile strip.
 
-Tip: views #1 (`Demo-Day Critical`) and #2 (`POC daily`) are the two
-the operator opens daily; put them first so they're the default tab
+Tip: views `Demo-Day Critical` and `POC daily` are the two the
+operator opens daily; put them first so they're the default tab
 when the project loads.
 
 ### §4.4 — Verify the existing 46 issues are on the project

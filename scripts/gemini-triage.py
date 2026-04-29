@@ -178,6 +178,16 @@ def apply_labels(issue_num: int, classification: dict) -> None:
     )
 
 
+def thinking(msg: str) -> None:
+    """Emit a THINKING block in the format the AI Ops dashboard's LogViewer
+    parses (`>>> THINKING` … `<<< END THINKING`). The dashboard pulls these
+    from raw run logs, so anything we want surfaced to the operator must
+    travel through this helper."""
+    print(">>> THINKING")
+    print(msg)
+    print("<<< END THINKING", flush=True)
+
+
 def main():
     # Fetch open issues still labeled needs-triage (those Claude missed)
     result = subprocess.run(
@@ -188,19 +198,36 @@ def main():
     )
     issues = json.loads(result.stdout)
     if not issues:
+        thinking("Gemini fallback: no needs-triage issues remain — Claude handled the queue.")
         print("Gemini fallback: no needs-triage issues remain. Claude handled everything.")
         return 0
 
+    thinking(
+        f"Gemini fallback engaged. Model={GEMINI_MODEL}. "
+        f"Queue size={len(issues)} (cap={MAX_ISSUES}). "
+        f"Triaging in order, one classification per item."
+    )
     print(f"Gemini fallback: triaging {len(issues)} remaining issue(s).")
     success = 0
     for i in issues:
         try:
             cls = gemini_classify(i["title"], i.get("body") or "")
+            thinking(
+                f"Issue #{i['number']} — {i['title']}\n"
+                f"Priority: {cls.get('priority')} | Complexity: {cls.get('complexity')}\n"
+                f"Area: {cls.get('area')} | Type: {cls.get('type')}\n"
+                f"Routing label: {cls.get('routing') or '(default Claude tier)'}\n"
+                f"Auto-routine: {cls.get('auto_routine')}\n"
+                f"Needs clarification: {cls.get('needs_clarification')}\n"
+                f"Rationale: {cls.get('rationale', '')}"
+            )
             apply_labels(i["number"], cls)
             print(f"  #{i['number']} → {cls.get('priority')}/{cls.get('complexity')} ({cls.get('rationale','')[:60]})")
             success += 1
         except Exception as e:
+            thinking(f"Issue #{i['number']} FAILED during Gemini classification: {e}")
             print(f"  #{i['number']} FAILED: {e}", file=sys.stderr)
+    thinking(f"Gemini fallback finished. Triaged {success}/{len(issues)}.")
     print(f"\nTriaged {success}/{len(issues)} via Gemini.")
     return 0 if success > 0 else 1
 

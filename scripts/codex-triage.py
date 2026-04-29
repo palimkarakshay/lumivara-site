@@ -143,8 +143,19 @@ def apply_labels(issue_num: int, classification: dict) -> None:
     )
 
 
+def thinking(msg: str) -> None:
+    """Emit a THINKING block in the format the AI Ops dashboard's LogViewer
+    parses (`>>> THINKING` … `<<< END THINKING`). The dashboard pulls these
+    from raw run logs, so anything we want surfaced to the operator must
+    travel through this helper."""
+    print(">>> THINKING")
+    print(msg)
+    print("<<< END THINKING", flush=True)
+
+
 def main() -> int:
     if not OPENAI_API_KEY:
+        thinking("Codex triage skipped: OPENAI_API_KEY not set in env.")
         print("Codex triage skipped: OPENAI_API_KEY not set.")
         return 0  # not an error — Codex is optional
 
@@ -156,20 +167,36 @@ def main() -> int:
     )
     issues = json.loads(result.stdout)
     if not issues:
+        thinking("Codex triage: no needs-triage issues remain — earlier engines handled the queue.")
         print("Codex triage: no needs-triage issues remain.")
         return 0
 
+    thinking(
+        f"Codex final-fallback engaged. Model={OPENAI_MODEL}. "
+        f"Queue size={len(issues)} (cap={MAX_ISSUES})."
+    )
     print(f"Codex triage ({OPENAI_MODEL}): triaging {len(issues)} issue(s).")
     success = 0
     for i in issues:
         try:
             cls = codex_classify(i["title"], i.get("body") or "")
+            thinking(
+                f"Issue #{i['number']} — {i['title']}\n"
+                f"Priority: {cls.get('priority')} | Complexity: {cls.get('complexity')}\n"
+                f"Area: {cls.get('area')} | Type: {cls.get('type')}\n"
+                f"Routing label: {cls.get('routing') or '(default Claude tier)'}\n"
+                f"Auto-routine: {cls.get('auto_routine')}\n"
+                f"Needs clarification: {cls.get('needs_clarification')}\n"
+                f"Rationale: {cls.get('rationale', '')}"
+            )
             apply_labels(i["number"], cls)
             print(f"  #{i['number']} → {cls.get('priority')}/{cls.get('complexity')} "
                   f"({cls.get('rationale','')[:60]})")
             success += 1
         except Exception as e:
+            thinking(f"Issue #{i['number']} FAILED during Codex classification: {e}")
             print(f"  #{i['number']} FAILED: {e}", file=sys.stderr)
+    thinking(f"Codex fallback finished. Triaged {success}/{len(issues)}.")
     print(f"\nTriaged {success}/{len(issues)} via Codex.")
     return 0 if success > 0 else 1
 

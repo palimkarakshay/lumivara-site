@@ -75,8 +75,8 @@ Pre-filled intake forms for each are in `07-client-handover-pack.md §6`.
 |---|---|---|
 | Marketing site, MDX content, design tokens | — | ✅ |
 | `/admin` portal UI + Server Actions + middleware | — | ✅ |
-| GitHub Actions workflows (`triage.yml`, `execute*.yml`, `plan-issues.yml`, `deep-research.yml`, `codex-review.yml`, `auto-merge.yml`, `project-sync.yml`, `setup-cli.yml`, `ai-smoke-test.yml`, `deploy-dashboard.yml`) | ✅ (operator-managed branch only — see 03 §2) | ✅ but committed only to `operator/main`, never `main` |
-| `scripts/triage-prompt.md`, `scripts/execute-prompt.md`, `scripts/gemini-triage.py`, `scripts/codex-triage.py`, `scripts/plan-issue.py`, `scripts/lib/routing.py`, `scripts/bootstrap-kanban.sh` | ✅ canonical | ✅ overlay-only on `operator/main` |
+| GitHub Actions workflows (`triage.yml`, `execute*.yml`, `plan-issues.yml`, `deep-research.yml`, `codex-review.yml`, `auto-merge.yml`, `project-sync.yml`, `setup-cli.yml`, `ai-smoke-test.yml`, `deploy-dashboard.yml`) | ✅ canonical templates in `workflows-template/` | Pattern C: live in the per-engagement `<slug>-pipeline` repo only (never on the site repo). See `02b §1` and `02 §1`. |
+| `scripts/triage-prompt.md`, `scripts/execute-prompt.md`, `scripts/gemini-triage.py`, `scripts/codex-triage.py`, `scripts/plan-issue.py`, `scripts/lib/routing.py`, `scripts/bootstrap-kanban.sh` | ✅ canonical | Pattern C: ride along with workflows in the `<slug>-pipeline` repo. |
 | n8n workflow JSON exports | ✅ canonical (`mothership/n8n/`) | ❌ never |
 | Operator runbooks, freelance pack, this folder | ✅ | ❌ never |
 | OAuth tokens, AI keys, vendor PAT | ✅ org secrets | ❌ never visible to client |
@@ -84,7 +84,7 @@ Pre-filled intake forms for each are in `07-client-handover-pack.md §6`.
 | Domain, hosting bill, Vercel team | ✅ until end of engagement, then transferred to client | becomes ✅ on transfer |
 | Site code, content, design | ❌ always client-owned | ✅ |
 
-The "operator/main" branch overlay technique is detailed in `02-architecture.md §4` and `03-secure-architecture.md §2`.
+The two-repo separation (Pattern C) is detailed in `02b-pattern-c-architecture.md` and `02-architecture.md §1/§4`. The earlier "operator/main branch overlay" technique was deprecated on 2026-04-28 — see `11 §1` for the decision history.
 
 ---
 

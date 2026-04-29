@@ -102,9 +102,9 @@ This is the biggest phase. Split it the same way the admin portal was split (5 p
 | Sub-phase | Deliverable |
 |---|---|
 | P5.4a | `cli/` package skeleton (`package.json`, `tsconfig`, `commander.js` setup, single `forge --help` command) |
-| P5.4b | `forge provision` — steps 1–5 of the flow in `02-architecture.md §3` (validate, gh repo create, org-secret scoping, push `client-template/` to main, push `workflows-template/` to operator/main) |
-| P5.4c | `forge provision` — steps 6–8 (Vercel API, n8n REST API, Twilio number purchase) |
-| P5.4d | `forge provision` — steps 9–11 (kanban bootstrap, smoke tests, handover render) and `--resume` |
+| P5.4b | `forge provision` — steps 1–7 of the flow in `02-architecture.md §3` (validate, create site repo, create pipeline repo, scope org secrets, push `client-template/` to site `main`, push `workflows-template/` + `scripts/` to pipeline `main`, install the GitHub App on the site repo) — Pattern C; see `02b §2` |
+| P5.4c | `forge provision` — steps 8–10 (Vercel API linked to site repo, n8n REST API, Twilio number purchase) |
+| P5.4d | `forge provision` — steps 11–13 (kanban bootstrap on site repo via App token, cross-repo smoke test, handover render) and `--resume` |
 | P5.4e | `forge teardown` — all four modes (handover, archive, pause, rebuild-vanilla) |
 | P5.4f | `forge set-tier`, `forge audit-secrets`, `forge costs`, `forge rotate-hmac` |
 
@@ -140,26 +140,57 @@ The existing `lumivara-site` repo is *de facto* Client #1's repo today. Make it 
 
 ---
 
-## P5.6 — Migrate `lumivara-site` to clean per-client repo 🟢 (partly manual)
+## P5.6 — Migrate `lumivara-site` to Pattern C two-repo shape 🟢 (partly manual)
 
-**Estimated turns:** 60–80 + manual GitHub UI clicks.
+**Estimated turns:** 80–100 + manual GitHub UI clicks.
 
-> **Canonical runbook:** [`docs/migrations/lumivara-people-advisory-spinout.md §2–§9`](../migrations/lumivara-people-advisory-spinout.md) is the copy-pasteable procedure (allow/deny tables, Vercel + n8n + Twilio wiring, dry run, rollback, acceptance). The §0 pre-flight in that runbook also revisits the *rename vs. fresh repo* decision and recommends fresh-repo + selective copy. The DOD list below remains the success criteria.
+Under Pattern C the existing repo splits into two: a clean site repo for the client, and a separate operator-only pipeline repo that holds every workflow and script. The agent does the bulk; the operator does the GitHub UI clicks (rename, App install, branch protection).
 
-1. **Operator (manual):** rename `palimkarakshay/lumivara-site` to `palimkarakshay/lumivara-people-advisory-site` in the GitHub UI.
+1. **Operator (manual):** rename `palimkarakshay/lumivara-site` to `palimkarakshay/lumivara-people-advisory-site` in the GitHub UI. (This becomes the **site** repo.)
 2. **Operator (manual):** push the new mothership repo's main first; verify it works.
-3. **Agent:** in the renamed `lumivara-people-advisory-site`:
-   - Delete `docs/mothership/`, `docs/freelance/`, `docs/operator/` (none of these should remain on `main`).
-   - Delete `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/plan-issue.py`, `scripts/test-routing.py`, `scripts/bootstrap-kanban.sh`, `scripts/lib/`.
-   - Move `.github/workflows/` files into a temp branch `operator/main`, push that branch, then delete from `main`.
-   - Add `.claudeignore` per `03-secure-architecture.md §2.3`.
-4. **Operator (manual):** apply branch protection rules from `03-secure-architecture.md §2.2`.
-5. **Operator (manual):** add Beas as a Read collaborator (currently nothing changes; she's never been a contributor).
-6. **Agent:** confirm Vercel preview + admin portal still work after the migration.
+3. **Operator (manual):** create the matching **pipeline** repo:
+   ```bash
+   gh repo create palimkarakshay/lumivara-people-advisory-pipeline --private \
+     --description "Operator-only pipeline for lumivara-people-advisory-site. Pattern C."
+   ```
+4. **Agent:** populate the pipeline repo from the (still-pre-migration) site repo:
+   ```bash
+   git clone https://github.com/palimkarakshay/lumivara-people-advisory-pipeline.git
+   cd lumivara-people-advisory-pipeline
+   # copy workflows + scripts from the site repo's working tree:
+   cp -R ../lumivara-people-advisory-site/.github/workflows .github/
+   cp -R ../lumivara-people-advisory-site/scripts ./
+   git add .github scripts
+   git commit -m "feat: pipeline-repo bootstrap for lumivara-people-advisory"
+   git push origin main
+   ```
+   Set the pipeline repo's `vars`: `SITE_REPO_OWNER=palimkarakshay`, `SITE_REPO_NAME=lumivara-people-advisory-site`, plus the cadence vars from `04 §2`.
+5. **Operator (manual):** install the GitHub App on the site repo only:
+   ```bash
+   # via the App's installation URL, scoped to lumivara-people-advisory-site.
+   ```
+   Capture the installation ID into `docs/clients/lumivara-people-advisory/cadence.json`.
+6. **Agent:** strip the autopilot from the **site** repo's `main`:
+   ```bash
+   cd ../lumivara-people-advisory-site
+   git rm -r .github/workflows
+   git rm -r scripts/triage-* scripts/execute-* scripts/gemini-* scripts/codex-*
+   git rm scripts/plan-issue.py scripts/test-routing.py scripts/bootstrap-kanban.sh
+   git rm -r scripts/lib
+   git rm -r docs/mothership docs/freelance docs/operator
+   git commit -m "chore: remove autopilot artefacts; Pattern C migration"
+   git push origin main
+   ```
+   Add `.claudeignore` per `03-secure-architecture.md §2.3` for belt-and-braces.
+7. **Operator (manual):** apply branch protection rules to:
+   - the site repo's `main` (per `03 §2.2` site-repo column)
+   - the pipeline repo's `main` (per `03 §2.5` pipeline-repo column)
+8. **Operator (manual):** add Beas as a Read collaborator on the site repo only. She is never a collaborator on the pipeline repo.
+9. **Agent:** confirm Vercel preview + admin portal still work after the migration. Run the cross-repo smoke test from `02b §2 step 5`.
 
 **DOD:**
-- `git ls-tree main -r --name-only | grep -E '(mothership|operator|freelance|triage|execute|gemini|codex|routing)'` returns no matches.
-- `operator/main` has all the workflow files; cron still fires; PRs still open.
+- Site repo: `git ls-tree main -r --name-only | grep -E '(\.github/workflows|scripts/(triage|execute|gemini|codex|plan-issue|test-routing|bootstrap-kanban|lib)|docs/(mothership|operator|freelance))'` returns **no** matches.
+- Pipeline repo: cron from its `main` fires on schedule; the App token-based PR opener writes to the site repo cleanly.
 - `lumivara-people-advisory.com` (production) is unchanged from a visitor's perspective.
 
 ---

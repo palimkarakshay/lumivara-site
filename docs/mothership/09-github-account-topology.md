@@ -18,9 +18,9 @@ So the topology is: **2 GitHub identities + 1 organisation**, all on free tier.
 
 | Identity | Type | Role | Cost |
 |---|---|---|---|
-| `palimkarakshay` (existing) | Personal user | Owner of the mothership org and of every client repo (until handover). The "Akshay" signing identity. | Free |
-| `{{BRAND_SLUG}}-bot` (new — e.g. `lumivara-forge-bot`) | Machine user | Holds the vendor PAT used by n8n + auto-PR commits. Clearly marked as a bot in profile bio. | Free |
-| `{{BRAND_SLUG}}` (new — e.g. `lumivara-forge`) | Organisation | Houses org-level Action secrets, branch-protection rulesets, the mothership repo, dashboards. Adds client repos as members for secret scoping. | Free |
+| `palimkarakshay` (existing) | Personal user | Owner of the mothership org and of every per-client site + pipeline repo (until handover). The "Akshay" signing identity. | Free |
+| `{{BRAND_SLUG}}-pipeline-bot` (new — e.g. `lumivara-forge-pipeline-bot`) | **GitHub App** (org-owned) | Canonical vendor identity under Pattern C. Installed per engagement on each `<slug>-site` repo; the pipeline repo's workflows mint short-lived installation tokens to push branches and open PRs against the site repo. Replaces the legacy machine-user PAT. See `02b §3` and `03b-github-app-spec.md` (Run B). | Free |
+| `{{BRAND_SLUG}}` (new — e.g. `lumivara-forge`) | Organisation | Houses org-level Action secrets, branch-protection rulesets, the mothership repo, dashboards, and **two repos per engagement** (`<slug>-site` and `<slug>-pipeline`). | Free |
 
 GitHub Free tier includes — for organisations on private repos — everything the autopilot needs:
 - Unlimited private repos
@@ -46,31 +46,41 @@ None of those apply for months 1–6 of paid operations. Stay free.
 2. **Add `palimkarakshay` as Owner** (you'll be auto-added since you created the org from that account).
 3. **Settings → Member privileges → Base permissions = No permission.** Forces explicit per-repo grants.
 4. **Settings → Actions → Workflow permissions = Read and write** (so workflows can comment on PRs, manage labels).
-5. **Create the bot account** — sign out, go to github.com/signup, register `{{BRAND_SLUG}}-bot` against a new email (use the operator's `+bot@` alias, e.g. `akshay+lumivara-forge-bot@gmail.com`). Profile bio: "🤖 Automation account for {{BRAND}}. Operator: @palimkarakshay." This identification is what keeps GitHub from flagging it.
-6. **Generate the bot's fine-grained PAT** — Issues:RW, Pull requests:R, Contents:R, Metadata:R, 90-day expiry. Store in operator vault as `VENDOR_GITHUB_PAT`.
-7. **Sign back in as `palimkarakshay`** → org Settings → People → Invite → invite `{{BRAND_SLUG}}-bot` as Member.
-8. **Org Settings → Secrets and variables → Actions → New organization secret** for each of:
+5. **Create the GitHub App `{{BRAND_SLUG}}-pipeline-bot`** — Org Settings → Developer settings → GitHub Apps → New GitHub App. Permissions per `02b §3`: Issues:RW, Pull requests:RW, Contents:RW, Metadata:R, Workflows:R on each installed repo. Owned by the `{{BRAND_SLUG}}` org. Generate a private key and store it.
+6. **Add the App's credentials as org secrets** — `APP_ID` (the public ID; safe to log) and `APP_PRIVATE_KEY` (the PEM). Both scoped to **selected repositories** (the pipeline repos only, never the site repos — the App is invoked from pipeline workflows).
+7. **Org Settings → Secrets and variables → Actions → New organization secret** for each of:
    - `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`)
    - `GEMINI_API_KEY`
    - `OPENAI_API_KEY` (optional)
-   - `VENDOR_GITHUB_PAT` (the bot's PAT from step 6)
-   For each: **Repository access = "Selected repositories"** — leave empty for now; add per client during provision.
-9. **Create the mothership repo inside the org** — `gh repo create {{BRAND_SLUG}}/{{BRAND_SLUG}}-mothership --private`. Move all the docs from `palimkarakshay/lumivara-site` into here per `05-mothership-repo-buildout-plan.md §P5.1`.
+   - `APP_ID` (from step 6)
+   - `APP_PRIVATE_KEY` (from step 6)
+   For each: **Repository access = "Selected repositories"** — leave empty for now; add each pipeline repo during provision.
+8. **Create the mothership repo inside the org** — `gh repo create {{BRAND_SLUG}}/{{BRAND_SLUG}}-mothership --private`. Move all the docs from `palimkarakshay/lumivara-site` into here per `05-mothership-repo-buildout-plan.md §P5.1`.
+
+> **Pattern C migration note:** earlier drafts of this checklist created a machine-user account `{{BRAND_SLUG}}-bot` and a fine-grained PAT (`VENDOR_GITHUB_PAT`) as the vendor identity. That has been deprecated as of 2026-04-28. The GitHub App in step 5 replaces both. If you previously bootstrapped the practice with a PAT-based bot, follow the migration in `12 §4` (security critique) and the App spec in `03b` (created by Run B).
 
 That's it. Free tier, one weekend, done.
 
 ---
 
-## 3. Where client repos live
+## 3. Where client repos live (Pattern C — two repos per engagement)
 
-**Two valid patterns; pick one and stick with it:**
+Each engagement gets **two private repos** in the `{{BRAND_SLUG}}` org, both during the engagement:
 
-| Pattern | Pros | Cons | Recommendation |
-|---|---|---|---|
-| **A. Client repos in the operator's `{{BRAND_SLUG}}` org** during engagement, transferred to client at handover | Org-level secrets attach cleanly; one place to see all clients; branch protection rulesets centralised | Counts against the org's Actions minutes; slight extra step at handover (transfer to client account or new client org) | ✅ **Recommended** |
-| **B. Client repos under `palimkarakshay` personal account** | Simpler attribution ("Akshay's repos"); no org admin overhead | Org-level secrets don't reach personal-account repos — you'd have to add the secrets to each repo individually, which is a security regression | ❌ Avoid; this is what the v2 template did and it's why org-level secret scoping is the v3 hardening |
+| Repo | Visibility to client | Lifecycle |
+|---|---|---|
+| `{{BRAND_SLUG}}/<slug>-site` | Read collaborator from the engagement onwards; transferred to the client at handover | Born on `forge provision`; transferred at `forge teardown --mode handover` |
+| `{{BRAND_SLUG}}/<slug>-pipeline` | **No access — ever.** The client is never added as a collaborator. | Born on `forge provision`; archived or deleted at `forge teardown --mode handover` |
 
-**Use Pattern A.** During provision, `forge provision` creates the repo as `{{BRAND_SLUG}}/<client-slug>-site`. At handover, it transfers to the client's GitHub account (or the client creates their own org and the repo transfers there).
+The site repo holds the Next.js app and the admin portal. The pipeline repo holds every workflow file, prompt, and operator-side script. The client cannot read the pipeline repo because they are not a collaborator on it; the GitHub App from §1 bridges the two at workflow runtime via short-lived installation tokens.
+
+This is the **canonical model as of 2026-04-28** (Pattern C — see `02b-pattern-c-architecture.md`). The earlier "single repo with `operator/main` overlay" pattern was deprecated when `11 §1` documented that scheduled workflows on non-default branches do not fire.
+
+The alternative of putting client repos under the `palimkarakshay` personal account remains a non-starter for the same reason it always was: org-level secrets don't reach personal-account repos, and the App scope is org-bound.
+
+### 3.1 GitHub App spec
+
+The full App manifest, install instructions, and the `actions/create-github-app-token@v1` recipe live in `03b-github-app-spec.md` (created by Run B in `16 §2`). A summary is in `02b §3`.
 
 ---
 
@@ -80,8 +90,8 @@ If you're asking *legally*, the answer lives in the Ontario business registratio
 
 If you're asking *operationally*, the topology in §1 IS the answer:
 - `palimkarakshay` = "Akshay, the operator/employee, signing commits and reviewing PRs"
-- `{{BRAND_SLUG}}` org = "the company that owns the mothership and houses the secrets"
-- `{{BRAND_SLUG}}-bot` = "the automation account that runs unattended"
+- `{{BRAND_SLUG}}` org = "the company that owns the mothership, the per-client site + pipeline repos, and the secrets"
+- `{{BRAND_SLUG}}-pipeline-bot` (GitHub App) = "the automation identity that runs unattended; one App, one installation per engagement"
 
 A future-you joining as a real second engineer? You'd add their personal GitHub account to the org as a Member with restricted repo access. No new bot. No new "employee account." That's the whole staffing model on free tier until cross-30-clients.
 
@@ -107,11 +117,16 @@ Pre-flight §1 of `06-operator-rebuild-prompt-v3.md` already references the org.
 
 ```
 □ Mothership org `{{BRAND_SLUG}}` exists on GitHub Free, with palimkarakshay as Owner.
-□ Bot account `{{BRAND_SLUG}}-bot` exists, identified as automation in bio.
-□ Bot is a Member of the org (write access on selected repos only).
+□ GitHub App `{{BRAND_SLUG}}-pipeline-bot` exists at the org level with the
+  permissions in 02b §3.
+□ Both per-engagement repos exist:
+   {{BRAND_SLUG}}/{{CLIENT_SLUG}}-site      (client-readable; site code)
+   {{BRAND_SLUG}}/{{CLIENT_SLUG}}-pipeline  (operator-only; workflows + scripts)
+□ The App is installed on {{CLIENT_SLUG}}-site (and only that repo).
 □ Org-level secrets exist: CLAUDE_CODE_OAUTH_TOKEN, GEMINI_API_KEY,
-  OPENAI_API_KEY, VENDOR_GITHUB_PAT — all set to "Selected repositories"
-  scope, currently scoping to {{CLIENT_SLUG}}-site.
+  OPENAI_API_KEY, APP_ID, APP_PRIVATE_KEY — all set to "Selected
+  repositories" scope, currently scoping to the {{CLIENT_SLUG}}-pipeline repo
+  only (the site repo runs no workflows and needs no secrets).
 □ Mothership repo `{{BRAND_SLUG}}/{{BRAND_SLUG}}-mothership` exists,
   private, contains the artefacts from P5.1.
 ```

@@ -143,7 +143,9 @@ Components live in `src/components/`. shadcn/ui components were generated via `n
 
 Change requests live in **GitHub Issues**, organised on a **Project v2 Kanban board**, and implemented by scheduled GitHub Actions.
 
-Full map: [`docs/BACKLOG.md`](./docs/BACKLOG.md).
+- **Operator front-door** — [`docs/ops/operator-playbook.md`](./docs/ops/operator-playbook.md): the single doc the operator opens every session. Today's hero task + parallel pool + drop-dead calendar.
+- **Shareable progress tracker** — [`docs/ops/progress-tracker.md`](./docs/ops/progress-tracker.md): the 60-second status anyone (advisor / partner / spouse / future hire) can scan. Refreshed Mondays.
+- **Backlog map** — [`docs/BACKLOG.md`](./docs/BACKLOG.md): how labels, lifecycle, and triage work.
 
 ### How to create an issue
 

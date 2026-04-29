@@ -2,6 +2,10 @@
 
 The backlog lives in GitHub Issues, grouped in a Project v2 board called **Lumivara Backlog**. This file is the map.
 
+> **Operator front-door:** [`docs/ops/operator-playbook.md`](ops/operator-playbook.md) — open every working session before any other tab. Tells you today's hero task, parallel options when you stall, and the drop-dead calendar.
+>
+> **Shareable status:** [`docs/ops/progress-tracker.md`](ops/progress-tracker.md) — safe to send to advisors / partners / Beas. The 60-second view of the three gates, phase progress, and this/last/next week.
+
 ## Source of truth
 
 - **Capture**: new items → `gh issue create` (from desk) or the `/admin` portal capture form (from phone), with email + SMS fallbacks through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./N8N_SETUP.md). The previous phone-PAT / HTTP Shortcuts path is **deprecated**; the deprecation notice and v1→v2 migration matrix live at [`PHONE_SETUP.md`](../PHONE_SETUP.md) and [`docs/TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) §1.4.

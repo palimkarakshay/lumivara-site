@@ -342,4 +342,218 @@ git grep -niE 'mothership|\{\{BRAND(_SLUG)?\}\}' \
 Returns zero lines. The link checker reports zero broken internal
 links. `npm run build` succeeds.
 
+---
+
+## §5 — Phase 3: Bootstrap the platform repo
+
+**Audience:** bot drives most of it; operator does GitHub UI clicks
+where the API can't reach (App installations, branch protection
+rulesets, Vercel project linking).
+
+**Estimated wall-clock:** ~1 week of staggered Claude Code sessions.
+
+### §5.1 — Sub-phase map (mirrors `05-mothership-repo-buildout-plan.md`)
+
+| Sub-phase | What lands | Owner | Prompt §  |
+|---|---|---|---|
+| P5.1 | Operator-side docs migrated to platform repo | Bot | §5.2 |
+| P5.2 | Workflow templates lifted (`workflows-template/`) + `scripts/` copied + parameterised with `{{CLIENT_*}}` placeholders | Bot | §5.3 |
+| P5.3 | Dashboard migrated, client-switcher added, GitHub Pages target re-pointed | Bot | §5.4 |
+| P5.4a | `cli/` skeleton (`forge --help`) | Bot | §5.5 |
+| P5.4b | `forge provision` steps 1–7 (repo create, GitHub App install, secret scope) | Bot | §5.5 |
+| P5.4c | `forge provision` steps 8–10 (Vercel API, n8n REST, Twilio number purchase) | Bot | §5.5 |
+| P5.4d | `forge provision` steps 11–13 (kanban bootstrap, smoke test, handover render) + `--resume` | Bot | §5.5 |
+| P5.4e | `forge teardown` modes (handover/archive/pause/rebuild-vanilla) | Bot | §5.5 |
+| P5.4f | `forge set-tier`, `forge audit-secrets`, `forge costs`, `forge rotate-hmac` | Bot | §5.5 |
+| P5.5 | Mirror Lumivara People Advisory client metadata into platform's `docs/clients/lumivara-people-advisory/` | Bot | §5.6 |
+
+Run sub-phases sequentially. Each opens its own issue in the platform
+repo, goes through the platform repo's own triage→plan→execute loop
+(once P5.2 lands, the platform self-hosts its workflows).
+
+### §5.2 — Prompt: P5.1 doc migration
+
+```
+Phase 3 P5.1 of docs/migrations/00-automation-readiness-plan.md.
+
+Source repo:  palimkarakshay/lumivara-site (this one), branch main,
+              post-Run-S1.
+Target repo:  lumivara-forge/lumivara-forge-platform, branch main,
+              today: empty + one-line README.
+
+You have local clones of both. Do this:
+
+1. From the source repo, copy the following paths VERBATIM into the
+   target repo:
+     docs/platform/                 (was docs/mothership/, S1-renamed)
+     docs/storefront/               (was docs/freelance/, S1-renamed)
+     docs/migrations/               (entire folder including this file)
+     docs/ops/
+     docs/research/
+     docs/decks/
+     docs/wiki/                     (operator-lane pages only — leave
+                                     🌐 client-lane pages on this repo;
+                                     see 15 §6 + wiki/_partials/lane-key.md
+                                     for which is which)
+     docs/AI_ROUTING.md
+     docs/ADMIN_PORTAL_PLAN.md
+     docs/N8N_SETUP.md
+     docs/MONITORING.md
+     docs/BACKLOG.md
+     docs/GEMINI_TASKS.md
+     docs/AI_CONSISTENCY.md
+     docs/OPERATOR_SETUP.md
+     docs/TEMPLATE_REBUILD_PROMPT.md
+     AGENTS.md
+     CLAUDE.md
+     CHANGELOG.md (operator slice — see 14 §6 schema)
+
+2. In the target repo, drop the docs/ prefix where files were promoted
+   to top-level (none today; keep the docs/ prefix).
+
+3. Add the platform repo's own README.md, .gitignore, .claudeignore,
+   .editorconfig per 05 §P5.1 step 5.
+
+4. Commit each top-level group separately:
+     - "feat(docs): seed platform docs from lumivara-site"
+     - "feat(docs): seed storefront pack"
+     - "feat(docs): seed migration runbooks"
+     - "feat(docs): seed ops/research/decks/wiki"
+     - "feat(docs): seed top-level operator docs (AI_ROUTING, etc.)"
+     - "feat(meta): platform README + ignores"
+
+5. Push to lumivara-forge/lumivara-forge-platform main.
+
+Leave the source repo (this one) untouched in P5.1 — it stays the
+de-facto Client #1 site repo until Phase 4. Do NOT delete the docs
+from this repo yet.
+
+Budget: at 70% of max-turns, commit + push + exit. Resume from the
+last completed copy group.
+```
+
+### §5.3 — Prompt: P5.2 workflow templates + scripts
+
+```
+Phase 3 P5.2 of docs/migrations/00-automation-readiness-plan.md.
+
+In the platform repo:
+
+1. Create workflows-template/.
+2. Copy each YAML from this repo's .github/workflows/ into
+   workflows-template/, renaming literal references to
+   palimkarakshay/lumivara-site → ${{ vars.SITE_REPO_OWNER }}/${{ vars.SITE_REPO_NAME }}.
+3. Replace literal label values like client/lumivara → client/${{ vars.CLIENT_SLUG }}.
+4. Replace hard-coded branch names with ${{ vars.DEFAULT_BRANCH }}
+   (default main).
+5. For each ${{ secrets.* }} reference, confirm it matches the org
+   secret names from 09 §2 step 7. If not, raise an issue tagged
+   area/forge, priority/P1; do NOT silently rename.
+6. Create scripts/ in the platform repo and copy:
+     triage-prompt.md, execute-prompt.md, plan-issue.py,
+     gemini-triage.py, codex-triage.py, codex-plan-review.py,
+     codex-fix-classify.py, codex-review-fallback.py,
+     test-routing.py, test-forge-routing.py, bootstrap-kanban.sh,
+     create-mothership-seed-issues.sh (rename to
+     create-platform-seed-issues.sh + grep its body),
+     bot-usage-report.py, recheck-missed-reviews.py,
+     seed-codex-review-backlog.py
+   plus scripts/lib/ (verbatim).
+7. Add a tests/ folder with a synthetic-issue fixture so each Python
+   script can be unit-tested for an "exit 0 with this stub" smoke.
+8. Commit per logical group: workflows-template, scripts root,
+   scripts/lib, tests.
+9. The smoke check from 05 §P5.2 DOD:
+     git -C platform grep -n "palimkarakshay/lumivara-site" -- workflows-template/ scripts/
+   must return zero matches.
+
+Budget: at 70% of max-turns, exit cleanly.
+```
+
+### §5.4 — Prompt: P5.3 dashboard migration
+
+```
+Phase 3 P5.3 of docs/migrations/00-automation-readiness-plan.md.
+
+In the platform repo:
+
+1. Copy this repo's dashboard/ tree verbatim.
+2. Update dashboard/src/lib/config.ts to read the active client repo
+   from a localStorage selector "forge-active-client-slug" (default
+   first repo from a /api/clients endpoint we'll mock for now).
+3. Add a ClientSwitcher component above the existing WorkflowList.
+4. Update the deploy workflow to target
+   palimkarakshay.github.io/lumivara-forge-platform (not the old slug).
+5. npm install + npm run build must succeed.
+6. Commit + push.
+
+Out-of-scope (for a follow-up issue): live data from the platform's
+own API. Today the switcher just pivots which repo's Action runs the
+dashboard polls; the API endpoint shape stays.
+```
+
+### §5.5 — Prompts: P5.4a–f forge CLI
+
+The CLI is the largest deliverable. Each sub-phase is ONE bot session
+that opens ONE issue in the platform repo and goes through the
+platform's own triage→plan→execute loop. Use this prompt as a
+template, swapping the sub-phase ID:
+
+```
+Phase 3 P5.4{X} of docs/migrations/00-automation-readiness-plan.md.
+
+Open an issue in lumivara-forge/lumivara-forge-platform titled:
+  "feat(cli): P5.4{X} — {sub-phase deliverable}"
+
+Body must reference:
+  - 05 §P5.4 sub-phase {X} for the deliverable list
+  - 02b §2 for the provisioning order
+  - 03 §3 for the secret topology
+  - 18-provisioning-automation-matrix.md for the Step IDs the CLI
+    must implement
+
+Add labels: area/forge, complexity/{complex|complex+}, priority/P1,
+status/needs-triage. Let the platform's own triage cron pick it up.
+
+Once the bot opens its draft PR, review and merge per the standard
+playbook.
+
+Repeat for sub-phases a, b, c, d, e, f. Sequential, not parallel —
+each builds on the last.
+```
+
+The CLI's `forge --help` is the exit criterion for P5.4 as a whole;
+each sub-phase's exit criterion is in `05 §P5.4` rows.
+
+### §5.6 — Prompt: P5.5 mirror Client #1 metadata
+
+```
+Phase 3 P5.5 of docs/migrations/00-automation-readiness-plan.md.
+
+In the platform repo:
+
+1. Create docs/clients/lumivara-people-advisory/.
+2. Add intake.md, cadence.json, secrets.md.age, runbook.md,
+   engagement-log.md, evidence-log.md per 05 §P5.5 + 19-engagement-
+   evidence-log-template.md.
+3. Validate cadence.json against schema/cadence.schema.json (create
+   the schema first if it doesn't exist; reference 04-tier-based-
+   agent-cadence.md for the field set).
+4. Commit + push.
+
+This phase mirrors Client #1's existence into the platform — it does
+NOT yet move Client #1's site code anywhere. That's Phase 4.
+```
+
+### §5.7 — Hard exit criterion
+
+- `npx forge --help` runs in the platform repo and lists every
+  subcommand from `05 §P5.4`.
+- `npx forge provision --client-slug demo --tier 2 --domain demo.test --dry-run`
+  prints the full plan with no real API calls.
+- `pattern-c-enforcement-checklist.md §4` pre-flight rows can all
+  resolve "ready" against the platform repo's state.
+- The platform repo's own kanban shows P5.1 → P5.5 issues all in
+  Done.
+
 

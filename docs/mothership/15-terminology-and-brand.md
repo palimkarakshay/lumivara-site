@@ -216,4 +216,76 @@ Operator-side actions still pending:
 
 The renames touch ~150 references across the repo. Doable in one Claude session (60–90 turns, Sonnet). Prompt body lives in `16 §5`.
 
-*Last updated: 2026-04-28.*
+---
+
+## §6 — Terminology policy and forbidden strings
+
+The brand name is **Lumivara Forge** (locked 2026-04-28 in §4 above). This section makes that decision enforceable in writing rather than leaving it to operator memory: it names the strings that must not appear in operator-scoped docs, and points at §7 below where legitimate references *are* allowed.
+
+### Scope rules
+
+| Scope | What lives here | Brand identity used | `Lumivara People Advisory` / `Lumivara People Solutions` allowed? |
+|---|---|---|---|
+| **Operator / mothership** | `docs/mothership/**`, `docs/AI_ROUTING.md`, `docs/MONITORING.md`, `docs/GEMINI_TASKS.md`, `docs/wiki/*` (operator-scoped pages), `AGENTS.md`, `CLAUDE.md` | "Lumivara Forge" only | **No** — except inside §7 of this file, or inside an explicit `> _Client example — see 15 §7._` callout that links to §7. |
+| **Migration history** | `docs/mothership/05` (P5.5 / P5.6), `docs/mothership/07` (Dummy A), `docs/mothership/08`, `docs/mothership/10`, `docs/mothership/14`, `docs/mothership/17`, `docs/migrations/*`, `docs/BACKLOG.md` migration row | The historical client name *is* the subject | **Yes** — these docs literally describe the Client #1 spinout and are allowed to name the client. |
+| **This-repo identity (transitional)** | `README.md`, `CONTRIBUTING.md` until the P5.6 spinout lands | The client's own brand | **Yes** — this repo is operationally Client #1's site today; renaming the README ahead of P5.6 would create the same operator/client contamination this policy is trying to prevent. The "Operator vs client framing" paragraph at the top of `README.md` makes the distinction explicit. After P5.6 the README is purely client-facing. |
+| **Client repo** | A future per-client site repo | The client's own brand only | "Lumivara Forge" appears only in a single footer credit ("Built on Lumivara Forge"). Other client brands never appear. |
+
+### Forbidden strings (operator-scope only)
+
+In the operator-scope row above, these literal strings must not appear except inside §7 of this file or inside a `> _Client example — see 15 §7._` callout:
+
+- `Lumivara People Advisory`
+- `Lumivara People Solutions`
+- `people advisory` (case-insensitive — covers the lowercase prose form used in older AI prompts and routing docs)
+
+The same rule covers `lumivara.ca`, `Beas Banerjee`, and other Client #1-specific identifiers when used as default operator context (i.e., not inside a labelled example or a migration-history doc).
+
+### Enforcement
+
+A future CI lint script (`scripts/check-terminology.sh`, planned in a follow-up issue — `scripts/*` is human-only per `AGENTS.md` and was deliberately deferred out of the issue that introduced this policy) will grep the forbidden strings against the operator-scope path list and fail when a hit lands outside the allowed paths in §7 or the migration-history rows above. Until that script lands, the policy is reviewer-enforced. The audit-grep recipe is
+
+```
+git grep -niE 'Lumivara People (Advisory|Solutions)|people advisory' \
+  -- docs/ README.md CONTRIBUTING.md AGENTS.md CLAUDE.md
+```
+
+Every remaining hit must fall under one of: §7 of this file, a `> _Client example_` callout linking back to §7, a migration-history doc listed above, or `README.md` / `CONTRIBUTING.md` under the framing paragraph.
+
+---
+
+## §7 — Client example appendix
+
+This appendix collects the legitimate-but-formerly-inline references to *Lumivara People Advisory* (Client #1) so that operator-scoped docs can link here instead of stamping a real client's brand into default operator context.
+
+Each example below is labelled with its client and its purpose. Do not copy these examples into a different client's repo — the per-client intake replaces the brand voice and the slug in every case.
+
+### Example — Lumivara People Advisory (Client #1 site repo today)
+
+Until the P5.6 spinout (see `docs/mothership/05-mothership-repo-buildout-plan.md §P5.6` and the runbook at `docs/migrations/lumivara-people-advisory-spinout.md`), the de-facto Client #1 site repo is `palimkarakshay/lumivara-site`. After the spinout it migrates to `palimkarakshay/lumivara-people-advisory-site`. Operator-scoped docs that need a concrete example of "the client repo" link here rather than naming Beas's site inline; their prose uses `<client-slug>` / `<client-repo>` placeholders.
+
+**Allowed because:** this is one specific client's mapping, not the operator's default. New operator prose uses placeholders and links here.
+
+### Example — Lumivara People Advisory (brand-voice prompt for AI authoring)
+
+`docs/GEMINI_TASKS.md §1` shows a brand-voice paragraph that hard-codes Beas Banerjee, lumivara.ca, and the HR services list. That text is correct *only* when batching insights articles for Client #1; for any other client, the operator swaps the brand-voice prompt with that client's intake before invoking the CLI.
+
+**Allowed because:** the text documents how the operator briefs an AI for one specific client, not how the operator briefs an AI by default.
+
+### Example — Lumivara People Advisory (engagement dummy intake)
+
+`docs/mothership/07-client-handover-pack.md §A` carries *Dummy A* — a fully filled intake YAML for Client #1 — used as the template for new engagements. `14-critique-operations-sequencing.md §9` separately tracks hardening that dummy data with `.test` TLDs and 555-prefix phone numbers; that hardening is out of scope for this policy doc and is tracked as its own follow-up issue.
+
+**Allowed because:** §A explicitly self-labels as a dummy intake and the surrounding doc treats it as one example among the per-engagement template set.
+
+### How to add a new entry to §7
+
+When a new operator-scoped doc would otherwise hard-code a real client brand:
+
+1. Replace the inline reference with `<client-slug>` / `<client-repo>` placeholders in the surrounding prose.
+2. Add a `> _Client example — see 15 §7._` callout at the point where the reader needs the concrete mapping.
+3. Append a new `### Example — <Client name> (<purpose>)` block here with a one-line **Allowed because:** justification.
+
+This keeps the operator-scope docs neutral (they read the same regardless of which client is currently Client #1) while preserving the concrete examples a future operator needs to ground the abstract doc against the live engagement.
+
+*Last updated: 2026-04-29.*

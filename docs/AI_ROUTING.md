@@ -108,10 +108,12 @@ ready PR.
 | `plan-issues.yml` | every hour (offset 30 min) + after every triage |
 | `execute.yml` | every hour |
 | `deep-research.yml` | dispatched by execute.yml |
-| `codex-review.yml` | on every `pull_request` (open/reopen/synchronize/ready_for_review) + dispatched by execute.yml for issue reviews |
+| `codex-review.yml` | on every `pull_request` (open/reopen/synchronize/ready_for_review) + dispatched by execute.yml for issue reviews + dispatched by `codex-review-recheck.yml` for deferred PRs |
 | `codex-pr-fix.yml` | on `issue_comment` when Codex posts a review on a PR |
 | `codex-review-backlog.yml` | manual (operator-triggered) |
+| `codex-review-recheck.yml` | every 4 hours — retries `review-deferred` PRs and seeds backlog issues for merged PRs that lack `codex-reviewed` |
 | `execute-fallback.yml` | dispatched by execute.yml on Claude failure |
+| `bot-usage-monitor.yml` | every 1 hour — rolling-5h + weekly behavioural quota report |
 | `ai-smoke-test.yml` | weekly (Mondays 12:00 UTC) |
 
 ### Consistency gate (every PR)
@@ -127,10 +129,48 @@ only when codex-review.yml's next synchronize-trigger re-review comes
 back clean. Full design + hallucination guards: see
 [`AI_CONSISTENCY.md`](./AI_CONSISTENCY.md).
 
-For PRs merged BEFORE this loop existed, the operator runs
-`codex-review-backlog.yml` (workflow_dispatch, dry-run by default) to
-seed one issue per gap, which triage then routes back through the
-normal Codex review path.
+#### When OpenAI is unavailable
+
+`codex-review.yml` walks a small ladder via
+`scripts/codex-review-fallback.py`:
+
+```
+OpenAI gpt-5.5  →  Gemini 2.5 Pro  →  defer
+```
+
+- **Gemini fallback** — when `OPENAI_API_KEY` is missing or returns
+  429, Gemini 2.5 Pro produces the review instead. The PR is labelled
+  both `codex-reviewed` (so auto-merge can proceed if there are no
+  blocker/major findings) and `codex-reviewed-by-gemini` (so the
+  monitoring dashboard can spot a degraded Codex path).
+- **Defer** — when both providers are unavailable, the PR is labelled
+  `review-deferred`. `auto-merge.yml` refuses to enable auto-merge
+  while that label is set. `codex-review-recheck.yml` retries every
+  4h until at least one provider's quota window has reset.
+
+#### Catching missed deploys (`codex-review-recheck.yml`)
+
+A merged PR == a Vercel deploy. Two ways a deploy can land without
+the consistency check:
+
+1. The PR opened during a brief outage of both review engines and got
+   merged before the recheck cron retried.
+2. The PR pre-dates the consistency gate entirely.
+
+The recheck workflow handles both:
+
+- **Open PRs labelled `review-deferred`** → `workflow_dispatch`
+  `codex-review.yml` again with `pr=N`. The fallback ladder retries
+  now that quota may have reset.
+- **Merged PRs in the last 14 days that lack `codex-reviewed`** →
+  delegate to `scripts/seed-codex-review-backlog.py`, which creates
+  one tracking issue per gap with `model/codex` + `type/code-review`.
+  The bot's normal execute pipeline then dispatches
+  `codex-review.yml` in issue mode and the review attaches to both
+  the issue and the merged PR.
+
+For older PRs (pre-gate), the operator can also run
+`codex-review-backlog.yml` (manual, dry-run by default).
 
 ### Plan consistency review (every plan)
 

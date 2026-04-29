@@ -202,3 +202,67 @@ Five layers, from "table stakes" to "uniquely ours":
 > The moat is the **operating system around the codebase**, not the codebase. Nobody in this segment is selling that today.
 
 <span class="small">Source: `docs/freelance/05-template-hardening-notes.md`, `docs/mothership/01-business-plan.md §6`.</span>
+
+---
+
+<!-- _class: lead -->
+
+# 3 · What customers say they want
+## Voice of the customer (target segments)
+
+---
+
+## Five segments, in their own words
+
+<br/>
+
+| Segment | The line we hear from them |
+|---|---|
+| **Solo consultant** (HR, coach, therapist, accountant) | "I'm relaunching my practice; the Squarespace site looks cheap and I can't update it without help." |
+| **Boutique services firm** (5–25 staff) | "Our site was built in 2019, our intern can't update it, and the agency invoiced $800 for a paragraph change." |
+| **Indie SaaS founder** | "Marketing site for my product; modern stack so I can hack on it. I don't want to babysit a CMS." |
+| **Local trades / clinics / studios** | "I want to look professional and have an online booking link. My current site looks like 2014." |
+| **Solo legal practice** | "I need a clean site that updates fees once a year without a developer call." |
+
+<span class="small">Source: `docs/freelance/01-gig-profile.md` Part 8 ("who to say yes to").</span>
+
+---
+
+## What they ask for, decoded
+
+<br/>
+
+| What they say | What they actually want |
+|---|---|
+| *"I need a website."* | A site that won't embarrass them in 18 months. |
+| *"I just need a typo fix."* | A relationship where typo fixes don't trigger a $200 invoice. |
+| *"Can I edit it myself?"* | They want **agency** without **complexity**. They don't want to learn WordPress. |
+| *"Make it pop."* | They want their visitors to convert — they don't have the vocabulary for it. |
+| *"I want it to rank on Google."* | They want SEO maintenance, not a one-time SEO setup. |
+| *"What if I want to leave?"* | They've been burned by lock-in before. |
+
+> The phone-edit shortcut speaks directly to "I want to edit it myself, but not learn anything new."
+> The retainer speaks directly to "no surprise invoices."
+> Pattern C handover speaks directly to "I won't be locked in."
+
+<span class="small">Source: `docs/freelance/01-gig-profile.md` Parts 4 & 6, `docs/freelance/04-slide-deck.md` "Honest objections."</span>
+
+---
+
+## The four objections we hear most
+
+<br/>
+
+> **"Can't I just use Squarespace?"**
+> *Yes — and a quarter of small businesses do. The difference is real ownership of the code + free unlimited edits + monthly improvements baked in.*
+
+> **"Why pay monthly?"**
+> *Because every other developer charges per-edit and disappears between projects. Over 24 months the retainer is cheaper, and the site is improving instead of decaying.*
+
+> **"What if you go out of business?"**
+> *Site keeps running. Domain, code, hosting are already in your name. The phone-edit pipeline stops; everything published stays published.*
+
+> **"I'm worried about being locked in."**
+> *You can't be. Pattern C means the autopilot is in our repo, not yours. Cancel any time; you keep a clean Next.js site.*
+
+<span class="small">Source: `docs/freelance/00-quick-start.md` "Is this marketable?", `docs/freelance/04-slide-deck.md` objections slide.</span>

@@ -1,10 +1,19 @@
-# Making Changes
+# Making Changes ⚪
+
+> **Lane:** ⚪ Both. The issue → PR loop is identical on the mothership and on every per-client repo. See [[_partials/lane-key]] for the badge legend.
+>
+> **Sidebar — who lands edits where.** On a **🌐 client repo**, the autopilot is the *only* thing that lands edits on `main` (the client has no write access until handover). On the **🛠 mothership**, both the bot and the operator commit. Either way, the issue → PR loop below is the same.
 
 The simplest way to request a site change is to create a GitHub Issue. No coding required.
 
 ## From your phone
 
 Sign in to `/admin` (magic-link email via Resend, Google, or Microsoft Entra) and use the in-portal capture form. Email-to-issue and SMS-to-issue lanes route through n8n — see [admin portal plan](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/ADMIN_PORTAL_PLAN.md) and [n8n setup](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/N8N_SETUP.md).
+If you have the HTTP Shortcuts app set up (see `PHONE_SETUP.md` at the root of `<client-repo>` — for the current Client #1 that is [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md)):
+
+1. Tap the shortcut
+2. Type what you want changed
+3. Submit
 
 > **Deprecated:** the previous HTTP Shortcuts / Apple Shortcuts + GitHub PAT path is no longer supported. Setup steps are removed from [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md), which is now a deprecation notice; the v1→v2 migration matrix lives in [`docs/TEMPLATE_REBUILD_PROMPT.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/TEMPLATE_REBUILD_PROMPT.md) §1.4.
 
@@ -12,7 +21,7 @@ Each captured submission lands as a GitHub Issue with `status/needs-triage`.
 
 ## From a browser
 
-1. Go to [Issues → New issue](https://github.com/palimkarakshay/lumivara-site/issues/new/choose)
+1. Go to **Issues → New issue** on `<client-repo>` (for the current Client #1: [palimkarakshay/lumivara-site/issues/new/choose](https://github.com/palimkarakshay/lumivara-site/issues/new/choose))
 2. Pick **Site change request**
 3. Fill in the template
 4. Submit

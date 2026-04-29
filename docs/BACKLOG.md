@@ -95,3 +95,7 @@ If a future phase needs to dial usage back:
 - Restore the per-tier mapping in `scripts/lib/routing.py` (`trivial|easy → haiku`, `medium → sonnet`, `complex → opus`)
 - Raise the bar for what gets `auto-routine` during triage (only `priority/P1` + `complexity/trivial|easy`)
 - Pause entirely: edit the schedule line to `- cron: '0 0 1 1 *'` (January 1st only), or comment the `schedule:` block out and rely on `workflow_dispatch` only.
+
+## Recurring backlog items
+
+- [ ] **Pattern C audit** — quarterly cadence, plus on every secret rotation and every new client repo onboarded. Walk every MUST / MUST-NOT row in [`docs/mothership/pattern-c-enforcement-checklist.md`](mothership/pattern-c-enforcement-checklist.md) (see §6 of that file for the procedure and §5 for the per-client verification commands).

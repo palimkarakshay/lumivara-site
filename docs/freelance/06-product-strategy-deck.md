@@ -456,3 +456,82 @@ By **month 24**:
 > Every step is individually testable. If one fails, the CLI prints what's done + what's left and the operator runs `--resume`.
 
 <span class="small">Source: `docs/mothership/02-architecture.md §3`, `docs/mothership/18-provisioning-automation-matrix.md`.</span>
+
+---
+
+<!-- _class: lead -->
+
+# 7 · The project plan
+## 12-month plan with revenue + headcount checkpoints
+
+---
+
+## Month-by-month projection (year 1)
+
+<br/>
+
+| Month | Active clients | Quota tier | MRR (CAD) | Setup-fees (CAD) | Gross | Net before tax + time |
+|---|---|---|---|---|---|---|
+| 1 | 2 | Pro | $200 | $3,000 | $3,200 | $3,152 |
+| 3 | 7 | Max 5x | $1,200 | $7,500 | $8,700 | $8,520 |
+| 6 | 16 | Max 20x | $3,800 | $11,000 | $14,800 | $14,457 |
+| 9 | 25 | Max 20x | $6,800 | $13,000 | $19,800 | $19,447 |
+| 12 | 32 | 2nd seat | $9,200 | $14,000 | $23,200 | $22,555 |
+
+**Year-1 gross ≈ CAD $177k. Year-1 net (pre-tax) ≈ CAD $170.5k. Take-home ≈ $100–110k after Ontario sole-prop tax + 15% slow-month adjustment.**
+
+<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part D (12-month spreadsheet), `docs/mothership/18-capacity-and-unit-economics.md` cost envelopes.</span>
+
+---
+
+## Operator's weekly cadence
+
+<br/>
+
+| Day | Time | Activity |
+|---|---|---|
+| Mon 08:30 | 30 min | Inbox sweep on the dashboard; re-rank Inbox issues across all clients |
+| Mon 12:00 | 30 min | Weekly AI smoke-test results review |
+| Daily | 30–60 min | PR review on mobile dashboard — merge greens, kick reds back to issues |
+| Wed | 60 min | Monthly improvement run for one T2/T3 client (rotate through roster) |
+| Fri | 30 min | Cost check — ccusage, Action minutes, Twilio, Resend, n8n health |
+| Last Fri / month | 60 min | Per-client "where is this going?" — draft 1–2 issues each |
+
+> **Total: ~10–12 hours/week of operator-managed work**, plus build time for new engagements (8–45 hrs each, lumpy).
+
+<span class="small">Source: `docs/mothership/01-business-plan.md §7`.</span>
+
+---
+
+## Capacity cliffs (when to upgrade what)
+
+<br/>
+
+| Cliff | Trigger | Action |
+|---|---|---|
+| **Cliff 1** | Client #6 | Claude Pro → Max 5x |
+| **Cliff 2** | GitHub Actions free-tier minutes saturate | Move pipeline repos to a paid org plan |
+| **Cliff 3** | n8n free-tier executions saturate | Self-host n8n on Railway (already planned, ~$5/mo) |
+| **Cliff 4** | Client #16 | Max 5x → Max 20x |
+| **Cliff 5** | Client #26 | Add a second Anthropic seat (= second operator) |
+| — | Client #25 | Hire part-time VA (5 hrs/wk, ~$300/mo CAD) for client comms triage |
+| — | Client #35 | Hire part-time second engineer for monthly improvement runs |
+| — | Client #50 | Decide whether to become an agency (Stage 2). |
+
+<span class="small">Source: `docs/mothership/18-capacity-and-unit-economics.md §6`, `docs/freelance/03-cost-analysis.md` Part E.</span>
+
+---
+
+## Tier mix targets (year 1 vs. year 2)
+
+<br/>
+
+| Tier | Year-1 target mix | Year-2 target mix | Reason |
+|---|---|---|---|
+| Tier 0 — Launch | 20% (portfolio + tire-kicker filter) | 10% | Loss-leader; deliberately scarce. |
+| Tier 1 — Lite | 30% | 20% | Solo consultants; ~30% upgrade to T2 within 6 months. |
+| **Tier 2 — Pro (headline)** | **40%** | **55%** | The economic engine. ~70% of MRR. |
+| Tier 3 — Business | 10% | 15% | Boutique firms; higher SLA. |
+| Tier 4 — Agency | 0% | 0% | Custom-quote only; not promoted. |
+
+<span class="small">Source: `docs/freelance/02-pricing-tiers.md` (each tier's "role"), `docs/freelance/03-cost-analysis.md` Part C.</span>

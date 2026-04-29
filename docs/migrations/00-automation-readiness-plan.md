@@ -238,4 +238,108 @@ manual operator review of the streak's PRs. If the operator can't say
 "I would have approved every one of these without changes," the streak
 doesn't count — start over with stricter triage.
 
+---
+
+## §4 — Phase 2: Run S1 — mechanical rename
+
+**Audience:** bot drives a single Claude Code session; operator
+reviews the resulting PR.
+
+**Estimated wall-clock:** one focused 60–90 turn session. Single PR.
+
+### §4.1 — What S1 does
+
+Single global find-replace pass against this repo. Every change is
+mechanical — placeholders to brand-locked values, plus the folder
+renames from `15b §2`.
+
+| Find | Replace | Files |
+|---|---|---|
+| `{{BRAND}}` | `Lumivara Forge` | All `docs/`, `AGENTS.md`, `README.md` (where present) |
+| `{{BRAND_SLUG}}` | `lumivara-forge` | All `docs/`, all `.github/workflows/*.yml`, `scripts/`, `dashboard/` |
+| `docs/mothership/` | `docs/platform/` | `git mv` + every relative link |
+| `docs/freelance/` | `docs/storefront/` | `git mv` + every relative link |
+| `docs/n8n-workflows/` | `docs/n8n/` | `git mv` + every relative link |
+| `mothership` (prose, case-insensitive) | `platform` | `docs/`, `AGENTS.md`, wiki — **except** `15 §1` glossary, `15b §1`, and migration-history docs (per `15 §6`) |
+| `mothership-bot` (slug) | `pipeline-bot` | secret names, doc references |
+| `client-template/` | `site-template/` | docs, future runtime |
+| `mothership-smoke` (status check) | `platform-smoke` | `pattern-c-enforcement-checklist`, `03-secure-architecture` |
+
+### §4.2 — What S1 does NOT do
+
+- ❌ Does not rename `palimkarakshay/lumivara-site` → anything. The
+  repo rename happens in Phase 4 with the spinout.
+- ❌ Does not transfer the repo to the `lumivara-forge` org. Same.
+- ❌ Does not touch `src/` — the client-side Next.js code stays put
+  (it's Client #1's, not the platform's).
+- ❌ Does not touch the four hard-excluded paths from
+  `scripts/execute-prompt.md` step 4: `.github/workflows/`, `scripts/`,
+  `.env*`, `package.json`, `src/app/api/contact/*` — except for the
+  literal `{{BRAND_SLUG}}` substitutions in workflows, which the
+  operator approves manually after the bot drafts the PR.
+
+### §4.3 — Bot prompt for Run S1
+
+Paste verbatim into Claude Code (Opus, extended thinking on, in this
+repo). One session, one PR. **Do not run this until Phase 1 is green.**
+
+```
+Run S1 from docs/mothership/16-automation-prompt-pack.md §5 and
+docs/mothership/15b-naming-conventions.md §2.
+
+Single PR titled "chore(rename): Run S1 — Lumivara Forge brand lock".
+
+Steps:
+1. Read 15b §2 for the find/replace table.
+2. For each placeholder substitution, run a project-wide grep first;
+   confirm the count matches the row in 15 §4 ("renames touch ~150
+   references") within ±20%.
+3. Apply substitutions in this order, committing after each logical
+   group:
+     a. {{BRAND}} → Lumivara Forge
+     b. {{BRAND_SLUG}} → lumivara-forge
+     c. mothership → platform (case-insensitive prose; preserve the
+        exception list from 15 §6 — do not modify 15 §1, 15b §1, or
+        any migration-history doc; instead append a one-line
+        "historical reference, intentional" comment if a hit there
+        is ambiguous)
+     d. freelance → storefront (folder + cross-links only; the
+        outward-marketing prose word "freelance" stays where it
+        describes a market, e.g. "freelance market on Upwork")
+     e. n8n-workflows/ → n8n/
+     f. mothership-bot → pipeline-bot, mothership-smoke → platform-smoke
+4. Run the rename portion: git mv docs/mothership docs/platform,
+   git mv docs/freelance docs/storefront, git mv docs/n8n-workflows
+   docs/n8n. Commit each as its own commit.
+5. Update relative links (../mothership/ → ../platform/, etc.) via
+   sed across docs/ and *.md. Commit.
+6. Run the audit greps from 15 §6 and 15b §6. Both must return zero
+   matches outside the exception list.
+7. Verify:
+     - npm run lint → green (no source changes; should be unaffected).
+     - npx tsc --noEmit → green.
+     - Every link in docs/platform/00-INDEX.md resolves (use a
+       link-checker like `lychee` or just grep + ls).
+8. Open the PR with the standard Vercel-mirror callout (none needed
+   for S1 — purely doc renames).
+
+Hard exclusions: do not touch src/, package.json, .env*, the four
+paths in scripts/execute-prompt.md step 4 except for the
+{{BRAND_SLUG}} value substitutions.
+
+Budget: at 70% of max-turns, finish the current commit, push, and
+exit cleanly. The next session resumes from step 6.
+```
+
+### §4.4 — Hard exit criterion
+
+```bash
+git grep -niE 'mothership|\{\{BRAND(_SLUG)?\}\}' \
+  -- docs/ README.md AGENTS.md CLAUDE.md \
+  | grep -vE '15-terminology-and-brand\.md|15b-naming-conventions\.md|migrations/'
+```
+
+Returns zero lines. The link checker reports zero broken internal
+links. `npm run build` succeeds.
+
 

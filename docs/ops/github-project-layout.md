@@ -12,21 +12,25 @@
 > **Audience.** Operator. Bots read this only when they need to know
 > which custom-field values to set on a new issue.
 >
-> **Status.** Drafted 2026-04-29 on branch
-> `claude/github-project-setup`. The ten custom fields in §3.1 were
-> created on the existing `Lumivara Backlog` project (user-level, ID
-> `PVT_kwHOARsRls4BVg_H`) on the same day via
-> `scripts/bootstrap-forge-project.sh`. No issue migration was
-> required — the 46 currently-open issues stay on the same project,
-> they just need bulk-classification.
+> **Status.** The project skeleton is fully live on the
+> `Lumivara Backlog` project (user-level, ID
+> `PVT_kwHOARsRls4BVg_H`): all ten custom fields were created on
+> 2026-04-29 via `scripts/bootstrap-forge-project.sh`, and all
+> twelve saved views were added in the web UI the same day. No
+> issue migration was required — the 46 then-open issues stay on
+> the same project, they just need bulk-classification (§6.2).
+> Outstanding operator work tracked by the §3 D-1 row in
+> `01-poc-perfection-plan.md` and by the audit routine scheduled
+> for ~2 weeks after rollout.
 
 ## §0 — Reading order
 
 1. §1 — the recommendation and why one project (not many).
 2. §2 — does the operator (or the bot) need new GitHub access?
-3. §3 — the field & view spec (what was created and what's still manual).
-4. §4 — web-UI runbook (Android browser, ~15 minutes) — used for the
-   12 saved views (the GraphQL API does not yet support view creation).
+3. §3 — the field & view spec (what was created, with live URLs).
+4. §4 — web-UI runbook (Android browser) — original walkthrough
+   for the views; preserved as reference even though the views are
+   already live.
 5. §5 — scripted runbook (Termux on phone, or Git Bash on Windows).
 6. §6 — migration safety: how the existing 46 issues survive the
    field rollout with no data loss and no manual re-add.
@@ -34,8 +38,9 @@
    org birth and per-client repo births in
    [`00-automation-readiness-plan.md`](../migrations/00-automation-readiness-plan.md).
 
-If you only have 5 minutes: read §1, §3.1 (the 10 fields), and §4.3
-(the views to add in the web UI).
+If you only have 5 minutes: read §1 and the §3.2 view-name + URL
+table. Open one or two views and confirm they work; the project is
+already wired for daily use.
 
 ## §1 — Recommendation
 

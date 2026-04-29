@@ -44,7 +44,9 @@ The execute bot (Claude Opus via GitHub Actions in the quality-first phase):
 5. Opens a PR: `feedback(#n): <summary>`
 6. Labels the issue `status/awaiting-review`
 
-> On the *current* `palimkarakshay/lumivara-site` (Client #1 + mothership-in-progress), `auto/issue-*` branches sit alongside `main` because the two-branch overlay has not landed yet. On a clean per-client repo, the workflow YAML and `scripts/` live on `operator/main` only and are invisible to the client's `main`.
+> On the *current* Client #1 + mothership-in-progress repo, `auto/issue-*` branches sit alongside `main` because the two-branch overlay has not landed yet. On a clean per-client repo, the workflow YAML and `scripts/` live on `operator/main` only and are invisible to the client's `main`.
+>
+> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ The current Client #1 repo is `palimkarakshay/lumivara-site`; that mapping is one specific engagement, not the operator's default framing.
 
 ### 4. Preview (automatic)
 Vercel's GitHub integration deploys a preview URL within ~60 s of the PR push and posts it as a comment on the PR.

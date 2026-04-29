@@ -368,4 +368,86 @@ If the gate is still red at D-14, the schedule slips by exactly two
 weeks (next rev: D-0 = Wed 2026-05-13, D-14 = Wed 2026-05-27). Don't
 "compress" the schedule by skipping evidence rows.
 
+## §6 — Catalog & demo-readiness gate (above the migration gate)
+
+§1's gate proves the autopilot is **technically** trustworthy. It does
+not prove the practice is **commercially** demo-able. The product
+catalog (`docs/freelance/01-gig-profile.md` Parts 2 & 4,
+`docs/freelance/02-pricing-tiers.md`, `docs/decks/04-prospective-client-deck.md`,
+`docs/freelance/06-product-strategy-deck.md`) sells three bundled
+things — a custom site, a phone-edit pipeline, and a monthly
+improvement subscription. The POC streak only exercises one of those
+(GitHub-issue → bot-PR → auto-merge), and only on this repo's natural
+backlog. The other two and the catalog itself need their own gate
+before any prospect demo happens.
+
+This gate is **not** required for migration (Phase 2). It **is**
+required before any external demo. Treat it as a parallel gate that
+opens "demo-ready" while §1 opens "migration-ready."
+
+### §6.1 — Phone-edit pipeline end-to-end
+
+The single most-load-bearing claim in the catalog is *"text from a
+phone, tap publish."* The streak does not prove it; this row does.
+
+| #   | Condition                                                                                                                                                                                              | Pass? |
+|-----|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| 6.1 | One full SMS-to-published cycle: operator's phone → Twilio → n8n `intake-sms` → GitHub issue created with right labels → triage → execute → PR opened → Vercel preview green → operator taps publish in `/admin` → production updated. Captured screenshots/log lines attached to the streak tracking issue. | ☐ |
+| 6.2 | Same cycle via the admin-portal magic-link path (Resend) — operator signs in, submits a change via `/admin/client/[slug]/request/new`, the rest of the chain fires identically. | ☐     |
+| 6.3 | Same cycle via inbound email (`requests@lumivara.ca` IMAP credential per `docs/N8N_SETUP.md` and `OPERATOR_SETUP.md §1.4`). One channel can be marked **deferred** if the demo script doesn't use it; deferral is documented in the tracking issue, not silent. | ☐ |
+| 6.4 | A deliberate "bot got it wrong" rehearsal: operator rejects the preview from the admin portal, the issue reopens with the rejection note, the bot proposes a v2, operator approves v2. The "every change waits for your tap" claim from `prospective-client-deck.md` slide 7 is provably true. | ☐ |
+
+### §6.2 — Catalog consistency
+
+Five decks + the gig profile + the pricing tiers must agree on every
+material number and the brand. Drift here is the exact failure mode
+that turns a demo into "wait, your slide says $4,500 but the gig says
+$3,250 — which is it?"
+
+| #   | Condition                                                                                                                                                                                                                                                                       | Pass? |
+|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| 6.5 | Brand-lock audit: every doc in `docs/freelance/`, `docs/decks/`, and `docs/mothership/01-business-plan.md` reads `Lumivara Forge` consistently — or every one still reads `{{BRAND}}` consistently. **No mixed state.** Run S1 (Phase 2) is the moment the switch flips; this row gates that the docs are coherent on whichever side they're on. | ☐ |
+| 6.6 | Pricing parity: T0 / T1 / T2 / T3 setup + monthly numbers in `02-pricing-tiers.md` match the same-named rows in `04-prospective-client-deck.md`, `06-product-strategy-deck.md`, and `04-slide-deck.md` (CAD figures, USD conversion footnote where present). One executable grep proving zero mismatches, attached to the tracking issue. | ☐ |
+| 6.7 | Source-bibliography health: every `[V]`-flagged claim in `04-prospective-client-deck.md` (e.g., "75%", "3,117", "95.9%", "27% YoY") has a corresponding live row in `docs/research/03-source-bibliography.md`. Any `[S]` row without a current source URL is downgraded to a footnote or removed. | ☐ |
+| 6.8 | Service catalog (`01-business-plan.md §4`) ↔ feature delivery: every "Built" row in §4's feature table is provably live in this repo (workflow file present, prompt file present, smoke evidence in the streak). Anything marked Built but not actually firing is removed from the catalog before the demo. | ☐ |
+
+### §6.3 — Demo site readiness
+
+The first demo cannot be Beas's site (too tied to the operator's
+family — see §9). It needs a **dummy-vertical demo site** the operator
+can actually click through with a stranger.
+
+| #   | Condition                                                                                                                                                                                                                                                                                                | Pass? |
+|-----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| 6.9 | Pick **one** dummy vertical with full template support today (per `docs/mothership/templates/00-templates-index.md`, the restaurant pack is the only ✅ row — pick that unless another vertical has been promoted to ✅ by demo time). | ☐     |
+| 6.10 | Render the picked vertical's intake (e.g., `Rose Restaurant` from `07-client-handover-pack.md §6`) into a real, deployed `*.vercel.app` preview, fronted by a non-production demo subdomain (`demo.lumivara-forge.com` once Phase 0 buys the domain; until then, the bare Vercel URL is acceptable for a private demo). | ☐ |
+| 6.11 | Lighthouse 90+ on every page of the demo site for Performance, Accessibility, Best Practices, SEO. Captured as a JSON export attached to the tracking issue. The catalog's "90+ Lighthouse" claim (`prospective-client-deck.md` slide 9) is the property under audit here. | ☐ |
+| 6.12 | `axe-core` CI gate green on the demo site PR. The "WCAG failures cannot be shipped" claim (`prospective-client-deck.md` slide 7) is the property under audit here. | ☐ |
+| 6.13 | The demo site is wired into the **same** autopilot loop as §6.1 — i.e., the demo SMS path lands an issue on the demo site's repo (or the demo client slug, post-Phase 4), not on `palimkarakshay/lumivara-site`. Pre-Phase-4 this means a temporary `client/demo` label on this repo with a `demo` slug suffix; post-Phase-4 it means a real per-client repo. | ☐ |
+
+### §6.4 — Public-demo legal & risk
+
+Cheap to skip, expensive to skip incorrectly. These rows are **not**
+gating for a private demo to a friendly advisor (§9.2 audience #1) but
+**are** gating before any demo to a stranger or a public posting.
+
+| #   | Condition                                                                                                                                                                                                                                          | Pass? |
+|-----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| 6.14 | Trademark search at CIPO (Class 35 + 42) and USPTO returned, captured in `docs/mothership/15-terminology-and-brand.md §2`. Any blocking conflict means the brand pivots **before** the demo — re-running Run S1 is cheaper than a takedown letter. | ☐     |
+| 6.15 | One pass of `git grep -E '[A-Za-z0-9+/=]{32,}' main` (already in §1.3 row 3.2) re-run with the demo site repo included; zero matches. A demo that leaks a token into a public preview is worse than no demo. | ☐     |
+| 6.16 | The "honest objections" slide (`04-prospective-client-deck.md` slide 11) has a current, written answer for each row — including "what if you go out of business" — that the operator can deliver verbally without reading. Rehearsed once on a recording. | ☐ |
+
+### §6.5 — One-line summary
+
+> **No external demo** until §6.1 + §6.2 + §6.3 are all green. §6.4 is
+> required only before strangers/public; private demos to one named
+> advisor or one named partner-candidate (§9) may proceed with §6.4 as
+> "deferred, captured."
+>
+> §6 is **independent** of §1: a demo can happen on a green §6 even
+> while §1 is still amber, and migration can happen on a green §1 even
+> while §6 is still amber. They serve different audiences (the demo
+> audience and the future-engineer audience). Don't let either gate
+> "shortcut" the other.
+
 *Last updated: 2026-04-29.*

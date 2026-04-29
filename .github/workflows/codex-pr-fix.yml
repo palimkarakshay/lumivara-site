@@ -1,0 +1,236 @@
+name: Apply Codex consistency fixes
+
+# Runs after `codex-review.yml` posts a review on a PR. Reads the review's
+# `## Suggested fixes` section, validates each suggestion against the actual
+# repo (hallucination guard), then dispatches Claude Opus to apply the
+# clearly-applicable consistency fixes as a follow-up commit on the PR's
+# branch. The PR's `codex-blockers` label is removed only after a fresh
+# Codex re-review (triggered by the `synchronize` event) comes back clean.
+#
+# Triggers:
+#   - `issue_comment` on a PR carrying the `codex-blockers` label, with
+#     the comment body containing "Code review (Codex" — that's the
+#     marker codex-review.yml prints. (`issue_comment` covers PR comments
+#     because GitHub treats PRs as issues for comment purposes.)
+#   - `workflow_dispatch` for operator-triggered re-runs.
+#
+# What this workflow does NOT do:
+#   - It does not blindly accept every suggestion. Each fix is filtered
+#     by `scripts/codex-fix-classify.py` so only mechanical, low-risk
+#     edits with verifiable file paths get applied. Complex / speculative
+#     suggestions are left to the human reviewer.
+#   - It does not merge. Auto-merge stays gated by `codex-blockers`
+#     (and the usual auto-routine + complexity rules); the gate clears
+#     when codex-review.yml re-runs on the new commits and finds nothing
+#     blocker/major.
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "PR number to apply Codex fixes to"
+        required: true
+      review_comment_id:
+        description: "Comment id of the Codex review (optional; auto-detect if blank)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  # Per-PR concurrency so two reviews on the same PR don't race.
+  group: codex-pr-fix-${{ github.event.issue.number || inputs.pr }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      proceed: ${{ steps.gate.outputs.proceed }}
+      pr: ${{ steps.gate.outputs.pr }}
+      head_ref: ${{ steps.gate.outputs.head_ref }}
+    steps:
+      - name: Decide whether to run
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          IS_PR: ${{ github.event.issue.pull_request != null }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          INPUT_PR: ${{ inputs.pr }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            PR="$INPUT_PR"
+          else
+            # Only act on PR comments that are actually a Codex review.
+            if [ "$IS_PR" != "true" ]; then
+              echo "Comment is on an issue, not a PR — skipping."
+              echo "proceed=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            if ! echo "$COMMENT_BODY" | grep -q "Code review (Codex"; then
+              echo "Comment is not a Codex review — skipping."
+              echo "proceed=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            PR="$ISSUE_NUMBER"
+          fi
+          # Need PR labels + head branch.
+          gh pr view "$PR" --repo palimkarakshay/lumivara-site \
+            --json number,headRefName,labels > /tmp/pr.json
+          HEAD=$(python3 -c 'import json; print(json.load(open("/tmp/pr.json"))["headRefName"])')
+          LABELS=$(python3 -c 'import json; print(",".join(l["name"] for l in json.load(open("/tmp/pr.json"))["labels"]))')
+          echo "PR #$PR head=$HEAD labels=$LABELS"
+          # Don't run on PRs the operator opted out of via `human-only`.
+          if echo "$LABELS" | grep -q "human-only"; then
+            echo "PR has human-only label — bot must not modify."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "pr=$PR" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$HEAD" >> "$GITHUB_OUTPUT"
+          echo "proceed=true" >> "$GITHUB_OUTPUT"
+
+  apply:
+    needs: gate
+    if: needs.gate.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate.outputs.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git identity
+        run: |
+          git config user.name "claude-auto"
+          git config user.email "claude-auto@users.noreply.github.com"
+
+      # ── Fetch the most recent Codex review and classify its fixes ──────
+      - name: Classify Codex suggested fixes
+        id: classify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ needs.gate.outputs.pr }}
+        run: |
+          set -euo pipefail
+          python3 scripts/codex-fix-classify.py "$PR" \
+            > /tmp/classified.json
+          APPLY_COUNT=$(python3 -c 'import json; print(len(json.load(open("/tmp/classified.json"))["apply"]))')
+          DEFER_COUNT=$(python3 -c 'import json; print(len(json.load(open("/tmp/classified.json"))["defer"]))')
+          echo "apply_count=$APPLY_COUNT" >> "$GITHUB_OUTPUT"
+          echo "defer_count=$DEFER_COUNT" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Codex fixes — classification"
+            echo ""
+            echo "- Applicable (mechanical, file paths verified): $APPLY_COUNT"
+            echo "- Deferred (speculative / unverifiable / risky): $DEFER_COUNT"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Nothing to apply — exit cleanly
+        if: steps.classify.outputs.apply_count == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ needs.gate.outputs.pr }}
+        run: |
+          echo "No applicable Codex fixes after classification. Leaving PR labels as-is."
+          # Post a short comment so the audit trail records the decision.
+          BODY=$(cat <<'EOF'
+          _codex-pr-fix.yml: classifier found no mechanical fixes to apply automatically. Any deferred items remain in the Codex review above for human triage._
+          EOF
+          )
+          gh pr comment "$PR" --repo palimkarakshay/lumivara-site --body "$BODY" || true
+
+      # ── Hand the classified fix list to Claude to apply ────────────────
+      - name: Apply fixes via Claude Opus
+        id: claude_fix
+        if: steps.classify.outputs.apply_count != '0'
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          settings: |
+            {
+              "permissions": {
+                "allow": ["Bash", "Read", "Write", "Edit", "Glob", "Grep"]
+              }
+            }
+          prompt: |
+            You are applying Codex consistency fixes to the current PR
+            branch. The classifier has already filtered to only the
+            mechanical, low-risk fixes whose cited file paths exist on
+            disk. The list is in `/tmp/classified.json` under the
+            `apply` key.
+
+            For each item in `apply`:
+            1. Read the cited file.
+            2. Make the smallest edit that satisfies the suggestion. If
+               on inspection the suggestion is wrong (Codex hallucinated
+               the context, the line is already correct, etc.), SKIP it
+               and add a one-line note to `/tmp/skipped.md` explaining
+               why. Do not force a bad edit.
+            3. After all items, run `npx tsc --noEmit` and `npm run lint`.
+               If either regresses vs. main, revert the offending edit.
+
+            Then commit + push:
+              git add -A
+              git commit -m "fix(codex-review): apply consistency findings"
+              git push origin HEAD
+
+            Do NOT touch hard-excluded paths: `.github/workflows/*`,
+            `.env*`, `scripts/*`, `src/app/api/contact/*`,
+            `package.json` deps. If a Codex finding cites one of those,
+            skip it and note in `/tmp/skipped.md`.
+
+            After pushing, post a comment on the PR summarising:
+              - How many findings were applied vs. skipped
+              - Per-skipped-finding reason (one line each)
+              - That the PR is now waiting for codex-review.yml's
+                synchronize-trigger re-run before `codex-blockers` can
+                be cleared.
+
+            Use:
+              gh pr comment ${{ needs.gate.outputs.pr }} \
+                --repo palimkarakshay/lumivara-site \
+                --body-file /tmp/summary.md
+          claude_args: |
+            --max-turns 200
+            --model claude-opus-4-7
+
+      - name: Surface terminal status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ needs.gate.outputs.pr }}
+        run: |
+          {
+            echo "## codex-pr-fix outcome — PR #$PR"
+            echo ""
+            echo "| Stage | Outcome |"
+            echo "|-------|---------|"
+            echo "| Classification | ${{ steps.classify.outcome || 'skipped' }} |"
+            echo "| Claude apply pass | ${{ steps.claude_fix.outcome || 'skipped' }} |"
+            echo ""
+            echo "_The codex-blockers label is cleared by codex-review.yml's"
+            echo "next synchronize run, NOT by this workflow — that ensures"
+            echo "Codex actually re-validates the fixes before auto-merge"
+            echo "becomes eligible again._"
+          } >> "$GITHUB_STEP_SUMMARY"

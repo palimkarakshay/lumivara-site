@@ -450,4 +450,75 @@ gating for a private demo to a friendly advisor (§9.2 audience #1) but
 > audience and the future-engineer audience). Don't let either gate
 > "shortcut" the other.
 
+## §7 — Operator drop-dead dates
+
+The operator is, by their own statement, going to delay every operator
+task they can. That posture is fine for cost (Claude Max 20x is paid
+either way) but it has hard limits — some operator-only tasks have
+**lead times** that, if missed, push the first prospect demo by months
+not weeks.
+
+This section is the "be the sensible adult" map. Each row names: the
+task, the earliest date it could happen (E), the latest date it can
+happen without slipping the demo (L), and the consequence of slipping
+past L. Assume the operator's preferred demo window is **early July
+2026** (≈ 9 weeks from D-0). If the demo window moves, every L date
+shifts with it.
+
+> **Reading rule.** "Don't act before E" is just as important as "must
+> act by L." Acting before E (e.g., creating the GitHub org during
+> Phase 1 streak) creates exactly the operator-action signal that
+> resets the streak counter.
+
+### §7.1 — The map
+
+| #   | Operator task                                                            | Earliest sensible date (E) | Latest acceptable date (L) | Lead time / why L matters | If slipped past L |
+|-----|--------------------------------------------------------------------------|----------------------------|----------------------------|---------------------------|-------------------|
+| O1  | **File the streak tracking issue + walk open issues** (POC §3 D-1)       | Thu 2026-04-30             | Mon 2026-05-04             | The streak cannot start counting until the issue exists. Each day past L is a day the streak doesn't accrue. | Streak start slips by exactly that many days; demo slips with it. |
+| O2  | **Vercel mirror sitting** (POC §3 D-2; G4–G6)                            | Fri 2026-05-01             | Mon 2026-05-04             | The drift watcher cannot run cleanly without it; §1.2 row 2.3 cannot tick. | Streak resets on the first false-green watcher run. |
+| O3  | **First-time backfill promote** (POC §3 D-3 AM; G7)                      | Mon 2026-05-04 AM          | Mon 2026-05-04 PM          | Drift starts double-digit; every watcher run opens a P1 issue until promoted. | False P1 issues poison the streak's "no P1 issues opened" condition (§1.1 row 1.3). |
+| O4  | **Trademark search filed** (CIPO Class 35 + 42 + USPTO; `01-business-plan §1`, `15-terminology-and-brand §2`)  | Today (2026-04-29)         | Fri 2026-05-08             | CIPO turnaround is 6–12 weeks on a clean filing, longer on conflicts. Brand-lock without a trademark answer is gambling that nobody else has the name. The brand-lock audit (§6.2 row 6.5) cannot tick green if the trademark answer hasn't returned. | If a conflict surfaces post-rename, Run S1 must be re-run to a new brand. Re-run is bot-cheap (~1 session) but every doc/deck/asset citing the old brand has to be re-rendered, including any decks already shared with advisors. **This is the single longest-lead operator task and the one most often deferred.** |
+| O5  | **Buy `lumivara-forge.com` + `.ca` domains** (Phase 0 row 1)             | Mon 2026-05-11             | Mon 2026-06-08             | Cheap ($30 / yr each); registrar of record matters more than timing. Earliest sensible is **after** trademark returns clean (O4). | If domain is squatted by someone else between O4 and O5, brand pivots and Run S1 re-runs. Same cost as O4 slip but compounds. |
+| O6  | **Phase 0 GitHub org + App + secrets bootstrap** (`00 §2.2`)             | Wed 2026-05-13 (POC §3 D-13) | Fri 2026-05-22             | Phase 2 (Run S1) cannot be merged into the platform org until the org exists. Phase 0 itself is one focused day; the L date is two weeks later because Phase 2 tolerates that slack. | Phase 2 doesn't start; Phase 3 doesn't start; demo slips. |
+| O7  | **Empty target client repos created** (`palimkarakshay/lumivara-people-advisory-site`, `*-pipeline`, plus a demo dummy repo for §6.3) | Wed 2026-05-13 | Fri 2026-05-29             | Slug-locking only. Push a one-line README, do nothing else. Reserves the slugs against squatting and lets the bot validate URLs in dry-runs. | If a slug is taken (unlikely on a personal account), §6.13 cannot point the demo at the right URL pre-Phase-4. |
+| O8  | **Vercel team account on `Forge` business email** (Phase 0 row 9)        | Wed 2026-05-13             | Fri 2026-06-05             | Today's Vercel project is on the operator's personal email. The new client + demo Vercel projects must live on the business email or the eventual transfer back to the client (catalog promise: "you own the hosting account") is theatrical. | Hosting-transfer story breaks; the catalog claim becomes false. **Soft slip:** the demo can run on the personal Vercel account; the L date is what matters for the eventual client #1 transfer. |
+| O9  | **Twilio sub-account + per-client number for the demo** (Phase 0 row 10) | Wed 2026-05-13             | Fri 2026-06-12             | $1.15/mo per number; the SMS arm of §6.1 needs at least one real number to demo on. The L date is the demo window minus 3 weeks (Twilio number provisioning + carrier verification can take 5–10 business days for SMS-A2P registration in Canada). | §6.1 row 6.1 cannot tick; demo loses its single most-load-bearing claim. |
+| O10 | **n8n on Railway, Forge instance** (Phase 0 row 10b)                     | Wed 2026-05-13             | Fri 2026-06-19             | One n8n instance, many workflows. The L date is demo minus 2 weeks for credential provisioning, workflow imports, smoke tests. | §6.1 / §6.2 / §6.3 rows that depend on n8n cannot tick; demo loses the entire phone-edit narrative. |
+| O11 | **1Password Business + recovery envelope** (`21-vault-strategy-adr.md`)  | Wed 2026-05-13             | Fri 2026-06-26             | One sitting, ~2 hours. The recovery envelope cannot be skipped — `09 §1.5` makes it a quarterly drill subject. | The single-Owner break-glass risk (`09 §9` row 5) goes from "documented mitigation" to "silent until it triggers." Catastrophic if the operator's laptop is lost between L and the first drill. |
+| O12 | **DNS cutover for advisory** (Phase 4 row 12)                            | Mon 2026-06-22             | Fri 2026-07-10             | Hard-to-reverse. The earliest sensible date is the day Phase 4 acceptance ticks green. The L date is the demo window's end. **Do not** schedule this in the same week as the demo — propagation lag + a bad cutover is the worst-possible demo-day surprise. | Demo audience hits the old site or a half-cut-over site. Recoverable but unprofessional. |
+| O13 | **Insurance: E&O + cyber liability** (`21-ip-protection-strategy.md §4`) | Mon 2026-06-15             | Fri 2026-08-01             | First paying client should be covered. Brokers take 2–4 weeks to quote + bind. The L date is demo + 4 weeks (a discovery-call demo doesn't yet need cover; a signed contract does). | Operator is personally liable for any IP / data-breach claim from Client #1 onward. |
+| O14 | **Lawyer-reviewed MSA + SOW** (`22-engagement-risk-protection.md §3, §4`) | Mon 2026-06-15             | Fri 2026-07-31             | Lawyer review is 2–4 weeks; revisions are another 1–2. Demo doesn't need this; **first contract** does. The L date is demo + 3 weeks, on the assumption that the demo converts and a contract is in front of someone within a month. | First client signs the operator's draft contract, which is not enforceable on the items that matter (IP assignment, non-payment, data privacy). |
+
+### §7.2 — Reading the map
+
+The dates **rank** the operator's procrastination cost. Reading down
+the L column:
+
+1. **O4 (trademark)** is today-or-this-week. Single longest lead time;
+   single most expensive to defer. **Start this Monday.**
+2. **O1 / O2 / O3** are this-week. They're inside the POC plan
+   already; this section just makes them harder to forget.
+3. **O5–O11** are mid-May to late-June. Phase 0 day clusters them;
+   the operator does them in one focused sitting per
+   `00 §2.2`. **Don't do them earlier** — operator action during the
+   streak resets the streak counter (§5.1 R3).
+4. **O12 (DNS cutover)** is the only late-June item that the operator
+   should *deliberately* delay until Phase 4 acceptance is green.
+5. **O13 + O14 (insurance + lawyer)** are post-demo. They're listed
+   here because the operator's "delay until necessary" instinct will
+   try to defer them past first contract — and signing without them
+   is the single biggest non-technical risk in the whole plan
+   (`22-engagement-risk-protection.md §5` row 1).
+
+### §7.3 — The single calendar entry the operator actually needs
+
+If the operator only schedules one thing this week, it is **the
+trademark filing (O4)**. It is the only row whose deadline is set by
+an external party (CIPO + USPTO turnaround) rather than by the
+operator's own pace, and it is the only row whose miss cascades into
+re-running Run S1 across every doc, deck, and asset.
+
+Everything else can be sequenced inside the POC plan and Phase 0 day
+without external coordination.
+
 *Last updated: 2026-04-29.*

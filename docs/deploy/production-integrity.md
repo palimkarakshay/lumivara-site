@@ -131,6 +131,33 @@ The client sees the badge flip from amber **Deploying now…** to green
 
 ---
 
+### 4a. Per-commit promote (operator-only)
+
+`/admin/deployments` exposes two distinct affordances on a client's drift
+card:
+
+1. **Promote tip of main → production** (existing). Bundles every pending
+   change into one production deploy. Use when shipping a batch.
+2. **Promote `#NN` → production** (per drift row). Promotes one specific
+   squash-merge SHA so a single completed issue can ship on its own.
+
+Both go through the same `assertSafePromotion()` guard, so the integrity
+contract holds either way:
+
+- Picking an *older* drift commit than tip of main promotes up to that
+  commit and leaves later drift pending. Run another promote to flush the
+  rest.
+- Picking a SHA that is older than current production is **refused** with
+  the standard `would_overwrite_newer` message — true cherry-pick of a
+  commit that sits behind production is not supported here.
+- Picking a SHA that already serves production no-ops cleanly.
+
+Per-commit promote is operator-only (admin allow-list gated). The
+client-facing `confirmDeploy` path on `/admin/client/[slug]/request/[number]`
+is unchanged and still gated on the tier's `deployApproval` feature.
+
+---
+
 ## 5. The drift watcher (mothership self-healing)
 
 Even with all the pre-flight checks above, drift is still possible if the

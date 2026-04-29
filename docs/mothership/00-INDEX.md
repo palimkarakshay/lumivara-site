@@ -86,6 +86,8 @@ Existing context that this folder builds on (do not duplicate):
 - `docs/freelance/02-pricing-tiers.md` — four-tier ladder with prices and decision tree
 - `docs/freelance/03-cost-analysis.md` — break-even and quit-the-day-job ramp
 - `docs/freelance/05-template-hardening-notes.md` — running list of system-hardening items
+- [`docs/research/00-INDEX.md`](../research/00-INDEX.md) — **evidentiary layer for all stakeholder decks**: two raw Gemini Deep Research outputs preserved verbatim under `raw/`, three synthesis docs, a [V]/[S]/[C]-flagged source bibliography, plus client personas, switch reasons, and honest drawbacks. Anything claimed in `docs/decks/` or `docs/freelance/04-slide-deck.md` traces back to a row in `03-source-bibliography.md`.
+- [`docs/decks/00-INDEX.md`](../decks/00-INDEX.md) — **stakeholder deck pack**: investor, partner (co-operator), employee (engineer / VA), prospective-client (persona-tailored), and advisor (pressure-test). Each deck cites verified rows in `docs/research/03-source-bibliography.md`.
 - `docs/AI_ROUTING.md` — multi-AI router policy and fallback chains
 - `docs/ADMIN_PORTAL_PLAN.md` — admin-portal architecture (5 phases)
 - `docs/N8N_SETUP.md` — n8n on Railway

@@ -125,3 +125,80 @@ Lumivara Forge **inverts** that:
 > The retainer model isn't more expensive. It's cheaper, predictable, and the site is *better* every month instead of degrading.
 
 <span class="small">Source: `docs/freelance/04-slide-deck.md` cost-comparison slide; `docs/freelance/02-pricing-tiers.md`.</span>
+
+---
+
+<!-- _class: lead -->
+
+# 2 · What we provide that others don't
+## The moat, in plain English
+
+---
+
+## The differentiation stack
+
+<br/>
+
+Five layers, from "table stakes" to "uniquely ours":
+
+1. **Modern Next.js 16 site** — most freelancers can do this. Table stakes.
+2. **Phone-edit shortcut** — submit a change from a phone in 30 seconds.
+3. **AI autopilot that implements + previews changes** — multi-AI router (Claude → Gemini → OpenAI), plan-then-execute pipeline.
+4. **Tier-based cadence** — T1 ships next morning, T2 within 2 hours, T3 within 1 hour.
+5. **Pattern C two-repo architecture** — autopilot lives in an operator-only pipeline repo; the client's site repo is a clean Next.js codebase they own outright.
+
+> Layers 2–5 are what nobody else is shipping in this market segment.
+
+<span class="small">Source: `docs/AI_ROUTING.md`, `docs/mothership/02b-pattern-c-architecture.md`, `docs/mothership/04-tier-based-agent-cadence.md`.</span>
+
+---
+
+## What each layer means concretely
+
+<br/>
+
+| Layer | Concrete capability |
+|---|---|
+| **Phone-edit** | iOS/Android Shortcut → admin portal → n8n webhook → GitHub issue → bot. Auth.js v5 + magic-link, Google, or Entra ID. |
+| **Multi-AI router** | Claude Opus primary; Gemini 2.5 Pro for 1M-context audits; gpt-5.5 for code review. **Outage in one provider doesn't pause the client's site.** |
+| **Plan-then-execute** | Every routine issue gets a structured implementation plan first, *then* code. Plans are explainable to the operator before any code is written. |
+| **Auto-merge gate** | Trivial/easy non-design PRs auto-merge once the Vercel preview check is green. Design and critical-path changes always wait for a human tap. |
+| **Pattern C** | Two private repos per client: `<slug>-site` (clean, client-readable, transferable) + `<slug>-pipeline` (operator-only, holds workflows + prompts + cron). The client cannot see the autopilot — at end of engagement they get a vanilla repo. |
+| **Codex second-opinion** | T3 PRs are reviewed by gpt-5.5 before merge. Two opinions before anything ships. |
+
+<span class="small">Source: `docs/AI_ROUTING.md`, `docs/ADMIN_PORTAL_PLAN.md`, `docs/mothership/02b-pattern-c-architecture.md §1`, `docs/mothership/04-tier-based-agent-cadence.md §1`.</span>
+
+---
+
+## The competitive frame, side by side
+
+<br/>
+
+| Feature | Squarespace / Wix | Local agency | Typical Upwork freelancer | **Lumivara Forge** |
+|---|---|---|---|---|
+| Custom design | ❌ template | ✅ | ✅ | ✅ |
+| Real code, owned by client | ❌ | partial | sometimes | ✅ |
+| Edits from a phone | partial (CMS) | ❌ | ❌ | ✅ |
+| AI autopilot ships changes | ❌ | ❌ | ❌ | ✅ |
+| 90+ Lighthouse out of the box | ❌ | sometimes | rarely | ✅ |
+| Monthly improvement run | ❌ | upsell | ❌ | ✅ |
+| Outage-resilient AI fallback | n/a | n/a | n/a | ✅ |
+| Two-repo "autopilot is hidden" architecture | n/a | n/a | n/a | ✅ |
+| Total 24-mo cost (active small biz) | $400 + your time | $15–30k+ | $5–15k + per-edit | $7.5–14k all-in |
+
+<span class="small">Source: `docs/freelance/01-gig-profile.md` Part 8 (audience matrix), `docs/freelance/04-slide-deck.md`.</span>
+
+---
+
+## Why competitors can't trivially copy
+
+<br/>
+
+- **n8n + multi-AI router + GitHub-App pattern is engineered, not configured.** A solo freelancer would need 3–6 months of vibe-coding to replicate, by which time they're competing on the same terms — fine.
+- **Most agencies make money on per-edit billing.** Killing that revenue stream is structurally hard for them; it's not a feature they'll add.
+- **Squarespace / Wix can't open-source-clone this.** They're CMS platforms; the value here is "you own the code AND it self-improves." Different shape entirely.
+- **The system itself is licensed per engagement** — not work-for-hire. The client owns the *site*; we license the *system around it*. (See `docs/freelance/05-template-hardening-notes.md`.)
+
+> The moat is the **operating system around the codebase**, not the codebase. Nobody in this segment is selling that today.
+
+<span class="small">Source: `docs/freelance/05-template-hardening-notes.md`, `docs/mothership/01-business-plan.md §6`.</span>

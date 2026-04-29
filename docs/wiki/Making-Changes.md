@@ -8,8 +8,11 @@ The simplest way to request a site change is to create a GitHub Issue. No coding
 
 ## From your phone
 
-Sign in to `/admin` (magic-link email via Resend, Google, or Microsoft Entra) and use the in-portal capture form. Email-to-issue and SMS-to-issue lanes route through n8n — see [admin portal plan](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/ADMIN_PORTAL_PLAN.md) and [n8n setup](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/N8N_SETUP.md).
-If you have the HTTP Shortcuts app set up (see `PHONE_SETUP.md` at the root of `<client-repo>` — for the current Client #1 that is [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md)):
+Sign in to `/admin` (magic-link email via Resend, Google, or Microsoft Entra) and use the in-portal capture form. Email-to-issue and SMS-to-issue lanes route through n8n — see `docs/ADMIN_PORTAL_PLAN.md` and `docs/N8N_SETUP.md` at the root of `<client-repo>`.
+
+If you have the HTTP Shortcuts app set up (see `PHONE_SETUP.md` at the root of `<client-repo>`):
+
+> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ For Client #1 today, `<client-repo>` resolves to `palimkarakshay/lumivara-site`, so the deprecation notice lives at [PHONE_SETUP.md](https://github.com/palimkarakshay/lumivara-site/blob/main/PHONE_SETUP.md).
 
 1. Tap the shortcut
 2. Type what you want changed
@@ -21,7 +24,9 @@ Each captured submission lands as a GitHub Issue with `status/needs-triage`.
 
 ## From a browser
 
-1. Go to **Issues → New issue** on `<client-repo>` (for the current Client #1: [palimkarakshay/lumivara-site/issues/new/choose](https://github.com/palimkarakshay/lumivara-site/issues/new/choose))
+1. Go to **Issues → New issue** on `<client-repo>`.
+
+   > _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ For Client #1: [palimkarakshay/lumivara-site/issues/new/choose](https://github.com/palimkarakshay/lumivara-site/issues/new/choose).
 2. Pick **Site change request**
 3. Fill in the template
 4. Submit

@@ -211,8 +211,13 @@ Redeploy.
 | Plain-English thinking summary on cards   | —           | —           | ✅         |
 | Idea quota / month                        | 5           | 25          | unlimited  |
 
-**Lumivara People Solutions** runs on **Scale** — the registry default
-in `src/lib/admin/clients.ts`.
+The current Client #1 in the registry runs on **Scale** — that mapping is
+the registry default in `src/lib/admin/clients.ts`.
+
+> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._
+> For Client #1 today the registry entry resolves to *Lumivara People
+> Solutions* on Scale; for any other client, the registry entry uses
+> that client's own slug and tier.
 
 ---
 

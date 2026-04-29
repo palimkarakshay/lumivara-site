@@ -4,6 +4,12 @@
 
 ---
 
+## Operator vs client framing
+
+This repo is currently **Client #1's site** (Lumivara People Advisory) and is *also* the laboratory in which the operator framework — **Lumivara Forge** — is being built. After the P5.6 spinout (see `docs/migrations/lumivara-people-advisory-spinout.md`), this repo's `main` becomes purely client-facing and the autopilot relocates to a separate operator-only repo. Until then, the README intentionally names the client because the repo is operationally the client's own; the formal terminology policy that keeps operator docs neutral is in [`docs/mothership/15-terminology-and-brand.md §6`](./docs/mothership/15-terminology-and-brand.md), with the appendix of legitimate client examples in §7.
+
+---
+
 ## 1. What this is
 
 A marketing and advisory site for Lumivara People Advisory, built with:

@@ -17,7 +17,9 @@
 This wiki documents two related but distinct codebases:
 
 - **🛠 Operator lane (Forge mothership)** — the operator's autopilot: triage → plan → execute → review → auto-merge, n8n workflows, the multi-AI router, the dashboard, the engagement playbooks. Lives in `palimkarakshay/{{BRAND_SLUG}}-mothership` (private) and on the `operator/main` overlay branch of every client repo.
-- **🌐 Client lane (Pattern C site repo)** — the clean Next.js site a client owns: copy, MDX articles, design tokens, the contact-form trust boundary, and "how do I request a change". Lives in a per-client repo (today: `palimkarakshay/lumivara-site`; on next rebuild: `palimkarakshay/lumivara-people-advisory-site`).
+- **🌐 Client lane (Pattern C site repo)** — the clean Next.js site a client owns: copy, MDX articles, design tokens, the contact-form trust boundary, and "how do I request a change". Lives in a per-client repo at `<org>/<client-slug>-site`.
+
+> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ For Client #1 today the slug resolves to `palimkarakshay/lumivara-site` and migrates to `palimkarakshay/lumivara-people-advisory-site` after the P5.6 spinout.
 
 For the architectural model that ties the two together — the `operator/main` overlay branch, the client `main`, and Pattern C — see `docs/mothership/02-architecture.md §1`.
 
@@ -54,7 +56,9 @@ Read [[_partials/lane-key]] first. Every page below is stamped with one of three
 
 ## First client migration — quickstart
 
-The first migration of an existing site (today: `palimkarakshay/lumivara-site`) into a clean per-client repo (`palimkarakshay/lumivara-people-advisory-site`) follows the spinout runbook.
+The first migration of an existing site into a clean per-client repo (`<org>/<client-slug>-site`) follows the spinout runbook.
+
+> _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ For Client #1 the source repo is `palimkarakshay/lumivara-site` and the target is `palimkarakshay/lumivara-people-advisory-site`; the runbook below is the canonical procedure.
 
 > **🛠 Operator-only.** A client never runs this; it is the operator's per-engagement spin-up.
 

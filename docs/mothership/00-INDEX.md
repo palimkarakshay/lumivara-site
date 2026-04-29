@@ -86,6 +86,7 @@ Existing context that this folder builds on (do not duplicate):
 - `docs/freelance/02-pricing-tiers.md` — four-tier ladder with prices and decision tree
 - `docs/freelance/03-cost-analysis.md` — break-even and quit-the-day-job ramp
 - `docs/freelance/05-template-hardening-notes.md` — running list of system-hardening items
+- `docs/freelance/07-client-migration-strategy.md` — operator playbook for prospects who already have a website (Path A keep-and-integrate, Path B full migration, hybrids, edge cases, decision matrix). Sales-shareable distillation lives at `docs/freelance/08-client-migration-summary.md`. Cross-link rather than duplicate; the strategy doc is operator+sales-facing and lives in `docs/freelance/` per the §1 rule that operator-only mechanics stay in `docs/mothership/` while client-routing playbooks stay in the storefront pack.
 - `docs/AI_ROUTING.md` — multi-AI router policy and fallback chains
 - `docs/ADMIN_PORTAL_PLAN.md` — admin-portal architecture (5 phases)
 - `docs/N8N_SETUP.md` — n8n on Railway

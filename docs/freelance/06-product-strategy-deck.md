@@ -266,3 +266,62 @@ Five layers, from "table stakes" to "uniquely ours":
 > *You can't be. Pattern C means the autopilot is in our repo, not yours. Cancel any time; you keep a clean Next.js site.*
 
 <span class="small">Source: `docs/freelance/00-quick-start.md` "Is this marketable?", `docs/freelance/04-slide-deck.md` objections slide.</span>
+
+---
+
+<!-- _class: lead -->
+
+# 4 · What competitors say they provide
+## Reading the field honestly
+
+---
+
+## The competitive landscape
+
+<br/>
+
+| Competitor type | What they pitch | What they actually deliver |
+|---|---|---|
+| **Squarespace / Wix / Webflow** | "Beautiful sites you can edit yourself." | Templated builders. Owners learn a CMS, sites slow down, real ownership is shallow. |
+| **Local agencies (5–20 person)** | "Custom site, full service, dedicated PM." | High-quality build, but every post-launch edit is a billable hour. Site decays unless the client keeps paying for retainer-time. |
+| **Upwork / Fiverr generalists** | "Custom Next.js / WordPress site, fast turnaround." | Variable quality, no post-launch system, "I'll fix it for $50" relationship. |
+| **Webflow Experts / Framer Pros** | "Designer-built, no-code-friendly, modern." | Beautiful designs locked into a hosted platform. Owners pay platform fees + still need a designer for changes. |
+| **AI website builders (Durable, Wix ADI, Framer AI)** | "AI builds your site in 60 seconds." | One-shot generators. No edit-loop, no improvement subscription, no real ownership. |
+| **DIY WordPress + plugins** | "You own everything, edit anything." | True, and a maintenance nightmare. Plugin conflicts, security patches, expert needed monthly. |
+
+<span class="small">Source: `docs/freelance/01-gig-profile.md` Part 8, `docs/freelance/00-quick-start.md` market questions.</span>
+
+---
+
+## What they don't claim (and why)
+
+<br/>
+
+No competitor in this segment is currently claiming **all four** of:
+
+1. *Custom-coded* (not a template) — agencies claim it; builders can't.
+2. *Edit from a phone in 30 seconds* — nobody claims this credibly today.
+3. *Monthly improvement run baked into a flat fee* — agencies upsell it; nobody includes it.
+4. *Outage-resilient AI fallback ladder* — purely an engineering investment we've already made.
+
+<br/>
+
+> The composite offer — *all four together* — is the empty quadrant. That's where Lumivara Forge sits.
+
+<span class="small">Source: `docs/AI_ROUTING.md` resilience section, `docs/mothership/01-business-plan.md §4` (feature matrix).</span>
+
+---
+
+## The "why hasn't a bigger player done this?" question
+
+<br/>
+
+Honest answer: because the economics only work for **one operator running 25–30 retainers** before it tips into hiring.
+
+- A bigger player needs to load operator costs (PMs, account managers, designers) — that pushes price above $1,000/mo, killing the segment.
+- A solo developer without the autopilot can serve maybe 5 retainers before drowning in edit requests — too small to invest in the system.
+- The autopilot is the **only** thing that lets one person deliver agency-grade service to 25+ clients at sub-$300/mo.
+
+> The category is structurally hostile to anyone who isn't a senior engineer + one Claude Max subscription. That window is exactly the operator's profile.
+
+<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part E, `docs/mothership/18-capacity-and-unit-economics.md` cliffs.</span>

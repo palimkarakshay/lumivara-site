@@ -75,6 +75,7 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 19 | `19-engagement-evidence-log-template.md` | "Per-client evidence log the operator copies into `docs/clients/<slug>/evidence-log.md` and appends to as each provisioning step lands." | Operator | **Per engagement, appended throughout** |
 | 17 | `17-claude-issue-seeding-pack.md` | "Pre-built issue / prompt seeds for Claude Code Cloud agents to bootstrap the mothership repo" | Operator | **Per seeding run** |
 | 18 | `18-capacity-and-unit-economics.md` | "Single source of truth for Action minutes, AI cost envelopes, operator-time, scaling cliffs, and the assumption change log" | Operator | Once; update via §7 change log when any assumption moves |
+| 20 | `20-launch-and-operating-cost-model.md` | "Practice-wide cost model: one-time launch costs, all recurring categories (legal, payment processing, accounting, insurance, marketing, operator tools), Year-1 vs Year-3 burn, and cost-per-customer breakeven against the planned T2 headline tier" | Operator | Once; refresh annually + before any vendor swap or pricing change |
 | — | `pattern-c-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
 | — | `templates/00-templates-index.md` | "Vertical-specific content prompts and intake forms for each client business type — restaurant is full; plumber/realtor/recruiter are stubs; six more verticals planned" | Operator | **Per engagement (restaurant = full; others = stub)** |
 | — | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) | "How do I spin Lumivara People Advisory out into its own client repo, end-to-end?" — phased one-shot runbook with allow/deny tables (`docs/migrations/_artifact-allow-deny.md`), per-phase dry-run / rollback / acceptance, and Pattern C §4/§5 as gate / acceptance set | Operator | **Once (per Client #1 spinout)** |
@@ -154,6 +155,7 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 
 - **Canonical architecture (Pattern C):** `02b-pattern-c-architecture.md`
 - **Capacity / cost / cliffs (single source of truth):** `18-capacity-and-unit-economics.md` — §1 assumptions, §6 cliffs, §7 change log
+- **Launch + operating cost model (practice-wide P&L, breakeven, plan-lock table):** `20-launch-and-operating-cost-model.md` — §2 launch, §3 recurring, §4 Year-1 vs Year-3, §5 breakeven, §6 plan-lock
 - New mothership repo bootstrap: `05-mothership-repo-buildout-plan.md`
 - Per-engagement playbook: `06-operator-rebuild-prompt-v3.md`
 - **Per-engagement provisioning matrix (Step IDs + validation + evidence): `18-provisioning-automation-matrix.md`**

@@ -219,6 +219,23 @@ else
   printf '      shipped on 2026-04-29 is the worked example.\n'
 fi
 
+# ----- §6 — Manifest coverage: every tracked file lane-classified -----
+print_section "§6 — Manifest coverage (every tracked file classified by .pattern-c.yml)"
+DRY_RUN="${ROOT}/scripts/forge-spinout-dry-run.sh"
+if [ ! -x "$DRY_RUN" ]; then
+  print_fail "scripts/forge-spinout-dry-run.sh missing or not executable."
+else
+  mapfile -t UNCOVERED < <(bash "$DRY_RUN" --uncovered 2>/dev/null | grep -v '^$')
+  if [ "${#UNCOVERED[@]}" -eq 0 ]; then
+    print_pass "all tracked files have a lane assignment in .pattern-c.yml."
+  else
+    print_fail "${#UNCOVERED[@]} tracked file(s) lack a lane assignment in .pattern-c.yml:"
+    printf '      %s\n' "${UNCOVERED[@]}"
+    printf '    > Add each to .pattern-c.yml `lanes:` (or `drop:`) so the spinout\n'
+    printf '      knows which side of the Pattern C split they go on.\n'
+  fi
+fi
+
 printf '\n'
 if [ "$FAIL" -ne 0 ]; then
   printf 'pattern-c-audit: ✗ violations found above. Fix or carve an exception in this script.\n'

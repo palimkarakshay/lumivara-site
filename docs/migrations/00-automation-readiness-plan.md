@@ -197,7 +197,7 @@ synthetic but real-work issues (each becomes a green streak row):
 | Cron path | Seed issue title (file these as real issues) |
 |---|---|
 | triage | "chore: rerun triage on issues #X..#Y after label rename" |
-| execute (routine) | "docs: fix three typos in `docs/freelance/00-quick-start.md`" |
+| execute (routine) | "docs: fix three typos in `docs/storefront/00-quick-start.md`" |
 | execute-complex | "feat: add a 'Forge' badge to the homepage hero" |
 | execute-single | "fix: rerun execute on #N with model override `claude-opus-4-7`" (uses `workflow_dispatch`) |
 | codex-review | (auto — fires on every PR opened by the streak above) |
@@ -264,7 +264,7 @@ renames from `15b §2`.
 | `{{BRAND}}` | `Lumivara Forge` | All `docs/`, `AGENTS.md`, `README.md` (where present) |
 | `{{BRAND_SLUG}}` | `lumivara-forge` | All `docs/`, all `.github/workflows/*.yml`, `scripts/`, `dashboard/` |
 | `docs/mothership/` | `docs/platform/` | `git mv` + every relative link |
-| `docs/freelance/` | `docs/storefront/` | `git mv` + every relative link |
+| `docs/storefront/` | `docs/storefront/` | `git mv` + every relative link |
 | `docs/n8n-workflows/` | `docs/n8n/` | `git mv` + every relative link |
 | `mothership` (prose, case-insensitive) | `platform` | `docs/`, `AGENTS.md`, wiki — **except** `15 §1` glossary, `15b §1`, and migration-history docs (per `15 §6`) |
 | `mothership-bot` (slug) | `pipeline-bot` | secret names, doc references |
@@ -392,7 +392,7 @@ You have local clones of both. Do this:
 1. From the source repo, copy the following paths VERBATIM into the
    target repo:
      docs/platform/                 (was docs/mothership/, S1-renamed)
-     docs/storefront/               (was docs/freelance/, S1-renamed)
+     docs/storefront/               (was docs/storefront/, S1-renamed)
      docs/migrations/               (entire folder including this file)
      docs/ops/
      docs/research/
@@ -732,7 +732,7 @@ deferred.
 **Workstreams:**
 
 1. **Template hardening** — walk every checkbox in
-   `docs/freelance/05-template-hardening-notes.md` (post-S1:
+   `docs/storefront/05-template-hardening-notes.md` (post-S1:
    `docs/storefront/05-template-hardening-notes.md`) into a tracked
    issue against the platform repo. Most are doc edits; a few are
    code (footer watermark, license header, kanban bootstrap removal

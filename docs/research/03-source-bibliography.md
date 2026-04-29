@@ -2,7 +2,7 @@
 
 # 03 — Source Bibliography
 
-Every load-bearing claim in `docs/decks/`, `docs/freelance/04-slide-deck.md`, or `docs/freelance/06-positioning-slide-deck.md` cites an anchor in this file. Each row records the URL, the claim it supports, the verification state, and the date of last verification.
+Every load-bearing claim in `docs/decks/`, `docs/storefront/04-slide-deck.md`, or `docs/storefront/06-positioning-slide-deck.md` cites an anchor in this file. Each row records the URL, the claim it supports, the verification state, and the date of last verification.
 
 > **Verification states.**
 > - `[V]` — independently re-verified at the primary or near-primary source on the date listed. Safe for any deck.
@@ -17,7 +17,7 @@ If a deck contains a number, percentage, or dollar figure not represented here, 
 
 | Anchor | Artefact | Verified |
 |---|---|---|
-| `§B-Self` | This repo: `docs/freelance/`, `docs/mothership/`, `AGENTS.md`, `docs/AI_ROUTING.md` etc. | 2026-04-29 (by inspection) |
+| `§B-Self` | This repo: `docs/storefront/`, `docs/mothership/`, `AGENTS.md`, `docs/AI_ROUTING.md` etc. | 2026-04-29 (by inspection) |
 | `§B-PDF-1` | `raw/gemini-research-1-deck-validation-through-research.md` (Gemini share `b81281a954e2`) | 2026-04-29 captured |
 | `§B-PDF-2` | `raw/gemini-research-2-validated-market-and-technical-viability.md` (Gemini share `9a91c1948a52`) | 2026-04-29 captured |
 

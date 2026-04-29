@@ -52,7 +52,7 @@ Mirrors `03-secure-architecture.md §1` (the four "never" rules) and `pattern-c-
 | Path / pattern | Rule violated |
 |---|---|
 | `docs/mothership/` | C-MUST-NOT-2 — operator-only IP. |
-| `docs/freelance/` | C-MUST-NOT-2 — outward-facing pitch / pricing / cost analysis is operator material, not the client's. |
+| `docs/storefront/` | C-MUST-NOT-2 — outward-facing pitch / pricing / cost analysis is operator material, not the client's. |
 | `docs/operator/` | C-MUST-NOT-2 — operator runbooks (incidents, audits) by definition. |
 | `docs/migrations/` | C-MUST-NOT-2 — this very folder. The runbooks reveal autopilot internals. |
 | `docs/ops/` | C-MUST-NOT-2 — operations procedures (audits, rotations) including the variable registry (#142). |

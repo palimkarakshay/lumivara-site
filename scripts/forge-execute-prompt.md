@@ -4,7 +4,7 @@ ONE specific Forge / mothership / Pattern C issue that has been pre-selected for
 
 This prompt is the docs-and-runbooks counterpart to `scripts/execute-prompt.md`. The
 general execute path is locked out of `docs/mothership/`, `docs/wiki/`, `AGENTS.md`,
-`docs/freelance/05-template-hardening-notes.md`, and `scripts/lib/routing.py` (because
+`docs/storefront/05-template-hardening-notes.md`, and `scripts/lib/routing.py` (because
 those touch the operator's autopilot ideology). This prompt opens *exactly* those paths
 — and nothing else — so the Forge lane can refactor canonical docs without weakening
 the general lane's guardrails.
@@ -56,8 +56,8 @@ For the issue at `$ISSUE_NUMBER`:
    most of these):
    - `docs/mothership/**`
    - `docs/wiki/**`
-   - `docs/freelance/05-template-hardening-notes.md`
-   - `docs/freelance/01-gig-profile.md` (only when the issue explicitly references it)
+   - `docs/storefront/05-template-hardening-notes.md`
+   - `docs/storefront/01-gig-profile.md` (only when the issue explicitly references it)
    - `docs/AI_ROUTING.md`, `docs/ADMIN_PORTAL_PLAN.md`, `docs/N8N_SETUP.md`,
      `docs/MONITORING.md`, `docs/BACKLOG.md`
    - `AGENTS.md`, `CLAUDE.md`, `CHANGELOG.md`, `README.md` — only when the issue

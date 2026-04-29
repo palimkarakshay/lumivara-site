@@ -15,7 +15,7 @@
 This doc is the **canonical source** for how we sell Lumivara Forge: the locked
 pitch + tagline, the ICP, the positioning matrix vs. competitors, the ranked
 channel plan, and the first-90-day launch calendar. It synthesises material
-already drafted across `docs/freelance/` rather than duplicating it; cross-refs
+already drafted across `docs/storefront/` rather than duplicating it; cross-refs
 point you to the original copy when you need verbatim language.
 
 ---
@@ -237,7 +237,7 @@ before treating any of these as locked.
 
 ---
 
-## 7 · How this doc relates to the others in `docs/freelance/`
+## 7 · How this doc relates to the others in `docs/storefront/`
 
 This is the **synthesis** doc. The pitch language, pricing math, costs, and
 deck slides already exist in the rest of the folder; we don't restate them

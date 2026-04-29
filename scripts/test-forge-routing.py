@@ -161,7 +161,7 @@ PATH_CASES = [
     ("docs/mothership/02-architecture.md", True, "mothership doc"),
     ("docs/mothership/02b-pattern-c-architecture.md", True, "new mothership doc"),
     ("docs/wiki/Home.md", True, "wiki doc"),
-    ("docs/freelance/05-template-hardening-notes.md", True, "freelance hardening note"),
+    ("docs/storefront/05-template-hardening-notes.md", True, "freelance hardening note"),
     ("AGENTS.md", True, "agent ideology root file"),
     ("scripts/lib/routing.py", True, "routing lib (Run C carve-out)"),
     ("src/app/page.tsx", False, "site code is forbidden"),

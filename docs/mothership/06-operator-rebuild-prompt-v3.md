@@ -381,7 +381,7 @@ Refuse to send the handover email unless every smoke (C-01..C-06) is ✅ in `evi
 | Their GitHub login | The email they used at intake | (They sign in to GitHub themselves; you don't share credentials) |
 | Their Vercel login | They create their own account at handover; until then, the operator's team owns the project | Walkthrough call only |
 
-**Never sent to client:** anything from `docs/mothership/`, `docs/freelance/`, the dashboard URL, the n8n URL, the Twilio admin, or the operator's vault.
+**Never sent to client:** anything from `docs/mothership/`, `docs/storefront/`, the dashboard URL, the n8n URL, the Twilio admin, or the operator's vault.
 
 ### Evidence capture (after run)
 

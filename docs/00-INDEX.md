@@ -32,7 +32,7 @@ For the locked architecture itself, read [`mothership/02b-pattern-c-architecture
 | [`MONITORING.md`](./MONITORING.md) | 🛠 | Smoke test, alerting, and run-cost tracking. |
 | [`N8N_SETUP.md`](./N8N_SETUP.md) | 🛠 | n8n on Railway — webhook + AI structuring workflows. |
 | [`OPERATOR_SETUP.md`](./OPERATOR_SETUP.md) | 🛠 | Step-by-step "from cold laptop to running pipeline" setup. |
-| [`TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) | 🛠 | Original (v1) site-rebuild prompt; superseded operationally by `mothership/06-operator-rebuild-prompt-v3.md` but retained as the source of the template-hardening backlog (see `freelance/05-template-hardening-notes.md`). |
+| [`TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) | 🛠 | Original (v1) site-rebuild prompt; superseded operationally by `mothership/06-operator-rebuild-prompt-v3.md` but retained as the source of the template-hardening backlog (see `storefront/05-template-hardening-notes.md`). |
 
 ---
 
@@ -41,7 +41,7 @@ For the locked architecture itself, read [`mothership/02b-pattern-c-architecture
 | Folder | Lane | What lives here | Internal index |
 |---|:---:|---|---|
 | [`mothership/`](./mothership/) | 🛠 | The operator's business pack: business plan, architecture, secure architecture, tier cadence, engagement playbooks, critique series, terminology, naming, capacity, IP, vault, engagement risk. Folder name retained per the 2026-04-29 operator decision; rename to `platform/` per `15b §2` is deferred. | [`mothership/00-INDEX.md`](./mothership/00-INDEX.md) |
-| [`freelance/`](./freelance/) | 🛠 | The outward-facing storefront: gigs, pricing tiers, slide decks, marketing strategy, client-migration strategy, template-hardening notes. Per `15b §2` this folder will rename to `storefront/` later in this PR series. | [`freelance/README.md`](./freelance/README.md) |
+| [`storefront/`](./storefront/) | 🛠 | The outward-facing storefront: gigs, pricing tiers, slide decks, marketing strategy, client-migration strategy, template-hardening notes. Renamed 2026-04-29 from `docs/freelance/` per [`mothership/15b §2`](./mothership/15b-naming-conventions.md). | [`storefront/README.md`](./storefront/README.md) |
 | [`decks/`](./decks/) | 🛠 | Stakeholder decks: investor, partner (co-operator), employee (engineer / VA), prospective-client, advisor pressure-test. | [`decks/00-INDEX.md`](./decks/00-INDEX.md) |
 | [`research/`](./research/) | 🛠 | Evidentiary layer for every deck claim: Gemini deep-research raw outputs, synthesis docs, source bibliography, personas, switch reasons, honest drawbacks. | [`research/00-INDEX.md`](./research/00-INDEX.md) |
 | [`migrations/`](./migrations/) | 🛠 | One-shot transition runbooks: Client #1 spinout, automation-readiness plan, POC perfection plan, artefact allow/deny tables. | [`migrations/README.md`](./migrations/README.md) |

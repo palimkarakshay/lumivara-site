@@ -28,7 +28,7 @@ Every row is shaped: **rule** → **why** → **verify** (a concrete `git`/`gh`/
 
 Operator-only artefacts live only in the platform repo or in a per-client pipeline repo (`{{BRAND_SLUG}}/<client-slug>-pipeline`). They never land on the site repo's `main`. The set:
 
-- `docs/mothership/`, `docs/freelance/`, `docs/operator/`, `docs/migrations/`, `docs/ops/`
+- `docs/mothership/`, `docs/storefront/`, `docs/operator/`, `docs/migrations/`, `docs/ops/`
 - `n8n/**`, `dashboard/**`
 - `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/plan-issue*`, `scripts/test-routing*`, `scripts/bootstrap-kanban.sh`, `scripts/lib/`
 
@@ -161,7 +161,7 @@ Mirrors the four "never" rules in `03-secure-architecture.md §1`, plus extensio
 
 ### C-MUST-NOT-2
 
-**Never** copy `docs/mothership/` (pre-S1) / `docs/platform/` (post-S1), `docs/freelance/` (pre-S1) / `docs/storefront/` (post-S1), `docs/operator/`, `docs/migrations/`, `docs/ops/`, `n8n/*.json`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/plan-issue*`, `scripts/test-routing*`, `scripts/bootstrap-kanban.sh`, `scripts/lib/`, or `dashboard/` into a site repo's `main`. They live in the pipeline repo (`<slug>-pipeline`) or the platform repo only.
+**Never** copy `docs/mothership/` (pre-S1) / `docs/platform/` (post-S1), `docs/storefront/` (pre-S1) / `docs/storefront/` (post-S1), `docs/operator/`, `docs/migrations/`, `docs/ops/`, `n8n/*.json`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/plan-issue*`, `scripts/test-routing*`, `scripts/bootstrap-kanban.sh`, `scripts/lib/`, or `dashboard/` into a site repo's `main`. They live in the pipeline repo (`<slug>-pipeline`) or the platform repo only.
 
 **Why:** these are operator IP and reveal the autopilot's inner workings. **Verify:** see C-MUST-1 above.
 

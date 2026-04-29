@@ -187,7 +187,7 @@ Workflow      n8n workflow prefixes       → forge-* (per-client suffix)
               Site footer credit           → "Built on Lumivara Forge"
 ```
 
-Single global find-replace pass against `docs/mothership/`, `docs/freelance/`, the templates, the workflows, and the dashboard. All placeholders already use `{{BRAND}}` / `{{BRAND_SLUG}}`, so the rename is mechanical. Run S1 (`16 §5`) executes this pass.
+Single global find-replace pass against `docs/mothership/`, `docs/storefront/`, the templates, the workflows, and the dashboard. All placeholders already use `{{BRAND}}` / `{{BRAND_SLUG}}`, so the rename is mechanical. Run S1 (`16 §5`) executes this pass.
 
 ---
 

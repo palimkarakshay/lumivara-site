@@ -8,7 +8,7 @@ This file is the operator's **deck-by-deck audit trail**. It maps every load-bea
 
 ---
 
-## §A — Existing positioning deck (`docs/freelance/06-positioning-slide-deck.md`)
+## §A — Existing positioning deck (`docs/storefront/06-positioning-slide-deck.md`)
 
 This is the operator-internal "nine questions" deck. The 2026-04-29 polish keeps the structure but inserts validated stats at six anchor points.
 
@@ -19,11 +19,11 @@ This is the operator-internal "nine questions" deck. The 2026-04-29 polish keeps
 | Section 2 — Differentiators | Only 36% of WP sites pass mobile Core Web Vitals (2025) | `[S] §B-WP-CWV` |
 | Section 4 — Competitor claims | DesignJoy $4,995–$7,995/mo + $999/mo Webflow add-on | `[V] §B-DesignJoy` |
 | Section 4 — Competitor claims | WP Buffs $79–$447/mo across five tiers (2026 pricing) | `[V] §B-WP-Buffs` |
-| Section 5 — End goal | 30 clients × CAD $500 blended → CAD $180k ARR; 95%+ pre-comp margin | derived from `docs/freelance/03-cost-analysis.md` Part D |
+| Section 5 — End goal | 30 clients × CAD $500 blended → CAD $180k ARR; 95%+ pre-comp margin | derived from `docs/storefront/03-cost-analysis.md` Part D |
 
 ---
 
-## §B — Existing client-facing deck (`docs/freelance/04-slide-deck.md`)
+## §B — Existing client-facing deck (`docs/storefront/04-slide-deck.md`)
 
 Outward-facing prospect deck. The 2026-04-29 polish adds a single "Why now" anchor slide with three validated stats and refreshes the cost-comparison table to include the verified WP Buffs and DesignJoy numbers.
 
@@ -46,7 +46,7 @@ External-facing. Every claim is `[V]` or carries a footnote.
 | TAM (footnoted) | Global management-consulting market $161.2B in 2024 (low-end estimate; range $161B–$466B across firms) | `[C] §B-MC-Market` |
 | ICP — legal | Average law firm spends ~$120k–$150k/year on SEO; 96% of legal consumers start at a search engine | `[V] §B-Law-Firm-Spend` |
 | ICP — dental | Dental practices spend 5–10% of gross on marketing; ~30–40% goes to website + SEO | `[S] §B-Dental-Spend` |
-| Unit economics | 30 × CAD $500 ARPU = CAD $180k ARR; pre-comp gross margin ~95% | derived from `docs/freelance/03-cost-analysis.md` Part D |
+| Unit economics | 30 × CAD $500 ARPU = CAD $180k ARR; pre-comp gross margin ~95% | derived from `docs/storefront/03-cost-analysis.md` Part D |
 | Comparable multiples | Private productized SaaS / AI-enabled services: 4–10× revenue | `[V] §B-SaaS-Multiples` |
 | Risk | AI hallucination — SWE-bench Bash Only ~33% failure | `[S] §B-SWE-bench` |
 | Risk | ADA litigation: 3,117 federal-court filings in 2025 | `[V] §B-ADA-Lawsuits` |

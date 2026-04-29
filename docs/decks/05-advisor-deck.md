@@ -29,7 +29,7 @@ For a senior advisor / mentor we are asking to push hard on the unfinished parts
 
 *Confidential. Single-recipient deck.*
 
-<span class="small">This deck is structured around what's contested, not what's settled. The settled parts live in `docs/decks/01-investor-deck.md` and `docs/freelance/06-positioning-slide-deck.md`.</span>
+<span class="small">This deck is structured around what's contested, not what's settled. The settled parts live in `docs/decks/01-investor-deck.md` and `docs/storefront/06-positioning-slide-deck.md`.</span>
 
 ---
 
@@ -81,7 +81,7 @@ If you find a hole in any of the above, please push — but the load-bearing que
 
 | Question | Our position |
 |---|---|
-| Can a solo operator hold 95% pre-comp gross margin at 30 clients? | Derived in `docs/freelance/03-cost-analysis.md` Part D and `docs/mothership/18-capacity-and-unit-economics.md`. Cash overhead at 30 clients is CAD $900 – $1,100/mo on revenue ≈ CAD $23,200/mo. |
+| Can a solo operator hold 95% pre-comp gross margin at 30 clients? | Derived in `docs/storefront/03-cost-analysis.md` Part D and `docs/mothership/18-capacity-and-unit-economics.md`. Cash overhead at 30 clients is CAD $900 – $1,100/mo on revenue ≈ CAD $23,200/mo. |
 | Is that sustainable through cliff transitions? | Cliffs at clients 6 / 16 / 26 (`docs/mothership/18 §6`). Each step adds ~CAD $100 – $200/mo to AI subscription cost; nothing else moves materially. Margin stays > 90% across cliffs. |
 | Where does it break? | If model deprecation forces the 2nd Anthropic seat earlier than client #26, margin compresses by ~3 percentage points until the seat amortises across more clients. Worth gaming. |
 
@@ -122,7 +122,7 @@ If you find a hole in any of the above, please push — but the load-bearing que
 These don't have answers in the deck pack yet. Your read on each would directly shape the next 90 days.
 
 1. **Should we lock the brand to "Lumivara Forge" or pivot to "Lumivara Cadence"?** Both are operator-acceptable. The cadence-mirrors-mechanic property of "Cadence" is unique; "Forge" is more direct. (`docs/mothership/01 §1`.)
-2. **Do we open Stage 2 (small-team) at client #25 or wait until #35?** The hire-ladder in `docs/freelance/03-cost-analysis.md` Part E says VA at 25, engineer at 35. A faster engineer hire compresses operator hours but also compresses partner-share economics.
+2. **Do we open Stage 2 (small-team) at client #25 or wait until #35?** The hire-ladder in `docs/storefront/03-cost-analysis.md` Part E says VA at 25, engineer at 35. A faster engineer hire compresses operator hours but also compresses partner-share economics.
 3. **Do we publish a public lumivara-forge.com case-study site this quarter, or stay quiet until Client #2 closes?** A public site accelerates inbound; a quiet posture protects Pattern C IP positioning.
 
 ---
@@ -145,6 +145,6 @@ Not approval. Specifically:
 
 *Confidential — single recipient.*
 
-*Source files for this deck: `docs/research/03-source-bibliography.md` (the [V]/[S]/[C] flags) · `docs/research/06-drawbacks-and-honest-risks.md` · `docs/mothership/01-business-plan.md`, `18-capacity-and-unit-economics.md` · `docs/freelance/03-cost-analysis.md`*
+*Source files for this deck: `docs/research/03-source-bibliography.md` (the [V]/[S]/[C] flags) · `docs/research/06-drawbacks-and-honest-risks.md` · `docs/mothership/01-business-plan.md`, `18-capacity-and-unit-economics.md` · `docs/storefront/03-cost-analysis.md`*
 
 <span class="small">© 2026 — confidential.</span>

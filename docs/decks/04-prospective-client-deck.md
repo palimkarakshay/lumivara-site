@@ -47,7 +47,7 @@ For each variant, swap:
   (selection guide in docs/research/05-reasons-to-switch §end)
 
 Default below: P1 / P2 hybrid. For E1 (indie SaaS founder) use the
-existing docs/freelance/04-slide-deck.md instead.
+existing docs/storefront/04-slide-deck.md instead.
 -->
 
 ## Why this is happening *now* (3 numbers)
@@ -201,7 +201,7 @@ You edit from your phone. We ship improvements monthly. We meet quarterly to tal
 | Improvement runs | none | quarterly | monthly | monthly |
 | Best for | "just get me online" | solo practitioner | most clients land here | small firm / multi-site |
 
-<span class="small">Pricing details + a la carte add-ons in our pricing PDF (`docs/freelance/02-pricing-tiers.md`). All prices in CAD; USD ≈ 0.72×.</span>
+<span class="small">Pricing details + a la carte add-ons in our pricing PDF (`docs/storefront/02-pricing-tiers.md`). All prices in CAD; USD ≈ 0.72×.</span>
 
 ---
 

@@ -161,7 +161,7 @@ Owns: the artefacts produced at engagement go-live. Source: `06 §6`.
 | H-03 | Handover email sent to client (template + walkthrough link). | Resend | manual | H-02 | `curl -sf https://api.resend.com/emails -H "Authorization: Bearer $RESEND_API_KEY"` shows the handover email with `last_event:delivered`. | `h-03-email.json` (api-response). |
 | H-04 | Admin portal URL handed to client (`https://{{DOMAIN}}/admin`). | site repo | manual | H-03 | Email body inspection — link points to `https://{{DOMAIN}}/admin`; client confirms receipt. | `h-04-portal-link.png` (screenshot of email). |
 | H-05 | Client signs in to `/admin` from their phone successfully. | site repo | manual | H-04 | `/admin/sign-in` log in Auth.js (Vercel Logs) shows the client's email and `event:signin.success` within the handover-call window. | `h-05-signin.png` (screenshot of Vercel Logs). |
-| H-06 | Operator confirms "never share" inventory: nothing from `docs/mothership/`, `docs/freelance/`, dashboard URL, n8n URL, Twilio admin, or vault was sent to client. | mothership | manual | H-03 | Visual inspection of the sent email; operator initials evidence-log entry. | `h-06-no-leak.md` (cli-stdout: confirmation initials + date). |
+| H-06 | Operator confirms "never share" inventory: nothing from `docs/mothership/`, `docs/storefront/`, dashboard URL, n8n URL, Twilio admin, or vault was sent to client. | mothership | manual | H-03 | Visual inspection of the sent email; operator initials evidence-log entry. | `h-06-no-leak.md` (cli-stdout: confirmation initials + date). |
 
 ---
 

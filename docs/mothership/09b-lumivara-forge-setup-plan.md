@@ -84,7 +84,7 @@ Steps 1–8 are one-time operator manual actions. Step 9 can be scripted once st
 | Directory / File | Description |
 |---|---|
 | `docs/mothership/` | All operator runbooks (this folder) |
-| `docs/freelance/` | Outward-facing pitch, pricing, cost analysis |
+| `docs/storefront/` | Outward-facing pitch, pricing, cost analysis |
 | `n8n/` | n8n workflow JSON exports |
 | `scripts/` | Triage / execute / plan automation scripts |
 | `workflows-template/` | Reusable GitHub Actions workflow templates |

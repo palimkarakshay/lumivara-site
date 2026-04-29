@@ -13,7 +13,7 @@ An issue is in scope for *this* triage if **any** of the following hold:
 - Title or body mentions `Lumivara Forge`, `mothership`, `control plane`, `platform repo`,
   `pipeline repo`, `Pattern C`, `<slug>-site`, `<slug>-pipeline`, `forge provision`,
   `bot account`, or `GitHub App` (case-insensitive).
-- The issue references files under `docs/mothership/`, `docs/freelance/05-template-hardening-notes.md`,
+- The issue references files under `docs/mothership/`, `docs/storefront/05-template-hardening-notes.md`,
   `docs/wiki/`, `docs/N8N_SETUP.md`, `docs/AI_ROUTING.md`, or `docs/ADMIN_PORTAL_PLAN.md`.
 - The issue is one of the critique-closure runs from `docs/mothership/16-automation-prompt-pack.md`
   (`Run A`, `Run B`, `Run C`, `Run D`, `S1`, `S2`, `S3`).
@@ -51,7 +51,7 @@ For each forge-eligible issue:
 4. **Decide auto-routine vs manual-only**:
    - Forge issues are usually `complexity/complex` — that historically meant `manual-only`.
      For this lane the rule is **inverted**: docs-only refactors of `docs/mothership/`,
-     `docs/wiki/`, `docs/freelance/05-template-hardening-notes.md`, `AGENTS.md` are
+     `docs/wiki/`, `docs/storefront/05-template-hardening-notes.md`, `AGENTS.md` are
      **auto-routine**, even at `complexity/complex`. The forge-execute workflow has the
      budget and permission scope to handle them.
    - Add `manual-only` **only** if the issue requires Vercel dashboard access, GitHub

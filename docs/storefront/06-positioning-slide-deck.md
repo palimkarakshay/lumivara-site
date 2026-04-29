@@ -28,7 +28,7 @@ A working answer to: *what are we selling, to whom, against whom, with what plan
 
 <br/>
 
-*Source material: `docs/mothership/` (operator pack), `docs/freelance/` (go-to-market pack), and `docs/research/` (Gemini Deep Research outputs + 7-stat independent verification pass), reconciled 2026-04-29.*
+*Source material: `docs/mothership/` (operator pack), `docs/storefront/` (go-to-market pack), and `docs/research/` (Gemini Deep Research outputs + 7-stat independent verification pass), reconciled 2026-04-29.*
 
 <br/>
 
@@ -72,7 +72,7 @@ Three things, bundled:
 - **Service B — the phone-edit system.** Submit a change from a phone shortcut → preview link arrives → tap to publish.
 - **Service C — the always-improving subscription.** Monthly improvements, monitoring, a quarterly call about where the site goes next.
 
-Source: `docs/freelance/01-gig-profile.md` Part 2.
+Source: `docs/storefront/01-gig-profile.md` Part 2.
 
 ---
 
@@ -87,7 +87,7 @@ Source: `docs/freelance/01-gig-profile.md` Part 2.
 | 5 | **Quality on autopilot.** | 90+ Lighthouse on every page. Accessibility regressions caught before they ship. | 95.9% of top-1M pages fail WCAG with 56.8 errors/page avg (`[V] §B-WebAIM`); 3,117 ADA lawsuits in 2025, +27% YoY (`[V] §B-ADA-Lawsuits`). |
 | 6 | **Nothing publishes without consent.** | Every change waits for a tap on the client's phone. | HITL gate mitigates SWE-bench ~33% AI-coding-agent failure rate (`[S] §B-SWE-bench`). |
 
-Source rows live in `docs/research/03-source-bibliography.md`. Voice / pitch lines from `docs/freelance/04-slide-deck.md` slides 4–9 and `01-gig-profile.md` Part 6.
+Source rows live in `docs/research/03-source-bibliography.md`. Voice / pitch lines from `docs/storefront/04-slide-deck.md` slides 4–9 and `01-gig-profile.md` Part 6.
 
 ---
 
@@ -103,7 +103,7 @@ Source rows live in `docs/research/03-source-bibliography.md`. Voice / pitch lin
 
 The retainer model isn't more expensive. It's cheaper, predictable, and the site is *better* every month instead of degrading.
 
-Source: `docs/freelance/04-slide-deck.md` "What it costs at lumivara-forge.com vs. an agency".
+Source: `docs/storefront/04-slide-deck.md` "What it costs at lumivara-forge.com vs. an agency".
 
 ---
 
@@ -138,7 +138,7 @@ Source: `docs/freelance/04-slide-deck.md` "What it costs at lumivara-forge.com v
 
 The market is full of Next.js developers. It is **not** full of people who can hand a non-technical owner a site that maintains itself.
 
-Source: `docs/freelance/01-gig-profile.md` Closing note.
+Source: `docs/storefront/01-gig-profile.md` Closing note.
 
 ---
 
@@ -210,7 +210,7 @@ From discovery calls, Fiverr inquiries, and the freelance gig-profile work:
 4. **"I want to own my site outright — no lock-in."**
    Their domain, their hosting, their code. Cancellable any time.
 
-Source: `docs/freelance/01-gig-profile.md` Parts 1, 6, and 8; `00-quick-start.md` "Is this marketable?"
+Source: `docs/storefront/01-gig-profile.md` Parts 1, 6, and 8; `00-quick-start.md` "Is this marketable?"
 
 ---
 
@@ -228,7 +228,7 @@ Source: `docs/freelance/01-gig-profile.md` Parts 1, 6, and 8; `00-quick-start.md
 > *"I'm worried about being locked in."*
 > They can't be. Code is theirs, domain is theirs, hosting is in their name.
 
-Source: `docs/freelance/00-quick-start.md` "Is this marketable?", `04-slide-deck.md` honest-objections slide.
+Source: `docs/storefront/00-quick-start.md` "Is this marketable?", `04-slide-deck.md` honest-objections slide.
 
 ---
 
@@ -243,7 +243,7 @@ Source: `docs/freelance/00-quick-start.md` "Is this marketable?", `04-slide-deck
 
 And who we say no to: agencies-wanting-half-price, equity-only, e-commerce, enterprise procurement.
 
-Source: `docs/freelance/01-gig-profile.md` Part 8.
+Source: `docs/storefront/01-gig-profile.md` Part 8.
 
 ---
 
@@ -348,7 +348,7 @@ This rule is the antidote to over-engineering. Everything in this deck collapses
 
 This is the explicit target the cost analysis is built around. It's not a "first step toward a unicorn." It's the destination of Stage 1.
 
-Source: `docs/freelance/03-cost-analysis.md` Parts B–D.
+Source: `docs/storefront/03-cost-analysis.md` Parts B–D.
 
 ---
 
@@ -362,7 +362,7 @@ Source: `docs/freelance/03-cost-analysis.md` Parts B–D.
 
 Stage 3 is a different business with different risks (real product-market fit, real on-call). **Don't pre-build for it.** Stay in Stage 1 until genuinely outgrown.
 
-Source: `docs/freelance/05-template-hardening-notes.md` "Long-term: should this become a SaaS?"
+Source: `docs/storefront/05-template-hardening-notes.md` "Long-term: should this become a SaaS?"
 
 ---
 
@@ -482,7 +482,7 @@ Source: `docs/mothership/00-INDEX.md` "Phased build plan".
 
 Trigger work in this window: MSA + SOW (before client #2), payment automation, PIPEDA before client #3.
 
-Source: `docs/freelance/03-cost-analysis.md` Part C, milestone 1.
+Source: `docs/storefront/03-cost-analysis.md` Part C, milestone 1.
 
 ---
 
@@ -497,7 +497,7 @@ Source: `docs/freelance/03-cost-analysis.md` Part C, milestone 1.
 
 Trigger work: 1Password vault by client #5; Claude Pro → Max 5x at client #6; Max 5x → Max 20x at client #16.
 
-Source: `docs/freelance/03-cost-analysis.md` Part C, milestone 2.
+Source: `docs/storefront/03-cost-analysis.md` Part C, milestone 2.
 
 ---
 
@@ -510,7 +510,7 @@ Source: `docs/freelance/03-cost-analysis.md` Part C, milestone 2.
 
 By month 12: ~32 active clients, ~$22k/month gross, year-1 take-home ~$118k–$128k after Ontario sole-prop tax.
 
-Source: `docs/freelance/03-cost-analysis.md` Part C, milestone 3 + Part D.
+Source: `docs/storefront/03-cost-analysis.md` Part C, milestone 3 + Part D.
 
 ---
 
@@ -526,7 +526,7 @@ Source: `docs/freelance/03-cost-analysis.md` Part C, milestone 3 + Part D.
 
 **Year-1 gross: ~$177k. Year-1 net before personal tax: ~$170.5k.**
 
-Source: `docs/freelance/03-cost-analysis.md` Part D + `mothership/18-capacity-and-unit-economics.md §3 / §6`.
+Source: `docs/storefront/03-cost-analysis.md` Part D + `mothership/18-capacity-and-unit-economics.md §3 / §6`.
 
 ---
 
@@ -634,7 +634,7 @@ If a cliff hits *during* an onboarding, finish the onboarding first, upgrade aft
 | n8n on Railway | ~$5–$10/mo | Hobby tier; Pro at Cliff 3. |
 | **Total month-1** | **~CAD $90–$120** | Almost all of which is AI subscriptions. |
 
-Source: `docs/freelance/03-cost-analysis.md` Part A; `mothership/18 §1`.
+Source: `docs/storefront/03-cost-analysis.md` Part A; `mothership/18 §1`.
 
 ---
 
@@ -684,7 +684,7 @@ Source: `docs/mothership/08-future-work.md §6` sequencing.
 
 At 30 clients the operator is **at the cap**. That's the trigger for VA + 2nd-engineer hires (months 9–12).
 
-Source: `docs/freelance/03-cost-analysis.md` Part A "Your time" + Part E.
+Source: `docs/storefront/03-cost-analysis.md` Part A "Your time" + Part E.
 
 ---
 
@@ -698,7 +698,7 @@ Source: `docs/freelance/03-cost-analysis.md` Part A "Your time" + Part E.
 
 The hire ladder is deliberately *late*. The autopilot exists so the operator can hold ~30 clients without help.
 
-Source: `docs/freelance/03-cost-analysis.md` Part E.
+Source: `docs/storefront/03-cost-analysis.md` Part E.
 
 ---
 
@@ -773,7 +773,7 @@ Year-1 destination: **30 active clients, ~$120k take-home, day job replaced.**
 
 Source files reconciled in this deck:
 `docs/mothership/00-INDEX.md` · `01-business-plan.md` · `02b-pattern-c-architecture.md` · `04-tier-based-agent-cadence.md` · `08-future-work.md` · `18-capacity-and-unit-economics.md`
-`docs/freelance/00-quick-start.md` · `01-gig-profile.md` · `02-pricing-tiers.md` · `03-cost-analysis.md` · `04-slide-deck.md` · `05-template-hardening-notes.md`
+`docs/storefront/00-quick-start.md` · `01-gig-profile.md` · `02-pricing-tiers.md` · `03-cost-analysis.md` · `04-slide-deck.md` · `05-template-hardening-notes.md`
 `docs/AI_ROUTING.md` · `docs/ADMIN_PORTAL_PLAN.md` · `docs/BACKLOG.md`
 
 <span class="small">© 2026 — system proprietary, licensed per engagement.</span>

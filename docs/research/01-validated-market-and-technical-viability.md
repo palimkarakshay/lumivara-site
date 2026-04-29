@@ -40,7 +40,7 @@ This is the operator-facing reconciliation of the two raw Gemini Deep Research o
 | **WP Buffs** | $79 – $447 / month across five tiers; "Perform" plan at $219/mo is the most-popular | `[V] §B-WP-Buffs` — re-verified at wpbuffs.com/plans on 2026-04-29; *the "$89–$359" figure in raw research is stale* |
 | **Annual all-in cost — DIY** | $240 – $1,700 + the operator's own time | derived |
 | **Annual all-in cost — boutique agency, year 2+** | $1,500 – $5,000 maintenance plus per-edit invoices | derived |
-| **Annual all-in cost — Lumivara Forge T2** | CAD $4,500 setup + 12 × CAD $249 = CAD $7,488; CAD $2,988/yr in steady state | from `docs/freelance/02-pricing-tiers.md` |
+| **Annual all-in cost — Lumivara Forge T2** | CAD $4,500 setup + 12 × CAD $249 = CAD $7,488; CAD $2,988/yr in steady state | from `docs/storefront/02-pricing-tiers.md` |
 
 The "missing middle" claim — that Lumivara Forge offers DesignJoy-class agility at a maintenance-tier price — is empirically supported by the same numbers above; it is not a marketing flourish.
 
@@ -73,7 +73,7 @@ The TAM/SAM framing the investor deck uses is **deliberately conservative**. Hea
 ## §5 — Validated solopreneur economics (used in investor + partner decks)
 
 1. **Traditional agency margins compress to 40–50% under headcount load; AI-leveraged solo operators can hold 65–75% gross margins.** `[S] §B-Solopreneur-Margin` — secondary-source industry write-ups (Almcorp, PrometAI). Use as range, not a precise figure.
-2. **At 30 clients × CAD $500/mo blended ARPU ≈ CAD $15,000 MRR ≈ CAD $180,000 ARR**, with operating overhead under CAD $700/mo at saturation — yielding ~95% gross margin pre-tax and pre-operator-comp. `[V] §B-Self` — derived directly from `docs/freelance/03-cost-analysis.md` Part D and `docs/mothership/18-capacity-and-unit-economics.md`.
+2. **At 30 clients × CAD $500/mo blended ARPU ≈ CAD $15,000 MRR ≈ CAD $180,000 ARR**, with operating overhead under CAD $700/mo at saturation — yielding ~95% gross margin pre-tax and pre-operator-comp. `[V] §B-Self` — derived directly from `docs/storefront/03-cost-analysis.md` Part D and `docs/mothership/18-capacity-and-unit-economics.md`.
 3. **Private productized-service / AI-enabled-SaaS valuation multiples typically run 4–10× revenue.** `[V] §B-SaaS-Multiples` — SaaS Capital, Aventis Advisors, Multiples.vc 2025-2026 benchmarks. *The raw research's "22.4× EBITDA / 22.3% AI premium" figure is at the very top of the public-market band and must not be quoted in private-investor materials without explicit context.*
 
 **Deck mapping.** §5 anchors the investor deck's ARR and unit-economics slides and the partner deck's profit-share discussion.

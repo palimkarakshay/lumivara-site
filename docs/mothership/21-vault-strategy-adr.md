@@ -182,7 +182,7 @@ Concrete examples:
 | `AUTH_RESEND_KEY` for client X | Repo (`03 §3` row) — vault NO | Runtime secret; per-client Vercel env. Vault would duplicate. |
 | Operator's GitHub recovery codes | Vault (`Operator`) | Not runtime; not in repo; recovery code. |
 | Pricing-model spreadsheet with margin assumptions for T1/T2/T3 | Vault (`Lumivara-Forge-IP`) | Strategic; competitor would learn. |
-| Published cost analysis at `docs/freelance/03-cost-analysis.md` | Repo | Already public-ish; mothership audience. |
+| Published cost analysis at `docs/storefront/03-cost-analysis.md` | Repo | Already public-ish; mothership audience. |
 | Draft MSA before signing | Vault (`Lumivara-Forge-IP`) | Strategic + legal-pre-execution. |
 | Signed MSA with Client #1 | Vault (`Per-client/lumivara-people-advisory`) | Per-client legal record. |
 | Client primary contact's mobile (used for SMS escalation per `12 §2`) | Vault (`Per-client/<slug>`) | Per-client contact data; not in repo. |

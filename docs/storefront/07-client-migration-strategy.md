@@ -82,7 +82,7 @@ The prospect wants a redesign, the legacy platform is **blocking** AI/automation
 
 - Client is frustrated with the current site (tone matters more than language — "it's fine" with a sigh is a yes).
 - The legacy platform forbids the script injection that Path A would need.
-- The combined legacy host + agency-edit-fees bill exceeds the equivalent Lumivara Forge tier on a 12-month view (refer the client to `docs/freelance/02-pricing-tiers.md` for the comparison; do not duplicate dollar numbers here).
+- The combined legacy host + agency-edit-fees bill exceeds the equivalent Lumivara Forge tier on a 12-month view (refer the client to `docs/storefront/02-pricing-tiers.md` for the comparison; do not duplicate dollar numbers here).
 - The brand has changed (rename, repositioning, new product line) and "lift and shift" wouldn't deliver enough.
 
 ### Steps

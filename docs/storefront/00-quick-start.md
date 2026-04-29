@@ -83,7 +83,7 @@ For the operator setup itself (token rotation, n8n workflow imports, Vercel env 
 
 ## How issue #86 maps to this pack
 
-For traceability — every ask in [issue #86](https://github.com/palimkarakshay/lumivara-site/issues/86) is addressed somewhere in `docs/freelance/`. Cross-reference if you're auditing or re-quoting:
+For traceability — every ask in [issue #86](https://github.com/palimkarakshay/lumivara-site/issues/86) is addressed somewhere in `docs/storefront/`. Cross-reference if you're auditing or re-quoting:
 
 | Issue ask | Lives in |
 |---|---|

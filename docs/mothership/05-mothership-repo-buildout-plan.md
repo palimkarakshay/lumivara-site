@@ -27,7 +27,7 @@ Status legend below: 🟢 ready to run · 🟡 in-progress · ✅ done · ⏸ bl
 1. `git clone` the empty mothership repo locally.
 2. Copy these paths from `lumivara-site` into the new repo (verbatim):
    - `docs/mothership/`
-   - `docs/freelance/`
+   - `docs/storefront/`
    - `docs/AI_ROUTING.md`
    - `docs/ADMIN_PORTAL_PLAN.md`
    - `docs/N8N_SETUP.md`
@@ -201,7 +201,7 @@ Under Pattern C the existing repo splits into two: a clean site repo for the cli
 
 **Estimated turns:** 80–120.
 
-Walk every item in `docs/freelance/05-template-hardening-notes.md` and convert each into a tracked issue against the mothership. Most are doc edits; a few need code:
+Walk every item in `docs/storefront/05-template-hardening-notes.md` and convert each into a tracked issue against the mothership. Most are doc edits; a few need code:
 
 - License header on `06-operator-rebuild-prompt-v3.md` (already present).
 - Strip `bootstrap-kanban.sh` from any client-handed-over repo (P5.6 already did this).

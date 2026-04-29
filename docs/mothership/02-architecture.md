@@ -14,7 +14,7 @@
 │                                          │
 │  Holds:                                  │
 │    docs/mothership/**     ← this folder  │
-│    docs/freelance/**       (storefront)  │
+│    docs/storefront/**       (storefront)  │
 │    docs/operator/**        (per-eng)     │
 │    docs/clients/<slug>/**  (per-client   │
 │      mirror — operator's copy of intake, │

@@ -102,7 +102,7 @@ We bound the market on the low end intentionally.
 
 ## Unit economics — derived, not aspirational
 
-These figures are taken directly from `docs/freelance/03-cost-analysis.md` Part D and `docs/mothership/18-capacity-and-unit-economics.md`. They are the operator's actual planning numbers, not investor-facing inflations.
+These figures are taken directly from `docs/storefront/03-cost-analysis.md` Part D and `docs/mothership/18-capacity-and-unit-economics.md`. They are the operator's actual planning numbers, not investor-facing inflations.
 
 | Line | Year-1 actual plan |
 |---|---|
@@ -121,7 +121,7 @@ Year-1 take-home (after Ontario sole-prop tax): **~CAD $118k – $128k.** This i
 
 Two reasons the margin holds.
 
-1. **No payroll until client #35.** The operator runs everything to ~30 clients (`docs/freelance/03-cost-analysis.md` Part E). VA hire at 25, second engineer at 35.
+1. **No payroll until client #35.** The operator runs everything to ~30 clients (`docs/storefront/03-cost-analysis.md` Part E). VA hire at 25, second engineer at 35.
 2. **Infrastructure is flat.** AI subscriptions, GitHub Free, Vercel Hobby, Resend Free, Twilio per-client (~$1.15/mo USD) all scale sub-linearly. Cost-per-client falls as the roster grows.
 
 | Stage | Active | Cash overhead / mo | Gross margin (pre-comp) |
@@ -135,7 +135,7 @@ Industry comparison: AI-enabled solo operators commonly report **65 – 75%** gr
 
 ## Competitive moat
 
-Five operational features only Lumivara Forge ships in this combination today (full detail: `docs/freelance/06-positioning-slide-deck.md` §2):
+Five operational features only Lumivara Forge ships in this combination today (full detail: `docs/storefront/06-positioning-slide-deck.md` §2):
 
 1. **Phone-as-CMS** over a real codebase — no major SMB builder offers this loop.
 2. **Multi-AI fallback ladder** (Claude → Gemini → OpenAI) — single-vendor outage doesn't pause the queue (`docs/AI_ROUTING.md`).
@@ -204,6 +204,6 @@ Year 2+ optionality is unforced: hold (Stage 1), expand (Stage 2 hire), or produ
 
 <br/>
 
-*Source files: `docs/research/01`, `03`, `06` · `docs/freelance/03-cost-analysis.md` Parts B–D · `docs/mothership/18-capacity-and-unit-economics.md`*
+*Source files: `docs/research/01`, `03`, `06` · `docs/storefront/03-cost-analysis.md` Parts B–D · `docs/mothership/18-capacity-and-unit-economics.md`*
 
 <span class="small">© 2026 — confidential. The system shown in this deck is proprietary and licensed per engagement.</span>

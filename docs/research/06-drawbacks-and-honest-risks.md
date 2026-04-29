@@ -34,7 +34,7 @@ Eight risks to the Lumivara Forge model, ranked by severity × likelihood. Each 
 - Multiple channels: phone shortcut, web admin portal, email, SMS. Whichever the client uses, the pipeline accepts it (`docs/ADMIN_PORTAL_PLAN.md`).
 - Monthly health-check email (T1+) prompts the owner with "here are 3 things I'd recommend this month — reply 'yes 1, 2' to ship them," which removes the cognitive load.
 
-**Residual risk.** Personality-driven; some owners just won't text a bot. The "say-no-to" filter (`docs/freelance/01-gig-profile.md` Part 8) tries to spot this in discovery; it doesn't always succeed.
+**Residual risk.** Personality-driven; some owners just won't text a bot. The "say-no-to" filter (`docs/storefront/01-gig-profile.md` Part 8) tries to spot this in discovery; it doesn't always succeed.
 
 **Severity.** Medium. **Likelihood.** Medium. **Net.** Real but bounded; resolved by clean churn (they keep their site, we keep our roster slot).
 
@@ -45,11 +45,11 @@ Eight risks to the Lumivara Forge model, ranked by severity × likelihood. Each 
 **The failure mode.** The operator is the single point of failure. Industry data shows 73% of tech founders / startup execs hide burnout, and ~65% of startup failures are attributed to founder burnout (`[S] §B-Founder-Burnout`).
 
 **Mitigation in this repo.**
-- 30-client cap until a hire is made (`docs/freelance/03-cost-analysis.md` Part E).
+- 30-client cap until a hire is made (`docs/storefront/03-cost-analysis.md` Part E).
 - Session-budget charter (50%/80%/95% gates) keeps any one client from starving the queue (`AGENTS.md`).
 - Weekly cadence (`docs/mothership/01-business-plan §7`) — fixed inbox-sweep + improvement-run + cost-check rhythm.
 - Mandatory 2-week break on the calendar before crossing client #25.
-- VA hire planned at 25 clients; second engineer at 35 clients (`docs/freelance/03-cost-analysis.md` Part E).
+- VA hire planned at 25 clients; second engineer at 35 clients (`docs/storefront/03-cost-analysis.md` Part E).
 
 **Residual risk.** Burnout still happens; the cap and cadence reduce probability, they do not eliminate it.
 
@@ -79,7 +79,7 @@ Eight risks to the Lumivara Forge model, ranked by severity × likelihood. Each 
 **Mitigation in this repo.**
 - Programmatic axe-core + Lighthouse a11y checks in CI on every preview build.
 - Manual review of design / critical paths excluded from auto-merge.
-- Operator liability: E&O / professional-liability + cyber-liability insurance scheduled to engage above $50k revenue (`docs/freelance/03-cost-analysis.md` Part F).
+- Operator liability: E&O / professional-liability + cyber-liability insurance scheduled to engage above $50k revenue (`docs/storefront/03-cost-analysis.md` Part F).
 
 **Residual risk.** Automated tools catch ~30–50% of WCAG issues; the rest (cognitive, screen-reader-flow, contrast in image overlays) still require human review. Not zero, but materially lower than the WordPress baseline (95.9% failure rate at WebAIM Million 2024 / `[V] §B-WebAIM`).
 
@@ -109,7 +109,7 @@ Eight risks to the Lumivara Forge model, ranked by severity × likelihood. Each 
 **Mitigation in this repo.**
 - Per-client rate-limits in `scripts/triage-prompt.md`.
 - Tier cadence (`docs/mothership/04-tier-based-agent-cadence.md`) — T0 manual, T1 daily, T2 every 2h, T3 hourly.
-- "Say-no-to" filter on intake (`docs/freelance/01-gig-profile.md` Part 8 + this folder's `04-client-personas.md` A1 anti-persona).
+- "Say-no-to" filter on intake (`docs/storefront/01-gig-profile.md` Part 8 + this folder's `04-client-personas.md` A1 anti-persona).
 - Stripe auto-charge with pause-at-+14, lockout-at-+30 days for non-payment (`docs/mothership/08-future-work §3`).
 
 **Residual risk.** A client who pays on time and is technically polite, but psychologically draining. The cap exists in part to absorb this.
@@ -123,7 +123,7 @@ Eight risks to the Lumivara Forge model, ranked by severity × likelihood. Each 
 **The failure mode.** Framer ships a code-export + n8n integration. Vercel v0 packages a retainer. An Anthropic-built "ship a marketing site" agent ships out of the box. Any of these compresses our differentiation moat.
 
 **Mitigation in this repo.**
-- Watch list maintained in `docs/freelance/06-positioning-slide-deck.md` Section 4 ("What competitors are NOT advertising").
+- Watch list maintained in `docs/storefront/06-positioning-slide-deck.md` Section 4 ("What competitors are NOT advertising").
 - Stage-1 strategy is *deliberate smallness with high margin per client*, not scale-at-all-costs (`docs/mothership/01-business-plan §6`). Even partial substitution still leaves a defensible per-client retainer business.
 - Pattern C operator-side IP isn't visible to the client; even if a competitor copies the front-end experience, the operational leverage is harder to replicate.
 

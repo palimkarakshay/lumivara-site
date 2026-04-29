@@ -84,12 +84,12 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 
 Existing context that this folder builds on (do not duplicate):
 
-- `docs/freelance/01-gig-profile.md` — outward-facing pitch, gigs, FAQ, "say no to" filters
-- `docs/freelance/02-pricing-tiers.md` — four-tier ladder with prices and decision tree
-- `docs/freelance/03-cost-analysis.md` — break-even and quit-the-day-job ramp
-- `docs/freelance/05-template-hardening-notes.md` — running list of system-hardening items
-- `docs/freelance/07-client-migration-strategy.md` — operator playbook for prospects who already have a website (Path A keep-and-integrate, Path B full migration, hybrids, edge cases, decision matrix). Sales-shareable distillation lives at `docs/freelance/08-client-migration-summary.md`. Cross-link rather than duplicate; the strategy doc is operator+sales-facing and lives in `docs/freelance/` per the §1 rule that operator-only mechanics stay in `docs/mothership/` while client-routing playbooks stay in the storefront pack.
-- [`docs/research/00-INDEX.md`](../research/00-INDEX.md) — **evidentiary layer for all stakeholder decks**: two raw Gemini Deep Research outputs preserved verbatim under `raw/`, three synthesis docs, a [V]/[S]/[C]-flagged source bibliography, plus client personas, switch reasons, and honest drawbacks. Anything claimed in `docs/decks/` or `docs/freelance/04-slide-deck.md` traces back to a row in `03-source-bibliography.md`.
+- `docs/storefront/01-gig-profile.md` — outward-facing pitch, gigs, FAQ, "say no to" filters
+- `docs/storefront/02-pricing-tiers.md` — four-tier ladder with prices and decision tree
+- `docs/storefront/03-cost-analysis.md` — break-even and quit-the-day-job ramp
+- `docs/storefront/05-template-hardening-notes.md` — running list of system-hardening items
+- `docs/storefront/07-client-migration-strategy.md` — operator playbook for prospects who already have a website (Path A keep-and-integrate, Path B full migration, hybrids, edge cases, decision matrix). Sales-shareable distillation lives at `docs/storefront/08-client-migration-summary.md`. Cross-link rather than duplicate; the strategy doc is operator+sales-facing and lives in `docs/storefront/` per the §1 rule that operator-only mechanics stay in `docs/mothership/` while client-routing playbooks stay in the storefront pack.
+- [`docs/research/00-INDEX.md`](../research/00-INDEX.md) — **evidentiary layer for all stakeholder decks**: two raw Gemini Deep Research outputs preserved verbatim under `raw/`, three synthesis docs, a [V]/[S]/[C]-flagged source bibliography, plus client personas, switch reasons, and honest drawbacks. Anything claimed in `docs/decks/` or `docs/storefront/04-slide-deck.md` traces back to a row in `03-source-bibliography.md`.
 - [`docs/decks/00-INDEX.md`](../decks/00-INDEX.md) — **stakeholder deck pack**: investor, partner (co-operator), employee (engineer / VA), prospective-client (persona-tailored), and advisor (pressure-test). Each deck cites verified rows in `docs/research/03-source-bibliography.md`.
 - `docs/AI_ROUTING.md` — multi-AI router policy and fallback chains
 - `docs/ADMIN_PORTAL_PLAN.md` — admin-portal architecture (5 phases)
@@ -121,7 +121,7 @@ Each phase is sized to fit comfortably inside a single Claude run with the 50%/8
 | **P4.6 — Critique closure** | Run A (`16 §1`) → fix architectural cron flaw; Run B (`16 §2`) → close security gaps; Run C (`16 §3`) → reconcile maths; Run D (`16 §4`) → operations sweep | ⏳ **Run before any P5 work** |
 | **P5 — Mothership repo bootstrap** | Run `05-mothership-repo-buildout-plan.md` end-to-end against an empty `palimkarakshay/{{BRAND_SLUG}}-mothership` repo | ⏳ After P4.6 |
 | **P6 — Migrate Client #1** | Re-scaffold *Lumivara People Advisory* into a clean per-client repo using `06-operator-rebuild-prompt-v3.md` | ⏳ After P5 |
-| **P7 — Hardening tasks** | Walk `docs/freelance/05-template-hardening-notes.md` items into issues against the new mothership repo | ⏳ After P6 |
+| **P7 — Hardening tasks** | Walk `docs/storefront/05-template-hardening-notes.md` items into issues against the new mothership repo | ⏳ After P6 |
 | **P8 — Legal & vault** | Implement items in `08-future-work.md` (PIPEDA, contracts, secrets vault, market study) | ⏳ Spread across months 2–6 |
 
 ### How to resume after a context-clear
@@ -147,7 +147,7 @@ When you're tempted to add a new doc, use this table to decide where it goes:
 | Is it client-shareable text or a per-client form? | Yes | Render from `07-client-handover-pack.md` into the per-client repo's `docs/client/` (created at engagement time, never in the mothership) |
 | Is it about the autopilot's internal mechanics (workflows, scripts)? | Yes | `docs/mothership/` plus the actual workflow lives in the new mothership repo |
 | Is it about a specific *client business's* content/branding/copy? | Yes | The client's own repo, never here |
-| Is it the public-facing pitch (Fiverr/LinkedIn/Upwork)? | Yes | `docs/freelance/` (already exists; keep it as the storefront) |
+| Is it the public-facing pitch (Fiverr/LinkedIn/Upwork)? | Yes | `docs/storefront/` (already exists; keep it as the storefront) |
 
 ---
 

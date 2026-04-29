@@ -24,7 +24,7 @@ The seven empirically grounded reasons a prospect should switch from their curre
 
 **You are switching from.** A traditional boutique agency on a per-edit billing model.
 
-**The pain.** Boutique agencies typically bill $75–$150/hr for edits with a $6k–$12k upfront build (`[S] §B-Boutique-Agency`). After launch, every "update the price on this page" is a custom invoice. Over 24 months on an active small business, total spend is $15,000–$30,000+ (`docs/freelance/04-slide-deck.md` cost table).
+**The pain.** Boutique agencies typically bill $75–$150/hr for edits with a $6k–$12k upfront build (`[S] §B-Boutique-Agency`). After launch, every "update the price on this page" is a custom invoice. Over 24 months on an active small business, total spend is $15,000–$30,000+ (`docs/storefront/04-slide-deck.md` cost table).
 
 **The arbitrage.** Tier 2 is CAD $4,500 setup + $249/mo = CAD $7,488 over 24 months. Cheaper *and* the site improves monthly instead of decaying. Lumivara Forge's published flat-fee subscription replaces the volatile invoice stream entirely.
 

@@ -59,7 +59,7 @@ Cross-references:
 - `docs/operator/RISK_REGISTER.md` — what can go wrong + mitigations.
 - `docs/client/INTAKE_FORM.md` — the only doc the client fills in.
 - `docs/client/HANDOVER_GUIDE.md` — the only doc the client receives.
-- `docs/freelance/05-template-hardening-notes.md` — running list of
+- `docs/storefront/05-template-hardening-notes.md` — running list of
   hardening items, with the v2 work marked done.
 
 ---
@@ -101,14 +101,14 @@ Cross-references:
 
 | Rule | Why |
 |---|---|
-| The client's `main` branch never contains `.github/workflows/`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/bootstrap-kanban.sh`, or any file inside `docs/operator/` or `docs/freelance/`. | These are the moat. If a curious client clones their repo, they should see a clean Next.js site with an `/admin` portal — not the autopilot. |
+| The client's `main` branch never contains `.github/workflows/`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/bootstrap-kanban.sh`, or any file inside `docs/operator/` or `docs/storefront/`. | These are the moat. If a curious client clones their repo, they should see a clean Next.js site with an `/admin` portal — not the autopilot. |
 | The autopilot workflows live on a separate **operator-managed branch** of the client repo (e.g. `operator/main`), pushed by the operator's vendor account, never merged into the client's `main`. The cron schedules run from `operator/main` via `workflow_dispatch.ref`. | Removes a trivial "diff main → see all the workflows" attack. |
 | The `CLAUDE_CODE_OAUTH_TOKEN` and all AI provider keys live as **organisation-level secrets** under the operator's GitHub org. The client repo is added as a member of the org. The token is never created by, owned by, or visible to the client. | If the engagement ends, the operator removes the repo from the org and the autopilot stops. The client keeps the site. |
 | A separate **vendor PAT** (operator-owned) is used by n8n to write GitHub issues / comments / labels. The client never holds a GitHub PAT on any device. | Eliminates the v1 phone-PAT exposure. The client's only credentials are their email magic link and OAuth identity. |
 | Twilio, IMAP/Gmail, Anthropic/Gemini/OpenAI keys live **only in n8n credentials** on the operator-controlled Railway instance. They never appear in any Vercel env or any client-readable file. | Same reason — the AI pipeline is operator infrastructure, not client infrastructure. |
 | Every n8n ↔ Next.js webhook is signed with `HMAC-SHA256` over `${unixTimestamp}.${rawBody}` using `N8N_HMAC_SECRET`, with a ≤5-minute skew check. The client's repo holds the *secret* (because Vercel env), but **not** the n8n credentials it pairs with. | Prevents replay; the secret alone is useless without the n8n side. |
 | The **mobile capture mechanism** is the `/admin` portal (Auth.js v5 magic-link / Google / Entra) plus the email + SMS fallbacks routed through n8n. **No client device ever talks to the GitHub API directly.** | This is the single biggest hardening change vs. v1 (`docs/_deprecated/PHONE_SETUP.md`). |
-| The footer contains an opt-in attribution `Built on the {{BRAND}} framework` link to the operator's services page. Removable on Tier 3+ only. | Per `docs/freelance/05-template-hardening-notes.md` § "per-client repo" #3. Passive marketing surface on every site. |
+| The footer contains an opt-in attribution `Built on the {{BRAND}} framework` link to the operator's services page. Removable on Tier 3+ only. | Per `docs/storefront/05-template-hardening-notes.md` § "per-client repo" #3. Passive marketing surface on every site. |
 
 ### 1.2 What the *client* sees, end-to-end
 
@@ -405,7 +405,7 @@ client the handover guide.
 
 Send the client *only* `docs/client/HANDOVER_GUIDE.md` and a 5-minute
 walkthrough video. Nothing from `docs/operator/`, nothing from
-`docs/freelance/`, and nothing from this file.
+`docs/storefront/`, and nothing from this file.
 
 ---
 

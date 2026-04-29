@@ -31,7 +31,7 @@ The rest of this document uses `{{BRAND}}` and `{{BRAND_SLUG}}` placeholders so 
 
 > **{{BRAND}}** designs and ships modern marketing websites for small businesses, then keeps them improving on an automated subscription. The client edits their site from a phone shortcut; an AI autopilot implements the change, opens a preview, and the client taps publish. Beautiful build. No decay. Owned by the client; managed by us.
 
-The full pitch and gig copy live in `docs/freelance/01-gig-profile.md` — keep it the storefront. This document is the **operator's** business plan, not the marketing copy.
+The full pitch and gig copy live in `docs/storefront/01-gig-profile.md` — keep it the storefront. This document is the **operator's** business plan, not the marketing copy.
 
 ---
 
@@ -52,7 +52,7 @@ A single, private operator-side organisation. It owns:
 - One Anthropic Pro/Max subscription bound via `claude setup-token` (the `CLAUDE_CODE_OAUTH_TOKEN`).
 - One Gemini API key (free tier), one OpenAI key (pay-go; optional).
 - The operator dashboard: GitHub Pages SPA on the mothership repo, mobile-first.
-- The freelance go-to-market collateral: `docs/freelance/` (lives in this repo today; migrates to mothership in P5).
+- The freelance go-to-market collateral: `docs/storefront/` (lives in this repo today; migrates to mothership in P5).
 
 ### 3.2 The client businesses
 
@@ -90,7 +90,7 @@ The two-repo separation (Pattern C) is detailed in `02b-pattern-c-architecture.m
 
 ## 4. Service catalog (recap, with the latest features)
 
-Tiers and prices live in `docs/freelance/02-pricing-tiers.md` (do not duplicate here). What's new — **features built since the freelance pack was last updated** that should be marketed at each tier:
+Tiers and prices live in `docs/storefront/02-pricing-tiers.md` (do not duplicate here). What's new — **features built since the freelance pack was last updated** that should be marketed at each tier:
 
 | Feature | Built | Tier where it appears |
 |---|---|---|
@@ -106,13 +106,13 @@ Tiers and prices live in `docs/freelance/02-pricing-tiers.md` (do not duplicate 
 | Session-budget charter (50%/80% gates) | `AGENTS.md` | All tiers — internal only; sold as "predictable monthly cost" |
 | `needs-vercel-mirror` label convention | `AGENTS.md` | Internal — protects against silent prod drift |
 
-These features become talking points in the slide deck (`docs/freelance/04-slide-deck.md`) and FAQ (`docs/freelance/01-gig-profile.md §6`). Update both with this list when the brand is locked.
+These features become talking points in the slide deck (`docs/storefront/04-slide-deck.md`) and FAQ (`docs/storefront/01-gig-profile.md §6`). Update both with this list when the brand is locked.
 
 ---
 
 ## 5. Revenue model (recap)
 
-Full ramp plan in `docs/freelance/03-cost-analysis.md`. The relevant invariants for the mothership:
+Full ramp plan in `docs/storefront/03-cost-analysis.md`. The relevant invariants for the mothership:
 
 - One Claude Pro/Max subscription bills against a 5-hour rolling quota that **all** clients share. The session-budget charter (`AGENTS.md`) is what keeps any single client from starving the others.
 - Each client's Vercel + GitHub + domain are billed to the **client** (or, until contract transfer, to the operator and rebilled with proof).
@@ -123,9 +123,9 @@ Full ramp plan in `docs/freelance/03-cost-analysis.md`. The relevant invariants 
 
 ## 6. What the mothership is NOT
 
-- It is **not a SaaS**. There's no self-serve onboarding, no shared multi-tenant database, no public sign-up. Stage-3 SaaS is in `docs/freelance/05-template-hardening-notes.md` — explicitly deferred.
+- It is **not a SaaS**. There's no self-serve onboarding, no shared multi-tenant database, no public sign-up. Stage-3 SaaS is in `docs/storefront/05-template-hardening-notes.md` — explicitly deferred.
 - It is **not an agency** in the project-shop sense. There are no employees, no PMs, no design team. The operator runs everything until cross-30-clients triggers `Part E` of the cost analysis.
-- It is **not a white-label reseller** to other agencies. Tier 4 exists for that case but is not promoted (`docs/freelance/02-pricing-tiers.md §"Tier 4"`).
+- It is **not a white-label reseller** to other agencies. Tier 4 exists for that case but is not promoted (`docs/storefront/02-pricing-tiers.md §"Tier 4"`).
 - It is **not a hosting company**. The client's hosting account is the client's, billed to the client, on the client's payment method by month 1 (or month 0 for T0).
 
 ---
@@ -147,7 +147,7 @@ The dashboard's "Recent runs" panel is the operator's inbox; the GitHub Project 
 
 ## 8. Risk register summary
 
-(Full register: `docs/freelance/03-cost-analysis.md §F` and the future `docs/operator/RISK_REGISTER.md` — to be drafted in mothership P5.)
+(Full register: `docs/storefront/03-cost-analysis.md §F` and the future `docs/operator/RISK_REGISTER.md` — to be drafted in mothership P5.)
 
 | Risk | Likelihood | Impact | Mitigation already built |
 |---|---|---|---|

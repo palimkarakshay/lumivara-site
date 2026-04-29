@@ -28,7 +28,11 @@ A working answer to: *what are we selling, to whom, against whom, with what plan
 
 <br/>
 
-*Source material: `docs/mothership/` (operator pack) and `docs/freelance/` (go-to-market pack), reconciled 2026-04-29.*
+*Source material: `docs/mothership/` (operator pack), `docs/freelance/` (go-to-market pack), and `docs/research/` (Gemini Deep Research outputs + 7-stat independent verification pass), reconciled 2026-04-29.*
+
+<br/>
+
+*Every load-bearing statistic in this deck cites a row in `docs/research/03-source-bibliography.md` with a verification state — `[V]` re-verified, `[S]` cited but not re-verified, `[C]` contested or superseded.*
 
 <span class="small">Operator deck — confidential. Not for client distribution.</span>
 
@@ -74,16 +78,16 @@ Source: `docs/freelance/01-gig-profile.md` Part 2.
 
 ## Six concrete benefits
 
-| # | Benefit | What the client experiences |
-|---|---|---|
-| 1 | **No decay.** | The site stays current because making it current is a 30-second job, not a $200 invoice. |
-| 2 | **No developer phone calls.** | Edits go in by phone, email, or SMS. The laptop stays closed. |
-| 3 | **Predictable monthly cost.** | One flat fee covers AI, monitoring, edits, improvements. Zero surprise invoices. |
-| 4 | **Full ownership.** | Code, domain, hosting account — all in the client's name on day one. |
-| 5 | **Quality on autopilot.** | 90+ Lighthouse on every page. Accessibility regressions caught before they ship. |
-| 6 | **Nothing publishes without consent.** | Every change waits for a tap on the client's phone. |
+| # | Benefit | What the client experiences | Why it matters (verified) |
+|---|---|---|---|
+| 1 | **No decay.** | The site stays current because making it current is a 30-second job, not a $200 invoice. | 75% of consumers abandon outdated sites (`[V] §B-Outdated-75`). |
+| 2 | **No developer phone calls.** | Edits go in by phone, email, or SMS. The laptop stays closed. | 50% of SMB owners cite "lack of skill" as primary digital-adoption barrier (`[S] §B-SMB-Mobile`). |
+| 3 | **Predictable monthly cost.** | One flat fee covers AI, monitoring, edits, improvements. Zero surprise invoices. | Boutique agency edits run $75–$150/hr (`[S] §B-Boutique-Agency`). |
+| 4 | **Full ownership.** | Code, domain, hosting account — all in the client's name on day one. | Pattern C two-repo isolation (`[V] §B-Self`). |
+| 5 | **Quality on autopilot.** | 90+ Lighthouse on every page. Accessibility regressions caught before they ship. | 95.9% of top-1M pages fail WCAG with 56.8 errors/page avg (`[V] §B-WebAIM`); 3,117 ADA lawsuits in 2025, +27% YoY (`[V] §B-ADA-Lawsuits`). |
+| 6 | **Nothing publishes without consent.** | Every change waits for a tap on the client's phone. | HITL gate mitigates SWE-bench ~33% AI-coding-agent failure rate (`[S] §B-SWE-bench`). |
 
-Source: `docs/freelance/04-slide-deck.md` slides 4–9, `01-gig-profile.md` Part 6.
+Source rows live in `docs/research/03-source-bibliography.md`. Voice / pitch lines from `docs/freelance/04-slide-deck.md` slides 4–9 and `01-gig-profile.md` Part 6.
 
 ---
 
@@ -264,13 +268,15 @@ Source: `docs/freelance/01-gig-profile.md` Part 8.
 
 ## Competitor pitch matrix
 
-| Competitor | What they tell SMBs | What they don't tell them |
-|---|---|---|
-| **Squarespace / Wix / Webflow** | "Build a beautiful site in an afternoon, edit it yourself, no code." | The site lives in their walled garden. Export is painful. Performance and SEO ceiling. Plugin sprawl over time. |
-| **Solo Upwork / Fiverr devs** | "Custom build, your code, your ownership, $1k–$5k." | After hand-off, every change is a custom invoice or a Slack message at 11pm. No ongoing improvement. |
-| **Boutique agencies** | "End-to-end design + build + monthly retainer for support." | Retainer pays for *availability*, not for actual edits. Each substantial change still bills $150–$300. |
-| **Headless CMS (Sanity / Contentful / Strapi) + dev** | "Modern stack, structured content, scalable." | Client must learn a CMS. Still needs a developer for layout / component changes. |
-| **AI-site generators (Framer AI, Durable, Bookmark)** | "Type a prompt, get a site." | Templated under the hood. Hosted in their stack. Phone-edit *publishing* is not the loop. |
+| Competitor | Verified pricing (2026-04-29) | What they tell SMBs | What they don't tell them |
+|---|---|---|---|
+| **Squarespace / Wix / Webflow** | $17 – $139 / mo (`[V] §B-Wix-Squarespace`) | "Build a beautiful site in an afternoon, edit it yourself, no code." | The site lives in their walled garden. Export is painful. Performance and SEO ceiling. Plugin sprawl over time. 71% of consumers spot a DIY at first click (`[V] §B-Outdated-75`). |
+| **Solo Upwork / Fiverr devs** | $1k – $5k upfront, then per-edit | "Custom build, your code, your ownership, $1k–$5k." | After hand-off, every change is a custom invoice or a Slack message at 11pm. No ongoing improvement. |
+| **Boutique agencies** | $6,000 – $12,000 upfront + $75 – $150/hr edits + $600 – $3,000/yr retainer (`[S] §B-Boutique-Agency`) | "End-to-end design + build + monthly retainer for support." | Retainer pays for *availability*, not for actual edits. Each substantial change still bills $75–$150/hr. |
+| **DesignJoy / Midday / Superside** | $4,995 / mo Standard, $7,995 / mo Pro, + $999 / mo Webflow add-on (`[V] §B-DesignJoy`) | "Unlimited design requests, async Trello, 48h turnarounds." | Webflow-hosted. Designed for funded SaaS / enterprise marketing teams. ~10× our blended ARPU. |
+| **WP Buffs maintenance** | $79 – $447 / mo across 5 tiers; "Perform" $219 / mo most popular (`[V] §B-WP-Buffs`) | "24/7 monitoring, weekly core updates, basic edits, speed optimisation." | Locks the client onto the underlying decaying WordPress. Doesn't include the initial build. |
+| **Headless CMS (Sanity / Contentful / Strapi) + dev** | $0 – $1,000 / mo CMS + dev hourly | "Modern stack, structured content, scalable." | Client must learn a CMS. Still needs a developer for layout / component changes. |
+| **AI-site generators (Framer AI, Durable, Bookmark)** | $20 – $100 / mo | "Type a prompt, get a site." | Templated under the hood. Hosted in their stack. Phone-edit *publishing* is not the loop. |
 
 We sit deliberately in the gap none of them serve: real-codebase ownership + AI-managed maintenance + flat fee.
 

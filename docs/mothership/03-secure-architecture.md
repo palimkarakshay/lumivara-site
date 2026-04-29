@@ -6,7 +6,11 @@
 
 The single most important property of this practice: **a curious client cannot see the operator's secrets, costs, or tools, even by inspecting their own repo.** This document is the rule-set that makes that true.
 
+> **Canonical enforcement surface:** [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md). The four rules below mirror C-MUST-NOT-1 through C-MUST-NOT-4 in that file byte-for-byte; any drift between the two locations is a bug. Edit both in the same PR.
+
 ## 1. The four "never" rules (memorise these)
+
+<!-- mirrors pattern-c-enforcement-checklist.md §3 C-MUST-NOT-1..4 -->
 
 1. **Never** put an operator API key, OAuth token, or vendor PAT into a client repo file — not in `.env.local.example`, not in a comment, not in a workflow `env:` block. Org-level secrets only.
 2. **Never** copy `docs/mothership/`, `docs/freelance/`, `docs/operator/`, `n8n/*.json`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/lib/routing.py`, or `dashboard/` into a client repo's `main`. They live on `operator/main` (overlay) or in the mothership repo only.
@@ -14,6 +18,8 @@ The single most important property of this practice: **a curious client cannot s
 4. **Never** show a client the dashboard URL (`https://palimkarakshay.github.io/{{BRAND_SLUG}}-mothership/`) or any operator runbook. They get the admin portal at `https://<their-domain>/admin` and nothing else.
 
 If a future bot or sub-agent asks Claude "should I commit this to the client repo's main?" — the answer is "only if it would be in the `client-template/` folder of the mothership." Anything else: no.
+
+The full list (including C-MUST-NOT-5 "no-PAT-on-the-phone" and C-MUST-NOT-6 "no operator-account pushes to client `main`") and the *verify* commands for each row live in [`pattern-c-enforcement-checklist.md §3`](pattern-c-enforcement-checklist.md#3--must-not-controls).
 
 ---
 

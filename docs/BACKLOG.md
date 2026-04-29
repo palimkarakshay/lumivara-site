@@ -4,7 +4,7 @@ The backlog lives in GitHub Issues, grouped in a Project v2 board called **Lumiv
 
 ## Source of truth
 
-- **Capture**: new items → `gh issue create` (from desk) or HTTP Shortcuts → `POST /repos/.../issues` (from phone). See [PHONE_SETUP.md](../PHONE_SETUP.md).
+- **Capture**: new items → `gh issue create` (from desk) or the `/admin` portal capture form (from phone), with email + SMS fallbacks through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./N8N_SETUP.md). The previous phone-PAT / HTTP Shortcuts path is **deprecated**; the deprecation notice and v1→v2 migration matrix live at [`PHONE_SETUP.md`](../PHONE_SETUP.md) and [`docs/TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) §1.4.
 - **Triage**: `.github/workflows/triage.yml` runs daily at 06:00 UTC. It classifies new issues (priority, complexity, area) using the rubric in [`scripts/triage-prompt.md`](../scripts/triage-prompt.md), adds labels, comments with rationale, moves the issue into the right Project column.
 - **Execute**: `.github/workflows/execute.yml` runs every 8 hours. It picks the top-ranked `auto-routine` open issue, implements it on a branch `auto/issue-<n>`, opens a PR. Never merges. See [`scripts/execute-prompt.md`](../scripts/execute-prompt.md).
 - **Ship**: you review the PR on phone via GitHub Mobile, merge when happy. Merge closes the referenced issue.
@@ -52,7 +52,7 @@ Bad example (bot will flag `needs-clarification`):
 
 > **Title:** Make the hero better
 
-For phone capture, prefix the title with `[P1]` / `[P2]` / `[P3]` if you already know the urgency — triage respects hints from the title. Otherwise the bot picks.
+When capturing from the `/admin` portal, prefix the title with `[P1]` / `[P2]` / `[P3]` if you already know the urgency — triage respects hints from the title. Otherwise the bot picks.
 
 ## Reverting a change
 
@@ -66,9 +66,11 @@ git push
 
 If you want to abandon an issue mid-flight, close it (or add `human-only`) — the bot checks status labels on every run and won't re-pick a closed one.
 
-## Manual triggers (from your desk or phone)
+## Manual triggers (from your desk)
 
-Any of these can be fired via the Actions tab, `gh workflow run`, or an HTTP Shortcuts request to `POST /repos/.../actions/workflows/<name>.yml/dispatches`:
+Any of these can be fired via the Actions tab or `gh workflow run`. (The
+phone-side HTTP Shortcuts trigger described in v1 is deprecated — see
+[`PHONE_SETUP.md`](../PHONE_SETUP.md) and [`docs/TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) §1.4.)
 
 | Workflow | When you'd manually run it |
 |----------|-----------------------------|
@@ -93,3 +95,11 @@ If a future phase needs to dial usage back:
 - Restore the per-tier mapping in `scripts/lib/routing.py` (`trivial|easy → haiku`, `medium → sonnet`, `complex → opus`)
 - Raise the bar for what gets `auto-routine` during triage (only `priority/P1` + `complexity/trivial|easy`)
 - Pause entirely: edit the schedule line to `- cron: '0 0 1 1 *'` (January 1st only), or comment the `schedule:` block out and rely on `workflow_dispatch` only.
+
+## Recurring backlog items
+
+- [ ] **Pattern C audit** — quarterly cadence, plus on every secret rotation and every new client repo onboarded. Walk every MUST / MUST-NOT row in [`docs/mothership/pattern-c-enforcement-checklist.md`](mothership/pattern-c-enforcement-checklist.md) (see §6 of that file for the procedure and §5 for the per-client verification commands).
+
+## One-shot operator runbooks
+
+- [ ] **Run [`docs/migrations/lumivara-people-advisory-spinout.md`](migrations/lumivara-people-advisory-spinout.md) end-to-end** — spin out Client #1 (Lumivara People Advisory) into `palimkarakshay/lumivara-people-advisory-site`. Target date: TBD by operator. Pre-flight gates: #140 (Pattern C checklist) ✅, #142 (variable registry) ☐. Issue #141 ships the *runbook*; running it is a separate operator action tracked here.

@@ -146,7 +146,7 @@ From your desk:
 gh issue create --title "Short description" --body "Full details"
 ```
 
-From your phone: [PHONE_SETUP.md](./PHONE_SETUP.md) — HTTP Shortcuts → `POST /repos/.../issues`.
+From your phone: sign in to `/admin` (Auth.js v5 magic link / Google / Entra) and use the capture form. Email and SMS lanes route through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./docs/ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./docs/N8N_SETUP.md). The previous HTTP Shortcuts / phone-PAT path is **deprecated** — see [PHONE_SETUP.md](./PHONE_SETUP.md) for the deprecation notice.
 
 ### Lifecycle
 
@@ -182,11 +182,23 @@ git push
 
 ---
 
-## 7. Phone shortcuts
+## 7. Mobile capture
 
-Setup guide: [PHONE_SETUP.md](./PHONE_SETUP.md).
+> ⚠️ **Deprecated-doc policy.** The previous phone-PAT + HTTP Shortcuts /
+> Apple Shortcuts mechanism in [`PHONE_SETUP.md`](./PHONE_SETUP.md) is
+> retained as a deprecation notice only — **do not follow its setup
+> steps**. Canonical replacements:
+>
+> - [`docs/N8N_SETUP.md`](./docs/N8N_SETUP.md) — n8n on Railway, webhook + AI structuring workflows.
+> - [`docs/ADMIN_PORTAL_PLAN.md`](./docs/ADMIN_PORTAL_PLAN.md) — `/admin` portal, Auth.js v5, three-channel intake, env vars.
+> - [`docs/TEMPLATE_REBUILD_PROMPT.md`](./docs/TEMPLATE_REBUILD_PROMPT.md) §1.4 — full v1→v2 migration matrix (security impact + operator actions).
+> - [`docs/wiki/Bot-Workflow.md`](./docs/wiki/Bot-Workflow.md) — end-to-end pipeline view.
 
-**HTTP Shortcuts** (Android) or **Shortcuts** (iOS) → `POST /repos/palimkarakshay/lumivara-site/issues` with a Bearer token. Creates a GitHub Issue with `status/needs-triage`. The triage bot picks it up within the hour.
+The current capture surface is the `/admin` portal (web form, magic-link
+sign-in via Resend / Google / Microsoft Entra), with email and SMS
+fallbacks routed through n8n. No client device — and no operator phone
+— holds a GitHub PAT. See [`docs/ADMIN_PORTAL_PLAN.md`](./docs/ADMIN_PORTAL_PLAN.md)
+Phase 2 for the implementation plan.
 
 ---
 

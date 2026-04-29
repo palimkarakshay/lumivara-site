@@ -1,6 +1,6 @@
-# Best Practices
+# Best Practices ⚪
 
-Conventions and guardrails for working on the `lumivara-site` repository.
+> **Lane:** ⚪ Both — except where stamped 🛠. See [[_partials/lane-key]] for the badge legend. These conventions apply on the mothership repo *and* on every per-client (`<client-repo>`) repo unless a section is explicitly stamped operator-only.
 
 ## Code quality
 
@@ -83,7 +83,13 @@ Typography: `text-display-xl` through `text-caption`, plus `text-label` for mono
 - Use semantic HTML — `<nav>`, `<main>`, `<article>`, `<section>` as appropriate
 - Color contrast ratio ≥ 4.5:1 for normal text, ≥ 3:1 for large text
 
-## Bot exclusions (hard limits for all contributors)
+## Bot exclusions (hard limits for all contributors) 🛠
+
+> <!-- do-not-copy:v1 -->
+> **🛠 Do not copy to client repos.** This section describes operator-side machinery that
+> lives on the mothership repo or on the `operator/main` overlay branch of a client
+> repo. A client cloning their `main` will never see this content. If you are the
+> operator scaffolding a new client repo, **omit this section from the per-client wiki**.
 
 These require human review and must not be changed by the bot or by contributors without explicit sign-off:
 
@@ -93,3 +99,5 @@ These require human review and must not be changed by the bot or by contributors
 4. `scripts/*`
 5. `src/app/api/contact/*`
 6. Deleting existing pages or components
+
+> **On a client repo `main`, items 1 and 4 are not present** (they live on `operator/main`); items 2, 3, 5, 6 still apply. The lane split is enforced by the Pattern C two-branch model — see `docs/mothership/02-architecture.md §1`.

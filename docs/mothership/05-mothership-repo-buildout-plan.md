@@ -122,6 +122,8 @@ Each sub-phase opens an issue in the mothership repo and goes through the standa
 
 **Estimated turns:** 40–60.
 
+> **Canonical runbook:** [`docs/migrations/lumivara-people-advisory-spinout.md §1`](../migrations/lumivara-people-advisory-spinout.md) operationalises this phase. The DOD list below remains the success criteria; the runbook owns the per-step procedure, dry-run/rollback, and acceptance greps.
+
 The existing `lumivara-site` repo is *de facto* Client #1's repo today. Make it official:
 
 1. In the mothership, create `docs/clients/lumivara-people-advisory/`.

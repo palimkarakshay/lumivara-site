@@ -94,6 +94,8 @@ The defining property: **the autopilot lives in a separate operator-only `<slug>
 
 The full canonical statement of Pattern C — including the GitHub App, token lifecycle, and trust zones — lives in `02b-pattern-c-architecture.md`.
 
+> **Enforcement:** every assertion in this section is enforced by an explicit MUST / MUST-NOT row in [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md). When a future change to the architecture would break a row there, update both files in the same PR.
+
 ---
 
 ## 2. Mothership repo file layout (target end state of P5)
@@ -231,6 +233,8 @@ The "client cannot see the autopilot" claim is now an architectural fact: the wo
 - Branch protection rules on the site repo's `main` prevent the client from force-pushing or rewriting history.
 - The pipeline repo never has the client as a collaborator; the App is the only non-operator identity with access, and the App is operator-owned.
 - At graceful exit (`teardown` CLI), the App is uninstalled from the site repo, the pipeline repo is archived/deleted, branch protections on the site repo are relaxed, the site repo is transferred to the client's account.
+
+> **Enforcement:** trust-zone separation is enforced by C-MUST-1, C-MUST-2, C-MUST-4, and C-MUST-NOT-2 in [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md). The pre-migration gate (§4) and post-migration verification (§5) of that file are what gate every client spinout.
 
 ---
 

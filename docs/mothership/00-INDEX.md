@@ -68,6 +68,8 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 14 | `14-critique-operations-sequencing.md` | "What sequencing/coherency gaps need closing?" — Tier-0 honesty, OAuth manual scope, rollback paths, backups, engagement-log schema | Operator | Once; closed by Run D in `16 §4` |
 | 15 | `15-terminology-and-brand.md` | "Better names for mothership/operator/agent and brand alternatives" | Operator | Once; rename ships via Run S1 in `16 §5` |
 | 16 | `16-automation-prompt-pack.md` | "Copy-paste prompts for Claude Code in the browser to close the critiques" | Operator | **Per critique-closure run** |
+| — | `pattern-c-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
+| — | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) | "How do I spin Lumivara People Advisory out into its own client repo, end-to-end?" — phased one-shot runbook with allow/deny tables (`docs/migrations/_artifact-allow-deny.md`), per-phase dry-run / rollback / acceptance, and Pattern C §4/§5 as gate / acceptance set | Operator | **Once (per Client #1 spinout)** |
 
 Existing context that this folder builds on (do not duplicate):
 
@@ -78,6 +80,7 @@ Existing context that this folder builds on (do not duplicate):
 - `docs/AI_ROUTING.md` — multi-AI router policy and fallback chains
 - `docs/ADMIN_PORTAL_PLAN.md` — admin-portal architecture (5 phases)
 - `docs/N8N_SETUP.md` — n8n on Railway
+- `docs/wiki/Home.md` — **dual-lane wiki** (🛠 Operator / 🌐 Client / ⚪ Both). The wiki is the working summary of this pack for the operator and is the source from which per-client wikis are scaffolded; only the 🌐 and ⚪ pages are copied into a client repo (see `docs/wiki/_partials/lane-key.md` and `docs/wiki/_partials/do-not-copy.md`).
 
 ---
 
@@ -146,6 +149,9 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 - Client-facing pack template: `07-client-handover-pack.md`
 - Tier-based AI cadence: `04-tier-based-agent-cadence.md`
 - Cost firewall + zone isolation: `03-secure-architecture.md` (partially deprecated — Run B rewrites)
+- Cost firewall + zone isolation: `03-secure-architecture.md`
+- **Pattern C enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `pattern-c-enforcement-checklist.md`**
+- **Client #1 spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)**
 - Future legal / vault work: `08-future-work.md`
 
 ---

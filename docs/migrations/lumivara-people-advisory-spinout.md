@@ -369,7 +369,7 @@ Run from a fresh clone of the **new client repo**:
 git -C /path/to/lumivara-people-advisory-site grep -niE 'forge|mothership|operator-only' main
 ```
 
-Must return zero matches. (Exception: a single `Built on the {{BRAND}} framework` footer credit is *required* on Tier 0/1/2 sites per `07 §8` and is mandatory for this Tier 2 engagement; the substituted footer reads "Built on the Lumivara Forge framework" — when the brand is finalised, that exact string lands once in `src/components/Footer.tsx` and is the only allowed match. The grep above accommodates this by searching for the lowercase token; if the brand pick contains "forge", widen the rule to `mothership|operator-only` only and exempt the footer line.)
+Must return zero matches. (Exception: a single `Forged by Lumivara` footer credit is *required* on Tier 0/1/2 sites per `07 §8` and is mandatory for this Tier 2 engagement; the substituted footer renders as "Forged by Lumivara — Sites built for advisors who lead with clarity." in `src/components/Footer.tsx` and is the only allowed match. Because the verb "Forged" contains the case-insensitive token `forge`, narrow the post-spinout grep above to `mothership|operator-only` and exempt the footer line — or run with `-w` to require whole-word matches on `forge`.)
 
 ### A3 — Pattern C checks all pass
 

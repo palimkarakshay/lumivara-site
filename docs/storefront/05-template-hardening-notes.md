@@ -24,7 +24,7 @@ The principle: the *site* is theirs to own. The *automation pipeline* is yours t
 |---|---|---|
 | 1 | Add a "vendor account" PAT separate from the client's own PAT. The auto-bot runs as the vendor account. The client's PAT is only for phone-edit issue creation. | Decouples your operator access from the client's owner access. |
 | 2 | Put the `CLAUDE_CODE_OAUTH_TOKEN` secret under your GitHub *organisation* (`your-business-org`), then add the client's repo as a member. The token never lives in the client's account. | If they leave, they lose the bot — they keep the site, they don't keep the autopilot. |
-| 3 | Watermark the system: a footer credit on the site reading *"Built on the [Brand] framework"* with a link to your services page. Removable on Tier 3 / Tier 4 only. | Gives every client site a passive marketing surface for you. |
+| 3 | Watermark the system: a footer credit on the site reading *"Forged by Lumivara"* with a link to your services page. Removable on Tier 3 / Tier 4 only. | Gives every client site a passive marketing surface for you. |
 | 4 | Document a "graceful exit" procedure that explicitly disables the autopilot and hands the client a "vanilla" repo. Include this in every contract. | When a client leaves, the wind-down is friendly and predictable, not a cliff. |
 
 ---

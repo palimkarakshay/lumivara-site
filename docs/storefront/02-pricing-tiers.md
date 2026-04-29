@@ -110,7 +110,7 @@ Everything in Tier 2, plus:
 **Custom quote, minimum CAD $15,000 setup + CAD $1,200 / month / site under management.**
 
 - You stay the operator; the agency presents to their clients.
-- Written credit clause: your tagline appears in the site footer ("Built on the [Brand] framework") OR you get listed as the named technical lead in agency case studies.
+- Written credit clause: your tagline appears in the site footer ("Forged by Lumivara") OR you get listed as the named technical lead in agency case studies.
 - Capped at 5 client sites under one agency contract — beyond that, custom enterprise pricing.
 
 **Don't promote this.** Only quote it when an agency reaches out. Most agencies who ask are looking for cheap labour; the steep price filters for ones who actually understand the value.

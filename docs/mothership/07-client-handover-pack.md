@@ -371,7 +371,7 @@ registrar_url: https://domains.google.com
 notes:
   - T0 — no admin portal; Jimmy emails the operator with a change request,
     operator does it manually, charges $90 per change.
-  - Footer credit "Built on the {{BRAND}} framework" is mandatory.
+  - Footer credit "Forged by Lumivara" is mandatory.
   - Upsell to T1 in month 6 if Jimmy submits ≥ 3 changes in any quarter.
 ```
 

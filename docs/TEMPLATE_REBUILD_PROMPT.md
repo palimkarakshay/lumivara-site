@@ -108,7 +108,7 @@ Cross-references:
 | Twilio, IMAP/Gmail, Anthropic/Gemini/OpenAI keys live **only in n8n credentials** on the operator-controlled Railway instance. They never appear in any Vercel env or any client-readable file. | Same reason — the AI pipeline is operator infrastructure, not client infrastructure. |
 | Every n8n ↔ Next.js webhook is signed with `HMAC-SHA256` over `${unixTimestamp}.${rawBody}` using `N8N_HMAC_SECRET`, with a ≤5-minute skew check. The client's repo holds the *secret* (because Vercel env), but **not** the n8n credentials it pairs with. | Prevents replay; the secret alone is useless without the n8n side. |
 | The **mobile capture mechanism** is the `/admin` portal (Auth.js v5 magic-link / Google / Entra) plus the email + SMS fallbacks routed through n8n. **No client device ever talks to the GitHub API directly.** | This is the single biggest hardening change vs. v1 (`docs/_deprecated/PHONE_SETUP.md`). |
-| The footer contains an opt-in attribution `Built on the {{BRAND}} framework` link to the operator's services page. Removable on Tier 3+ only. | Per `docs/storefront/05-template-hardening-notes.md` § "per-client repo" #3. Passive marketing surface on every site. |
+| The footer contains an opt-in attribution `Forged by Lumivara` link to the operator's services page. Removable on Tier 3+ only. | Per `docs/storefront/05-template-hardening-notes.md` § "per-client repo" #3. Passive marketing surface on every site. |
 
 ### 1.2 What the *client* sees, end-to-end
 

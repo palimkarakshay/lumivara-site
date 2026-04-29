@@ -184,7 +184,14 @@ Display       {{BRAND}}                   → "Lumivara Forge"
               Sub-product                  → "Lumivara Forge Sites"
 
 Workflow      n8n workflow prefixes       → forge-* (per-client suffix)
-              Site footer credit           → "Built on Lumivara Forge"
+              Site footer credit           → "Forged by Lumivara"
+                          (tagline updated 2026-04-29 — drops the
+                          "Built on…" framing in favour of the
+                          parent-brand verb form. Renders on the
+                          Site as "Forged by Lumivara — Sites
+                          built for advisors who lead with
+                          clarity." See
+                          src/lib/site-config.ts builder block.)
 ```
 
 Single global find-replace pass against `docs/mothership/`, `docs/storefront/`, the templates, the workflows, and the dashboard. All placeholders already use `{{BRAND}}` / `{{BRAND_SLUG}}`, so the rename is mechanical. Run S1 (`16 §5`) executes this pass.
@@ -229,7 +236,7 @@ The brand name is **Lumivara Forge** (locked 2026-04-28 in §4 above). This sect
 | **Operator / mothership** | `docs/mothership/**`, `docs/AI_ROUTING.md`, `docs/MONITORING.md`, `docs/GEMINI_TASKS.md`, `docs/wiki/*` (operator-scoped pages), `AGENTS.md`, `CLAUDE.md` | "Lumivara Forge" only | **No** — except inside §7 of this file, or inside an explicit `> _Client example — see 15 §7._` callout that links to §7. |
 | **Migration history & critique** | `docs/mothership/00-INDEX.md` (Why-this-folder-exists genesis + read-order entries about Client #1), `docs/mothership/01-business-plan.md` (brand-comparison rows), `docs/mothership/05` (P5.5 / P5.6 migration steps), `docs/mothership/07` (Dummy A — per `14 §9`), `docs/mothership/08` (historical context), `docs/mothership/10` (critique), `docs/mothership/14` (critique §2 / §9), `docs/mothership/15` itself (§2 brand-family halo, §6 policy, §7 appendix), `docs/mothership/17` (issue-seeding pack), `docs/migrations/*` (one-shot runbooks), `docs/BACKLOG.md` (migration row) | The historical client name *is* the subject | **Yes** — these docs literally describe the Client #1 spinout, the critique that motivated it, or the brand-comparison context that named the client; they are allowed to name the client. |
 | **This-repo identity (transitional)** | `README.md`, `CONTRIBUTING.md` until the P5.6 spinout lands | The client's own brand | **Yes** — this repo is operationally Client #1's site today; renaming the README ahead of P5.6 would create the same operator/client contamination this policy is trying to prevent. The "Operator vs client framing" paragraph at the top of `README.md` makes the distinction explicit. After P5.6 the README is purely client-facing. |
-| **Client repo** | A future per-client site repo | The client's own brand only | "Lumivara Forge" appears only in a single footer credit ("Built on Lumivara Forge"). Other client brands never appear. |
+| **Client repo** | A future per-client site repo | The client's own brand only | The operator brand appears only in a single footer credit ("Forged by Lumivara" — tagline locked 2026-04-29; see §4 for the dated note). Other client brands never appear. |
 
 ### Forbidden strings (operator-scope only)
 

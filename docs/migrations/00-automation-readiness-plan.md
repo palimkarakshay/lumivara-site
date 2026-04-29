@@ -786,4 +786,67 @@ Phase 6 does not "complete." Its health is measured by the
 If any of those fall behind by a full cycle, file a P1 issue and
 treat it as a Phase 6 incident.
 
+---
 
+## §8 — Prompt index (copy-paste reference)
+
+Every Claude Code session this plan invokes, in order. Each is
+self-contained — the bot does not need this file open to run them.
+
+| # | Phase | Prompt location | Session length |
+|---|---|---|---|
+| 1 | 1 — green streak driver | `§3.4` of this file | ~30 min/day for 10 days |
+| 2 | 2 — Run S1 mechanical rename | `§4.3` of this file | ~60–90 turns, single PR |
+| 3 | 3 / P5.1 — doc migration | `§5.2` of this file | 60–80 turns |
+| 4 | 3 / P5.2 — workflow templates + scripts | `§5.3` of this file | 40–60 turns |
+| 5 | 3 / P5.3 — dashboard | `§5.4` of this file | 30–50 turns |
+| 6 | 3 / P5.4a–f — forge CLI sub-phases | `§5.5` template, repeat 6× | 40–80 turns each |
+| 7 | 3 / P5.5 — Client #1 metadata mirror | `§5.6` of this file | 40–60 turns |
+| 8 | 4 — spinout driver | `§6.3` of this file | 80–120 turns + operator clicks |
+| 9 | 5 — green-field provisioning | `§7.1` of this file | ~30 turns + 4h wall time |
+| 10 | 6 — hardening backlog seed | `§7.2` of this file | ~40 turns |
+
+> **Resumption pattern.** Every prompt above carries the line "Budget:
+> at 70% of max-turns, commit + push + exit cleanly." The next session
+> resumes by re-pasting the same prompt — the prompt's first step is
+> always to read the current state and find the resume point. This is
+> a deliberate property of the design, not an accident.
+
+---
+
+## §9 — Risk register (top 5 things that go wrong)
+
+| # | Risk | Likelihood | Impact | Mitigation |
+|---|---|---|---|---|
+| 1 | Run S1 rename misses a hit and a critical doc cross-link breaks | Medium | Medium — operator wastes a session debugging | The audit-grep in `§4.4` runs as a CI check after S1 lands. If it fails, the PR doesn't merge. |
+| 2 | The forge CLI ships incomplete (P5.4 splits drift) | High | High — Phases 4–5 cannot start without it | Each sub-phase has an explicit DOD. The CLI's `--help` is the integration point; missing subcommands fail loudly, not silently. |
+| 3 | DNS cutover in Phase 4 takes longer than expected; production dual-points for hours | Medium | High — visitors hit stale Vercel project | Schedule cutover for a low-traffic window. Keep the old Vercel project alive (paused) for 7 days as instant rollback. Document the rollback in the runbook §6 explicitly. |
+| 4 | The bot misclassifies a Phase 1 streak issue and breaks at row 8/10 | High | Low — streak resets, no real damage | The streak resetting is a feature. The 10-row gate is doing exactly what it's designed to. |
+| 5 | Operator-only Owner credentials get lost (laptop + phone gone, recovery envelope unverified) | Low | Catastrophic — entire org locked out | Phase 0 row 11 prints + seals the recovery envelope; Phase 6 bullet 5 schedules the first drill within 2 weeks. Without that drill, this risk is silent until it triggers. |
+
+If any of these escalate during execution, file a P0 issue with this
+section linked, and pause whichever phase is in flight.
+
+---
+
+## §10 — Drift fixes shipped in this PR
+
+Beyond seeding this plan, this PR ships two related drift fixes:
+
+1. **`docs/mothership/15b-naming-conventions.md`** — already landed in
+   an earlier commit on this branch. Codifies §1 of `15-terminology-
+   and-brand.md` so Run S1 has a target tree to write against.
+2. **`docs/mothership/pattern-c-enforcement-checklist.md`** — same
+   branch, separate commit. Updates §1 and the §C-MUST-2 / -4 / -8
+   rows to reference the pipeline repo instead of the deprecated
+   `operator/main` overlay branch. Without this fix, Phase 4's
+   pre-flight gate (§6.1) cannot resolve.
+
+Other drift (the spinout runbook still describing the overlay branch,
+`wiki/Home.md` lines 19/24/69 likewise) is **not** fixed in this PR
+because it's a substantial rewrite better done by the bot under Phase 4
+sub-issue 1 ("fix(docs): align spinout runbook with 02b two-repo
+Pattern C"). Keeping that change out of this PR keeps the diff
+reviewable.
+
+*Last updated: 2026-04-29.*

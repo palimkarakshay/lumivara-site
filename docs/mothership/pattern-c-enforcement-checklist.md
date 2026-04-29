@@ -6,16 +6,17 @@
 
 ## §1 — Definition of Pattern C
 
-"Pattern C" is the operator's two-repo / two-branch trust model:
+"Pattern C" is the operator's **two-repo** trust model (canonical and locked 2026-04-28; see `02b-pattern-c-architecture.md`). Each engagement has three repos in scope:
 
-- **Mothership repo** — `palimkarakshay/{{BRAND_SLUG}}-mothership` (private, operator-only). Holds the autopilot, prompts, n8n workflows, dashboard, freelance pack, per-client mirrors, and these mothership docs. See `02-architecture.md §1` and `02-architecture.md §2`.
-- **Client repo** — `palimkarakshay/<client-slug>-site`, two relevant branches:
-  - `main` — client-readable. Clean Next.js + admin portal only.
-  - `operator/main` — operator-only overlay. Holds workflows, scripts, and per-engagement notes; pushed by `{{BRAND_SLUG}}-bot`. See `03-secure-architecture.md §2.1`.
+- **Platform repo** — `{{BRAND_SLUG}}/{{BRAND_SLUG}}-platform` (private, operator-only). Holds the autopilot templates, prompts, n8n workflow JSON, dashboard, storefront pack, per-client mirrors, and these platform docs. Workflows here run only against the platform repo's own `main` (e.g. `platform-smoke.yml`). See `02-architecture.md §1` and `02b §1`.
+- **Site repo** — `{{BRAND_SLUG}}/<client-slug>-site` (private during engagement; transferred to the client at handover). Branches: `main` (client-readable Next.js + admin portal). **No** `.github/workflows/` files on the site repo — the directory is empty by design (`02b §1`, `02b §4`).
+- **Pipeline repo** — `{{BRAND_SLUG}}/<client-slug>-pipeline` (private forever; never shared with the client). Branches: `main` (workflows, scripts, per-engagement runbooks). The cron schedules fire from this branch — the canonical GitHub Actions default-branch path, no overlay tricks (`02b §1`).
 
-The defining trick: the autopilot lives on `operator/main`, never on `main`. End-of-engagement, `operator/main` is deleted and the client keeps a vanilla repo (`02-architecture.md §7`).
+The defining property: the autopilot lives in a **separate repo the client has no Read access to**, not on a hidden branch. The site repo is autopilot-free for the entire engagement, not just at handover (`02b §6`).
 
-This checklist is the *enforcement* of that model. The architecture docs are the *what*; the rows below are the *must / must-not / how to verify*.
+> **Historical note.** Earlier drafts of this checklist described an `operator/main` overlay branch on the site repo. That model is **deprecated** as of 2026-04-28 (decision recorded in `11 §1`; canonical statement in `02b`). The two-branch overlay survives only as historical context inside `11 §1`, `10 §2`, and the migration prompt-pack (`16`, `17`) under banners labelled "Historical / decision record." If a row below references the deprecated branch, it is a drift bug — fix it in the same PR.
+
+This checklist is the *enforcement* of the two-repo model. The architecture docs are the *what*; the rows below are the *must / must-not / how to verify*.
 
 ---
 
@@ -25,7 +26,7 @@ Every row is shaped: **rule** → **why** → **verify** (a concrete `git`/`gh`/
 
 ### C-MUST-1 — Operator-side IP stays operator-side
 
-Operator-only artefacts live only in the mothership repo or on `operator/main` of a client repo. The set:
+Operator-only artefacts live only in the platform repo or in a per-client pipeline repo (`{{BRAND_SLUG}}/<client-slug>-pipeline`). They never land on the site repo's `main`. The set:
 
 - `docs/mothership/`, `docs/freelance/`, `docs/operator/`, `docs/migrations/`, `docs/ops/`
 - `n8n/**`, `dashboard/**`
@@ -42,19 +43,23 @@ git -C <client-repo> ls-tree main -r --name-only \
 
 Must return zero matches.
 
-### C-MUST-2 — Workflow YAML lives on `operator/main`, not `main`
+### C-MUST-2 — Workflow YAML lives in the pipeline repo, never on the site repo
 
-Autopilot workflows (`triage`, `execute*`, `plan-issues`, `deep-research`, `codex-review`, `auto-merge`, `project-sync`, `setup-cli`, `ai-smoke-test`, `deploy-dashboard`) ship on `operator/main` only. Client `main` may carry vanilla CI (lint/test) but no autopilot file.
+Autopilot workflows (`triage`, `execute*`, `plan-issues`, `deep-research`, `codex-review`, `auto-merge`, `project-sync`, `setup-cli`, `ai-smoke-test`, `deploy-dashboard`) ship on the **pipeline repo's `main`**. The site repo's `.github/workflows/` directory is empty by design — site `main` may carry vanilla CI (lint/test) only, but in practice today it is empty.
 
-**Why:** GitHub Actions reads `schedule:` triggers from any branch with `.github/workflows/*.yml`, so the cron still fires. Keeping these off `main` keeps them invisible to a client who clones their repo.
+**Why:** GitHub Actions cron `schedule:` triggers fire from a repo's default branch. Keeping the autopilot in a *separate repo* the client has no Read access to means the workflows are invisible by **permission**, not by branch-listing politeness (`02b §6`). The deprecated `operator/main` overlay model relied on the client's discretion not to look at other branches; Pattern C's two-repo model removes the question entirely.
 
 **Verify:**
 
 ```bash
-git -C <client-repo> ls-tree main -- .github/workflows/
+# Site repo: zero workflows.
+git -C <site-repo> ls-tree main -- .github/workflows/
+
+# Pipeline repo: workflows present, on its main (the default branch).
+git -C <pipeline-repo> ls-tree main -- .github/workflows/
 ```
 
-Must be empty or contain only client-side CI files (today: empty).
+Site repo command must be empty (or list only client-side CI files). Pipeline repo command must list every autopilot workflow listed above.
 
 ### C-MUST-3 — Secrets injected via Vercel env vars only
 
@@ -71,27 +76,27 @@ git -C <client-repo> grep -E '[A-Za-z0-9+/=]{32,}' main \
 
 Must return nothing high-entropy. Pair with the variable-registry CI check (deferred — see issue #142) once it lands.
 
-### C-MUST-4 — Branch protection on `main` and `operator/main`
+### C-MUST-4 — Branch protection on site `main` and pipeline `main`
 
-Match the rules in `03-secure-architecture.md §2.2` exactly:
+Match the canonical rules in `03-secure-architecture.md §2.2` (site repo) and `02b §7` (pipeline repo):
 
-- `main`: PR review required (1), thread resolution required, Vercel status check required, `allow_force_pushes: false`, `allow_deletions: false`, `enforce_admins: false` (operator break-glass).
-- `operator/main`: pushes restricted to `{{BRAND_SLUG}}-bot`, `mothership-smoke` status check required, `allow_force_pushes: false`.
+- **Site repo `main`**: PR review required (1), thread resolution required, Vercel status check required, `allow_force_pushes: false`, `allow_deletions: false`, `enforce_admins: false` (operator break-glass), pushes restricted to the GitHub App + operator (the App authors `auto/*` branches and PRs; client never has push).
+- **Pipeline repo `main`**: PR review required (1, operator-only — auto-merge disabled), `allow_force_pushes: false`, `allow_deletions: false`, pushes restricted to operator (the App does **not** push to its own pipeline repo's `main`; only operator-as-human edits land here), Code Owners required for `.github/workflows/`. Required status check today: none; planned: `workflow-lint` + `cron-syntax`.
 
-**Why:** without these the client (a Read-only collaborator on `main`) can force-push or delete; the operator's personal account can accidentally push the autopilot to `operator/main` outside the bot flow.
+**Why:** without these the client (a Read-only collaborator on the site repo's `main`) can force-push or delete; on the pipeline side, a compromised operator session must not be able to fan out across every engagement that uses the same workflow templates.
 
 **Verify:**
 
 ```bash
-gh api repos/palimkarakshay/<client-slug>-site/branches/main/protection
-gh api repos/palimkarakshay/<client-slug>-site/branches/operator/main/protection
+gh api repos/{{BRAND_SLUG}}/<client-slug>-site/branches/main/protection
+gh api repos/{{BRAND_SLUG}}/<client-slug>-pipeline/branches/main/protection
 ```
 
-JSON shape must match the canonical block. Apply via the `provision` CLI (`02-architecture.md §3 step 5`); they are not optional.
+Both JSON shapes must match the canonical blocks. Apply via the `forge provision` CLI (`02b §2 step 5` for site, separate step for pipeline); they are not optional.
 
 ### C-MUST-5 — `.claudeignore` present on client `main`
 
-The client `main` ships `.claudeignore` listing the operator-only paths from `03-secure-architecture.md §2.3`. Belt-and-braces: even if a future operator cherry-picks from `operator/main` into `main`, the agent running on `main` won't read those files into context.
+The site repo's `main` ships `.claudeignore` listing the operator-only paths from `03-secure-architecture.md §2.3`. Belt-and-braces: even if a future operator accidentally copies a file from the pipeline repo into the site repo, an agent running on the site repo's `main` won't read those files into context.
 
 **Why:** defence in depth against future-operator footgun. The branch boundary is the wall; `.claudeignore` is the moat.
 
@@ -125,20 +130,20 @@ Each named secret must appear; UI check (`Settings → Secrets and variables →
 
 **Verify:** registry §3 row marks `owner = client` and `rotation = 12 months`. Cross-check by listing n8n credentials and confirming exactly one credential per client carrying the suffix `-<client-slug>`. If the registry CI check from #142 has landed, run that — otherwise this row is a manual quarterly procedure.
 
-### C-MUST-8 — Mothership smoke check on `operator/main`
+### C-MUST-8 — Platform smoke check on the pipeline repo's `main`
 
-Branch protection on `operator/main` requires the `mothership-smoke` status check (defined in the mothership repo's `.github/workflows/mothership-smoke.yml`).
+Branch protection on each pipeline repo's `main` requires the `platform-smoke` status check (defined in the platform repo's `.github/workflows/platform-smoke.yml` and reused per pipeline repo).
 
-**Why:** every push to `operator/main` flows through a smoke pass that verifies the autopilot wiring (token reachable, n8n reachable, Vercel reachable) before the cron picks the branch up.
+**Why:** every push to a pipeline repo's `main` flows through a smoke pass that verifies the autopilot wiring (App-token mintable, n8n reachable, Vercel reachable) before the cron picks the branch up. Catches drift before it fans out across every engagement that pulls workflow updates from the platform.
 
 **Verify:**
 
 ```bash
-gh api repos/palimkarakshay/<client-slug>-site/branches/operator/main/protection \
+gh api repos/{{BRAND_SLUG}}/<client-slug>-pipeline/branches/main/protection \
   --jq '.required_status_checks.contexts'
 ```
 
-Output must include `mothership-smoke`.
+Output must include `platform-smoke`.
 
 ---
 
@@ -156,7 +161,7 @@ Mirrors the four "never" rules in `03-secure-architecture.md §1`, plus extensio
 
 ### C-MUST-NOT-2
 
-**Never** copy `docs/mothership/`, `docs/freelance/`, `docs/operator/`, `docs/migrations/`, `docs/ops/`, `n8n/*.json`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/plan-issue*`, `scripts/test-routing*`, `scripts/bootstrap-kanban.sh`, `scripts/lib/`, or `dashboard/` into a client repo's `main`. They live on `operator/main` (overlay) or in the mothership repo only.
+**Never** copy `docs/mothership/` (pre-S1) / `docs/platform/` (post-S1), `docs/freelance/` (pre-S1) / `docs/storefront/` (post-S1), `docs/operator/`, `docs/migrations/`, `docs/ops/`, `n8n/*.json`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/plan-issue*`, `scripts/test-routing*`, `scripts/bootstrap-kanban.sh`, `scripts/lib/`, or `dashboard/` into a site repo's `main`. They live in the pipeline repo (`<slug>-pipeline`) or the platform repo only.
 
 **Why:** these are operator IP and reveal the autopilot's inner workings. **Verify:** see C-MUST-1 above.
 
@@ -204,13 +209,13 @@ Before running `docs/migrations/<client>-spinout.md` (the spinout runbook tracke
 | # | Pre-flight check | Source control | Ready? |
 |---|---|---|---|
 | 1 | All operator-only paths (C-MUST-1 set) are absent or marked for removal in the source repo's `main` after spinout | C-MUST-1 / C-MUST-NOT-2 | ☐ |
-| 2 | All autopilot workflow YAML is moved to `operator/main` (or staged for the move) | C-MUST-2 | ☐ |
+| 2 | All autopilot workflow YAML is staged in the pipeline repo's `main` (not on the site repo) | C-MUST-2 | ☐ |
 | 3 | No high-entropy strings in `main` history (check with `git grep` on every ref the spinout will preserve) | C-MUST-3 / C-MUST-NOT-1 | ☐ |
-| 4 | Branch-protection rules drafted for both `main` and `operator/main` and ready to apply via the `provision` CLI | C-MUST-4 | ☐ |
+| 4 | Branch-protection rules drafted for both site repo `main` and pipeline repo `main` and ready to apply via the `forge provision` CLI | C-MUST-4 | ☐ |
 | 5 | `.claudeignore` content from `03-secure-architecture.md §2.3` staged for the new `main` | C-MUST-5 | ☐ |
 | 6 | Each org-level secret (`CLAUDE_CODE_OAUTH_TOKEN`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, `VENDOR_GITHUB_PAT`) has the new client repo added to `Repository access: Selected` | C-MUST-6 | ☐ |
 | 7 | A per-client `N8N_HMAC_SECRET` has been generated, stored in the operator vault, and is ready for Vercel + n8n injection (no commit) | C-MUST-7 | ☐ |
-| 8 | The mothership smoke workflow is ready to land on `operator/main` of the new repo | C-MUST-8 | ☐ |
+| 8 | The platform-smoke workflow is ready to land on the new pipeline repo's `main` | C-MUST-8 | ☐ |
 | 9 | Invoice templates and handover pack drafts contain no third-party brand names or operator URLs | C-MUST-NOT-3 / C-MUST-NOT-4 | ☐ |
 | 10 | The client onboarding flow uses magic-link / OAuth at `/admin` only — no PAT or credential is communicated to the client | C-MUST-NOT-5 | ☐ |
 | 11 | The bot account `{{BRAND_SLUG}}-bot` exists and is the intended sole writer to `main` post-spinout | C-MUST-NOT-6 | ☐ |
@@ -228,11 +233,11 @@ Right after the spinout completes, run every C-MUST verification command and tic
 | C-MUST-1 | `git ls-tree main -r --name-only \| grep -E '(^docs/(mothership\|freelance\|operator\|migrations\|ops)/\|^n8n/\|^dashboard/\|^scripts/(triage\|execute\|gemini\|codex\|plan-issue\|test-routing\|bootstrap-kanban)\|^scripts/lib/)'` returns empty | ☐ |
 | C-MUST-2 | `git ls-tree main -- .github/workflows/` is empty (or client-CI only) | ☐ |
 | C-MUST-3 | `git grep -E '[A-Za-z0-9+/=]{32,}' main` returns nothing high-entropy | ☐ |
-| C-MUST-4 | `gh api …/branches/main/protection` and `…/branches/operator/main/protection` match the canonical block | ☐ |
+| C-MUST-4 | `gh api repos/{{BRAND_SLUG}}/<slug>-site/branches/main/protection` and `gh api repos/{{BRAND_SLUG}}/<slug>-pipeline/branches/main/protection` match the canonical blocks | ☐ |
 | C-MUST-5 | `git cat-file -p main:.claudeignore` matches `03-secure-architecture.md §2.3` | ☐ |
 | C-MUST-6 | `gh api orgs/{{BRAND_SLUG}}/actions/secrets` lists each token with `Repository access: Selected` covering the new repo | ☐ |
 | C-MUST-7 | n8n credential `…-<client-slug>` exists; Vercel env var present in client project; registry §3 row updated | ☐ |
-| C-MUST-8 | `mothership-smoke` is listed in `operator/main` required status checks | ☐ |
+| C-MUST-8 | `platform-smoke` is listed in the pipeline repo `main` required status checks | ☐ |
 | C-MUST-NOT-1..6 | Spot-check each per its §3 verify line; record N/A only with a one-line rationale | ☐ |
 
 If a row cannot be ticked, file an issue tagged `area/forge`, `priority/P1`, `status/needs-clarification`, citing this section.
@@ -260,4 +265,4 @@ Audit procedure: walk every C-MUST and C-MUST-NOT row, run its verify line for e
 - `docs/migrations/` — spinout runbooks that cite §4 and §5 as gate / acceptance.
 - `docs/BACKLOG.md` — Pattern C audit cadence backlog row pointing here.
 
-*Last updated: 2026-04-28.*
+*Last updated: 2026-04-29.*

@@ -161,7 +161,51 @@ not regress during the streak. Listing them so a regression in any one
 
 ## §3 — Dated 14-day plan
 
-(filled in subsequent commit)
+The plan runs **D-0 (Wed 2026-04-29) → D-14 (Wed 2026-05-13)**, two
+calendar weeks. Day labels are "operator wall-clock days," not bot
+turn-budgets. The bot's per-run `--max-turns` self-pacing rules from
+`AGENTS.md` apply unchanged inside each day.
+
+| Day        | Date         | Owner        | Deliverables                                                                                                                                                                                                                                                                                  | Gate rows it touches |
+|------------|--------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------|
+| **D-0**    | Wed 04-29    | ☐ Operator   | (a) Read §1 + §4. (b) Land this plan on `claude/poc-plan-migration-OFV54`, request review, merge. (c) Confirm decision: streak counts only `auto-routine` issues, not the synthetic seed issues filed for cron-path coverage in §3.3 of the readiness plan (per `00 §3.3` they double up).    | meta                 |
+| **D-1**    | Thu 04-30    | ☐ Operator   | (a) File the **"Phase 1 green streak — counter at 0/10"** tracking issue (label `meta/automation-readiness`, pinned). Body = the §1.1 + §1.2 + §1.3 checklist verbatim. (b) Walk every open issue and apply `priority/` × `complexity/` × `area/` triples or close as `status/post-migration`. | G1, G3               |
+| **D-2**    | Fri 05-01    | ☐ Operator   | Vercel-mirror sitting: rows 1–3 of `production-integrity.md §9`. Add the env vars in all three environments, add the `deployment.succeeded`/`error` webhook, add the GitHub repo secrets for the watcher. Capture the screenshots into the streak tracking issue.                              | G4, G5, G6 → 2.1     |
+| **D-3 AM** | Mon 05-04    | ☐ Operator   | Click **Promote tip of main** on `/admin/deployments`. Confirm drift goes to zero. Wait 30 min for the watcher's first scheduled run; confirm it does **not** open a P1 issue (drift = 0 path).                                                                                              | G7 → 2.2, 2.3-half   |
+| **D-3 PM** | Mon 05-04    | ▶ Bot        | File the seven seed issues from `00 §3.3`: triage rerun, doc typo fix (routine), homepage Forge badge (complex), execute-single rerun, codex-review (auto on every PR), Gemini deep-research summary, auto-merge (auto on green PRs).                                                          | G2 → 1.2             |
+| **D-4**    | Tue 05-05    | ▶ Bot        | First two streak rows: routine doc-typo seed (#3.3 row "execute (routine)"), and the codex-review path firing automatically against its PR. Land both green; the bot updates the streak tracking issue counter to 2/10.                                                                       | 1.1 (rows 1–2)       |
+| **D-5**    | Wed 05-05/06 | ▶ Bot        | Streak rows 3–4: the homepage Forge badge (`execute-complex`), and an `execute-single` workflow_dispatch rerun targeting an existing low-stakes issue with `model/opus`. Codex-review fires on each.                                                                                            | 1.1 (rows 3–4)       |
+| **D-6**    | Thu 05-07    | ▶ Bot        | Streak rows 5–6: deep-research seed issue closes with a doc PR; auto-merge demonstrably fires on a green Vercel + low-complexity PR. Bot ticks the cron-path coverage table in the tracking issue.                                                                                            | 1.1 (rows 5–6), 1.2  |
+| **D-7**    | Fri 05-08    | ▶ Bot        | Streak rows 7–8: two more `auto-routine` issues from the natural backlog (anything labelled `auto-routine` + `complexity/easy` or simpler). One must include a `src/` change so Vercel preview deploys.                                                                                       | 1.1 (rows 7–8)       |
+| **D-8**    | Mon 05-11 AM | ▶ Bot        | Streak rows 9–10: two final `auto-routine` issues. After row 10 the bot comments **"READY FOR PHASE 2 — pending §1.2 + §1.3 evidence"** on the tracking issue.                                                                                                                                | 1.1 (rows 9–10)      |
+| **D-8 PM** | Mon 05-11    | ▶ Bot        | Capture **G8** evidence: fire `confirmDeploy` against an old preview SHA via `/admin/client/[slug]/request/[number]`, screenshot the `would_overwrite_newer` rejection, attach to the tracking issue.                                                                                          | G8 → 2.4             |
+| **D-9**    | Tue 05-12    | ▶ Bot        | Capture **G9** evidence: deliberately delay one promote until the drift-watcher opens a P1 issue, then let triage + execute auto-promote it. Drift returns to zero. Watcher closes its own issue. Attach the issue + audit-log links to the tracking issue.                                    | G9 → 2.3, 2.5        |
+| **D-10**   | Tue 05-12 PM | ▶ Bot        | **Pattern C readiness pass.** Run `git grep -E '[A-Za-z0-9+/=]{32,}' main`, byte-diff `.claudeignore` vs `03-secure-architecture.md §2.3`, audit `_artifact-allow-deny.md` against the live tree, run the invoice grep against any rendered handover-pack drafts. Tick §1.3 rows.            | G10–G13 → 3.1–3.4    |
+| **D-11**   | Wed 05-13 AM | ☐ Operator   | Operator review of the 10 streak PRs (§1.1 row 1.5). Sign off on each, in writing, in the tracking issue. If any one needs a "would have asked for changes" comment, the streak resets to 0/10 and the plan re-runs from D-4.                                                                  | 1.5                  |
+| **D-11 PM**| Wed 05-13    | ☐ Operator + bot | Confirm every row of §1 (1.1 through 3.4) is ticked. Bot drafts the §4 hard-exit-check command output as a comment on the tracking issue. Operator countersigns. Tracking issue moves to **MIGRATION READY** with a single `/lgtm` comment.                                              | gate exit            |
+| **D-12**   | Thu 05-14    | ☐ Operator   | Buffer day. Reserved for any §1 row that flipped during D-11. If the gate is green, this day is used to print the recovery envelope (`00 §2.2` row 11) and book the first quarterly recovery drill.                                                                                            | buffer               |
+| **D-13**   | Fri 05-15    | ☐ Operator   | **Phase 0 (account + identity bootstrap) starts** in parallel with the green gate — Phase 0 is operator-only and has no dependency on Phase 1's exit, but `00 §2` recommends sequencing it so the org and the GitHub App exist before Run S1 lands.                                            | unblocks Phase 2     |
+| **D-14**   | Mon 05-18    | ▶ Bot        | **Phase 2 (Run S1 — mechanical rename)** starts. Single Claude Code session against this repo per `00 §4.3`. The migration is unblocked **only because §1 is green** — if any row flipped during D-12/D-13, halt and re-run §3 from D-4.                                                       | enters Phase 2       |
+
+### §3.1 — Self-pacing inside any day
+
+`AGENTS.md` already governs `--max-turns` self-pacing. Two extra rules
+specific to this plan:
+
+- **No new streak row after 80% used.** The bot finishes the current
+  row, ticks the tracking issue, and exits. The next bot run picks the
+  next row.
+- **No `git push` of the tracking-issue counter increment if the row
+  isn't actually green.** A row counts only when its PR is merged,
+  Vercel preview is green, and Codex-review opened no P1 issues. The
+  bot must not pre-increment "in anticipation."
+
+### §3.2 — Acceptable holiday / off-day reslotting
+
+Any single day can slip by **48 h** without resetting the streak (the
+streak is about quality, not throughput). A row that takes longer than
+48 h to land green for non-streak reasons (CI flake, third-party API
+outage) is reset to 0/10 — that is intentional and matches `00 §3.5`.
 
 ## §4 — Hard exit checks
 

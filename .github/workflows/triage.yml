@@ -119,6 +119,31 @@ jobs:
             means the operator deliberately parked the item. Add priority/
             complexity/area/type/model labels as usual so the hold item is
             navigable.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash for each issue you classify so the operator can follow
+            your rubric application without scrolling through every label
+            command. Use a heredoc to keep multi-line content intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            Issue #N — <title>
+            Priority/Complexity/Area/Type rationale: ...
+            Routing decision: ...
+            Auto-routine? yes/no — why
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum:
+              1. One block at the start summarising the queue you'll work on.
+              2. One block per issue before applying labels (the rubric trace).
+              3. One block at the end with the queue-level summary.
+            Keep blocks tight; never paste full issue bodies or label lists.
           claude_args: |
             --max-turns 150
             --model claude-opus-4-7

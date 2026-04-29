@@ -188,6 +188,23 @@ jobs:
 
             Save the plan to /tmp/plan.md before posting. Do NOT touch any source files.
             Do NOT open a branch. Do NOT open a PR.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash at the major decision points (initial read of the issue,
+            shape of the plan, risks you considered, definition-of-done):
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            <one or more lines of reasoning>
+            <<< END THINKING
+            EOT
+            ```
+
+            Keep blocks tight; no full file contents, no secrets.
           claude_args: |
             --max-turns 150
             --model claude-opus-4-7
@@ -224,6 +241,31 @@ jobs:
             Find the comment that starts with "## Implementation Plan (Opus)" and follow it.
             Then read scripts/execute-prompt.md for the full execution protocol.
             Implement the issue. The gh CLI is authenticated. Node + dependencies installed.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash at every meaningful decision point so the operator can
+            follow what you're doing. Use a heredoc to keep multi-line content
+            intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            <one or more lines of reasoning>
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum:
+              1. One block at the start: how you read the plan and the issue.
+              2. One before each significant action (branch creation, large
+                 edit, type/lint run, PR open).
+              3. One before exit summarising what you changed and why.
+            Keep each block tight (a few short paragraphs). Do not include
+            secrets, full file contents, or generated diffs inside a block.
+
             When done, print the summary and exit.
           claude_args: |
             --max-turns 500

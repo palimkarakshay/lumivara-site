@@ -92,6 +92,29 @@ jobs:
             the Forge heuristic in the prompt. Leave non-forge issues alone —
             the general triage workflow (.github/workflows/triage.yml) owns
             those. Do not remove `status/needs-triage` from non-forge issues.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash for each issue you classify so the operator can follow
+            your rubric application. Use a heredoc to keep multi-line content
+            intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            Issue #N — <title>
+            Forge heuristic match: ...
+            Priority/Complexity/Area/Type rationale: ...
+            Auto-routine? yes/no — why
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum: one block at the start (queue overview), one
+            block per issue (rubric trace), one block at the end (summary).
+            Keep blocks tight; never paste full issue bodies.
           claude_args: |
             --max-turns 120
             --model claude-opus-4-7

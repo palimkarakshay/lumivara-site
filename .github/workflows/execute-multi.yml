@@ -1,0 +1,348 @@
+name: Execute multiple backlog items
+
+# Manual lane to drive several items through the execute-single pipeline in
+# one operator action. Resolves an issue list (default = all eligible
+# manual-eligible items) and runs the same per-issue Claude implementation
+# loop as `execute-single.yml`, one issue at a time, sharing the global
+# `claude-runtime` concurrency group so it never races a cron `execute.yml`.
+#
+# Inputs:
+#   issues:         comma/space-separated list of issue numbers, OR `all`
+#                   (or blank) to pick up every eligible item under `filter`.
+#   filter:         which population `all` covers — `manual-eligible`
+#                   (default: manual-only + P1 auto-routine, mirrors
+#                   execute-complex.yml's auto-pick set) or `auto-routine`
+#                   (everything that the cron would normally take).
+#   model_override: forwarded to every iteration; blank = use each issue's
+#                   `model/*` label.
+#   max_items:      hard cap on resolved items (default 10) so a typo of
+#                   `all` doesn't fan out into 50 Claude runs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      issues:
+        description: "Issue numbers (comma/space-separated) or 'all' (blank = all)"
+        required: false
+        default: "all"
+      filter:
+        description: "Population for 'all' (ignored when explicit numbers given)"
+        required: false
+        default: "manual-eligible"
+        type: choice
+        options:
+          - "manual-eligible"
+          - "auto-routine"
+      model_override:
+        description: "Override model (blank = each issue's model/* label)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "claude-haiku-4-5-20251001"
+          - "claude-sonnet-4-6"
+          - "claude-opus-4-7"
+      max_items:
+        description: "Cap on resolved items (safety; default 10)"
+        required: false
+        default: "10"
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  # ── Resolve the issue list once, up front ────────────────────────────────
+  # Emits a JSON array consumed by the `execute` job's matrix. Empty array
+  # short-circuits the matrix so the workflow exits cleanly when nothing is
+  # eligible (instead of failing with "matrix must have at least one item").
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.list.outputs.matrix }}
+      count: ${{ steps.list.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build issue list
+        id: list
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_ISSUES: ${{ inputs.issues }}
+          INPUT_FILTER: ${{ inputs.filter }}
+          INPUT_MAX: ${{ inputs.max_items }}
+        run: |
+          set -e
+          python3 - <<'PY'
+          import json, os, re, subprocess, sys
+
+          raw = (os.environ.get("INPUT_ISSUES") or "").strip()
+          filt = (os.environ.get("INPUT_FILTER") or "manual-eligible").strip()
+          try:
+              cap = max(1, int(os.environ.get("INPUT_MAX", "10")))
+          except ValueError:
+              cap = 10
+
+          summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          out = open(os.environ["GITHUB_OUTPUT"], "a")
+
+          def emit(line: str) -> None:
+              print(line)
+              if summary:
+                  with open(summary, "a") as fh:
+                      fh.write(line + "\n")
+
+          # Surface the resolution reasoning so it shows up in the dashboard's
+          # LogViewer alongside the per-issue Claude thinking blocks.
+          emit(">>> THINKING")
+          emit(f"Inputs: issues={raw!r} filter={filt!r} max={cap}")
+
+          # Explicit list path: parse numbers from the input. Reject anything
+          # that isn't a positive integer so a typo like '12,abc,15' fails
+          # loudly rather than silently dropping items.
+          explicit = raw and raw.lower() not in ("all", "*")
+          if explicit:
+              tokens = [t for t in re.split(r"[\s,]+", raw) if t]
+              bad = [t for t in tokens if not t.isdigit()]
+              if bad:
+                  emit(f"Invalid issue tokens (expected integers): {bad}")
+                  emit("<<< END THINKING")
+                  print(f"::error::Invalid issue tokens: {bad}")
+                  sys.exit(1)
+              numbers = []
+              seen = set()
+              for t in tokens:
+                  n = int(t)
+                  if n in seen:
+                      continue
+                  seen.add(n)
+                  numbers.append(n)
+              emit(f"Explicit list resolved to {numbers} (deduped, order preserved).")
+          else:
+              # 'all' path: query gh for the population matching `filter`,
+              # then sort by (priority, createdAt) so P1s lead.
+              emit(f"Scanning open issues for filter={filt}.")
+              res = subprocess.run(
+                  ["gh", "issue", "list", "--repo", "palimkarakshay/lumivara-site",
+                   "--label", "auto-routine", "--state", "open",
+                   "--json", "number,title,labels,createdAt", "--limit", "100"],
+                  check=True, capture_output=True, text=True,
+              )
+              issues = json.loads(res.stdout)
+              EXCLUDE = {"human-only", "status/blocked",
+                         "status/in-progress", "status/needs-clarification",
+                         "status/awaiting-review", "status/on-hold"}
+              PRIO_RANK = {"priority/P1": 0, "priority/P2": 1, "priority/P3": 2}
+              eligible = []
+              for i in issues:
+                  labels = {l["name"] for l in i["labels"]}
+                  if labels & EXCLUDE:
+                      continue
+                  prio = min((PRIO_RANK.get(l, 99) for l in labels), default=99)
+                  if prio == 99:
+                      continue
+                  if filt == "manual-eligible":
+                      # Match execute-complex.yml's auto-pick rule: manual-only
+                      # OR any P1. Everything else belongs to the cron lane.
+                      is_manual = "manual-only" in labels
+                      if not (is_manual or prio == 0):
+                          continue
+                  elif filt == "auto-routine":
+                      # Cron-equivalent population; skip manual-only here.
+                      if "manual-only" in labels:
+                          continue
+                  else:
+                      emit(f"Unknown filter {filt!r} — defaulting to manual-eligible.")
+                      is_manual = "manual-only" in labels
+                      if not (is_manual or prio == 0):
+                          continue
+                  eligible.append((prio, i["createdAt"], i["number"], i["title"]))
+              eligible.sort()
+              numbers = [n for _, _, n, _ in eligible]
+              emit(f"Eligible after filters: {len(numbers)} item(s).")
+              for prio, created, num, title in eligible:
+                  emit(f"  - #{num} (P{prio + 1}) {title}")
+
+          if cap and len(numbers) > cap:
+              emit(f"Capping at max_items={cap} (was {len(numbers)}).")
+              numbers = numbers[:cap]
+
+          emit(f"Final list ({len(numbers)}): {numbers}")
+          emit("<<< END THINKING")
+
+          out.write(f"count={len(numbers)}\n")
+          out.write(f"matrix={json.dumps(numbers)}\n")
+          PY
+
+      - name: Render run summary
+        env:
+          COUNT: ${{ steps.list.outputs.count }}
+          MATRIX: ${{ steps.list.outputs.matrix }}
+        run: |
+          {
+            echo "## Execute multi — resolved list"
+            echo ""
+            echo "- count: \`$COUNT\`"
+            echo "- issues: \`$MATRIX\`"
+            echo "- model override: \`${{ inputs.model_override || '(per-issue label)' }}\`"
+            echo "- filter: \`${{ inputs.filter }}\`"
+            echo ""
+            if [ "$COUNT" = "0" ]; then
+              echo "_No eligible issues — execute job is skipped._"
+            else
+              echo "_Each issue runs as its own matrix job, sequential via \`max-parallel: 1\`._"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ── Per-issue execution ───────────────────────────────────────────────────
+  # One matrix job per issue; max-parallel: 1 keeps the run serial so two
+  # Claude actions never share a runner. Concurrency group is shared with
+  # every other execute-* workflow so cron and manual lanes interlock.
+  execute:
+    needs: resolve
+    if: needs.resolve.outputs.count != '0'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        issue: ${{ fromJSON(needs.resolve.outputs.matrix) }}
+    concurrency:
+      group: claude-runtime
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git identity
+        run: |
+          git config user.name "claude-auto"
+          git config user.email "claude-auto@users.noreply.github.com"
+
+      # Same model-resolution rubric as execute-single.yml. Duplicated here
+      # because GitHub Actions doesn't let one workflow reuse another's steps
+      # without a reusable-workflow refactor — out of scope for this change.
+      - name: Resolve model for issue
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_ISSUE: ${{ matrix.issue }}
+          INPUT_MODEL: ${{ inputs.model_override }}
+        run: |
+          gh issue view "$INPUT_ISSUE" --repo palimkarakshay/lumivara-site \
+            --json number,title,labels > /tmp/issue.json
+
+          python3 - <<'PY'
+          import json, os
+          i = json.load(open('/tmp/issue.json'))
+          labels = {l['name'] for l in i['labels']}
+          MODEL_FOR = {
+              "model/haiku":  "claude-haiku-4-5-20251001",
+              "model/sonnet": "claude-sonnet-4-6",
+              "model/opus":   "claude-opus-4-7",
+          }
+          MODEL_FROM_COMPLEXITY = {
+              "complexity/trivial": "claude-opus-4-7",
+              "complexity/easy":    "claude-opus-4-7",
+              "complexity/medium":  "claude-opus-4-7",
+              "complexity/complex": "claude-opus-4-7",
+          }
+          model = next((MODEL_FOR[l] for l in labels if l in MODEL_FOR), None)
+          if not model:
+              model = next((MODEL_FROM_COMPLEXITY[l] for l in labels if l in MODEL_FROM_COMPLEXITY), "claude-opus-4-7")
+          override = os.environ.get("INPUT_MODEL", "").strip()
+          if override:
+              model = override
+          out = open(os.environ["GITHUB_OUTPUT"], "a")
+          out.write(f"model={model}\n")
+          # Surface the per-issue routing as a thinking block so the
+          # dashboard log viewer shows it alongside Claude's reasoning.
+          print(">>> THINKING")
+          print(f"Issue #{i['number']}: {i['title']}")
+          print(f"Labels: {sorted(labels)}")
+          print(f"Resolved model: {model} (override={'yes' if override else 'no'})")
+          print("<<< END THINKING", flush=True)
+          PY
+
+      - name: Export ISSUE_NUMBER
+        run: echo "ISSUE_NUMBER=${{ matrix.issue }}" >> "$GITHUB_ENV"
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          settings: |
+            {
+              "permissions": {
+                "allow": [
+                  "Bash",
+                  "Read",
+                  "Write",
+                  "Edit",
+                  "Glob",
+                  "Grep"
+                ]
+              }
+            }
+          prompt: |
+            Issue #${{ matrix.issue }} has been pre-selected for you as one of
+            ${{ needs.resolve.outputs.count }} item(s) in this multi-issue run.
+            ISSUE_NUMBER=${{ matrix.issue }} is available in your env.
+            This is a MANUAL MULTI-ISSUE execution — the operator explicitly
+            queued this issue. Read `scripts/execute-prompt.md` and implement it.
+            Skip eligibility checks — the operator's choice overrides any triage
+            gate (including status/awaiting-review or human-only). Still respect
+            the hard exclusions (no touching workflows, env files, contact API).
+            The `gh` CLI is authenticated. Node + dependencies are installed.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash at every meaningful decision point so the operator can
+            follow what you're doing. Use a heredoc to keep multi-line content
+            intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            <one or more lines of reasoning>
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum:
+              1. One block at the start: how you read the issue, the plan, risks.
+              2. One before each significant action (branch creation, large
+                 edit, type/lint run, PR open).
+              3. One before exit summarising what you changed and why.
+            Keep each block tight (a few short paragraphs). Do not include
+            secrets, full file contents, or generated diffs inside a block.
+
+            When done, print the summary and exit.
+          claude_args: |
+            --max-turns 500
+            --model ${{ steps.pick.outputs.model }}
+
+      - name: Per-issue summary
+        if: always()
+        run: |
+          {
+            echo "### Issue #${{ matrix.issue }}"
+            echo ""
+            echo "- model: \`${{ steps.pick.outputs.model }}\`"
+            echo "- job status: \`${{ job.status }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -168,6 +168,30 @@ jobs:
             issues explicitly request this; honour it.
 
             The `gh` CLI is authenticated. Node + dependencies are installed.
+
+            ## Surface your reasoning to the dashboard
+
+            The AI Ops dashboard's LogViewer surfaces text wrapped in
+            `>>> THINKING` / `<<< END THINKING` markers. Emit a thinking block
+            via Bash at every meaningful decision point so the operator can
+            follow what you're doing. Use a heredoc to keep multi-line content
+            intact:
+
+            ```
+            cat <<'EOT'
+            >>> THINKING
+            <one or more lines of reasoning>
+            <<< END THINKING
+            EOT
+            ```
+
+            Print at minimum:
+              1. One block at the start: how you read the issue, the plan, risks.
+              2. One before each commit batch (what changed and why).
+              3. One before exit summarising the PR you opened.
+            Keep each block tight (a few short paragraphs). Do not include
+            secrets, full file contents, or generated diffs inside a block.
+
             When done, print the summary and exit.
           claude_args: |
             --max-turns 500

@@ -149,3 +149,98 @@ Milestones live on the **repo**, not on the project. Use them only as
 
 Per-client repos (Phase 4+) get their own milestones inside their own
 project space.
+
+## §4 — Web-UI runbook (Android browser, ~15 minutes)
+
+This is the **default** path. Everything below is clickable on a phone.
+No terminal, no PAT, no `gh` CLI. Login as the user who owns
+`palimkarakshay/lumivara-site`.
+
+### §4.1 — Open the existing project
+
+1. Visit https://github.com/palimkarakshay?tab=projects on phone.
+2. Tap **`Lumivara Backlog`** (the project created by
+   `bootstrap-kanban.sh` step 2). If it doesn't exist, tap
+   **New project → Board → name it `Lumivara Forge — operator hub`
+   → Create**.
+3. (Optional) Top-right `…` → **Settings → Rename** →
+   `Lumivara Forge — operator hub`. The rename is cosmetic; URLs and
+   item membership are preserved.
+
+### §4.2 — Add the eleven custom fields
+
+In the project, top-right `…` → **Settings → Custom fields → New field**.
+For each of the eleven rows in §3.1, tap **+ New field**, pick the
+type from the spec, paste the option list verbatim. The phone keyboard
+remembers the last typed option, so the second field onwards is fast.
+
+Order tip: create them in the order listed in §3.1 — that order
+matches the field-strip you'll see when opening an issue card on
+mobile, which is the order the operator reads in.
+
+Field-creation gotchas on mobile:
+
+- The `Drop-Dead Date` and `Earliest-Sensible Date` fields require
+  type = **Date**. Free tier supports as many date fields as you
+  want.
+- `Demo-Day Critical` is **Single-select** with two options
+  (`yes`, `no`) — not the GitHub built-in `Iteration` or `Number`
+  types.
+- For `Status`, **don't** create a new field. The board view's
+  built-in `Status` column is the one used. If you renamed any
+  columns earlier (e.g. removed `Inbox`), restore them to the five
+  in §3.1 row 11 — `bootstrap-kanban.sh` and the `triage`/`execute`
+  cron paths read these names.
+
+### §4.3 — Add the twelve saved views
+
+In the project, top-left **+ New view** for each row in §3.2.
+For each:
+
+1. Pick the **Type** column from §3.2 (Board / Table / Roadmap).
+2. Tap **Filter** → paste the filter expression.
+3. Tap **Group by** → pick the field.
+4. Tap **Sort** → pick the field + direction.
+5. Top-left view tab → long-press → **Rename** to the view name in §3.2.
+6. Drag the tab into position — order matters for the mobile strip.
+
+Tip: views #1 (`Demo-Day Critical`) and #2 (`POC daily`) are the two
+the operator opens daily; put them first so they're the default tab
+when the project loads.
+
+### §4.4 — Verify the existing 46 issues are on the project
+
+Already-open issues are added to `Lumivara Backlog` automatically by
+the **Auto-add** workflow enabled in `bootstrap-kanban.sh` step 2. To
+confirm:
+
+1. Project → **By Workstream** view (view #4 from §3.2).
+2. Scroll the table — every open issue from
+   https://github.com/palimkarakshay/lumivara-site/issues should be a
+   row. Workstream / Phase / Gate / Repo-Destination cells will be
+   blank — that's expected; they get filled in §4.5.
+
+If any issues are missing, top-right `…` → **Workflows → Auto-add to
+project** → confirm `palimkarakshay/lumivara-site` is in the repo
+filter and `Status: Open` is the trigger. Re-saving forces a backfill.
+
+### §4.5 — Bulk-classify in the web UI
+
+This is the slow step on mobile. The fast path is §5 (scripted). On
+phone:
+
+1. Open the **By Workstream** view.
+2. For each row, tap the row → fill `Workstream`, `Phase`, `Gate`,
+   `Owner-Type`, `Demo-Day Critical`, `Repo-Destination-Post-Migration`.
+   Skip `Drop-Dead Date` unless the row is on the §7.1 deadline sheet.
+3. With 46 open issues, allow ~20 minutes. The keyboard remembers
+   recent picks per field, so it's not 46 × 6 = 276 typed values —
+   it's 46 × 6 taps after the first round.
+
+### §4.6 — Done. Smoke test.
+
+Open the **Demo-Day Critical** view. It should now show only issues
+the operator marked yes in §4.5. If it shows zero rows but you
+marked some, the filter is wrong — tap **Filter** and confirm it's
+`Demo-Day Critical: yes` (case-sensitive on the *field* name; the
+*value* dropdown is case-insensitive).

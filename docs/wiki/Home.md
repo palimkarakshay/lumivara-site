@@ -47,7 +47,7 @@ The first migration of an existing site (today: `palimkarakshay/lumivara-site`) 
 
 > **🛠 Operator-only.** A client never runs this; it is the operator's per-engagement spin-up.
 
-1. Open the spinout runbook — _forthcoming at `docs/migrations/lumivara-people-advisory-spinout.md`; until it lands, follow the issue thread on [#141](https://github.com/palimkarakshay/lumivara-site/issues/141)._
+1. Open the spinout runbook at [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md). It is the canonical, copy-pasteable procedure (phased §0–§9, with allow/deny tables in [`docs/migrations/_artifact-allow-deny.md`](../migrations/_artifact-allow-deny.md)). It cites `docs/mothership/pattern-c-enforcement-checklist.md §4/§5` as gate and acceptance set.
 2. Confirm the brand pick from `docs/mothership/01-business-plan.md §1` and substitute `{{BRAND}}` / `{{BRAND_SLUG}}` globally before generating the new repo.
 3. Use `docs/mothership/06-operator-rebuild-prompt-v3.md` as the engagement playbook — that doc owns the bootstrap order, the n8n wiring, and the handover gates.
 4. After the new repo's `main` builds clean on Vercel, copy only the 🌐 and ⚪ pages from this wiki into the per-client wiki. The 🛠 pages stay on the mothership.
@@ -66,3 +66,4 @@ The first migration of an existing site (today: `palimkarakshay/lumivara-site`) 
 | **Mothership repo:** | `palimkarakshay/{{BRAND_SLUG}}-mothership` (private; on next rebuild) |
 | **Pattern C reference:** | `docs/mothership/02-architecture.md §1` (the two-branch model); enforcement checklist forthcoming via [#140](https://github.com/palimkarakshay/lumivara-site/issues/140) |
 | **Cross-link:** | `docs/mothership/00-INDEX.md` — operator-side master index, never client-shared |
+| **First-client spinout:** | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) — one-shot runbook for Client #1 |

@@ -97,3 +97,7 @@ If a future phase needs to dial usage back:
 ## Recurring backlog items
 
 - [ ] **Pattern C audit** — quarterly cadence, plus on every secret rotation and every new client repo onboarded. Walk every MUST / MUST-NOT row in [`docs/mothership/pattern-c-enforcement-checklist.md`](mothership/pattern-c-enforcement-checklist.md) (see §6 of that file for the procedure and §5 for the per-client verification commands).
+
+## One-shot operator runbooks
+
+- [ ] **Run [`docs/migrations/lumivara-people-advisory-spinout.md`](migrations/lumivara-people-advisory-spinout.md) end-to-end** — spin out Client #1 (Lumivara People Advisory) into `palimkarakshay/lumivara-people-advisory-site`. Target date: TBD by operator. Pre-flight gates: #140 (Pattern C checklist) ✅, #142 (variable registry) ☐. Issue #141 ships the *runbook*; running it is a separate operator action tracked here.

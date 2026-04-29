@@ -613,4 +613,125 @@ Pre-empting the operator's own future arguments:
 > (§6.3), not on the advisory, so the advisory cutover happens on its
 > own schedule without demo-day pressure.
 
+## §9 — First-demo target audience and playbook
+
+The operator wants the first-ever demo to be "almost finished, highly
+polished, production-grade." That standard is reachable — but the
+audience the demo is shown to determines whether the polish delivers
+a useful signal or an empty compliment.
+
+### §9.1 — The wrong audience for the first demo
+
+Three temptations to disarm explicitly:
+
+1. **Actual paying clients.** Too high stakes. A real client who
+   churns or refers negatively over a "first demo" wobble is
+   permanent reputational damage. Save them for after the second
+   demo cycle.
+2. **Beas (Lumivara People Advisory).** She is the operator's
+   spouse-aligned guinea pig — closer to a co-builder than an
+   audience. Her feedback is fused with the build and lacks the
+   stranger's eye that surfaces blind spots.
+3. **Cold prospects on Fiverr / Upwork.** They optimise for "is the
+   price right" and "can I get it cheaper", not "is the product
+   right." Cold-prospect feedback is useful at month 3, not at
+   first-demo.
+
+### §9.2 — The right audience, ranked
+
+| Rank | Persona                                                                | Why they're the right first audience                                                                                                                                | What you ask them                                                                                                                                                          | Decks/cite                          |
+|------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------|
+| #1   | **One named senior advisor / mentor** (founder, agency principal, or senior engineer with a small-business client portfolio) | Lowest churn cost, highest signal. They are *paid* — by reputation and reciprocity — to be brutal. They have no upside in flattering you. They have seen many failed pivots and will name yours quickly. | "Pretend I'm pitching this to the prospect on slide 11 of the deck. Where do you stop me?" Then shut up and listen. | `docs/decks/05-advisor-deck.md` (the deck written *for* this audience) |
+| #2   | **One named potential partner / co-operator** — someone who could join the practice as a hands-on partner | Aligned-incentive honesty. They will tell you the truth because they are evaluating whether to bet their own time on it. They will probe the operations model harder than any advisor — because they would inherit it. | "Walk me through what you'd want to change before you'd say yes to running this with me." | `docs/decks/02-partner-deck.md` |
+| #3   | **One friendly small-business owner outside the operator's family** — drawn from the target persona (solo professional, health practice, or boutique firm). Ideally someone the operator has met once but who has no social obligation to be polite. | The first stranger's-eye reaction. They reveal whether the catalog's positioning lands without an operator-lawyered explanation. | "Show me where you got confused. Show me what you'd ask if I weren't in the room." | `docs/decks/04-prospective-client-deck.md` (persona-tailored — pick the variant matching their business type) |
+| #4   | **One peer freelancer / agency owner** in the same market segment | Architectural sanity check. They will spot the things a client wouldn't — `package.json` weirdness, deploy story holes, the bus-factor question. | "If you were taking over this practice tomorrow, what would terrify you?" | `docs/decks/03-employee-deck.md` (or partner deck — closest fit) |
+
+The plan is **all four** in sequence, not all four at once. Spread
+them over the two weeks following the demo-readiness gate (§6) going
+green. Each one influences the next.
+
+### §9.3 — The demo itself (10-minute script)
+
+Three acts. Time-boxed. The 10-minute target is deliberate: longer
+demos invite politeness instead of feedback.
+
+#### Act 1 — Show the site (3 minutes)
+
+Open the dummy-vertical demo site (the §6.3 site —
+`demo.lumivara-forge.com` or the bare Vercel URL). Walk the prospect
+through one page. Ask: *"Does this look like the site of the
+business named at the top of the homepage, or like a generic
+template?"* Listen. Their answer is the first piece of feedback
+worth more than its weight in gold.
+
+#### Act 2 — Tap-edit live (4 minutes)
+
+Hand them the operator's phone with the shortcut already loaded.
+Ask them to type a change — anything. *"Update the menu special on
+Fridays to 'Halibut at $32.'"* Or *"Add a closing time on Sundays."*
+Together, watch:
+
+1. The shortcut sends.
+2. The bot opens an issue (~30s).
+3. (Cheat allowed for demo: pre-warm the cron so the next triage
+   tick is within 60s, not 30 minutes.) Triage labels appear.
+4. Execute opens a draft PR (~3–5 min).
+5. Vercel preview goes green.
+6. The operator (or, if comfortable, the prospect themself) taps
+   publish in the admin portal.
+7. The change is live.
+
+> **The whole point of the practice** is the chain above. If any
+> link breaks during the demo, the demo itself has surfaced the bug
+> §6.1 was supposed to catch — and that's still useful, but it
+> means §6 wasn't actually green. Take the criticism, don't pretend.
+
+#### Act 3 — The catalog conversation (3 minutes)
+
+Show the pricing-tier slide
+(`04-prospective-client-deck.md` slide "What it costs vs. the
+alternatives"). Ask: *"Where would you push back on these numbers?"*
+
+The prospect's answer is the only price-elasticity data the operator
+has access to before signing a contract. Treat it as gold.
+
+### §9.4 — What feedback to capture and what to ignore
+
+Every advisor / partner / prospect / peer will offer 10–30 pieces of
+feedback in a one-hour conversation. The operator's job is to
+classify them into three buckets, not to action all of them.
+
+| Bucket               | Definition                                                                                                                                                                   | Disposition                                                                                                                                          |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Truth-teller**     | They can name a specific moment where they got confused, lost trust, or stopped paying attention. Includes "I don't believe that statistic" and "this part felt slow."       | File as a P1 issue against the relevant doc/feature. Action before the next demo.                                                                    |
+| **Preference**       | They have a different aesthetic, tagline preference, or feature priority — but can't tie it to a specific business outcome.                                                  | File as a P3 issue. Revisit if the same preference shows up in 2+ demos.                                                                             |
+| **Out-of-scope**     | They want a different product. ("Why don't you also offer logo design?", "What about Shopify integration?")                                                                  | File nowhere. Already covered in `01-gig-profile.md` Part 8 ("who to say no to"). Don't let demo politeness drift the catalog. |
+
+After each demo, write the bucket disposition into the streak
+tracking issue under a new "Demo log" section. Rerun the catalog
+consistency check (§6.2) once any P1 doc changes have landed.
+
+### §9.5 — The "when do I stop demo'ing and start selling" rule
+
+Two demo cycles. Then start charging.
+
+- **Cycle 1**: §9.2 audiences #1–#4, in order, over ~2 weeks. Outcome:
+  the truth-teller bucket from each is filed and addressed.
+- **Cycle 2**: re-run with #1 and #3 (advisor + small-business owner)
+  to confirm the P1 fixes from cycle 1 actually landed. If both
+  return "I'd buy this / I'd refer you", **stop**. Move to paid
+  prospects.
+
+The temptation to do a third cycle "just to polish more" is the same
+instinct as deferring O4 — it feels productive and is actually
+delay. Time spent on a third feedback cycle is time not spent
+shipping to the first paying client (the one who triggers O13 + O14).
+
+### §9.6 — One-line summary
+
+> First demo audience: **one named advisor**, on a fully-green §6
+> dummy-vertical site, with a 10-minute three-act script. Then three
+> more audiences, then a second cycle, then start selling. Don't
+> demo to family, paying clients, or cold prospects in cycle 1.
+
 *Last updated: 2026-04-29.*

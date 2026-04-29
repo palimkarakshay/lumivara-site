@@ -297,3 +297,107 @@ mapping rules deserve a quiet day of operator review before they ship.
 For now, bulk classification is the §4.5 tap-through. The
 single-highest-leverage column to fill on this pass is
 `Repo-Destination-Post-Migration` — see §6.
+
+## §6 — Migration safety
+
+This section answers two distinct "is it safe?" questions:
+
+1. Is rolling out the new fields safe for the **existing 46 open
+   issues** that are already on the `Lumivara Backlog` project? (§6.1)
+2. Is the project itself safe across the Phase 0–6 migration that
+   births the org and the per-client repos? (§7)
+
+### §6.1 — Field rollout is non-destructive
+
+Adding a custom field to an existing Project v2 is purely additive:
+
+- Existing items keep their existing field values (Status, Title,
+  Assignees, Labels mirror).
+- New fields land on every item with the value **empty** — no row
+  is dropped, no row is duplicated.
+- The auto-add workflow (`bootstrap-kanban.sh` step 2) keeps adding
+  new issues as before.
+- Removing a field later deletes its values across all items but
+  does not touch the items themselves.
+
+Therefore: run §4 or §5, eyeball **By Workstream** view, classify at
+your pace. If you misclassify, edit; there is no rollback to do.
+
+### §6.2 — The single most important bulk-classification pass
+
+Of the eleven fields, the one that **earns its keep most** is
+`Repo-Destination-Post-Migration`. Filling it on every open issue
+once turns the Phase 4 issue-transfer step from "audit every open
+issue and decide where it goes" into "filter the project by
+destination and run `gh issue transfer` per group."
+
+The §3 D-1 row of `01-poc-perfection-plan.md` ("walk every open
+issue") is the natural moment to do this in one sitting. Cross-link
+added in that file's §3 row D-1 once this PR lands.
+
+### §6.3 — Label cloning, when new repos appear
+
+When Phase 4 spawns the per-client repos, each new repo needs the
+existing label set (priority/* / complexity/* / area/* / status/* /
+gating). `scripts/bootstrap-kanban.sh` already handles label creation
+for *this* repo; the per-client equivalent is a one-line wrapper
+that runs the same `create_label` block against the new repo slug.
+Track that as a separate issue when Phase 4 begins — out of scope
+for this doc.
+
+## §7 — Phase 4 transfer playbook
+
+The project is **user-level** (§1.2). When Phase 0 of
+[`00-automation-readiness-plan.md`](../migrations/00-automation-readiness-plan.md)
+births the `lumivara-forge` org and Phase 4 transfers issues into
+per-client repos, the project survives because:
+
+- User-level projects are not tied to repo ownership; adding a repo
+  to the project's "linked repositories" list is a one-click action.
+- `gh issue transfer` **within the same owner** preserves project
+  membership and custom-field values losslessly.
+- `gh issue transfer` **across owners** (user → org, or user → org →
+  per-client repo) drops the project membership on the transferred
+  issue. This is the failure mode to design around.
+
+### §7.1 — Recommended Phase 4 sequence
+
+1. **Before transfer:** add every new repo (in the new org) to the
+   user-level project's linked-repos list. The auto-add workflow
+   keeps catching new issues opened in any of those repos.
+2. **Before transfer:** filter the project by
+   `Repo-Destination-Post-Migration` to confirm every issue has a
+   destination. Empty cells = not yet decided = blockers.
+3. **Transfer in groups, not all-at-once.** For each value of
+   `Repo-Destination-Post-Migration`:
+   - Export the list of issue numbers from the project view.
+   - For each issue, run `gh issue transfer <num> <new-owner>/<new-repo>`.
+   - Custom-field values **will be lost** at the cross-owner
+     boundary. Mitigation: before each batch, also export the
+     custom-field values to a local CSV; after the transfer, re-apply
+     them via a one-off GraphQL script. This is annoying but bounded.
+4. **After transfer, per repo:** confirm the auto-add workflow has
+   re-added the now-transferred issue to the user-level project (it
+   will, because the new repo was added in step 1).
+5. **Eventually:** transfer the project itself from the user owner
+   to the new org. GitHub supports this without losing items; the
+   project's URL changes, the items don't move.
+
+### §7.2 — Why not transfer the project to the org first
+
+Two reasons:
+
+- The org doesn't exist until Phase 0 finishes. The project needs to
+  exist *before* Phase 0 to triage Phase 0 itself.
+- A user-level project that survives multiple repo births is easier
+  than an org-level project that needs the org to exist before it
+  can be born.
+
+### §7.3 — The single failure mode worth scripting
+
+Cross-owner `gh issue transfer` losing custom-field values is the
+one place where a small script pays for itself: ~5 minutes of
+GraphQL to (a) read fields per issue, (b) write fields per
+post-transfer issue. **Defer until Phase 4 is the next thing on the
+calendar** — premature scripting against an unstable schema creates
+more rework than it saves.

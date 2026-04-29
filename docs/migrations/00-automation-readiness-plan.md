@@ -669,4 +669,121 @@ curl -sI https://lumivara.ca | head -1
 All three rows green, plus every row of `pattern-c-enforcement-checklist §5`
 ticked.
 
+---
+
+## §7 — Phases 5 & 6: Client #2 from clean slate, then ongoing hardening
+
+### §7.1 — Phase 5: First fully bot-driven onboarding
+
+Once Phase 4 has proven the migration path on Client #1 (where the bot
+**moved** an existing site), Phase 5 proves the **green-field** path:
+provisioning a brand-new client from a one-line intake.
+
+**Operator action:** one — purchase a throwaway domain
+(`forge-smoke-test-co.test` or a real `.com` for $12) so the
+provisioning hits real DNS APIs.
+
+**Bot prompt:**
+
+```
+Phase 5 of docs/migrations/00-automation-readiness-plan.md.
+
+In the platform repo, run:
+
+  npx forge provision \
+    --client-slug smoke-test-co \
+    --tier 2 \
+    --domain forge-smoke-test-co.com \
+    --intake-file docs/clients/smoke-test-co/intake.md
+
+The intake.md should be a minimal but real fill of
+07-client-handover-pack.md §A: dummy person, real contact email
+(operator's), tier 2 cadence, restaurant vertical (so the
+templates/restaurant pack exercises).
+
+Verify per 05 §P5.8 DOD list: GitHub repos exist with right shape,
+Vercel project deployed, admin portal at /admin accepts a magic
+link, n8n workflows for the slug listed, an SMS to the per-client
+Twilio number opens a GitHub issue with right labels, the cron
+picks it up, the bot opens a PR within 2h, auto-merge fires on
+green Vercel, deploy-confirmed n8n SMS reaches the operator.
+
+Then run:
+  npx forge teardown --client-slug smoke-test-co --mode archive
+and verify no stranded resources (gh repo list, Vercel UI,
+n8n UI, Twilio UI).
+
+Hard exit: the SMS-to-published cycle completes in under 4 hours
+of wall time and the teardown leaves no stranded resources.
+```
+
+### §7.2 — Phase 6: Hardening + handover (ongoing)
+
+Once Phase 5 is green, the practice is **operationally ready**. Phase 6
+is the long tail — items that are not gating but compound risk if
+deferred.
+
+**Workstreams:**
+
+1. **Template hardening** — walk every checkbox in
+   `docs/freelance/05-template-hardening-notes.md` (post-S1:
+   `docs/storefront/05-template-hardening-notes.md`) into a tracked
+   issue against the platform repo. Most are doc edits; a few are
+   code (footer watermark, license header, kanban bootstrap removal
+   from handover).
+2. **Vault & IP** — implement `21-vault-strategy-adr.md` rollout
+   steps (vendor-agnostic structure, role grants, rotation calendar,
+   migration from `pass`).
+3. **Engagement risk** — push `22-engagement-risk-protection.md` §3
+   (IP clauses) + §4 (non-payment safeguards) through legal review.
+   Cannot be bot-completed; flag every legal-review row as
+   `human-only` + `area/legal`.
+4. **Cost optimisation** — once the practice has 3+ clients, revisit
+   `AGENTS.md` model selection table. Today every step is Opus; cost
+   optimisation milestone may downshift triage to Sonnet, etc.
+5. **Second-Owner break-glass drill** — quarterly per `09 §1.5`. The
+   first drill should land within 2 weeks of Phase 0 completing, not
+   wait for Phase 6.
+
+**Bot prompt for backlog seeding (Phase 6 starter):**
+
+```
+Phase 6 of docs/migrations/00-automation-readiness-plan.md.
+
+Walk every checkbox in docs/storefront/05-template-hardening-notes.md
+and convert each unchecked item into a tracked issue against the
+platform repo lumivara-forge/lumivara-forge-platform.
+
+For each issue:
+  - Title: "harden(<area>): <one-line summary>"
+  - Body: cite the source line in 05-template-hardening-notes.md and
+    paste the relevant context.
+  - Labels: area/forge-hardening, complexity/{simple|easy|medium},
+    priority/P2, status/needs-triage.
+  - Assign: leave to triage cron.
+
+Then file the same exercise against:
+  - 21-vault-strategy-adr.md §6 (rollout steps).
+  - 22-engagement-risk-protection.md §6 (per-engagement onboarding
+    flow). Tag each one human-only + area/legal so the executor
+    skips them.
+
+Single PR is fine — issues land via gh issue create, not file edits.
+Report counts back: "filed N hardening issues, M vault issues, P
+risk issues."
+```
+
+### §7.3 — Hard exit criterion (none — Phase 6 is ongoing)
+
+Phase 6 does not "complete." Its health is measured by the
+**recurring** checks:
+
+- Quarterly Pattern C audit (`pattern-c-enforcement-checklist §6`).
+- Quarterly secrets rotation (`03b-security-operations-checklist`).
+- Quarterly recovery drill (`09 §1.5`).
+- Monthly cost review (`20-launch-and-operating-cost-model §6`).
+
+If any of those fall behind by a full cycle, file a P1 issue and
+treat it as a Phase 6 incident.
+
 

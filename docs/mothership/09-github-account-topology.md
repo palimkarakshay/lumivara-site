@@ -40,13 +40,36 @@ None of those apply for months 1–6 of paid operations. Stay free.
 
 ---
 
+## 1.5 Break-glass topology (single-Owner is not survivable)
+
+`§1` lists `palimkarakshay` as the only Owner of the org. That is the bootstrap shape; it is not the steady-state shape. A single Owner means a single point of failure: phishing, lost MFA recovery codes, hospitalisation, or a stolen laptop without a vault recovery path each end the entire business in one incident. The break-glass topology fixes this without forcing a paid plan tier and without giving up the "keep the operator's posture small" property `12 §1` flagged.
+
+### Required components
+
+| Requirement | What it is | Implementation today | Implementation post-Pattern-C / multi-client |
+|---|---|---|---|
+| **Second Owner** | A second identity with org-Owner permission | One human (trusted co-founder, sibling, accountant) **or** one machine identity `{{BRAND_SLUG}}-recovery` whose recovery codes live in the off-platform envelope (see below). Pick one path; document the choice in `docs/operator/RECOVERY_DRILL_LOG.md`. | Same. The choice can change, but the doc must reflect what is true today. |
+| **2-of-2 rule on org settings changes** | A norm-and-process rule, not a GitHub feature on Free tier | Document in this file + `03b §1` monthly checklist; the operator self-enforces by waiting for the second Owner's ack before changing branch protections, repo collaborators, or org secrets. | Enforce via Enterprise's `Require admin approval` ruleset (post-month-6, when Team or Enterprise lands). Until then, the rule is procedural and the audit log is the evidence trail. |
+| **Off-platform recovery envelope** | The "if your laptop and phone are both gone" backup | Print recovery codes from `https://github.com/settings/security` and `1Password Settings → Account recovery`. Seal in a tamper-evident envelope. Deposit with the trusted second party (lawyer, sibling, safe-deposit box). One envelope, both sets of codes. | Same. Re-seal on every quarterly drill if the envelope is opened to verify codes. |
+| **Quarterly recovery drill** | Proof the break-glass actually opens | First Friday of every quarter: log in as the second Owner (or as the recovery machine identity), confirm Owner-level access, log out. Append a one-line entry to `docs/operator/RECOVERY_DRILL_LOG.md` with date, who, "pass/fail", action items. | Same. Drill failures are P0 issues. |
+
+The cost of the break-glass is one extra free GitHub identity, one envelope, and 15 minutes per quarter. The cost of skipping it is the entire business.
+
+A canonical step-by-step for adding the second Owner lives in §2.5.
+
+---
+
 ## 2. Setup order (do this once, before any client #2 work)
 
 1. **Create the organisation** at github.com/organizations/new → Free plan → owner email = your existing operator email. Name: `{{BRAND_SLUG}}`. Display name: `{{BRAND}}`. Pick the slug carefully — it's permanent without a paid migration.
 2. **Add `palimkarakshay` as Owner** (you'll be auto-added since you created the org from that account).
 3. **Settings → Member privileges → Base permissions = No permission.** Forces explicit per-repo grants.
 4. **Settings → Actions → Workflow permissions = Read and write** (so workflows can comment on PRs, manage labels).
-5. **Create the GitHub App `{{BRAND_SLUG}}-pipeline-bot`** — Org Settings → Developer settings → GitHub Apps → New GitHub App. Permissions per `02b §3`: Issues:RW, Pull requests:RW, Contents:RW, Metadata:R, Workflows:R on each installed repo. Owned by the `{{BRAND_SLUG}}` org. Generate a private key and store it.
+5. **Create the GitHub App `{{BRAND_SLUG}}-pipeline-bot` (the canonical vendor identity).** This is App-first; the legacy machine-user PAT is a deprecated fallback (see step 6 and `12 §4`). Sub-steps:
+    - **5a. Create the App.** Org Settings → Developer settings → GitHub Apps → New GitHub App. Owner = the `{{BRAND_SLUG}}` org (not your personal account). Permissions per `02b §3` and `03 §3.X`: Issues:RW, Pull requests:RW, Contents:RW, Metadata:R, Workflows:R. **No** `Administration` / `Secrets` / `Members` scopes — those would broaden the blast radius unnecessarily.
+    - **5b. Register the private key.** Generate a private key from the App's settings page and download the PEM. The PEM never leaves the operator vault except via the org-secret upload in step 6.
+    - **5c. Install the App on the mothership repo.** This is the bootstrapping installation so the mothership-side smoke workflows can read the App's audit signal. Scope to `{{BRAND_SLUG}}/{{BRAND_SLUG}}-mothership` only.
+    - **5d. (Per engagement, run by `forge provision`.)** Install the App on each new `<slug>-site` repo at provision time. The App is **never** installed on the pipeline repos — pipeline workflows are the *callers*, not the *targets* (`03 §3.X`). Capture each `installation_id` into `docs/clients/<slug>/cadence.json`.
 6. **Add the App's credentials as org secrets** — `APP_ID` (the public ID; safe to log) and `APP_PRIVATE_KEY` (the PEM). Both scoped to **selected repositories** (the pipeline repos only, never the site repos — the App is invoked from pipeline workflows).
 7. **Org Settings → Secrets and variables → Actions → New organization secret** for each of:
    - `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`)
@@ -57,9 +80,53 @@ None of those apply for months 1–6 of paid operations. Stay free.
    For each: **Repository access = "Selected repositories"** — leave empty for now; add each pipeline repo during provision.
 8. **Create the mothership repo inside the org** — `gh repo create {{BRAND_SLUG}}/{{BRAND_SLUG}}-mothership --private`. Move all the docs from `palimkarakshay/lumivara-site` into here per `05-mothership-repo-buildout-plan.md §P5.1`.
 
-> **Pattern C migration note:** earlier drafts of this checklist created a machine-user account `{{BRAND_SLUG}}-bot` and a fine-grained PAT (`VENDOR_GITHUB_PAT`) as the vendor identity. That has been deprecated as of 2026-04-28. The GitHub App in step 5 replaces both. If you previously bootstrapped the practice with a PAT-based bot, follow the migration in `12 §4` (security critique) and the App spec in `03b` (created by Run B).
+> **Pattern C migration note (deprecated fallback path).** Earlier drafts of this checklist created a machine-user account `{{BRAND_SLUG}}-bot` and a fine-grained PAT (`VENDOR_GITHUB_PAT`, 90-day expiry) as the vendor identity. That has been deprecated as of 2026-04-28. The GitHub App in step 5 is the canonical replacement. The bot-account / PAT path now exists **only** as a named exception:
+>
+> - The bot account remains as a fallback identity for tasks the App genuinely cannot do today. The App's permissions in step 5a cover every workflow-side action; the only remaining caller is the n8n credential that writes issues/comments on the site repos. n8n core does not natively understand GitHub App installation tokens (they need refreshing every hour), so the PAT survives there until `forge` ships an n8n-token-refresh helper (`05 §P5.4f`).
+> - The PAT is tracked as the single named exception row in `03 §3` and is scheduled for retirement in the issue **"Operator: install GitHub App in place of VENDOR_GITHUB_PAT"** (see `16 §7`).
+> - Until that issue closes, the PAT remains a deprecated fallback — never the primary identity, never the recommended path. New workflows must always start from the App pattern (`03 §3.X`).
+>
+> If you previously bootstrapped the practice with a PAT-based bot, follow the migration in `12 §4` (security critique) and the canonical model in `03 §3.X`.
 
 That's it. Free tier, one weekend, done.
+
+---
+
+## 2.5 Adding the second Owner (break-glass setup)
+
+Pair this section with `§1.5`. Run it once, before client #2; the goal is one of two well-documented identities (human or machine) carrying Owner permission, with off-platform recovery codes sealed and a quarterly drill on the calendar.
+
+### Path A — trusted human as second Owner
+
+Use this when there is a real person who is reachable inside an hour and trusted with org-level write access.
+
+1. Open `https://github.com/orgs/{{BRAND_SLUG}}/people` → **Invite member** → enter the trusted human's GitHub handle. Role = **Owner**.
+2. Have them accept the invitation. Confirm they appear with the Owner badge in `Org settings → People → Owners`.
+3. Both Owners enable hardware MFA (YubiKey or WebAuthn). Software TOTP is acceptable but not preferred.
+4. Print recovery codes (`https://github.com/settings/security`). Both Owners do this independently.
+5. Seal both sets of recovery codes in **one** tamper-evident envelope. Deposit with the trusted second party from `08 §4`. Do not photograph the codes.
+6. Record the choice in `docs/operator/RECOVERY_DRILL_LOG.md`: date, second-Owner identity, envelope location, first drill date.
+7. Schedule the first quarterly drill (`§1.5` + `03b §3`) in the operator's calendar.
+
+### Path B — `{{BRAND_SLUG}}-recovery` machine identity
+
+Use this when there is no trusted human, or when the operator prefers a machine-only break-glass.
+
+1. Create a new GitHub user account `{{BRAND_SLUG}}-recovery` with a unique email the operator controls (e.g. `recovery@{{BRAND_SLUG}}.com`). This is permitted by GitHub ToS — machine accounts are explicitly allowed when clearly identified.
+2. Enable hardware MFA. Generate fresh recovery codes (`https://github.com/settings/security`).
+3. Invite `{{BRAND_SLUG}}-recovery` as **Owner** of `{{BRAND_SLUG}}` org. Accept on the recovery account.
+4. Store the recovery account's password in **two** places:
+   - The operator's `pass` / 1Password vault.
+   - A printed copy in the off-platform envelope (along with the printed recovery codes).
+5. Confirm that with the envelope alone, a third party can sign in as `{{BRAND_SLUG}}-recovery` and reach the org's Owner controls. This is the break-glass property.
+6. Record the choice in `docs/operator/RECOVERY_DRILL_LOG.md`: date, identity, envelope location, first drill date.
+7. Schedule the first quarterly drill.
+
+### Either path — failure modes to avoid
+
+- **Do not** reuse the operator's primary YubiKey for the second Owner. The break-glass is meaningless if both identities depend on the same physical key.
+- **Do not** store the recovery envelope in the operator's home or office unless that location is genuinely accessible to someone other than the operator under stress.
+- **Do not** skip the first drill. An untested recovery path is wishful thinking, not a control.
 
 ---
 
@@ -116,9 +183,17 @@ Set a calendar reminder month-3 of paid ops to check Actions minutes; upgrade re
 Pre-flight §1 of `06-operator-rebuild-prompt-v3.md` already references the org. Update its first checkbox group to:
 
 ```
-□ Mothership org `{{BRAND_SLUG}}` exists on GitHub Free, with palimkarakshay as Owner.
+□ Mothership org `{{BRAND_SLUG}}` exists on GitHub Free with TWO Owners:
+   • palimkarakshay (operator)
+   • <second-Owner-identity>  (human or {{BRAND_SLUG}}-recovery; per §2.5)
+□ Recovery codes for both Owners are printed and sealed in the
+  off-platform envelope (per §1.5 + §2.5).
+□ Quarterly recovery drill is scheduled in the operator calendar; the
+  most recent drill log entry exists in
+  docs/operator/RECOVERY_DRILL_LOG.md.
 □ GitHub App `{{BRAND_SLUG}}-pipeline-bot` exists at the org level with the
-  permissions in 02b §3.
+  permissions in 02b §3 / 03 §3.X (Issues:RW, Pull requests:RW,
+  Contents:RW, Metadata:R, Workflows:R — and nothing else).
 □ Both per-engagement repos exist:
    {{BRAND_SLUG}}/{{CLIENT_SLUG}}-site      (client-readable; site code)
    {{BRAND_SLUG}}/{{CLIENT_SLUG}}-pipeline  (operator-only; workflows + scripts)
@@ -127,10 +202,16 @@ Pre-flight §1 of `06-operator-rebuild-prompt-v3.md` already references the org.
   OPENAI_API_KEY, APP_ID, APP_PRIVATE_KEY — all set to "Selected
   repositories" scope, currently scoping to the {{CLIENT_SLUG}}-pipeline repo
   only (the site repo runs no workflows and needs no secrets).
+□ The bot-account / VENDOR_GITHUB_PAT path is treated as the deprecated
+  fallback per §2's migration note; if a PAT row still exists in the
+  org-secret list, it is named in `03 §3` as the single retained
+  exception (n8n credential) and is scheduled for retirement in the
+  "Operator: install GitHub App in place of VENDOR_GITHUB_PAT" issue
+  (see `16 §7`).
 □ Mothership repo `{{BRAND_SLUG}}/{{BRAND_SLUG}}-mothership` exists,
   private, contains the artefacts from P5.1.
 ```
 
 The provision CLI in P5.4 will check these automatically before each client provision; failing any check = abort with a clear message.
 
-*Last updated: 2026-04-28.*
+*Last updated: 2026-04-29.*

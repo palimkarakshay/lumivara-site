@@ -116,6 +116,19 @@ export function Footer() {
           <CarbonBadge />
         </div>
 
+        <p className="mt-6 text-center text-caption text-muted-strong">
+          Powered by{" "}
+          <a
+            href={siteConfig.builder.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline transition-colors hover:text-ink"
+          >
+            {siteConfig.builder.name}
+          </a>
+          {" "}— {siteConfig.builder.cta}
+        </p>
+
         <div className="mt-8 flex flex-col items-center justify-between gap-3 text-caption text-muted-strong sm:flex-row">
           <p>
             © {new Date().getFullYear()} Lumivara People Advisory. Toronto,

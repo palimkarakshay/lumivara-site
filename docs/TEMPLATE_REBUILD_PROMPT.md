@@ -150,6 +150,28 @@ Summarised here; the full procedure is in `docs/operator/OPERATOR_RUNBOOK.md`.
 9. Monitor monthly: ccusage, Action minutes, Twilio balance, Resend deliverability, n8n workflow health.
 10. On termination: run the graceful-exit playbook in the runbook (remove org membership, revoke vendor PAT, archive n8n workflows, rotate secrets, deliver vanilla repo).
 
+### 1.4 Migration matrix — v1 phone-PAT → v2 n8n + admin portal
+
+The mobile-capture mechanism originally documented in `PHONE_SETUP.md`
+(now a deprecation notice — see issue #139) is fully replaced by the
+v2 trust-zone model defined in §1.1 above. Use this matrix when
+rotating an existing client off the v1 path, or when explaining the
+security delta to a stakeholder.
+
+| Capability | Old mechanism (v1, deprecated) | New mechanism (v2, canonical) | Security impact | Required operator action |
+|---|---|---|---|---|
+| Capture: backlog item from operator's phone | HTTP Shortcuts / Apple Shortcuts → `POST /repos/.../issues` with a fine-grained PAT stored on the device. | `/admin/new` Server Action → HMAC-signed webhook → n8n → Octokit `issues.create`. Operator signs in with magic link / Google / Entra; no GitHub credential ever touches the device. | Removes a long-lived `Issues:write` PAT from a portable device. Loss of phone is no longer a credential-revocation event. | Revoke phone PAT; delete HTTP Shortcuts / Apple Shortcuts; sign in to `/admin` instead. |
+| Capture: backlog item from a non-technical client | Not supported (would have required handing the client a PAT). | Three lanes — `/admin/new`, email to `requests@<client-domain>`, SMS to a per-client Twilio number — all routed through n8n with AI structuring before issue creation. | Enables multi-client deployment without ever provisioning a client-side GitHub credential. | Wire the three n8n workflows from `docs/N8N_SETUP.md` and `docs/ADMIN_PORTAL_PLAN.md` Phase 2; mint per-client Auth.js OAuth clients (A4 in §2). |
+| Workflow trigger: fire `triage.yml` / `execute.yml` from phone | Second phone shortcut posting to `actions/workflows/<name>.yml/dispatches` with `Actions:write` PAT. | Cron schedules in `.github/workflows/`. Manual reruns happen from the operator's laptop via `gh workflow run`, not from a phone. | Removes the second high-blast-radius scope (`Actions:write`) from any device. Reduces the attack surface to "issues only" even on the operator-side vendor PAT. | Drop `Actions:write` from any remaining operator PATs; rely on cron + laptop `gh` for ad-hoc triggers. |
+| Vendor identity for issue / comment / label writes | Operator's own user-scoped PAT, mixed-purpose. | Dedicated `<brand>-bot` GitHub user with a per-engagement vendor PAT held only in n8n credentials. | Separates operator-personal credentials from automation credentials; bot identity is recognisable on every auto-PR. | Create the bot account once (§A2), store its PAT in n8n only, never in Vercel / phone / laptop dotfiles. |
+| AI provider keys (Claude / Gemini / OpenAI) | Mixed: operator vault + GitHub Actions secrets + occasional ad-hoc storage. | `CLAUDE_CODE_OAUTH_TOKEN` in operator GitHub **organisation** secrets; AI structuring keys in n8n credentials only; never in any client repo or Vercel env. | One revocation point per provider, scoped per engagement by org-secret repository allow-list. | Move all AI keys to org-level secrets (§A1); remove from any client-repo Actions secrets that predate v2. |
+| Vercel deploy trigger | Phone-side Vercel API token + raw POST to `/v13/deployments`. | Per-client Vercel **Deploy Hook URL** (`VERCEL_DEPLOY_HOOK_<CLIENT>`) called by the `/admin` "Confirm Deploy" Server Action. | Replaces a long-lived Vercel API token with a single-purpose deploy hook URL whose only effect is "build production once". | Generate a deploy hook per client (§B2 #5); revoke any phone-stored Vercel API tokens unless still needed for project lookups. |
+| HMAC signing of cross-system calls | Not used (raw GitHub API calls). | All n8n ↔ Next.js webhooks signed with `HMAC-SHA256` over `${unixTimestamp}.${rawBody}` using `N8N_HMAC_SECRET`, ≤5-minute skew. | Prevents replay; secret-only compromise on the Vercel side is useless without n8n credentials, and vice versa. | Generate a per-client `N8N_HMAC_SECRET` (`openssl rand -hex 32`); set the same value in both Vercel and n8n credentials. |
+
+The migration applies in full to any new client (no v1 setup steps are
+ever run). For Lumivara itself, the matrix is the punch list for the
+post-rollout cleanup once issues #91 – #95 land.
+
 ---
 
 ## 2. Operator setup checklist (the parts Claude can't do)

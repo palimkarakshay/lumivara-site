@@ -11,6 +11,8 @@ This is the template the operator renders, per engagement, into the **client's r
 
 > **Rendering convention:** every `{{...}}` placeholder maps to a key in `docs/clients/<slug>/intake.md`. Use a single `pnpm dlx mustache intake.json 07-client-handover-pack.md > clients/<slug>/handover.md` to render.
 
+> **Pre-handover gate (Lumivara People Advisory).** Before rendering this pack for *Lumivara People Advisory*, the spinout runbook in [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) must have all phase acceptance boxes checked (§9 A1, A2, A3 — including `pattern-c-enforcement-checklist.md §5` post-migration verifications). For all *future* Tier 0/1/2 clients, fork that runbook into `docs/migrations/<client-slug>-spinout.md`, walk it end-to-end, and gate this rendering on its acceptance set. The §8 per-engagement validation checklist below is the *post-render* gate; the spinout runbook's §9 is the *pre-render* gate.
+
 ---
 
 ## §1 — Welcome (rendered per client)

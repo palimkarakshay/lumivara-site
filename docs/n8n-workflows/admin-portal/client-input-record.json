@@ -1,0 +1,81 @@
+{
+  "name": "Lumivara · Admin · Client input — record",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lumivara-decision",
+        "responseMode": "responseNode",
+        "options": { "rawBody": true }
+      },
+      "name": "Decision webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const crypto = require('crypto');\nconst secret = $env['N8N_HMAC_SECRET'];\nconst header = $input.first().headers['x-lumivara-signature'] || '';\nconst raw = $input.first().rawBody?.toString('utf8') ?? '';\nconst parts = Object.fromEntries(header.split(',').map(p => p.split('=')));\nconst t = Number(parts.t);\nconst supplied = parts.v1;\nif (!Number.isFinite(t) || !supplied) throw new Error('bad-signature-format');\nif (Math.abs(Math.floor(Date.now() / 1000) - t) > 300) throw new Error('signature-stale');\nconst expected = crypto.createHmac('sha256', secret).update(`${t}.${raw}`).digest('hex');\nconst a = Buffer.from(expected, 'hex');\nconst b = Buffer.from(supplied, 'hex');\nif (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw new Error('signature-invalid');\nreturn [{ json: JSON.parse(raw) }];"
+      },
+      "name": "Verify HMAC",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const d = $input.first().json;\nconst chosen = d.kind === 'option' ? `${d.optionId}) ${d.optionLabel}` : (d.text || '').trim();\nreturn [{ json: { ...d, comment: `**Client chose:** ${chosen}` } }];"
+      },
+      "name": "Format comment",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [620, 300]
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": "={{ $env['GITHUB_REPO'].split('/')[0] }}",
+        "repository": "={{ $env['GITHUB_REPO'].split('/')[1] }}",
+        "issueNumber": "={{ $json.issueNumber }}",
+        "body": "={{ $json.comment }}"
+      },
+      "name": "Comment on issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [840, 300]
+    },
+    {
+      "parameters": {
+        "operation": "removeLabel",
+        "owner": "={{ $env['GITHUB_REPO'].split('/')[0] }}",
+        "repository": "={{ $env['GITHUB_REPO'].split('/')[1] }}",
+        "issueNumber": "={{ $('Verify HMAC').item.json.issueNumber }}",
+        "labels": "needs-client-input"
+      },
+      "name": "Remove label",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [1060, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, issueNumber: $('Verify HMAC').item.json.issueNumber } }}"
+      },
+      "name": "ACK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1280, 300]
+    }
+  ],
+  "connections": {
+    "Decision webhook": { "main": [[{ "node": "Verify HMAC", "type": "main", "index": 0 }]] },
+    "Verify HMAC": { "main": [[{ "node": "Format comment", "type": "main", "index": 0 }]] },
+    "Format comment": { "main": [[{ "node": "Comment on issue", "type": "main", "index": 0 }]] },
+    "Comment on issue": { "main": [[{ "node": "Remove label", "type": "main", "index": 0 }]] },
+    "Remove label": { "main": [[{ "node": "ACK", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "tags": ["lumivara", "admin-portal", "client-input"]
+}

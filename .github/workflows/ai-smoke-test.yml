@@ -48,7 +48,7 @@ jobs:
               sys.exit(1)
           PY
 
-      - name: Test OpenAI API (REST) — Codex/gpt-4o-mini
+      - name: Test OpenAI API (REST) — Codex/gpt-5.5
         id: openai
         if: always()
         continue-on-error: true
@@ -64,7 +64,7 @@ jobs:
           req = urllib.request.Request(
               "https://api.openai.com/v1/chat/completions",
               data=json.dumps({
-                  "model":"gpt-4o-mini",
+                  "model":"gpt-5.5",
                   "messages":[{"role":"user","content":"reply with the single word: pong"}],
                   "max_tokens":10
               }).encode(),
@@ -75,12 +75,12 @@ jobs:
               r = urllib.request.urlopen(req, timeout=20)
               text = json.loads(r.read())["choices"][0]["message"]["content"].strip()
               ok = "pong" in text.lower()
-              print(f"OpenAI gpt-4o-mini: {'OK' if ok else 'UNEXPECTED'} — response: {text[:80]}")
+              print(f"OpenAI gpt-5.5: {'OK' if ok else 'UNEXPECTED'} — response: {text[:80]}")
               sys.exit(0 if ok else 1)
           except urllib.error.HTTPError as e:
               body = e.read().decode()[:200]
               if e.code == 429:
-                  # Free tier / no credit is common — flag as warning, not error.
+                  # Quota / rate-limit is recoverable — flag as warning, not error.
                   # Gemini is the primary free fallback; OpenAI is a nice-to-have.
                   print(f"::warning::OpenAI quota/rate limit: {body}")
                   print("OpenAI key is valid but lacks quota. Codex fallback will not work until credits are added at platform.openai.com/settings/billing. Gemini remains the primary free fallback.")
@@ -134,7 +134,7 @@ jobs:
           echo "| Provider / check | Status | Role |" >> "$GITHUB_STEP_SUMMARY"
           echo "|------------------|--------|------|" >> "$GITHUB_STEP_SUMMARY"
           echo "| Gemini 2.5 Flash (REST) | ${{ steps.gemini.outcome }} | Primary free fallback for triage |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| OpenAI gpt-4o-mini (REST) | ${{ steps.openai.outcome }} | Optional Codex fallback (needs credits) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| OpenAI gpt-5.5 (REST) | ${{ steps.openai.outcome }} | Codex / second-opinion review (ChatGPT Plus tier) |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Claude Code OAuth token | ${{ steps.claude.outcome }} | Primary for triage + execute |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Codex + Gemini CLIs install | ${{ steps.clis.outcome }} | Required by deep-research.yml + codex-review.yml |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Routing rubric (10 sample issues) | ${{ steps.routing.outcome }} | Multi-model dispatch correctness |" >> "$GITHUB_STEP_SUMMARY"

@@ -20,9 +20,12 @@ sys.path.insert(0, str(Path(__file__).parent))
 from lib.routing import decide_from_classification  # noqa: E402
 
 REPO = "palimkarakshay/lumivara-site"
+# gemini-2.5-flash stays the triage default: 500 req/day free-tier headroom is
+# perfect for high-frequency classification. Deep work uses gemini-2.5-pro via
+# plan-issue.py / deep-research.yml.
 GEMINI_MODEL = "gemini-2.5-flash"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
-MAX_ISSUES = 10  # Match Haiku triage cap
+MAX_ISSUES = 25  # Quality-first phase: matches the bumped Claude triage cap
 
 RUBRIC = """You are triaging a GitHub issue for the Lumivara People Advisory site
 (an HR consulting site: Next.js + Tailwind + MDX). Classify and reformat the issue.
@@ -115,13 +118,12 @@ def apply_labels(issue_num: int, classification: dict) -> None:
             f"type/{classification['type']}",
             "status/planned",
         ])
+        # Quality-first phase: every complexity tier maps to model/opus by
+        # default. Cost-optimisation phase will revert to per-tier mapping.
         complexity = classification["complexity"]
-        if complexity in ("trivial", "easy"):
-            labels_to_add.append("model/haiku")
-        elif complexity == "medium":
-            labels_to_add.append("model/sonnet")
-        else:
-            labels_to_add.extend(["model/opus", "manual-only"])
+        labels_to_add.append("model/opus")
+        if complexity == "complex":
+            labels_to_add.append("manual-only")
 
         # Provider override (gemini-pro / codex / cline). When the rubric asks
         # for a non-Claude path, that label takes precedence over the

@@ -7,7 +7,7 @@ name: Execute fallback (Codex / Gemini)
 # the project conventions.
 #
 # Engine ladder per run (first to succeed wins):
-#   1. OpenAI Codex CLI (gpt-4o)  — best at agentic file edits
+#   1. OpenAI Codex CLI (gpt-5.5)  — best at agentic file edits (ChatGPT Plus tier)
 #   2. Gemini CLI (gemini-2.5-pro) — large context, free tier
 #
 # Hard exclusions and PR mechanics mirror scripts/execute-prompt.md.

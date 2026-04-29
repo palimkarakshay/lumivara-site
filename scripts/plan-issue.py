@@ -12,18 +12,18 @@ modify, exact changes, definition of done. This is what lets execution
 keep running when Claude is unavailable.
 
 Engine ladder (each step is best-effort; first to succeed wins):
-  1. Claude Sonnet — preferred (best at structured planning + tool use)
+  1. Claude Opus — preferred (strongest planning quality + tool use).
      Skipped here when invoked from CI; planning via Claude requires the
      claude-code-action setup, which lives in the workflow. When this
      script is invoked standalone, it skips Claude and starts at step 2.
-  2. Gemini 2.5 Pro — large context, free tier
-  3. OpenAI gpt-4o — strong reasoning, paid
+  2. Gemini 2.5 Pro — 1M-context, free tier
+  3. OpenAI gpt-5.5 — ChatGPT Plus tier, strong reasoning
 
 Usage:
   GEMINI_API_KEY=... OPENAI_API_KEY=... GH_TOKEN=... \
     python3 scripts/plan-issue.py [issue_number]
 
-If `issue_number` is omitted, scans the queue and plans up to 5 issues.
+If `issue_number` is omitted, scans the queue and plans up to 15 issues.
 """
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ import urllib.error
 import urllib.request
 
 REPO = "palimkarakshay/lumivara-site"
-MAX_ISSUES = 5
+MAX_ISSUES = 15  # Quality-first phase: plan more aggressively per run
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
@@ -135,7 +135,7 @@ def plan_with_openai(title: str, body: str) -> str | None:
     req = urllib.request.Request(
         "https://api.openai.com/v1/chat/completions",
         data=json.dumps({
-            "model": "gpt-4o",
+            "model": "gpt-5.5",
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.2,
         }).encode(),
@@ -172,7 +172,7 @@ def plan_one(issue: dict) -> bool:
     if not plan:
         plan = plan_with_openai(title, body)
         if plan:
-            engine_used = "OpenAI gpt-4o"
+            engine_used = "OpenAI gpt-5.5"
 
     if not plan:
         print(f"  #{num}: no plan engine succeeded; skipping.", file=sys.stderr)

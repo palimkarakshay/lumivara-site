@@ -1,6 +1,6 @@
 # Claude Usage Monitoring
 
-Track quota consumption across automated CI runs and interactive sessions before hitting the 5-hour rolling window limit.
+Track quota consumption across automated CI runs and interactive sessions before hitting the 5-hour rolling window limit. The repo is currently on the operator's **Max 20x** subscription (~20× Pro headroom) running quality-first defaults — Opus everywhere on Claude, gpt-5.5 on OpenAI, Gemini's free tier on the fallback ladder.
 
 ## ccusage — per-session and aggregate usage
 
@@ -42,10 +42,11 @@ Symptoms: triage/execute runs finish in < 5 turns with "usage limit reached" mes
 
 Immediate relief (in order):
 1. Wait — the rolling window resets progressively (5h rolling, not midnight reset)
-2. Reduce execute.yml cron from 3x/day to 1x/day:
-   Change `0 0,8,16 * * *` → `0 8 * * *` in `.github/workflows/execute.yml`
-3. Raise the auto-routine bar: in triage-prompt.md, only mark `auto-routine` for P1 + trivial/easy
-4. Pause entirely: change the cron to `0 0 1 1 *` (fires once a year)
+2. Reduce execute.yml cron from hourly to less frequent:
+   Change `0 * * * *` → `0 */4 * * *` in `.github/workflows/execute.yml`
+3. Restore the per-tier model mapping in `scripts/lib/routing.py` (trivial/easy → haiku, medium → sonnet, complex → opus) so cheap tasks stop running on Opus
+4. Raise the auto-routine bar: in triage-prompt.md, only mark `auto-routine` for P1 + trivial/easy
+5. Pause entirely: change the cron to `0 0 1 1 *` (fires once a year)
 
 ## ccstatusonline (community tool)
 

@@ -71,6 +71,7 @@ Existing context that this folder builds on (do not duplicate):
 - `docs/AI_ROUTING.md` — multi-AI router policy and fallback chains
 - `docs/ADMIN_PORTAL_PLAN.md` — admin-portal architecture (5 phases)
 - `docs/N8N_SETUP.md` — n8n on Railway
+- `docs/wiki/Home.md` — **dual-lane wiki** (🛠 Operator / 🌐 Client / ⚪ Both). The wiki is the working summary of this pack for the operator and is the source from which per-client wikis are scaffolded; only the 🌐 and ⚪ pages are copied into a client repo (see `docs/wiki/_partials/lane-key.md` and `docs/wiki/_partials/do-not-copy.md`).
 
 ---
 
@@ -89,7 +90,9 @@ Each phase is sized to fit comfortably inside a single Claude run with the 50%/8
 | **P2 — Operations docs** | `04-tier-based-agent-cadence`, `05-mothership-repo-buildout-plan` | ✅ Done in this session |
 | **P3 — Engagement playbooks** | `06-operator-rebuild-prompt-v3`, `07-client-handover-pack` (with dummy clients) | ✅ Done in this session |
 | **P4 — Future-work stubs** | `08-future-work.md` (legal, vault, contracts, payments, market research) | ✅ Done in this session |
-| **P5 — Mothership repo bootstrap** | Run `05-mothership-repo-buildout-plan.md` end-to-end against an empty `palimkarakshay/{{BRAND_SLUG}}-mothership` repo | ⏳ Next operator-led step |
+| **P4.5 — External critique** | `10`–`15` (this session's review of the pack) + `16` (the prompt-pack to close it) | ✅ Done in this session |
+| **P4.6 — Critique closure** | Run A (`16 §1`) → fix architectural cron flaw; Run B (`16 §2`) → close security gaps; Run C (`16 §3`) → reconcile maths; Run D (`16 §4`) → operations sweep | ⏳ **Run before any P5 work** |
+| **P5 — Mothership repo bootstrap** | Run `05-mothership-repo-buildout-plan.md` end-to-end against an empty `palimkarakshay/{{BRAND_SLUG}}-mothership` repo | ⏳ After P4.6 |
 | **P6 — Migrate Client #1** | Re-scaffold *Lumivara People Advisory* into a clean per-client repo using `06-operator-rebuild-prompt-v3.md` | ⏳ After P5 |
 | **P7 — Hardening tasks** | Walk `docs/freelance/05-template-hardening-notes.md` items into issues against the new mothership repo | ⏳ After P6 |
 | **P8 — Legal & vault** | Implement items in `08-future-work.md` (PIPEDA, contracts, secrets vault, market study) | ⏳ Spread across months 2–6 |
@@ -136,6 +139,8 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 - Client-facing pack template: `07-client-handover-pack.md`
 - Tier-based AI cadence: `04-tier-based-agent-cadence.md`
 - Cost firewall + zone isolation: `03-secure-architecture.md`
+- **Pattern C enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `pattern-c-enforcement-checklist.md`**
+- **Client #1 spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)**
 - Future legal / vault work: `08-future-work.md`
 
 *Last updated: 2026-04-28.*

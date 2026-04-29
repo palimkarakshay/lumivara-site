@@ -11,20 +11,21 @@ The Decision dataclass carries the chosen provider/model AND a human-readable
 audit trail so workflows can print the reasoning into the GitHub Actions log.
 
 Provider taxonomy (matches `model/*` labels emitted by triage):
-  - model/haiku        -> Claude Haiku       (triage, trivial edits)
-  - model/sonnet       -> Claude Sonnet      (default code implementation)
-  - model/opus         -> Claude Opus        (planning pass for complex work)
+  - model/haiku        -> Claude Haiku       (reserved for cost-optimisation phase)
+  - model/sonnet       -> Claude Sonnet      (reserved for cost-optimisation phase)
+  - model/opus         -> Claude Opus        (default for every Claude task in the
+                                              quality-first phase)
   - model/gemini-pro   -> Gemini 2.5 Pro     (deep research, long-form content,
-                                              full-codebase audits — large ctx)
-  - model/codex        -> OpenAI Codex       (code review, second-opinion diff
-                                              analysis on PRs)
-  - model/cline        -> (no CI integration; documented + routed back to Sonnet)
+                                              full-codebase audits — large ctx, free tier)
+  - model/codex        -> OpenAI gpt-5.5     (code review, second-opinion diff
+                                              analysis on PRs — ChatGPT Plus tier)
+  - model/cline        -> (no CI integration; documented + substituted with Opus)
 
 `model/cline` is intentionally accepted by the rubric so operators can flag
-"agentic-large-refactor" tasks, but the router downgrades it to Claude Sonnet
-because Cline ships only as a VS Code extension — there's no headless CLI we
-can drive in GitHub Actions today. The audit trail records the original intent
-and the downgrade reason so it shows up in run summaries.
+"agentic-large-refactor" tasks, but the router substitutes Claude Opus because
+Cline ships only as a VS Code extension — there's no headless CLI we can drive
+in GitHub Actions today. The audit trail records the original intent and the
+substitution reason so it shows up in run summaries.
 """
 
 from __future__ import annotations
@@ -43,14 +44,17 @@ GEMINI_MODELS = {
     "model/gemini-flash": "gemini-2.5-flash",
 }
 CODEX_MODELS = {
-    "model/codex": "gpt-4o-mini",
+    "model/codex": "gpt-5.5",
 }
 
 # Fallback complexity -> claude model when no model/* label is present.
+# Quality-first phase: every tier defaults to Opus. The dedicated `model/haiku`
+# and `model/sonnet` labels still route correctly when an operator opts in,
+# but unlabelled issues all get Opus until the cost-optimisation phase lands.
 COMPLEXITY_TO_CLAUDE = {
-    "complexity/trivial": "claude-haiku-4-5-20251001",
-    "complexity/easy":    "claude-haiku-4-5-20251001",
-    "complexity/medium":  "claude-sonnet-4-6",
+    "complexity/trivial": "claude-opus-4-7",
+    "complexity/easy":    "claude-opus-4-7",
+    "complexity/medium":  "claude-opus-4-7",
     "complexity/complex": "claude-opus-4-7",
 }
 
@@ -147,11 +151,12 @@ def decide(labels: set[str]) -> Decision:
         # Documented downgrade: no headless Cline CLI available in CI.
         reasons.append(
             "`model/cline` label present, but Cline has no headless CLI for "
-            "GitHub Actions — downgrading to Claude Sonnet (closest agentic match)."
+            "GitHub Actions — substituting Claude Opus (closest agentic match "
+            "and the project default in the quality-first phase)."
         )
         return Decision(
             provider="cline-downgraded",
-            model="claude-sonnet-4-6",
+            model="claude-opus-4-7",
             workflow="claude",
             reasons=reasons,
             label_used="model/cline",
@@ -201,10 +206,10 @@ def decide(labels: set[str]) -> Decision:
             )
 
     # 4. Default
-    reasons.append("No routing labels found — defaulting to Claude Sonnet.")
+    reasons.append("No routing labels found — defaulting to Claude Opus (quality-first phase).")
     return Decision(
         provider="claude",
-        model="claude-sonnet-4-6",
+        model="claude-opus-4-7",
         workflow="claude",
         reasons=reasons,
     )

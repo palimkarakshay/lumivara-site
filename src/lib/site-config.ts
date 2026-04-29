@@ -26,6 +26,11 @@ export const siteConfig = {
     button: "Subscribe",
     success: "You're in — look out for the next issue.",
   } as const,
+  builder: {
+    name: "Lumivara Infotech",
+    url: "https://lumivara.ca",
+    cta: "Want a site like this? Get started.",
+  } as const,
 } as const;
 
 export type SiteConfig = typeof siteConfig;

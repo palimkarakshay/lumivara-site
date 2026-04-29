@@ -389,3 +389,70 @@ By **month 24**:
 > Saying "no" to four of these every quarter is what keeps the operator's hours under 60 and the margins above 60%.
 
 <span class="small">Source: `docs/mothership/01-business-plan.md §6`, `docs/freelance/01-gig-profile.md` Part 8.</span>
+
+---
+
+<!-- _class: lead -->
+
+# 6 · Steps to achieve the end goal
+## The path from today to 30 retainers
+
+---
+
+## Phase ladder (operator-side)
+
+<br/>
+
+| Phase | Deliverable | Status (Apr 2026) |
+|---|---|---|
+| **P0–P4** | Survey, foundation docs, ops, engagement playbooks, future-work stubs | ✅ Done |
+| **P4.5–P4.6** | External critique + critique-closure runs (architecture, security, scaling, ops) | 🟡 In-flight |
+| **P5** | Bootstrap private mothership repo (`lumivara-forge-mothership`) end-to-end | ⏳ Next |
+| **P6** | Migrate Lumivara People Advisory into a clean per-client repo as Client #1 | ⏳ After P5 |
+| **P7** | Walk template-hardening items into issues against the new mothership | ⏳ After P6 |
+| **P8** | Legal + vault (PIPEDA, MSA + SOW, payment automation, 1Password) | ⏳ Months 2–6 |
+
+<span class="small">Source: `docs/mothership/00-INDEX.md` phased build plan.</span>
+
+---
+
+## Phase ladder (go-to-market)
+
+<br/>
+
+| Stretch | What lands in this stretch |
+|---|---|
+| **Days 1–7** | Fiverr Gig 1 live; Toptal / Arc / Lemon.io applications submitted; LinkedIn case study posted; 10 network DMs sent. |
+| **Days 8–30** | 5 Upwork applications/day; first 5 Tier-0 / Tier-1 setups delivered at 15% launch discount; reviews accumulate. |
+| **Months 2–3** | Cross 5 paying retainers. Trigger: legal pack (MSA + SOW), payment automation (Stripe Subscriptions), privacy pack (PIPEDA). |
+| **Months 4–9** | 3–4 new clients/month, mostly Tier 2. Cross Cliff 1 (Pro→Max 5x at client #6) and Cliff 4 (Max 5x → Max 20x at client #16). |
+| **Months 10–12** | MRR alone covers fixed personal expenses; 6-month runway saved; **quit the day job**. |
+| **Months 13–24** | Hire part-time VA at ~25 clients; second engineer at ~35; cap at 30 retainers until VA in place. |
+
+<span class="small">Source: `docs/freelance/01-gig-profile.md` Part 10 (30-day plan), `docs/freelance/03-cost-analysis.md` Part C (milestones), Part E (tooling triggers).</span>
+
+---
+
+## Per-engagement step list (the CLI)
+
+<br/>
+
+`npx forge provision --client-slug <slug> --tier <n>` runs **13 idempotent steps**:
+
+1. Validate slug + intake form completeness.
+2. Create `<slug>-site` private repo.
+3. Create `<slug>-pipeline` private repo.
+4. Add both to org-secret scope.
+5. Push `client-template/` (Next.js scaffold) to site repo's `main`.
+6. Push `workflows-template/` + `scripts/` to pipeline repo's `main`.
+7. Install GitHub App on the site repo; capture installation ID.
+8. Provision Vercel project + env vars + deploy hook.
+9. Provision n8n workflows (intake-web / email / sms, notify, record, deploy-confirmed).
+10. Provision Twilio per-client number.
+11. Bootstrap GitHub labels + Project board on site repo.
+12. Smoke-test cross-repo write (App opens + closes a no-op PR).
+13. Render handover pack from `07-client-handover-pack.md`.
+
+> Every step is individually testable. If one fails, the CLI prints what's done + what's left and the operator runs `--resume`.
+
+<span class="small">Source: `docs/mothership/02-architecture.md §3`, `docs/mothership/18-provisioning-automation-matrix.md`.</span>

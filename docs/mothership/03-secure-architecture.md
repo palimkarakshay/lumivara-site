@@ -87,20 +87,13 @@ If a client device is lost, the client clicks "Sign out everywhere" in `/admin/s
 
 ## 3. Secret topology
 
-| Secret | Lives in | Used by | Rotation |
-|---|---|---|---|
-| `CLAUDE_CODE_OAUTH_TOKEN` | `{{BRAND_SLUG}}` org secrets | Every client repo's workflows on `operator/main` | When `claude setup-token` is re-run (no expiry) |
-| `GEMINI_API_KEY` | `{{BRAND_SLUG}}` org secrets | Same | 12 months |
-| `OPENAI_API_KEY` | `{{BRAND_SLUG}}` org secrets | Same (codex-review fallback only) | 6 months |
-| `VENDOR_GITHUB_PAT` | `{{BRAND_SLUG}}` org secrets + n8n credentials | n8n issue/comment/label writes | 90 days; calendar reminder |
-| `N8N_HMAC_SECRET` (per-client) | client Vercel env + n8n credential for that client | `/admin` Server Actions ↔ n8n webhooks | 12 months |
-| `AUTH_SECRET` (per-client) | client Vercel env | Auth.js JWT signing | 12 months |
-| `AUTH_RESEND_KEY` | client Vercel env (same key for every client) | Magic-link emails | 6 months (one rotation = update every client's Vercel env) |
-| `AUTH_GOOGLE_*`, `AUTH_MICROSOFT_*` | client Vercel env (per-client OAuth app) | OAuth sign-in | Until OAuth app is deleted |
-| Twilio account SID / auth token | n8n credentials (operator-only) | Per-client SMS lane | 12 months |
-| IMAP password / app password | n8n credentials | Email lane | 6 months |
-| Vercel API token | operator's vault → CLI calls | `provision` CLI | 6 months |
-| Stripe / Lemon Squeezy keys | operator's vault → invoicing scripts | Subscription billing | 12 months |
+> **Canonical inventory: [`docs/ops/variable-registry.md`](../ops/variable-registry.md).** That file is the audited list with every name, scope, owner, rotation cadence, and source reference. The excerpt below keeps the *contextual prose* for the three secrets whose blast radius warrants a paragraph; for any secret not listed in the excerpt, treat the registry as authoritative.
+
+| Secret | Why it gets prose here |
+|---|---|
+| `CLAUDE_CODE_OAUTH_TOKEN` | The single OAuth token that bills every autopilot run against the operator's Claude Pro/Max subscription. Org-scoped; never a per-repo secret in the canonical Pattern C model. Rotation = re-run `claude setup-token`; no expiry. The blast radius is "every client repo's autopilot stops" — visible failure, not silent compromise, which is why no expiry is acceptable. |
+| `VENDOR_GITHUB_PAT` | The bot account's fine-grained PAT used by n8n for issue / comment / label writes. 90-day rotation; the calendar reminder lives in the operator's pass tree. Blast radius if leaked = anyone can open / close issues across every client repo (no code write); recovery = revoke in GitHub → Tokens, regenerate, update every n8n credential row. |
+| `N8N_HMAC_SECRET` | Per-client. Signs every Vercel ↔ n8n webhook over `${unixTimestamp}.${rawBody}`. Two-phase rotation (issue new → both accepted → retire old) — see §4. The HMAC + the vendor PAT together are what gates the autopilot from accepting a forged webhook; either one alone is useless. |
 
 ### 3.1 The operator vault
 
@@ -114,12 +107,17 @@ Every secret has:
 
 ### 3.2 Audit cadence
 
-Quarterly: `pass audit` style run by hand:
-1. List every org secret. Confirm rotation date < 6 months.
-2. List every n8n credential. Confirm same.
-3. List every Vercel env. Spot-check three clients for stale `AUTH_RESEND_KEY` values.
+Quarterly: `pass audit` style run by hand. Walk
+[`docs/ops/variable-registry.md`](../ops/variable-registry.md) row by
+row and re-confirm the **Last verified** stamp at the bottom of that
+file. The walk-through:
+
+1. List every org secret (registry §1). Confirm rotation date < 6 months.
+2. List every n8n credential (registry §4). Confirm same.
+3. List every Vercel env (registry §3). Spot-check three clients for stale `AUTH_RESEND_KEY` values.
 4. List every collaborator on every client repo. Remove anyone not actively engaged.
-5. Run `npx forge audit-secrets` (P5 deliverable) — prints a single pass/fail.
+5. Run `npx forge audit-secrets` (P5 deliverable) — prints a single pass/fail; data source is the registry.
+6. Update the **Last verified** date in `docs/ops/variable-registry.md §7`.
 
 ---
 

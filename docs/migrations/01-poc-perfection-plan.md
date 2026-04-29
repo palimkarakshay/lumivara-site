@@ -18,7 +18,7 @@
 >   the production-deployment fix (PR #151, branch
 >   `claude/fix-production-deployment-BuaWE`) introduced and that this
 >   POC has to **prove green** end-to-end before migration.
-> - `docs/freelance/07-client-migration-strategy.md` — the client-facing
+> - `docs/storefront/07-client-migration-strategy.md` — the client-facing
 >   migration playbook the POC has to be safe enough to drive.
 >
 > **Status:** drafted 2026-04-29 on branch
@@ -32,9 +32,9 @@
 3. `docs/deploy/production-integrity.md §3` (the integrity contract).
 4. `docs/mothership/pattern-c-enforcement-checklist.md §4` (the
    pre-migration gate — every row must resolve green from this POC).
-5. `docs/freelance/01-gig-profile.md` Parts 2 & 4, `docs/freelance/02-pricing-tiers.md`,
+5. `docs/storefront/01-gig-profile.md` Parts 2 & 4, `docs/storefront/02-pricing-tiers.md`,
    `docs/decks/04-prospective-client-deck.md`,
-   `docs/freelance/06-product-strategy-deck.md` (the product
+   `docs/storefront/06-product-strategy-deck.md` (the product
    catalog the §6 demo-readiness gate is auditing).
 
 If you only have 5 minutes: read §1 (the migration-blocked gate), §6
@@ -398,9 +398,9 @@ weeks (next rev: D-0 = Wed 2026-05-13, D-14 = Wed 2026-05-27). Don't
 
 §1's gate proves the autopilot is **technically** trustworthy. It does
 not prove the practice is **commercially** demo-able. The product
-catalog (`docs/freelance/01-gig-profile.md` Parts 2 & 4,
-`docs/freelance/02-pricing-tiers.md`, `docs/decks/04-prospective-client-deck.md`,
-`docs/freelance/06-product-strategy-deck.md`) sells three bundled
+catalog (`docs/storefront/01-gig-profile.md` Parts 2 & 4,
+`docs/storefront/02-pricing-tiers.md`, `docs/decks/04-prospective-client-deck.md`,
+`docs/storefront/06-product-strategy-deck.md`) sells three bundled
 things — a custom site, a phone-edit pipeline, and a monthly
 improvement subscription. The POC streak only exercises one of those
 (GitHub-issue → bot-PR → auto-merge), and only on this repo's natural
@@ -432,7 +432,7 @@ $3,250 — which is it?"
 
 | #   | Condition                                                                                                                                                                                                                                                                       | Pass? |
 |-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
-| 6.5 | Brand-lock audit: every doc in `docs/freelance/`, `docs/decks/`, and `docs/mothership/01-business-plan.md` reads `Lumivara Forge` consistently — or every one still reads `{{BRAND}}` consistently. **No mixed state.** Run S1 (Phase 2) is the moment the switch flips; this row gates that the docs are coherent on whichever side they're on. | ☐ |
+| 6.5 | Brand-lock audit: every doc in `docs/storefront/`, `docs/decks/`, and `docs/mothership/01-business-plan.md` reads `Lumivara Forge` consistently — or every one still reads `{{BRAND}}` consistently. **No mixed state.** Run S1 (Phase 2) is the moment the switch flips; this row gates that the docs are coherent on whichever side they're on. | ☐ |
 | 6.6 | Pricing parity: T0 / T1 / T2 / T3 setup + monthly numbers in `02-pricing-tiers.md` match the same-named rows in `04-prospective-client-deck.md`, `06-product-strategy-deck.md`, and `04-slide-deck.md` (CAD figures, USD conversion footnote where present). One executable grep proving zero mismatches, attached to the tracking issue. | ☐ |
 | 6.7 | Source-bibliography health: every `[V]`-flagged claim in `04-prospective-client-deck.md` (e.g., "75%", "3,117", "95.9%", "27% YoY") has a corresponding live row in `docs/research/03-source-bibliography.md`. Any `[S]` row without a current source URL is downgraded to a footnote or removed. | ☐ |
 | 6.8 | Service catalog (`01-business-plan.md §4`) ↔ feature delivery: every "Built" row in §4's feature table is provably live in this repo (workflow file present, prompt file present, smoke evidence in the streak). Anything marked Built but not actually firing is removed from the catalog before the demo. | ☐ |

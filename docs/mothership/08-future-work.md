@@ -97,7 +97,7 @@ Trigger: before client #5 OR when MRR exceeds CAD $3,000 (whichever first).
 1. **Adjacent verticals** — same product, new audience: trades (plumbers/electricians), professional services (accountants/lawyers), wellness (therapists/coaches).
 2. **Geo expansion** — Ontario → BC → Quebec (with French support); needs Law 25 compliance from §1.
 3. **White-label-for-agencies** — already designed (Tier 4); promote only after the operator hits 20 active clients and has spare capacity.
-4. **Productise the operator side** — managed-service-as-SaaS; Stage-3 from `docs/freelance/05-template-hardening-notes.md`. Defer until 30+ clients.
+4. **Productise the operator side** — managed-service-as-SaaS; Stage-3 from `docs/storefront/05-template-hardening-notes.md`. Defer until 30+ clients.
 
 Trigger: monthly review starting month 6 of paid operations.
 
@@ -113,6 +113,6 @@ Trigger: monthly review starting month 6 of paid operations.
 | §4 Vault | Before client #5 OR MRR > $3k | 1 weekend | CAD $100/mo (1Password + Bitwarden) |
 | §5 Market research | Month 6 | Ongoing | $0 |
 
-The whole "for later" stack runs ~CAD $2,500 one-time + $100/mo recurring. Bake into the cost analysis (`docs/freelance/03-cost-analysis.md`) once the brand is locked.
+The whole "for later" stack runs ~CAD $2,500 one-time + $100/mo recurring. Bake into the cost analysis (`docs/storefront/03-cost-analysis.md`) once the brand is locked.
 
 *Last updated: 2026-04-28.*

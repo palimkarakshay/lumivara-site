@@ -29,7 +29,7 @@ For someone joining hands-on in operations and maintenance — sharing the work,
 
 *Confidential. Single-recipient deck.*
 
-<span class="small">Numbers cite verified rows in `docs/research/03-source-bibliography.md`. Internal numbers (capacity / cost / cliffs) cite `docs/freelance/03-cost-analysis.md` and `docs/mothership/18-capacity-and-unit-economics.md`.</span>
+<span class="small">Numbers cite verified rows in `docs/research/03-source-bibliography.md`. Internal numbers (capacity / cost / cliffs) cite `docs/storefront/03-cost-analysis.md` and `docs/mothership/18-capacity-and-unit-economics.md`.</span>
 
 ---
 
@@ -37,7 +37,7 @@ For someone joining hands-on in operations and maintenance — sharing the work,
 
 You've watched this thing get built. You've used it. You understand both the mechanics and the boundaries — the two-repo isolation, the budget charter, the "say-no-to" filter — in a way that is rare to find ready-made.
 
-The next 12 months can be done solo (`docs/freelance/03-cost-analysis.md` Part C) but they don't *have to be*. A partner who shares the operational load and shares the upside is the most leveraged hire we could make — and "hire" is the wrong word for the relationship I'm describing.
+The next 12 months can be done solo (`docs/storefront/03-cost-analysis.md` Part C) but they don't *have to be*. A partner who shares the operational load and shares the upside is the most leveraged hire we could make — and "hire" is the wrong word for the relationship I'm describing.
 
 This deck is the one-page version of that conversation.
 
@@ -47,7 +47,7 @@ This deck is the one-page version of that conversation.
 
 > We sell flat-fee, AI-managed marketing websites to high-LTV professional-services SMBs (lawyers, dentists, boutique consultants, small firms). Sites the client owns outright, edits from a phone, and that improve themselves every month. We cap at 30 clients in Stage 1.
 
-Headline numbers — same source as the operator-internal cost model in `docs/freelance/03-cost-analysis.md` Part D:
+Headline numbers — same source as the operator-internal cost model in `docs/storefront/03-cost-analysis.md` Part D:
 
 - Year-1 gross: ~CAD $177k
 - Year-1 net before personal income tax: ~CAD $170.5k
@@ -81,7 +81,7 @@ Three personas (full pack: `docs/research/04-client-personas.md`).
 | P2 — local health practice (dental / physio / clinic) | T2 / T3 | 5 – 10% of revenue on marketing; 30 – 40% on web + SEO (`[S] §B-Dental-Spend`) | Compliance + owner can't update + mobile-first |
 | P3 — boutique services firm (5 – 25 staff) | T3 | CAD $20k – $60k/yr on web + tooling | One named accountable person, not a 3-person agency |
 
-**Anti-persona:** trades / restaurants / salons. Margins too thin, update cadence too high. Discipline matters; one bad client costs more than ten good ones earn (`docs/freelance/03-cost-analysis.md` Part C, "honest caveats").
+**Anti-persona:** trades / restaurants / salons. Margins too thin, update cadence too high. Discipline matters; one bad client costs more than ten good ones earn (`docs/storefront/03-cost-analysis.md` Part C, "honest caveats").
 
 ---
 
@@ -140,7 +140,7 @@ Two structures we should jointly choose between (the *real* contract is owed to 
 
 **Structure B — Hybrid retainer + share.** Partner gets a smaller fixed monthly retainer plus a smaller share of net revenue. Lower variance for the partner; higher operator carry on upside.
 
-Indicative: 30 clients × CAD $500 blended ARPU = CAD $180k ARR; net pre-tax pre-comp ~CAD $170.5k (`docs/freelance/03-cost-analysis.md` Part D). A 30/70 partner-share at saturation = CAD ~$51k/yr to the partner, retainer-style. Either structure shifts as we move into Stage 2 (hires) or Stage 3 (productisation).
+Indicative: 30 clients × CAD $500 blended ARPU = CAD $180k ARR; net pre-tax pre-comp ~CAD $170.5k (`docs/storefront/03-cost-analysis.md` Part D). A 30/70 partner-share at saturation = CAD ~$51k/yr to the partner, retainer-style. Either structure shifts as we move into Stage 2 (hires) or Stage 3 (productisation).
 
 ---
 
@@ -160,8 +160,8 @@ You would *not* be choosing into:
 
 A blunt list. Things that sometimes worry partners about new ventures, that aren't issues here:
 
-- **Product-market fit on the existing client.** lumivara.com runs the full pipeline daily.
-- **Pricing has a defensible floor and ceiling.** `docs/freelance/02-pricing-tiers.md` four-tier ladder, validated against verified competitor pricing in `docs/research/03 §B`.
+- **Product-market fit on the existing client.** lumivara-forge.com runs the full pipeline daily.
+- **Pricing has a defensible floor and ceiling.** `docs/storefront/02-pricing-tiers.md` four-tier ladder, validated against verified competitor pricing in `docs/research/03 §B`.
 - **Provider risk is mitigated.** Multi-AI fallback ladder in `docs/AI_ROUTING.md`. We don't pause when Anthropic hiccups.
 - **Operator IP is protected.** Pattern C (`docs/mothership/02b-pattern-c-architecture.md`) is locked. The client's repo is genuinely vanilla; the pipeline never crosses over.
 - **The legal sequence is documented.** `docs/mothership/08-future-work.md` schedules MSA, PIPEDA, vault, insurance — none of it is "TBD."
@@ -211,6 +211,6 @@ Three concrete things, in your name, that survive the partnership:
 
 *Confidential — single recipient.*
 
-*Source files for this deck: `docs/research/04-client-personas.md`, `06-drawbacks-and-honest-risks.md` · `docs/freelance/03-cost-analysis.md` Parts B–E · `docs/mothership/01-business-plan.md` §7, `18-capacity-and-unit-economics.md` §6.*
+*Source files for this deck: `docs/research/04-client-personas.md`, `06-drawbacks-and-honest-risks.md` · `docs/storefront/03-cost-analysis.md` Parts B–E · `docs/mothership/01-business-plan.md` §7, `18-capacity-and-unit-economics.md` §6.*
 
 <span class="small">© 2026 — confidential. Operator IP is licensed per-engagement.</span>

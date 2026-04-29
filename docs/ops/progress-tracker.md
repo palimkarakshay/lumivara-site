@@ -196,6 +196,6 @@ If you're **Beas** reading this:
 | The operator's personal front-door | [`docs/ops/operator-playbook.md`](./operator-playbook.md) |
 | The live kanban (mobile-friendly) | [Lumivara Backlog → Demo-Day Critical view](https://github.com/users/palimkarakshay/projects/1/views/6) |
 | The pinned streak tracking issue | [GitHub: meta/automation-readiness label](https://github.com/palimkarakshay/lumivara-site/issues?q=is%3Aissue+label%3Ameta%2Fautomation-readiness) |
-| The product catalog (what's being sold) | [`docs/freelance/01-gig-profile.md`](../freelance/01-gig-profile.md), [`docs/freelance/02-pricing-tiers.md`](../freelance/02-pricing-tiers.md) |
+| The product catalog (what's being sold) | [`docs/storefront/01-gig-profile.md`](../freelance/01-gig-profile.md), [`docs/storefront/02-pricing-tiers.md`](../freelance/02-pricing-tiers.md) |
 | The decks (per audience) | [`docs/decks/`](../decks/) |
 | The brand and naming policy | [`docs/mothership/15-terminology-and-brand.md`](../mothership/15-terminology-and-brand.md) |

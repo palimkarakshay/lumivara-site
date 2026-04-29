@@ -145,7 +145,7 @@ cat > /tmp/client-repo/.claudeignore <<'EOF'
 docs/operator/
 docs/clients/
 docs/mothership/
-docs/freelance/
+docs/storefront/
 n8n/
 workflows-template/
 scripts/
@@ -350,7 +350,7 @@ Run from a fresh clone of the **mothership**:
 
 ```bash
 git -C /path/to/mothership grep -niE 'lumivara people advisory|hr consulting|people strategy' \
-  -- 'docs/mothership/' 'docs/freelance/' 'scripts/' 'workflows-template/' \
+  -- 'docs/mothership/' 'docs/storefront/' 'scripts/' 'workflows-template/' \
   ':!docs/clients/lumivara-people-advisory/' ':!docs/mothership/07-client-handover-pack.md' \
   ':!docs/mothership/10-critique-executive-summary.md' \
   ':!docs/mothership/11-critique-architectural-issues.md' \

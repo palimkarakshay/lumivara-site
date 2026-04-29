@@ -2,7 +2,7 @@
 
 > **DRAFT — pending operator approval (issue #115).** This is the first-pass
 > landing copy for whichever surface the Forge brand eventually lives on
-> (a `/forge` route on lumivara.com, a separate microsite, or a Fiverr / Upwork
+> (a `/forge` route on lumivara-forge.com, a separate microsite, or a Fiverr / Upwork
 > profile spelled out long-form). It is **not yet wired into `src/`** — site
 > integration is a downstream issue.
 >
@@ -28,11 +28,11 @@
 > developer phone calls. No surprise invoices. You own everything.
 
 **Primary CTA:** `Book a 15-min walkthrough` → `/contact?source=forge-hero`
-**Secondary CTA:** `See the live demo` → `https://lumivara.com`
+**Secondary CTA:** `See the live demo` → `https://lumivara-forge.com`
 
 **Proof line (under CTAs):**
 
-> *Built and run on the exact system this site uses. Live at lumivara.com.*
+> *Built and run on the exact system this site uses. Live at lumivara-forge.com.*
 
 ---
 
@@ -69,7 +69,7 @@ thing that stops; the site stays yours. Source: `01-gig-profile.md` Part 6 FAQ
 
 > Reserve a single quote slot here. **Do not ship placeholder testimonials.**
 > Until the first paying client gives written permission, fill this slot with
-> the operator's own line about lumivara.com:
+> the operator's own line about lumivara-forge.com:
 >
 > > *"This site you're reading is built and run on the same system. The proof
 > > is the website itself — every change you'll see ship here, ships through
@@ -115,7 +115,7 @@ fills in the working address before this ships)*
 
 ## Tone + style notes for whoever wires this into the site
 
-- **Headline font** matches the existing `Fraunces` serif used on lumivara.com
+- **Headline font** matches the existing `Fraunces` serif used on lumivara-forge.com
   (see `src/content/home.ts` and `06-positioning-slide-deck.md` style block).
 - **No emoji.** No icons in the benefits grid (icons read as templated).
 - **No price on the landing page.** Pricing lives behind the discovery call;

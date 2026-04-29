@@ -14,7 +14,7 @@ The pack assumes the AI lane scales linearly with clients. It doesn't — there 
 
 | Source | Claim |
 |---|---|
-| `freelance/03 §A` | "GitHub free tier gives 2,000 Action minutes/month — well over what a small site needs (~200 minutes/month with hourly triage and 6×daily execute crons)" |
+| `storefront/03 §A` | "GitHub free tier gives 2,000 Action minutes/month — well over what a small site needs (~200 minutes/month with hourly triage and 6×daily execute crons)" |
 | `09 §1` | "2,000 Actions minutes/month per org (free Linux runners)" — and "you only need to upgrade if/when you cross ~2,000 Actions minutes/month (≈ 25 active T2 clients with current cron)" |
 | `04 §1` | "Action minutes budget / month: T1 = 100, T2 = 250, T3 = 600" |
 
@@ -31,7 +31,7 @@ The pack assumes the AI lane scales linearly with clients. It doesn't — there 
 Three things to update:
 
 1. **Reconcile the maths.** Update `09 §1` to say "Free tier covers ~5 active T2 clients or ~10 T1 clients; you'll outgrow it by client #6 on T2 mix. Plan for Team plan ($4/seat × 1 seat ≈ $4/mo) by month 4."
-2. **Update `freelance/03 §A`'s 200-min claim** — that's roughly accurate for a *single* T2 client at low triage cadence, not for the practice. Footnote it as "per client" and add the practice-level total.
+2. **Update `storefront/03 §A`'s 200-min claim** — that's roughly accurate for a *single* T2 client at low triage cadence, not for the practice. Footnote it as "per client" and add the practice-level total.
 3. **Add a workflow-runtime budget enforcer.** `mothership-smoke.yml` should query the org's billing API every Friday and post a comment on the mothership if usage projects to exceed 80% of the plan budget.
 
 The cost-firewall principle still holds — Action minutes are operator-paid — but the planning needs honest numbers.
@@ -40,15 +40,15 @@ The cost-firewall principle still holds — Action minutes are operator-paid —
 
 ## §2 — 🟠 AI cost numbers don't reconcile
 
-> **Status (2026-04-29): closed.** The cost formula and three-scenario envelope live in [`18 §3`](18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes); the table below is the source the new envelope was derived from. `freelance/03 §D` 12-month projection has been recomputed against `18 §3`'s base column (year-1 net moves ~$1,500 CAD; documented in [`18 §7`](18-capacity-and-unit-economics.md#7--assumption-change-log)).
+> **Status (2026-04-29): closed.** The cost formula and three-scenario envelope live in [`18 §3`](18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes); the table below is the source the new envelope was derived from. `storefront/03 §D` 12-month projection has been recomputed against `18 §3`'s base column (year-1 net moves ~$1,500 CAD; documented in [`18 §7`](18-capacity-and-unit-economics.md#7--assumption-change-log)).
 
 ### What the docs claim
 
 | Source | Claim |
 |---|---|
-| `freelance/03 §A` | "Every 5 clients adds about $40 USD/month of AI cost when you're on Max" |
-| `freelance/03 §D` (table) | Month 4: 10 clients, AI cost $140 USD. Month 8: 22 clients, AI cost $280. Month 12: 32 clients, AI cost $280. |
-| `freelance/03 §A` (plans) | Pro $20, Max 5x $100, Max 20x $200 |
+| `storefront/03 §A` | "Every 5 clients adds about $40 USD/month of AI cost when you're on Max" |
+| `storefront/03 §D` (table) | Month 4: 10 clients, AI cost $140 USD. Month 8: 22 clients, AI cost $280. Month 12: 32 clients, AI cost $280. |
+| `storefront/03 §A` (plans) | Pro $20, Max 5x $100, Max 20x $200 |
 
 ### Reality
 
@@ -78,7 +78,7 @@ Concretely:
 
 Codex is the only USD-per-call line item; it scales with PR volume not client count. Gemini paid is rare; document the trigger.
 
-Update `freelance/03 §D` with these numbers; the year-1 net changes by ~$1,500 CAD. Not a viability change, but the published number must match the model.
+Update `storefront/03 §D` with these numbers; the year-1 net changes by ~$1,500 CAD. Not a viability change, but the published number must match the model.
 
 ---
 
@@ -167,7 +167,7 @@ This is precision, not correctness — the existing system *does* protect quota;
 
 ## §7 — 🟡 Sustainability: the "until burnout" risk is real
 
-`freelance/03 §F` lists burnout as risk #5 with mitigation "hard cap clients at 30 until you've hired help." That's a good cap but the mitigation is reactive.
+`storefront/03 §F` lists burnout as risk #5 with mitigation "hard cap clients at 30 until you've hired help." That's a good cap but the mitigation is reactive.
 
 Two pre-emptive measures the pack does not mention:
 

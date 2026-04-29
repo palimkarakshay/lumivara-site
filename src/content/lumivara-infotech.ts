@@ -1,14 +1,24 @@
 /**
- * Lumivara Infotech — landing page copy.
+ * Lumivara Forge — landing page copy.
  *
- * A separate business arm offering automated website creation, owned by
- * Akshay Palimkar. Lives under the Lumivara umbrella but is distinct from
- * Lumivara People Advisory.
+ * Brand locked 2026-04-28 to "Lumivara Forge" per
+ * docs/mothership/15-terminology-and-brand.md §4 (the prior "Infotech"
+ * working name is retired). Owned by Akshay Palimkar. Lives under the
+ * Lumivara umbrella but is distinct from Lumivara People Advisory.
+ *
+ * PATTERN C NOTE (2026-04-29): this page (Akshay's operator pitch) currently
+ * lives on Beas's marketing-site repo, which is a Pattern C violation per
+ * docs/mothership/02b-pattern-c-architecture.md §6 / pattern-c-enforcement-
+ * checklist.md C-MUST-1: operator brand should not occupy a site repo URL
+ * tree. Tracked for relocation to the operator's own site at
+ * lumivara-forge.com (pending domain registration, 15 §5) — the file,
+ * export name, and route slug all stay "lumivara-infotech" until that
+ * relocation happens, to avoid breaking incoming links and SEO.
  */
 
 export const lumivaraInfotechContent = {
   hero: {
-    monoLabel: "Lumivara Infotech",
+    monoLabel: "Lumivara Forge",
     headline: "Automated website creation, built and shipped for you.",
     subhead:
       "We design, build, and run modern marketing sites — powered by AI workflows that turn weeks of dev work into days. Pick a tier, share your brief, get a production-ready site.",
@@ -174,6 +184,6 @@ export const lumivaraInfotechContent = {
     monoLabel: "Who's behind this",
     heading: "Built by Akshay Palimkar.",
     body:
-      "Lumivara Infotech is led by Akshay Palimkar — engineer, builder, and operator. Akshay designs the automation pipeline, runs the builds end-to-end, and is the single point of contact on every project.",
+      "Lumivara Forge is led by Akshay Palimkar — engineer, builder, and operator. Akshay designs the automation pipeline, runs the builds end-to-end, and is the single point of contact on every project.",
   },
 } as const;

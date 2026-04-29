@@ -13,7 +13,7 @@
 ================================================================================
 -->
 
-# 21 — IP Protection Strategy (Lumivara Infotech)
+# 21 — IP Protection Strategy (Lumivara Forge)
 
 Operator-side inventory of every intellectual-property asset the practice owns or touches, the protection mechanism that applies to each, the contracts that move ownership cleanly, and the insurance posture that backstops the legal layer when something goes wrong anyway. Companion to:
 
@@ -34,11 +34,11 @@ Every category of asset the practice creates, touches, or relies on. The "Owner"
 
 | # | Category | Examples | Owner (post-contracts) | Sensitivity |
 |---|---|---|---|---|
-| A | **Mothership / pipeline source code** | The control-plane repo (`palimkarakshay/{{BRAND_SLUG}}-platform`), every per-client `<slug>-pipeline` repo, the multi-AI router, n8n workflows, GitHub App glue, dashboard SPA, CLI (`forge`) | Operator (Lumivara Infotech sole-prop) | **Very high** — competitive moat; never leaves operator org |
+| A | **Platform / pipeline source code** | The control-plane repo (`palimkarakshay/{{BRAND_SLUG}}-platform`), every per-client `<slug>-pipeline` repo, the multi-AI router, n8n workflows, GitHub App glue, dashboard SPA, CLI (`forge`) | Operator (Lumivara Forge sole-prop) | **Very high** — competitive moat; never leaves operator org |
 | B | **Per-client site source code** | Each `<slug>-site` repo: Next.js app, copy under `src/content/`, design tokens, MDX insights, admin portal scaffolding | **Client** (assigned on engagement completion; see §3.3) | Medium — common-sense template work; operator-side templates remain operator-owned |
-| C | **Brand assets — Lumivara Infotech / {{BRAND}}** | Word mark "Lumivara Forge", logo, colour system, voice/tone, marketing copy on `{{BRAND_SLUG}}.com`, Fiverr/LinkedIn collateral | Operator | **High** — brand confusion with Lumivara People Advisory is a real risk |
+| C | **Brand assets — Lumivara Forge / {{BRAND}}** | Word mark "Lumivara Forge", logo, colour system, voice/tone, marketing copy on `{{BRAND_SLUG}}.com`, Fiverr/LinkedIn collateral | Operator | **High** — brand confusion with Lumivara People Advisory is a real risk |
 | D | **Brand assets — client** | Each client's word mark, logo, photos, copy | Client (operator licenses for site-build use only) | Medium — handled by SOW per engagement |
-| E | **Operational processes & runbooks** | This `docs/mothership/` folder, the freelance pack (`docs/freelance/`), per-engagement playbook (`06-operator-rebuild-prompt-v3.md`), security ops checklist (`03b`), provisioning matrix (`18`) | Operator | **Very high** — the entire know-how moat |
+| E | **Operational processes & runbooks** | This `docs/mothership/` folder, the freelance pack (`docs/storefront/`), per-engagement playbook (`06-operator-rebuild-prompt-v3.md`), security ops checklist (`03b`), provisioning matrix (`18`) | Operator | **Very high** — the entire know-how moat |
 | F | **AI prompts & prompt pack** | `scripts/triage-prompt.md`, `scripts/execute-prompt.md`, the vertical content prompts in `docs/mothership/templates/`, the multi-AI router policy in `docs/AI_ROUTING.md` | Operator | **Very high** — directly reproducible if leaked |
 | G | **Designs & component library** | Tailwind v4 + shadcn-on-Base UI design tokens, MDX renderers, component compositions, custom illustrations (if any) | Operator (template); client (any per-client custom design) | Medium |
 | H | **Training data / fine-tunes** *(speculative — not in use today)* | If the operator ever fine-tunes a model on aggregated client data, the resulting weights and the data corpus | Operator (with explicit client consent in MSA) | Very high if it ever exists; today: **N/A** |

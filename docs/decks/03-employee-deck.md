@@ -45,11 +45,11 @@ You'd be either that second engineer, or the VA who triages client communication
 
 ## Why this is hiring at all
 
-We will reach 25 active clients in roughly months 8 – 9 of the year-1 plan (`docs/freelance/03-cost-analysis.md` Part C, milestone 2). At that volume the operator's monthly hours hit ~115 – 175 (`docs/mothership/18 §4`). That is the cap.
+We will reach 25 active clients in roughly months 8 – 9 of the year-1 plan (`docs/storefront/03-cost-analysis.md` Part C, milestone 2). At that volume the operator's monthly hours hit ~115 – 175 (`docs/mothership/18 §4`). That is the cap.
 
 Two things break above the cap:
 
-1. **Client comms triage.** New inquiries, scheduling, intake-form follow-ups. A part-time VA at ~5 hours/week, ~CAD $300/mo (`docs/freelance/03-cost-analysis.md` Part E).
+1. **Client comms triage.** New inquiries, scheduling, intake-form follow-ups. A part-time VA at ~5 hours/week, ~CAD $300/mo (`docs/storefront/03-cost-analysis.md` Part E).
 2. **Monthly improvement runs at saturation.** The bot does the boring 60% of the implementation work; an engineer reviews PRs, runs the monthly per-client improvement audit, and handles the parts the bot can't (design, complex integrations). Triggered at ~35 clients (Cliff 5 unlocks the 2nd Anthropic seat).
 
 Both roles exist *because* we hit the limit, not because we want to grow headcount.
@@ -84,7 +84,7 @@ You'd not be writing site CSS from scratch. The bot does that. You're the review
 
 ## What you'd actually work on (VA track)
 
-- **Inbound triage.** Discovery-form submissions, Fiverr / Upwork inquiries, LinkedIn DMs. Categorise → route to operator, pre-qualified, with a one-line summary. The "say-no-to" filter from `docs/freelance/01-gig-profile.md` Part 8 is your reference.
+- **Inbound triage.** Discovery-form submissions, Fiverr / Upwork inquiries, LinkedIn DMs. Categorise → route to operator, pre-qualified, with a one-line summary. The "say-no-to" filter from `docs/storefront/01-gig-profile.md` Part 8 is your reference.
 - **Calendar wrangling.** Book discovery calls into a 3-slots-per-week window. Confirmation emails go via Resend.
 - **Per-client check-in cadence.** Monthly health-check email (T1 +). The bot drafts; you proofread and send.
 - **Inbox sweep on the operator dashboard.** Mon AM and Wed PM, surface anything aging out.
@@ -162,7 +162,7 @@ You would *not* be choosing into:
 - A "we're going to be the next Vercel" hockey-stick story. We're not.
 - A 10-person team with a head of people. There are at most 2 – 3 of us.
 - Equity in a venture-backed company. Sole proprietorship; future incorporation possible but not promised.
-- Every client. Roster discipline (`docs/freelance/01-gig-profile.md` Part 8) is non-negotiable.
+- Every client. Roster discipline (`docs/storefront/01-gig-profile.md` Part 8) is non-negotiable.
 
 ---
 
@@ -197,6 +197,6 @@ In order:
 
 <br/>
 
-*Source files for this deck: `docs/research/06-drawbacks-and-honest-risks.md` · `docs/freelance/03-cost-analysis.md` Part E · `docs/mothership/01-business-plan.md`, `04-tier-based-agent-cadence.md`, `18-capacity-and-unit-economics.md`, `pattern-c-enforcement-checklist.md` · `AGENTS.md`*
+*Source files for this deck: `docs/research/06-drawbacks-and-honest-risks.md` · `docs/storefront/03-cost-analysis.md` Part E · `docs/mothership/01-business-plan.md`, `04-tier-based-agent-cadence.md`, `18-capacity-and-unit-economics.md`, `pattern-c-enforcement-checklist.md` · `AGENTS.md`*
 
 <span class="small">© 2026 — confidential. Operator IP is licensed per-engagement.</span>

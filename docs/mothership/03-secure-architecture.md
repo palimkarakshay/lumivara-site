@@ -13,7 +13,7 @@ The single most important property of this practice: **a curious client cannot s
 <!-- mirrors pattern-c-enforcement-checklist.md §3 C-MUST-NOT-1..4 -->
 
 1. **Never** put an operator API key, OAuth token, or vendor PAT into a client repo file — not in `.env.local.example`, not in a comment, not in a workflow `env:` block. Org-level secrets only.
-2. **Never** copy `docs/mothership/`, `docs/freelance/`, `docs/operator/`, `n8n/*.json`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/lib/routing.py`, or `dashboard/` into a client repo's `main`. They live on `operator/main` (overlay) or in the mothership repo only.
+2. **Never** copy `docs/mothership/`, `docs/storefront/`, `docs/operator/`, `n8n/*.json`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/lib/routing.py`, or `dashboard/` into a client repo's `main`. They live on `operator/main` (overlay) or in the mothership repo only.
 3. **Never** invoice a client for a line item that names a third-party service (Anthropic, Google, OpenAI, Twilio, Resend, Vercel, n8n, Railway). Bill at tier price; the cost stack is yours.
 4. **Never** show a client the dashboard URL (`https://palimkarakshay.github.io/{{BRAND_SLUG}}-mothership/`) or any operator runbook. They get the admin portal at `https://<their-domain>/admin` and nothing else.
 
@@ -56,7 +56,7 @@ Every client repo's `main` ships with a `.claudeignore` listing:
 docs/operator/
 docs/clients/
 docs/mothership/
-docs/freelance/
+docs/storefront/
 n8n/
 workflows-template/
 scripts/

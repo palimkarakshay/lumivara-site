@@ -8,7 +8,7 @@ The backlog lives in GitHub Issues, grouped in a Project v2 board called **Lumiv
 
 ## Source of truth
 
-- **Capture**: new items → `gh issue create` (from desk) or the `/admin` portal capture form (from phone), with email + SMS fallbacks through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./N8N_SETUP.md). The previous phone-PAT / HTTP Shortcuts path is **deprecated**; the deprecation notice and v1→v2 migration matrix live at [`PHONE_SETUP.md`](../PHONE_SETUP.md) and [`docs/TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) §1.4.
+- **Capture**: new items → `gh issue create` (from desk) or the `/admin` portal capture form (from phone), with email + SMS fallbacks through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./N8N_SETUP.md). The previous phone-PAT / HTTP Shortcuts path is **deprecated**; the historical deprecation notice and v1→v2 migration matrix live at [`docs/_deprecated/PHONE_SETUP.md`](./_deprecated/PHONE_SETUP.md) and [`docs/TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) §1.4.
 - **Triage**: `.github/workflows/triage.yml` runs daily at 06:00 UTC. It classifies new issues (priority, complexity, area) using the rubric in [`scripts/triage-prompt.md`](../scripts/triage-prompt.md), adds labels, comments with rationale, moves the issue into the right Project column.
 - **Execute**: `.github/workflows/execute.yml` runs every 8 hours. It picks the top-ranked `auto-routine` open issue, implements it on a branch `auto/issue-<n>`, opens a PR. Never merges. See [`scripts/execute-prompt.md`](../scripts/execute-prompt.md).
 - **Ship**: you review the PR on phone via GitHub Mobile, merge when happy. Merge closes the referenced issue.
@@ -74,7 +74,7 @@ If you want to abandon an issue mid-flight, close it (or add `human-only`) — t
 
 Any of these can be fired via the Actions tab or `gh workflow run`. (The
 phone-side HTTP Shortcuts trigger described in v1 is deprecated — see
-[`PHONE_SETUP.md`](../PHONE_SETUP.md) and [`docs/TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) §1.4.)
+[`docs/_deprecated/PHONE_SETUP.md`](./_deprecated/PHONE_SETUP.md) and [`docs/TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) §1.4.)
 
 | Workflow | When you'd manually run it |
 |----------|-----------------------------|

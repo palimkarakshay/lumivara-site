@@ -2,15 +2,15 @@
 ================================================================================
   CONFIDENTIAL — OPERATOR-ONLY SOURCE OF TRUTH
   Closes #113. Companion to `18-capacity-and-unit-economics.md` (capacity / AI /
-  cliffs) and `freelance/03-cost-analysis.md` (per-client cost-of-goods + ramp).
+  cliffs) and `storefront/03-cost-analysis.md` (per-client cost-of-goods + ramp).
   This doc is the *practice-wide* P&L view: every line item that is NOT
   per-client, plus the breakeven math against a planned tier price.
 ================================================================================
 -->
 
-# 20 — Launch & Operating Cost Model (Lumivara Infotech)
+# 20 — Launch & Operating Cost Model (Lumivara Forge)
 
-Practice-wide cost model for the freelance entity (provisional brand: **Lumivara Forge**, see [`01-business-plan.md §1`](./01-business-plan.md)). Owns:
+Practice-wide cost model for the operator practice (brand locked 2026-04-28: **Lumivara Forge**, see [`01-business-plan.md §1`](./01-business-plan.md) and [`15-terminology-and-brand.md §4`](./15-terminology-and-brand.md)). Owns:
 
 1. Every recurring operating cost the practice incurs that is *not* a per-client cost-of-goods.
 2. Every one-time launch / setup cost (legal, incorporation, brand, vault, accountancy onboarding).
@@ -19,7 +19,7 @@ Practice-wide cost model for the freelance entity (provisional brand: **Lumivara
 
 > **Where the AI / GitHub / Vercel / Resend numbers live.** This doc does **not** restate per-tier AI costs, Action-minute envelopes, or capacity cliffs — those are owned by [`18-capacity-and-unit-economics.md`](./18-capacity-and-unit-economics.md) (the single source of truth) and the consumer-table contract in `18 §8` is binding. Cells below that need an AI-cost or infrastructure-quota number cite the relevant `18` anchor.
 >
-> **Where the per-client retainer margin lives.** Per-client cost-of-goods (AI cost allocation, operator hours, cash margin per tier) is in [`18 §5`](./18-capacity-and-unit-economics.md#5--margin-model-per-tier) and the ramp / setup-fee math is in [`docs/freelance/03-cost-analysis.md §A–D`](../freelance/03-cost-analysis.md). Don't re-derive them here.
+> **Where the per-client retainer margin lives.** Per-client cost-of-goods (AI cost allocation, operator hours, cash margin per tier) is in [`18 §5`](./18-capacity-and-unit-economics.md#5--margin-model-per-tier) and the ramp / setup-fee math is in [`docs/storefront/03-cost-analysis.md §A–D`](../freelance/03-cost-analysis.md). Don't re-derive them here.
 
 All figures are CAD unless noted USD; the FX assumption is [`18 §1 fx_cad_per_usd`](./18-capacity-and-unit-economics.md#1--assumptions-table) (1 USD = 1.39 CAD). Re-use that rate; do not introduce a second.
 
@@ -110,7 +110,7 @@ The practice has two product types: setup fees (one-time) and retainers (subscri
 | Failed-charge retry | $0 (Stripe Smart Retries) | — |
 | Disputes | $15 USD per dispute | Budget $0–$30/mo until practice has a dispute history |
 
-**At Year-1 close** ([`docs/freelance/03-cost-analysis.md §D`](../freelance/03-cost-analysis.md) ramp): gross revenue ≈ $177,000 CAD. At 2.9% + $0.30 average across mixed setup + retainer + an average 1 charge per $250, processing burns roughly:
+**At Year-1 close** ([`docs/storefront/03-cost-analysis.md §D`](../freelance/03-cost-analysis.md) ramp): gross revenue ≈ $177,000 CAD. At 2.9% + $0.30 average across mixed setup + retainer + an average 1 charge per $250, processing burns roughly:
 
 ```
 Stripe_year1 ≈ 177,000 × 0.029  +  ~330 charges × $0.30 USD × 1.39 FX
@@ -144,7 +144,7 @@ Billing_surcharge_year1 ≈ 46,000 × 0.005 ≈ $230 CAD/year
 
 | Line item | Monthly (CAD) | Annual (CAD) | Notes |
 |---|---:|---:|---|
-| Professional liability / E&O (sole-prop tech, $1M limit) | $0 | $400–$600 | Per [`docs/freelance/03 §F`](../freelance/03-cost-analysis.md). Carry once revenue >$50k/yr. |
+| Professional liability / E&O (sole-prop tech, $1M limit) | $0 | $400–$600 | Per [`docs/storefront/03 §F`](../freelance/03-cost-analysis.md). Carry once revenue >$50k/yr. |
 | Cyber liability rider (data breach response, $250k limit) | $0 | $300–$500 | Add when first PII-handling client signs (T2+ admin portal). |
 | Tools-of-trade rider (laptop, monitor) on home insurance | $0 | $0–$120 | Often a $5–10/mo addition to existing tenant/home policy. |
 | **Subtotal** (Year-1, before $50k revenue trigger) | **$0** | **$0** | Insurance starts when the trigger trips, mid-year. |
@@ -160,7 +160,7 @@ Billing_surcharge_year1 ≈ 46,000 × 0.005 ≈ $230 CAD/year
 | Fiverr Pro listing fee | $0 | $0 | Free to list; takes 20% of completed orders (counted as a contra-revenue, not a cost line — see breakeven note below). |
 | Upwork Connects | $20 | $240 | Per-bid currency; ~$20/mo for steady proposing. |
 | Demo site hosting (10 verticals on Vercel free) | $0 | $0 | All under [`18 §1 vercel_free_bandwidth`](./18-capacity-and-unit-economics.md#1--assumptions-table). |
-| Demo site password protection (Vercel Pro) | $0 | $0 | Defer; rely on obscure preview URLs per [`10-lumivara-infotech-setup-plan.md §6`](./10-lumivara-infotech-setup-plan.md). |
+| Demo site password protection (Vercel Pro) | $0 | $0 | Defer; rely on obscure preview URLs per [`09b-lumivara-forge-setup-plan.md §6`](./09b-lumivara-forge-setup-plan.md). |
 | Paid ads (Google / Meta) | $0–$200 | $0–$2,400 | Defer to Year-2; organic + Fiverr is sufficient at sub-30 client scale. |
 | Brand-domain email (Google Workspace, 1 user) | $9 | $108 | Required for `hello@{{BRAND_SLUG}}.com`; alternative is Zoho free for 1 user ($0). |
 | **Subtotal** (Year-1, lean) | **$69** | **$828** | LinkedIn Premium + Upwork + Workspace. |
@@ -189,7 +189,7 @@ Billing_surcharge_year1 ≈ 46,000 × 0.005 ≈ $230 CAD/year
 | G Marketing & sales (lean) | ~$828 | ~$3,200 |
 | H Operator tools (partial-year ramp) | ~$1,200 | ~$1,800 |
 | **Subtotal — practice-wide non-AI** | **~$9,400 CAD** | **~$23,200 CAD** |
-| A Per-client cost-of-goods (AI / GitHub / Vercel etc., from [`18 §3`](./18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes), CAD-converted, derived from `freelance/03 §D` ramp) | ~$2,800 | ~$8,500 |
+| A Per-client cost-of-goods (AI / GitHub / Vercel etc., from [`18 §3`](./18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes), CAD-converted, derived from `storefront/03 §D` ramp) | ~$2,800 | ~$8,500 |
 | **Total recurring operating cost** | **~$12,200 CAD** | **~$31,700 CAD** |
 
 > **Why Year-3 steady-state revenue jumps payment-processing 3×.** Year-3 assumes the practice has stabilised at the [`18 §1 operator_hard_cap_clients`](./18-capacity-and-unit-economics.md#1--assumptions-table) (~30 clients) with churn replenished from a steady inbound pipeline. Gross revenue at that scale is ~$520k CAD/yr (~$43k/mo gross from MRR + setup-fee replenishment), so 2.9% is ~$15k/yr.
@@ -204,23 +204,23 @@ Billing_surcharge_year1 ≈ 46,000 × 0.005 ≈ $230 CAD/year
 
 ## §4 — Year-1 vs Year-3 burn comparison
 
-Year-3 is the planning horizon for the "is the practice viable as a full-time business?" question. The numbers below combine [§2 one-time launch](#2--one-time-launch-costs) + [§3 recurring](#3--recurring-operating-costs-practice-wide) and add the revenue side from [`docs/freelance/03 §D`](../freelance/03-cost-analysis.md).
+Year-3 is the planning horizon for the "is the practice viable as a full-time business?" question. The numbers below combine [§2 one-time launch](#2--one-time-launch-costs) + [§3 recurring](#3--recurring-operating-costs-practice-wide) and add the revenue side from [`docs/storefront/03 §D`](../freelance/03-cost-analysis.md).
 
 ### Year-1 P&L (single-operator phase)
 
 | Bucket | Amount (CAD) | Source |
 |---|---:|---|
 | **Revenue** | | |
-| MRR (sum of months 1–12) | ~$45,400 | [`freelance/03 §D`](../freelance/03-cost-analysis.md) MRR column summed |
+| MRR (sum of months 1–12) | ~$45,400 | [`storefront/03 §D`](../freelance/03-cost-analysis.md) MRR column summed |
 | Setup fees (sum of months 1–12) | ~$123,500 | Same table |
-| **Gross revenue Year-1** | **~$168,900** | (Note: `freelance/03 §D` quotes ~$177k, the $8k delta is mix-rounding noise. Use the table's $177k as authoritative.) |
+| **Gross revenue Year-1** | **~$168,900** | (Note: `storefront/03 §D` quotes ~$177k, the $8k delta is mix-rounding noise. Use the table's $177k as authoritative.) |
 | **Costs** | | |
 | One-time launch ([§2 base](#2--one-time-launch-costs)) | -$2,781 | This doc §2 |
 | Recurring operating ([§3 total](#3--recurring-operating-costs-practice-wide)) | -$12,200 | This doc §3 |
 | Fiverr take (estimated 20% × $20k of revenue from Fiverr-sourced clients) | -$4,000 | Optional contra; only if Fiverr is the source. Skip if outbound LinkedIn dominates. |
 | **Year-1 net before tax** | **~$152,000–158,000** | |
 | Personal income tax @ Ontario sole-prop ([`18 §1 tax_band_ontario_soleprop`](./18-capacity-and-unit-economics.md#1--assumptions-table) range 25–30%) | -$38,000 to -$47,400 | Range, not single number; consult an accountant. |
-| **Year-1 take-home** | **~$105,000–120,000 CAD** | Materially aligned with [`freelance/03 §D`](../freelance/03-cost-analysis.md) "$118k–$128k" headline (delta = the new non-AI line items this doc surfaces). |
+| **Year-1 take-home** | **~$105,000–120,000 CAD** | Materially aligned with [`storefront/03 §D`](../freelance/03-cost-analysis.md) "$118k–$128k" headline (delta = the new non-AI line items this doc surfaces). |
 
 ### Year-3 P&L (steady-state, 30 active clients, single-operator)
 
@@ -264,14 +264,14 @@ The 2nd-seat scenario is *more profitable take-home* than the single-operator ha
 
 ## §5 — Cost-per-customer breakeven
 
-Anchored on Tier 2 (Pro) at **$249 CAD/mo MRR + $4,500 setup**, which [`docs/freelance/02-pricing-tiers.md`](../freelance/02-pricing-tiers.md) names as the headline tier.
+Anchored on Tier 2 (Pro) at **$249 CAD/mo MRR + $4,500 setup**, which [`docs/storefront/02-pricing-tiers.md`](../freelance/02-pricing-tiers.md) names as the headline tier.
 
 ### Per-customer fully-loaded cost (Year-1, T2 Pro)
 
 | Line item | Per-T2-customer per-month (CAD) | Source |
 |---|---:|---|
 | AI cost allocation ([`18 §5 #margin-t2`](./18-capacity-and-unit-economics.md#5--margin-model-per-tier)) | $5 | `18 §5` |
-| Per-client infra (Vercel + GitHub headroom) | $0 | [`freelance/03 §A`](../freelance/03-cost-analysis.md) |
+| Per-client infra (Vercel + GitHub headroom) | $0 | [`storefront/03 §A`](../freelance/03-cost-analysis.md) |
 | Practice overhead allocation (§3 Year-1 total $12,200 ÷ avg 16 clients × 12 mo) | $64 | $12,200 / (16 × 12) |
 | Payment processing (2.9% × $249 + $0.30 USD × 1.39 FX) | $7.66 | Stripe |
 | Fiverr take (only if Fiverr-sourced; 20% × $249) | $0 or $50 | Skip if outbound LinkedIn |
@@ -286,7 +286,7 @@ Anchored on Tier 2 (Pro) at **$249 CAD/mo MRR + $4,500 setup**, which [`docs/fre
 | Fully-loaded cost (no Fiverr) | $77 | |
 | **Net per T2 customer per month** | **$172** | 69% gross margin |
 | Months to recoup operator's [§4 launch + 1 month operating cost](#4--year-1-vs-year-3-burn-comparison) ($2,781 + $1,000) | ~22 customer-months | i.e. 2 customers × 11 months OR 22 customers × 1 month |
-| **Customer count at which Year-1 recurring covers itself** ($12,200 / $172) | **~71 customer-months** | Realistic: 6 customers × 12 months, OR 12 customers × 6 months. Year-1 ramp ([`freelance/03 §D`](../freelance/03-cost-analysis.md)) hits this around month 4 of paid operations. |
+| **Customer count at which Year-1 recurring covers itself** ($12,200 / $172) | **~71 customer-months** | Realistic: 6 customers × 12 months, OR 12 customers × 6 months. Year-1 ramp ([`storefront/03 §D`](../freelance/03-cost-analysis.md)) hits this around month 4 of paid operations. |
 | **Payback period for one new T2 acquisition** (setup cost $0 since builds are operator-time + $4,500 setup fee) | **Day 1** | The setup fee already covers the marginal acquisition cost; every monthly retainer is pure cash margin minus the $77 fully-loaded cost. |
 
 ### Pricing sensitivity (what if T2 is $199 instead of $249?)
@@ -297,7 +297,7 @@ Anchored on Tier 2 (Pro) at **$249 CAD/mo MRR + $4,500 setup**, which [`docs/fre
 | Discount ($199) | $199 | $76 (lower Stripe %) | $123 | ~99 |
 | Premium ($299) | $299 | $78 | $221 | ~55 |
 
-**The $50 discount from $249 → $199 increases breakeven client-months by 40%.** This is the math behind the operator's "do not race to the bottom" instinct in [`docs/freelance/01-gig-profile.md`](../freelance/01-gig-profile.md).
+**The $50 discount from $249 → $199 increases breakeven client-months by 40%.** This is the math behind the operator's "do not race to the bottom" instinct in [`docs/storefront/01-gig-profile.md`](../freelance/01-gig-profile.md).
 
 ### Anchor IDs
 
@@ -317,7 +317,7 @@ Single source of truth for "which plan / tier / vendor is the practice committed
 | OpenAI / Codex plan | ChatGPT Plus ($20 USD/mo) for second-opinion review | [`AGENTS.md` Model table](../../AGENTS.md) | If Codex review volume exceeds Plus quota |
 | GitHub plan (mothership org) | Free → Team at Cliff 2 | [`#cliff-2-github-free-to-team`](./18-capacity-and-unit-economics.md#6--scale-thresholds-and-trigger-points) | Cliff 2 |
 | Vercel plan (mothership site) | Free | Mothership site is low-traffic | Pro at $20 USD/mo if mothership marketing site grows past free-tier limits |
-| Vercel plan (per-client sites) | Free | Per [`docs/freelance/03 §A`](../freelance/03-cost-analysis.md) | Client opts into Pro themselves; not on operator P&L |
+| Vercel plan (per-client sites) | Free | Per [`docs/storefront/03 §A`](../freelance/03-cost-analysis.md) | Client opts into Pro themselves; not on operator P&L |
 | Resend plan | Free (3,000 emails/mo) | [`18 §1 resend_free_emails`](./18-capacity-and-unit-economics.md#1--assumptions-table) | Cross 3,000 emails/mo across all client contact forms |
 | Twilio (SMS) | Pay-as-you-go | [`18 §1 twilio_*`](./18-capacity-and-unit-economics.md#1--assumptions-table) | None — usage-based |
 | Railway plan | Free → Hobby at Cliff 3 | [`#cliff-3-railway-free-to-hobby`](./18-capacity-and-unit-economics.md#6--scale-thresholds-and-trigger-points) | Cliff 3 |
@@ -345,9 +345,9 @@ Append-only. Add a row whenever a §2, §3, §6 line moves by more than ±10% OR
 
 | Date | Changed line | Old value | New value | Reason | Downstream impact |
 |---|---|---|---|---|---|
-| 2026-04-29 | (seeded) §2 one-time launch base case | (none) | $2,781 CAD | Initial draft per #113 | §4 Year-1 net references this. Reconciles with `freelance/03 §D` headline within ~$8k mix-rounding noise. |
+| 2026-04-29 | (seeded) §2 one-time launch base case | (none) | $2,781 CAD | Initial draft per #113 | §4 Year-1 net references this. Reconciles with `storefront/03 §D` headline within ~$8k mix-rounding noise. |
 | 2026-04-29 | (seeded) §3 Year-1 recurring practice-wide non-AI | (none) | ~$9,400 CAD | Initial draft per #113 | New surface area not previously aggregated. Pulls the line items that were scattered in `08 §1–§4` into one model. |
-| 2026-04-29 | (seeded) §5 fully-loaded T2 cost-per-customer | (none) | $77 CAD/mo (no Fiverr) | Initial draft per #113 | First explicit breakeven calc. `freelance/03 §A` summary cost-of-goods only counted AI + operator time; this adds practice-overhead allocation + Stripe fees. |
+| 2026-04-29 | (seeded) §5 fully-loaded T2 cost-per-customer | (none) | $77 CAD/mo (no Fiverr) | Initial draft per #113 | First explicit breakeven calc. `storefront/03 §A` summary cost-of-goods only counted AI + operator time; this adds practice-overhead allocation + Stripe fees. |
 | 2026-04-29 | (seeded) Year-3 single-operator sustainability warning | (none) | ~$45–50k take-home | Initial draft per #113 | Material business decision: forces a 30+ client expansion plan OR a price increase OR Cliff 5 hire to sustain operator-comparable take-home. Surfaced in §4. |
 
 ---

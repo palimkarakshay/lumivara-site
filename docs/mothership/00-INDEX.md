@@ -21,9 +21,13 @@
 
 # Mothership Business Pack — Master Index
 
-This folder is the **operator-side runbook for the freelance practice that builds, ships, and maintains small-business websites with an AI autopilot**. It is the successor to (and supersedes for operator concerns) `docs/TEMPLATE_REBUILD_PROMPT.md`. The original template stays as a historical artefact; the v3 rebuild prompt lives at `06-operator-rebuild-prompt-v3.md`.
+> _Lane: 🛠 Pipeline — operator-only business pack; never copied to a client repo._
+>
+> **Folder name retained.** Per the operator decision on 2026-04-29, this folder stays as `docs/mothership/` even though [`15b §2`](./15b-naming-conventions.md) locks the long-term rename to `docs/platform/`. Prose terminology (`mothership` → `platform` in noun usage) is being swept incrementally — `scripts/pattern-c-audit.sh` keeps the brand-drift checks green. The companion folder `docs/freelance/` was renamed to `docs/storefront/` on the same day per the same lock.
 
-> **Provisional brand:** *Lumivara Forge* — see `01-business-plan.md §1` for four other options and the trade-offs. Treat the brand as `{{BRAND}}` everywhere in this folder so a global rename is cheap.
+This folder is the **operator-side runbook for the practice that builds, ships, and maintains small-business websites with an AI autopilot**. It is the successor to (and supersedes for operator concerns) `docs/TEMPLATE_REBUILD_PROMPT.md`. The original template stays as a historical artefact; the v3 rebuild prompt lives at `06-operator-rebuild-prompt-v3.md`.
+
+> **Brand locked:** **Lumivara Forge** (2026-04-28; see [`15-terminology-and-brand.md §4`](./15-terminology-and-brand.md)). Slug: `lumivara-forge`. Trademark availability check (CIPO Class 42 + USPTO) per `15 §5` is the only remaining pre-launch gate. `{{BRAND}}` placeholders downstream are gradually being resolved; new docs may use the literal name directly.
 
 ---
 
@@ -62,8 +66,7 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 07 | `07-client-handover-pack.md` | "What do I send to the client?" — includes dummy intake forms | Operator → Client | **Per engagement** (rendered per client) |
 | 08 | `08-future-work.md` | "What's deferred? Legal, vault, market research, contracts, payments." | Operator | Once, revisit before each big milestone |
 | 09 | `09-github-account-topology.md` | "Should I create a new GitHub org/account, and what are the three identities?" | Operator | Once |
-| 10 | `10-lumivara-infotech-setup-plan.md` | "How do I actually set up the Lumivara Infotech GitHub org with real slugs?" | Operator | Once (at brand-lock time) |
-| 09 | `09-github-account-topology.md` | "Should I create a new GitHub org? Free vs paid? Bot account?" | Operator | Once |
+| 09b | `09b-lumivara-forge-setup-plan.md` | "How do I actually set up the Lumivara Forge GitHub org with real slugs?" — companion to 09 (renamed 2026-04-29 from `10-lumivara-infotech-setup-plan.md`; the prior `10` collided with the critique series, and the 'Infotech' working name was retired by `15 §4`) | Operator | Once (at brand-lock time) |
 | 10 | `10-critique-executive-summary.md` | "Is the pack viable? What are the top 10 issues?" | Operator | Read first when revisiting the pack |
 | 11 | `11-critique-architectural-issues.md` | "What structural problems block production?" — names the cron-on-default-branch bug + three pick-one fix patterns. **Pattern C chosen 2026-04-28; canonical statement now in `02b`.** | Operator | Once; closed in canonical docs by Pattern C propagation (this PR series) |
 | 12 | `12-critique-security-secrets.md` | "Where do the secrets / cost-firewall leaks come from?" — single-Owner break-glass, per-client Resend keys, two-phase HMAC rotation, GitHub-App swap | Operator | Once; closed by Run B in `16 §2` |
@@ -78,19 +81,19 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 20 | `20-launch-and-operating-cost-model.md` | "Practice-wide cost model: one-time launch costs, all recurring categories (legal, payment processing, accounting, insurance, marketing, operator tools), Year-1 vs Year-3 burn, and cost-per-customer breakeven against the planned T2 headline tier" | Operator | Once; refresh annually + before any vendor swap or pricing change |
 | 21 | `21-ip-protection-strategy.md` | "IP inventory and protection plan: what we own, which legal mechanism (copyright / trademark / trade secret / patent) protects each, contractor + per-engagement IP assignment, insurance posture (E&O / cyber / IP infringement), Canada-first jurisdictional notes with US/EU triggers, consolidated lawyer-review checklist" | Operator | Once; refresh before each lawyer engagement and on any new asset class |
 | 21 | `21-vault-strategy-adr.md` | "Which vault stores the operator's IP and business secrets, what goes in it, who can see what, and how does it stay separate from the per-client runtime topology in `03 §3`?" — picks 1Password Business with vendor-agnostic structure / roles / rotation / SOP / migration plan from `pass` | Operator | Once; revisit at Cliff 5 (`18 §6`) when a second seat lands |
-| 22 | `22-engagement-risk-protection.md` | "What is Lumivara Infotech's documented posture against the three client-engagement risks — data privacy (PIPEDA / Law 25), IP leakage in client contracts, and clients failing to pay after signing? What gets disclosed at onboarding, what goes in the MSA / SOW, and what is explicitly a human-only step?" — drafts §3 IP clauses + §4 non-payment safeguards + §5 risk register + §6 onboarding flow for counsel review | Operator | **Per engagement (§6) + once for counsel review** |
+| 22 | `22-engagement-risk-protection.md` | "What is Lumivara Forge's documented posture against the three client-engagement risks — data privacy (PIPEDA / Law 25), IP leakage in client contracts, and clients failing to pay after signing? What gets disclosed at onboarding, what goes in the MSA / SOW, and what is explicitly a human-only step?" — drafts §3 IP clauses + §4 non-payment safeguards + §5 risk register + §6 onboarding flow for counsel review | Operator | **Per engagement (§6) + once for counsel review** |
 | — | `pattern-c-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
 | — | `templates/00-templates-index.md` | "Vertical-specific content prompts and intake forms for each client business type — restaurant is full; plumber/realtor/recruiter are stubs; six more verticals planned" | Operator | **Per engagement (restaurant = full; others = stub)** |
 | — | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) | "How do I spin Lumivara People Advisory out into its own client repo, end-to-end?" — phased one-shot runbook with allow/deny tables (`docs/migrations/_artifact-allow-deny.md`), per-phase dry-run / rollback / acceptance, and Pattern C §4/§5 as gate / acceptance set | Operator | **Once (per Client #1 spinout)** |
 
 Existing context that this folder builds on (do not duplicate):
 
-- `docs/freelance/01-gig-profile.md` — outward-facing pitch, gigs, FAQ, "say no to" filters
-- `docs/freelance/02-pricing-tiers.md` — four-tier ladder with prices and decision tree
-- `docs/freelance/03-cost-analysis.md` — break-even and quit-the-day-job ramp
-- `docs/freelance/05-template-hardening-notes.md` — running list of system-hardening items
-- `docs/freelance/07-client-migration-strategy.md` — operator playbook for prospects who already have a website (Path A keep-and-integrate, Path B full migration, hybrids, edge cases, decision matrix). Sales-shareable distillation lives at `docs/freelance/08-client-migration-summary.md`. Cross-link rather than duplicate; the strategy doc is operator+sales-facing and lives in `docs/freelance/` per the §1 rule that operator-only mechanics stay in `docs/mothership/` while client-routing playbooks stay in the storefront pack.
-- [`docs/research/00-INDEX.md`](../research/00-INDEX.md) — **evidentiary layer for all stakeholder decks**: two raw Gemini Deep Research outputs preserved verbatim under `raw/`, three synthesis docs, a [V]/[S]/[C]-flagged source bibliography, plus client personas, switch reasons, and honest drawbacks. Anything claimed in `docs/decks/` or `docs/freelance/04-slide-deck.md` traces back to a row in `03-source-bibliography.md`.
+- `docs/storefront/01-gig-profile.md` — outward-facing pitch, gigs, FAQ, "say no to" filters
+- `docs/storefront/02-pricing-tiers.md` — four-tier ladder with prices and decision tree
+- `docs/storefront/03-cost-analysis.md` — break-even and quit-the-day-job ramp
+- `docs/storefront/05-template-hardening-notes.md` — running list of system-hardening items
+- `docs/storefront/07-client-migration-strategy.md` — operator playbook for prospects who already have a website (Path A keep-and-integrate, Path B full migration, hybrids, edge cases, decision matrix). Sales-shareable distillation lives at `docs/storefront/08-client-migration-summary.md`. Cross-link rather than duplicate; the strategy doc is operator+sales-facing and lives in `docs/storefront/` per the §1 rule that operator-only mechanics stay in `docs/mothership/` while client-routing playbooks stay in the storefront pack.
+- [`docs/research/00-INDEX.md`](../research/00-INDEX.md) — **evidentiary layer for all stakeholder decks**: two raw Gemini Deep Research outputs preserved verbatim under `raw/`, three synthesis docs, a [V]/[S]/[C]-flagged source bibliography, plus client personas, switch reasons, and honest drawbacks. Anything claimed in `docs/decks/` or `docs/storefront/04-slide-deck.md` traces back to a row in `03-source-bibliography.md`.
 - [`docs/decks/00-INDEX.md`](../decks/00-INDEX.md) — **stakeholder deck pack**: investor, partner (co-operator), employee (engineer / VA), prospective-client (persona-tailored), and advisor (pressure-test). Each deck cites verified rows in `docs/research/03-source-bibliography.md`.
 - `docs/AI_ROUTING.md` — multi-AI router policy and fallback chains
 - `docs/ADMIN_PORTAL_PLAN.md` — admin-portal architecture (5 phases)
@@ -122,7 +125,7 @@ Each phase is sized to fit comfortably inside a single Claude run with the 50%/8
 | **P4.6 — Critique closure** | Run A (`16 §1`) → fix architectural cron flaw; Run B (`16 §2`) → close security gaps; Run C (`16 §3`) → reconcile maths; Run D (`16 §4`) → operations sweep | ⏳ **Run before any P5 work** |
 | **P5 — Mothership repo bootstrap** | Run `05-mothership-repo-buildout-plan.md` end-to-end against an empty `palimkarakshay/{{BRAND_SLUG}}-mothership` repo | ⏳ After P4.6 |
 | **P6 — Migrate Client #1** | Re-scaffold *Lumivara People Advisory* into a clean per-client repo using `06-operator-rebuild-prompt-v3.md` | ⏳ After P5 |
-| **P7 — Hardening tasks** | Walk `docs/freelance/05-template-hardening-notes.md` items into issues against the new mothership repo | ⏳ After P6 |
+| **P7 — Hardening tasks** | Walk `docs/storefront/05-template-hardening-notes.md` items into issues against the new mothership repo | ⏳ After P6 |
 | **P8 — Legal & vault** | Implement items in `08-future-work.md` (PIPEDA, contracts, secrets vault, market study) | ⏳ Spread across months 2–6 |
 
 ### How to resume after a context-clear
@@ -148,7 +151,7 @@ When you're tempted to add a new doc, use this table to decide where it goes:
 | Is it client-shareable text or a per-client form? | Yes | Render from `07-client-handover-pack.md` into the per-client repo's `docs/client/` (created at engagement time, never in the mothership) |
 | Is it about the autopilot's internal mechanics (workflows, scripts)? | Yes | `docs/mothership/` plus the actual workflow lives in the new mothership repo |
 | Is it about a specific *client business's* content/branding/copy? | Yes | The client's own repo, never here |
-| Is it the public-facing pitch (Fiverr/LinkedIn/Upwork)? | Yes | `docs/freelance/` (already exists; keep it as the storefront) |
+| Is it the public-facing pitch (Fiverr/LinkedIn/Upwork)? | Yes | `docs/storefront/` (already exists; keep it as the storefront) |
 
 ---
 

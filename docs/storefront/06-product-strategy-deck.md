@@ -30,7 +30,7 @@ style: |
 A working answer to nine questions:
 **benefits · differentiation · customer voice · competitor claims · end goal · steps · plan · risks · resources.**
 
-<span class="small">Operator-only working deck · 2026-04-29 · sourced from `docs/mothership/` + `docs/freelance/`</span>
+<span class="small">Operator-only working deck · 2026-04-29 · sourced from `docs/mothership/` + `docs/storefront/`</span>
 
 ---
 
@@ -39,7 +39,7 @@ A working answer to nine questions:
 <br/>
 
 This is the **internal strategy deck** — not the prospect deck.
-The prospect-facing deck is `docs/freelance/04-slide-deck.md` ("imagine your site here").
+The prospect-facing deck is `docs/storefront/04-slide-deck.md` ("imagine your site here").
 
 This one is the operator's own answer to: *what are we actually building, why does it win, and what does it take to ship?*
 
@@ -61,7 +61,7 @@ Three things in one offer:
 2. **The phone-edit system** — change requests in 30 seconds, no developer call.
 3. **The "always-improving" subscription** — the site gets quietly better every month.
 
-<span class="small">Source: `docs/mothership/01-business-plan.md §2`, `docs/freelance/01-gig-profile.md` Part 2.</span>
+<span class="small">Source: `docs/mothership/01-business-plan.md §2`, `docs/storefront/01-gig-profile.md` Part 2.</span>
 
 ---
 
@@ -86,7 +86,7 @@ Three things in one offer:
 | **Every change waits for their tap** | The bot proposes, the owner publishes. Nothing surprises them live. |
 | **Multi-channel intake** | Phone shortcut, email, or SMS — whichever is in front of them. |
 
-<span class="small">Source: `docs/freelance/01-gig-profile.md` Parts 2 & 6, `docs/freelance/04-slide-deck.md` slides 4–7.</span>
+<span class="small">Source: `docs/storefront/01-gig-profile.md` Parts 2 & 6, `docs/storefront/04-slide-deck.md` slides 4–7.</span>
 
 ---
 
@@ -105,7 +105,7 @@ Lumivara Forge **inverts** that:
 - The client's *own* requested edits are unlimited within fair-use on Tier 2.
 - Total cost over 24 months is **$7.5–$14k vs. $15–$30k+ for an agency.**
 
-<span class="small">Source: `docs/freelance/02-pricing-tiers.md` Tier 2, `docs/freelance/04-slide-deck.md` "What it costs … vs. an agency."</span>
+<span class="small">Source: `docs/storefront/02-pricing-tiers.md` Tier 2, `docs/storefront/04-slide-deck.md` "What it costs … vs. an agency."</span>
 
 ---
 
@@ -124,7 +124,7 @@ Lumivara Forge **inverts** that:
 
 > The retainer model isn't more expensive. It's cheaper, predictable, and the site is *better* every month instead of degrading.
 
-<span class="small">Source: `docs/freelance/04-slide-deck.md` cost-comparison slide; `docs/freelance/02-pricing-tiers.md`.</span>
+<span class="small">Source: `docs/storefront/04-slide-deck.md` cost-comparison slide; `docs/storefront/02-pricing-tiers.md`.</span>
 
 ---
 
@@ -186,7 +186,7 @@ Five layers, from "table stakes" to "uniquely ours":
 | Two-repo "autopilot is hidden" architecture | n/a | n/a | n/a | ✅ |
 | Total 24-mo cost (active small biz) | $400 + your time | $15–30k+ | $5–15k + per-edit | $7.5–14k all-in |
 
-<span class="small">Source: `docs/freelance/01-gig-profile.md` Part 8 (audience matrix), `docs/freelance/04-slide-deck.md`.</span>
+<span class="small">Source: `docs/storefront/01-gig-profile.md` Part 8 (audience matrix), `docs/storefront/04-slide-deck.md`.</span>
 
 ---
 
@@ -197,11 +197,11 @@ Five layers, from "table stakes" to "uniquely ours":
 - **n8n + multi-AI router + GitHub-App pattern is engineered, not configured.** A solo freelancer would need 3–6 months of vibe-coding to replicate, by which time they're competing on the same terms — fine.
 - **Most agencies make money on per-edit billing.** Killing that revenue stream is structurally hard for them; it's not a feature they'll add.
 - **Squarespace / Wix can't open-source-clone this.** They're CMS platforms; the value here is "you own the code AND it self-improves." Different shape entirely.
-- **The system itself is licensed per engagement** — not work-for-hire. The client owns the *site*; we license the *system around it*. (See `docs/freelance/05-template-hardening-notes.md`.)
+- **The system itself is licensed per engagement** — not work-for-hire. The client owns the *site*; we license the *system around it*. (See `docs/storefront/05-template-hardening-notes.md`.)
 
 > The moat is the **operating system around the codebase**, not the codebase. Nobody in this segment is selling that today.
 
-<span class="small">Source: `docs/freelance/05-template-hardening-notes.md`, `docs/mothership/01-business-plan.md §6`.</span>
+<span class="small">Source: `docs/storefront/05-template-hardening-notes.md`, `docs/mothership/01-business-plan.md §6`.</span>
 
 ---
 
@@ -224,7 +224,7 @@ Five layers, from "table stakes" to "uniquely ours":
 | **Local trades / clinics / studios** | "I want to look professional and have an online booking link. My current site looks like 2014." |
 | **Solo legal practice** | "I need a clean site that updates fees once a year without a developer call." |
 
-<span class="small">Source: `docs/freelance/01-gig-profile.md` Part 8 ("who to say yes to").</span>
+<span class="small">Source: `docs/storefront/01-gig-profile.md` Part 8 ("who to say yes to").</span>
 
 ---
 
@@ -245,7 +245,7 @@ Five layers, from "table stakes" to "uniquely ours":
 > The retainer speaks directly to "no surprise invoices."
 > Pattern C handover speaks directly to "I won't be locked in."
 
-<span class="small">Source: `docs/freelance/01-gig-profile.md` Parts 4 & 6, `docs/freelance/04-slide-deck.md` "Honest objections."</span>
+<span class="small">Source: `docs/storefront/01-gig-profile.md` Parts 4 & 6, `docs/storefront/04-slide-deck.md` "Honest objections."</span>
 
 ---
 
@@ -265,7 +265,7 @@ Five layers, from "table stakes" to "uniquely ours":
 > **"I'm worried about being locked in."**
 > *You can't be. Pattern C means the autopilot is in our repo, not yours. Cancel any time; you keep a clean Next.js site.*
 
-<span class="small">Source: `docs/freelance/00-quick-start.md` "Is this marketable?", `docs/freelance/04-slide-deck.md` objections slide.</span>
+<span class="small">Source: `docs/storefront/00-quick-start.md` "Is this marketable?", `docs/storefront/04-slide-deck.md` objections slide.</span>
 
 ---
 
@@ -289,7 +289,7 @@ Five layers, from "table stakes" to "uniquely ours":
 | **AI website builders (Durable, Wix ADI, Framer AI)** | "AI builds your site in 60 seconds." | One-shot generators. No edit-loop, no improvement subscription, no real ownership. |
 | **DIY WordPress + plugins** | "You own everything, edit anything." | True, and a maintenance nightmare. Plugin conflicts, security patches, expert needed monthly. |
 
-<span class="small">Source: `docs/freelance/01-gig-profile.md` Part 8, `docs/freelance/00-quick-start.md` market questions.</span>
+<span class="small">Source: `docs/storefront/01-gig-profile.md` Part 8, `docs/storefront/00-quick-start.md` market questions.</span>
 
 ---
 
@@ -324,7 +324,7 @@ Honest answer: because the economics only work for **one operator running 25–3
 
 > The category is structurally hostile to anyone who isn't a senior engineer + one Claude Max subscription. That window is exactly the operator's profile.
 
-<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part E, `docs/mothership/18-capacity-and-unit-economics.md` cliffs.</span>
+<span class="small">Source: `docs/storefront/03-cost-analysis.md` Part E, `docs/mothership/18-capacity-and-unit-economics.md` cliffs.</span>
 
 ---
 
@@ -351,7 +351,7 @@ Honest answer: because the economics only work for **one operator running 25–3
 > If a feature, doc, or tool helps the operator serve **paid retainer clients** better — build it.
 > If it helps **prospects, hypothetical SaaS users, or other agencies** — defer it.
 
-<span class="small">Source: `docs/freelance/05-template-hardening-notes.md` "Long-term", `docs/mothership/01-business-plan.md §9`.</span>
+<span class="small">Source: `docs/storefront/05-template-hardening-notes.md` "Long-term", `docs/mothership/01-business-plan.md §9`.</span>
 
 ---
 
@@ -372,7 +372,7 @@ By **month 24**:
 - 40+ retainers, second engineer hired, operator drops to ~30 hrs/week on the practice.
 - Still no SaaS, no self-serve. The system stays operator-mediated until the numbers force the change.
 
-<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part D (12-month spreadsheet), Part C (milestones).</span>
+<span class="small">Source: `docs/storefront/03-cost-analysis.md` Part D (12-month spreadsheet), Part C (milestones).</span>
 
 ---
 
@@ -388,7 +388,7 @@ By **month 24**:
 
 > Saying "no" to four of these every quarter is what keeps the operator's hours under 60 and the margins above 60%.
 
-<span class="small">Source: `docs/mothership/01-business-plan.md §6`, `docs/freelance/01-gig-profile.md` Part 8.</span>
+<span class="small">Source: `docs/mothership/01-business-plan.md §6`, `docs/storefront/01-gig-profile.md` Part 8.</span>
 
 ---
 
@@ -429,7 +429,7 @@ By **month 24**:
 | **Months 10–12** | MRR alone covers fixed personal expenses; 6-month runway saved; **quit the day job**. |
 | **Months 13–24** | Hire part-time VA at ~25 clients; second engineer at ~35; cap at 30 retainers until VA in place. |
 
-<span class="small">Source: `docs/freelance/01-gig-profile.md` Part 10 (30-day plan), `docs/freelance/03-cost-analysis.md` Part C (milestones), Part E (tooling triggers).</span>
+<span class="small">Source: `docs/storefront/01-gig-profile.md` Part 10 (30-day plan), `docs/storefront/03-cost-analysis.md` Part C (milestones), Part E (tooling triggers).</span>
 
 ---
 
@@ -480,7 +480,7 @@ By **month 24**:
 
 **Year-1 gross ≈ CAD $177k. Year-1 net (pre-tax) ≈ CAD $170.5k. Take-home ≈ $100–110k after Ontario sole-prop tax + 15% slow-month adjustment.**
 
-<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part D (12-month spreadsheet), `docs/mothership/18-capacity-and-unit-economics.md` cost envelopes.</span>
+<span class="small">Source: `docs/storefront/03-cost-analysis.md` Part D (12-month spreadsheet), `docs/mothership/18-capacity-and-unit-economics.md` cost envelopes.</span>
 
 ---
 
@@ -518,7 +518,7 @@ By **month 24**:
 | — | Client #35 | Hire part-time second engineer for monthly improvement runs |
 | — | Client #50 | Decide whether to become an agency (Stage 2). |
 
-<span class="small">Source: `docs/mothership/18-capacity-and-unit-economics.md §6`, `docs/freelance/03-cost-analysis.md` Part E.</span>
+<span class="small">Source: `docs/mothership/18-capacity-and-unit-economics.md §6`, `docs/storefront/03-cost-analysis.md` Part E.</span>
 
 ---
 
@@ -534,7 +534,7 @@ By **month 24**:
 | Tier 3 — Business | 10% | 15% | Boutique firms; higher SLA. |
 | Tier 4 — Agency | 0% | 0% | Custom-quote only; not promoted. |
 
-<span class="small">Source: `docs/freelance/02-pricing-tiers.md` (each tier's "role"), `docs/freelance/03-cost-analysis.md` Part C.</span>
+<span class="small">Source: `docs/storefront/02-pricing-tiers.md` (each tier's "role"), `docs/storefront/03-cost-analysis.md` Part C.</span>
 
 ---
 
@@ -559,7 +559,7 @@ By **month 24**:
 | **Bot ships breaking change to prod** | Low | High | Auto-merge gate is opt-in per label; design + critical paths excluded; Vercel preview always required; every change waits for client tap on T0/T1. |
 | **Client refuses to pay** | Med | Med | Stripe auto-charge; pause autopilot at +14 days; full lockout at +30; site stays live (it's their domain). |
 
-<span class="small">Source: `docs/mothership/01-business-plan.md §8`, `docs/freelance/03-cost-analysis.md` Part F.</span>
+<span class="small">Source: `docs/mothership/01-business-plan.md §8`, `docs/storefront/03-cost-analysis.md` Part F.</span>
 
 ---
 
@@ -576,7 +576,7 @@ By **month 24**:
 | **A larger player (Webflow, Framer) ships an AI-edit feature** | Could compress the differentiation from 4 layers to 3. | Pattern C ownership claim is structurally hard to copy without changing their business model. |
 | **Solo-operator dependency** | Operator hospitalised → clients have no operator. | Break-glass envelope, successor protocol, vault redundancy (1Password Business + Bitwarden self-host). Trigger: client #5 OR MRR > $3k. |
 
-<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part F, `docs/mothership/08-future-work.md §4` (vault).</span>
+<span class="small">Source: `docs/storefront/03-cost-analysis.md` Part F, `docs/mothership/08-future-work.md §4` (vault).</span>
 
 ---
 
@@ -598,7 +598,7 @@ By week 4, success looks like:
 
 > If you have those, the market exists. If you don't, the bottleneck is **reach**, not product — fix is more posting, not more features.
 
-<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part G.</span>
+<span class="small">Source: `docs/storefront/03-cost-analysis.md` Part G.</span>
 
 ---
 
@@ -622,7 +622,7 @@ By week 4, success looks like:
 | **Second engineer** (part-time) | Hired | At ~35 active clients | Negotiable; second Anthropic seat unlocks parallel work. |
 | **Logo / branding designer** (referral, not employee) | External | When a client needs it | Pass-through cost; you don't middleman. |
 
-<span class="small">Source: `docs/mothership/08-future-work.md §2`, `docs/freelance/03-cost-analysis.md` Part E.</span>
+<span class="small">Source: `docs/mothership/08-future-work.md §2`, `docs/storefront/03-cost-analysis.md` Part E.</span>
 
 ---
 
@@ -644,7 +644,7 @@ By week 4, success looks like:
 | **1Password Business + Bitwarden self-host** | Vault redundancy | ~CAD $100/mo (after client #5) |
 | **Pro-liability insurance** | Once revenue > $50k | ~$400/yr CAD |
 
-<span class="small">Source: `docs/mothership/01-business-plan.md §3.1`, `docs/freelance/03-cost-analysis.md` Part A, `docs/mothership/08-future-work.md §4`.</span>
+<span class="small">Source: `docs/mothership/01-business-plan.md §3.1`, `docs/storefront/03-cost-analysis.md` Part A, `docs/mothership/08-future-work.md §4`.</span>
 
 ---
 
@@ -661,7 +661,7 @@ By week 4, success looks like:
 
 > **Recurring monthly burn at 30 clients ≈ CAD $700–900** (Claude Max 20x + 2nd seat + Twilio + Railway + 1Password). Against MRR ~$8.5k that's a 10% cost ratio.
 
-<span class="small">Source: `docs/freelance/03-cost-analysis.md` Parts C & D, `docs/mothership/18-capacity-and-unit-economics.md` cost envelopes.</span>
+<span class="small">Source: `docs/storefront/03-cost-analysis.md` Parts C & D, `docs/mothership/18-capacity-and-unit-economics.md` cost envelopes.</span>
 
 ---
 
@@ -672,7 +672,7 @@ By week 4, success looks like:
 These already exist; the value is in keeping them updated:
 
 - **`docs/mothership/`** — 18+ operator-side docs (canonical architecture, security, cadence, engagement playbooks, critique closures).
-- **`docs/freelance/`** — public-facing storefront (gigs, pricing, cost analysis, prospect deck).
+- **`docs/storefront/`** — public-facing storefront (gigs, pricing, cost analysis, prospect deck).
 - **`workflows-template/`** — 12 GitHub Actions workflows ready to push to per-client pipeline repos.
 - **`scripts/`** — triage prompts, execute prompts, multi-AI router, plan-issue, bootstrap-kanban.
 - **`n8n/`** — workflow JSON exports (intake-web/email/sms, notify, record, deploy-confirmed).
@@ -682,7 +682,7 @@ These already exist; the value is in keeping them updated:
 
 > **The IP isn't the codebase. It's the runbooks + the cadence + the licensed system around the codebase.** That's what we license per engagement and reverts on termination.
 
-<span class="small">Source: `docs/mothership/00-INDEX.md` quick links, `docs/freelance/05-template-hardening-notes.md`.</span>
+<span class="small">Source: `docs/mothership/00-INDEX.md` quick links, `docs/storefront/05-template-hardening-notes.md`.</span>
 
 ---
 
@@ -723,11 +723,11 @@ The deck is a *synthesis* of these canonical docs. When in doubt, the doc wins:
 - `docs/mothership/04-tier-based-agent-cadence.md` — cron + model + auto-merge per tier
 - `docs/mothership/08-future-work.md` — legal, vault, payment automation, market research
 - `docs/mothership/18-capacity-and-unit-economics.md` — single source of truth for cost / cliffs
-- `docs/freelance/01-gig-profile.md` — outward pitch + audience matrix
-- `docs/freelance/02-pricing-tiers.md` — four-tier ladder
-- `docs/freelance/03-cost-analysis.md` — break-even + quit-the-day-job ramp
-- `docs/freelance/04-slide-deck.md` — prospect-facing deck (this one's sibling)
-- `docs/freelance/05-template-hardening-notes.md` — IP / licensing / Stage-3 thinking
+- `docs/storefront/01-gig-profile.md` — outward pitch + audience matrix
+- `docs/storefront/02-pricing-tiers.md` — four-tier ladder
+- `docs/storefront/03-cost-analysis.md` — break-even + quit-the-day-job ramp
+- `docs/storefront/04-slide-deck.md` — prospect-facing deck (this one's sibling)
+- `docs/storefront/05-template-hardening-notes.md` — IP / licensing / Stage-3 thinking
 - `docs/AI_ROUTING.md` — multi-AI router + resilience ladder
 
 ---
@@ -744,4 +744,4 @@ The deck is a *synthesis* of these canonical docs. When in doubt, the doc wins:
 
 <br/>
 
-<span class="small">© 2026. Generated 2026-04-29 from `docs/mothership/` + `docs/freelance/`. Subject to revision as the cost-optimisation phase begins (see `AGENTS.md`).</span>
+<span class="small">© 2026. Generated 2026-04-29 from `docs/mothership/` + `docs/storefront/`. Subject to revision as the cost-optimisation phase begins (see `AGENTS.md`).</span>

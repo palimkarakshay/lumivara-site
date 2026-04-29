@@ -6,8 +6,8 @@
 > ⚠️ **Deprecated-doc policy.** Mobile capture via the operator's phone-PAT
 > + HTTP Shortcuts / Apple Shortcuts is **deprecated**. The canonical
 > capture path is the `/admin` portal plus n8n-routed email + SMS
-> fallbacks. Do not follow the setup steps formerly in `PHONE_SETUP.md` —
-> that file is retained as a deprecation notice only. Canonical reading:
+> fallbacks. Do not follow the setup steps formerly in `PHONE_SETUP.md`
+> (relocated 2026-04-29 to [`docs/_deprecated/PHONE_SETUP.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/_deprecated/PHONE_SETUP.md)) — that file is retained as a historical deprecation notice only. Canonical reading:
 > [`docs/N8N_SETUP.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/N8N_SETUP.md),
 > [`docs/ADMIN_PORTAL_PLAN.md`](https://github.com/palimkarakshay/lumivara-site/blob/main/docs/ADMIN_PORTAL_PLAN.md),
 > and the v1→v2 migration matrix in

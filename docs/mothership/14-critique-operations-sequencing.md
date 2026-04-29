@@ -8,7 +8,7 @@ The pack is internally cross-referenced but has several sequencing gaps where th
 
 ## §1 — 🟡 Tier 0 economics are a loss-leader, not a tier
 
-`freelance/02` describes Tier 0 as "$1,200 setup, no monthly, future changes billed at $90 per change (1-day turnaround)." `07 Dummy F` (Jimmy Barber) follows this.
+`storefront/02` describes Tier 0 as "$1,200 setup, no monthly, future changes billed at $90 per change (1-day turnaround)." `07 Dummy F` (Jimmy Barber) follows this.
 
 The honest accounting:
 
@@ -26,7 +26,7 @@ freelance/02 Tier 0 — Strategic role:
   beyond that, decline or upsell to T1.
 ```
 
-The current "deliberately priced cheap enough to clear quickly, but not so cheap it attracts problem clients" language is fine for the gig profile (`freelance/01`), but the pricing tiers doc should be honest about the margin.
+The current "deliberately priced cheap enough to clear quickly, but not so cheap it attracts problem clients" language is fine for the gig profile (`storefront/01`), but the pricing tiers doc should be honest about the margin.
 
 ---
 

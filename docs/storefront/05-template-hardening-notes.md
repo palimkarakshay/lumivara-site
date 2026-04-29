@@ -41,8 +41,8 @@ The principle: the *site* is theirs to own. The *automation pipeline* is yours t
 
 ## What to do *now* (before any of the above)
 
-1. **Don't commit the unlicensed prompt.** It's in `docs/TEMPLATE_REBUILD_PROMPT.md` already (a copy was uploaded to the conversation). For now keep it where it is — but mark this folder (`docs/freelance/`) and the template doc as *internal* in your README.
-2. **Don't share the live repo URL with prospects.** Show the live *site* (`lumivara.com`) and the public-facing slide deck only. The architecture under the hood is your competitive secret until you've decided how to license it.
+1. **Don't commit the unlicensed prompt.** It's in `docs/TEMPLATE_REBUILD_PROMPT.md` already (a copy was uploaded to the conversation). For now keep it where it is — but mark this folder (`docs/storefront/`) and the template doc as *internal* in your README.
+2. **Don't share the live repo URL with prospects.** Show the live *site* (`lumivara-forge.com`) and the public-facing slide deck only. The architecture under the hood is your competitive secret until you've decided how to license it.
 3. **Track every potential client touchpoint** in a single CRM (HubSpot free tier, or a Notion table) so you have a record of who's seen what level of detail. Useful if a leakage ever traces back to one prospect.
 
 ---

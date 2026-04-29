@@ -114,7 +114,7 @@ If the operator approaches saturation, they walk the cliffs in [`18 §6`](18-cap
 
 1. Cliff 1 — Claude Pro → Max 5x. Plan-cost numbers in [`18 §1`](18-capacity-and-unit-economics.md#1--assumptions-table) (`claude_pro_cost`, `claude_max5x_cost`).
 2. Cliff 4 — Max 5x → Max 20x. Plan-cost number in `18 §1` (`claude_max20x_cost`).
-3. Cliff 5 — beyond Max 20x, hire a second operator with their own Anthropic seat (`docs/freelance/03-cost-analysis.md §E` and `18 §6` Cliff 5).
+3. Cliff 5 — beyond Max 20x, hire a second operator with their own Anthropic seat (`docs/storefront/03-cost-analysis.md §E` and `18 §6` Cliff 5).
 
 The dashboard's "Quota usage" panel charts this in real time (P5 deliverable; not yet built — track in `docs/mothership/05-mothership-repo-buildout-plan.md §P5.4`).
 
@@ -161,6 +161,6 @@ The cadence matrix is **the second-most-marketable feature of the whole offering
 - *"Higher tiers also get a second AI reviewer on every change — a different model than the one that wrote the code. Two opinions before anything goes live."*
 - *"And if any provider has an outage, your changes don't pause — they fall through to the next provider in line."*
 
-Update `docs/freelance/01-gig-profile.md §6` and `docs/freelance/04-slide-deck.md` slide 5 to reflect the cadence ladder once the brand is locked.
+Update `docs/storefront/01-gig-profile.md §6` and `docs/storefront/04-slide-deck.md` slide 5 to reflect the cadence ladder once the brand is locked.
 
 *Last updated: 2026-04-28.*

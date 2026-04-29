@@ -2,7 +2,7 @@
 
 # 04 — Client Personas
 
-Three target personas (the "say yes to" list), one anti-persona (the "say no to" list), and one boundary-edge persona (case-by-case). Every budget figure cites a row in `03-source-bibliography.md`. Personas are a refinement of `docs/freelance/01-gig-profile.md` Part 8 — read that first for the longer-form filter.
+Three target personas (the "say yes to" list), one anti-persona (the "say no to" list), and one boundary-edge persona (case-by-case). Every budget figure cites a row in `03-source-bibliography.md`. Personas are a refinement of `docs/storefront/01-gig-profile.md` Part 8 — read that first for the longer-form filter.
 
 > **Use of this doc.** When drafting any client-facing deck, pick the single persona it targets and write the deck *for that one* — never a generic "small business owner." When two personas apply, write two decks; do not blend them.
 

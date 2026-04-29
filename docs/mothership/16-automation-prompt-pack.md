@@ -6,7 +6,7 @@
 
 Three closes-the-critique prompts (Run A, B, C) plus a fourth optional cleanup (Run D) and three supplementary one-shot prompts (S1, S2, S3) to hand to Claude Code in the browser. Each prompt is self-contained — paste it, hit run, walk away.
 
-> **Mode:** Opus 4.7 Max (1M context). The prompts assume you have the mothership pack (`docs/mothership/`) and the supporting docs (`docs/AI_ROUTING.md`, `docs/ADMIN_PORTAL_PLAN.md`, `docs/N8N_SETUP.md`, `freelance/*`) checked into the working tree.
+> **Mode:** Opus 4.7 Max (1M context). The prompts assume you have the mothership pack (`docs/mothership/`) and the supporting docs (`docs/AI_ROUTING.md`, `docs/ADMIN_PORTAL_PLAN.md`, `docs/N8N_SETUP.md`, `storefront/*`) checked into the working tree.
 >
 > **Per-run discipline:** every prompt below opens its own branch + PR; never run two in parallel against the same files. Order: A → B → C (D and S1–S3 can interleave).
 
@@ -340,7 +340,7 @@ reconciliation pass. Read in order:
 
   docs/mothership/04-tier-based-agent-cadence.md
   docs/mothership/09-github-account-topology.md
-  docs/freelance/03-cost-analysis.md
+  docs/storefront/03-cost-analysis.md
   docs/AI_ROUTING.md
   AGENTS.md
   docs/mothership/13-critique-ai-and-scaling.md  ← your spec
@@ -455,7 +455,7 @@ cleanup items. Read in order:
 
   docs/mothership/14-critique-operations-sequencing.md  ← your spec
   docs/mothership/06-operator-rebuild-prompt-v3.md
-  docs/freelance/02-pricing-tiers.md
+  docs/storefront/02-pricing-tiers.md
   docs/mothership/07-client-handover-pack.md
   docs/mothership/08-future-work.md
 
@@ -566,7 +566,7 @@ just the brand swap. Apply in order:
 
 1. Find-replace every '{{BRAND}}' → 'Lumivara Forge' across:
      - docs/mothership/**
-     - docs/freelance/**
+     - docs/storefront/**
      - AGENTS.md, CLAUDE.md
      - .env.local.example, README.md
    except: 15-terminology-and-brand.md (it documents the

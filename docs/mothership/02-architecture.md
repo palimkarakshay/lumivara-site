@@ -14,7 +14,7 @@
 │                                          │
 │  Holds:                                  │
 │    docs/mothership/**     ← this folder  │
-│    docs/freelance/**       (storefront)  │
+│    docs/storefront/**       (storefront)  │
 │    docs/operator/**        (per-eng)     │
 │    docs/clients/<slug>/**  (per-client   │
 │      mirror — operator's copy of intake, │
@@ -168,7 +168,7 @@ The full canonical statement of Pattern C — including the GitHub App, token li
 │   ├── tailwind, tsconfig, eslint, etc.
 │   ├── package.json
 │   ├── README.template.md          # uses Mustache-ish {{...}} placeholders
-│   ├── PHONE_SETUP.template.md     # template version of the existing one
+│   ├── _deprecated/PHONE_SETUP.template.md  # template version of the historical notice (now under docs/_deprecated/ on this repo)
 │   └── .env.local.example
 ├── dashboard/                      # mobile SPA — moved from this repo
 └── cli/

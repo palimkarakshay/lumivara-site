@@ -1,7 +1,7 @@
 <!--
 ================================================================================
   CONFIDENTIAL — OPERATOR-ONLY SOURCE OF TRUTH
-  Closes #121. Defines Lumivara Infotech's documented posture against three
+  Closes #121. Defines Lumivara Forge's documented posture against three
   client-engagement risks: (1) data privacy, (2) IP leakage, (3) clients
   failing to pay after a contract is signed.
 
@@ -51,7 +51,7 @@ The default disposition for every section is **operator-only**. A section is cli
 
 This section is the structured input for the PIPEDA work deferred at [`08 §1`](08-future-work.md#1-data-protection--privacy-legalcompliance) and the Law 25 architectural items at [`12 §7`](12-critique-security-secrets.md#7----lesser-pipeda--law-25-compliance-is-partly-architectural). Closing #121 does not close those — it gives them a stable starting frame.
 
-### §2.1 What client-side PII Lumivara Infotech actually touches
+### §2.1 What client-side PII Lumivara Forge actually touches
 
 Three surfaces, all narrow:
 
@@ -140,7 +140,7 @@ Default position, drafted for counsel:
 
 > "Deliverables" means the per-client marketing site (the `<slug>-site` repository contents), the per-client privacy page, the per-client copy and content authored under this Agreement, the per-client design assets, and any other artefact explicitly listed in the SOW. Title to all Deliverables vests in Client upon full payment of the SOW invoice for the milestone in which the Deliverable was produced.
 >
-> "Operator Tooling" means the Lumivara Infotech autopilot, including without limitation the mothership repository, the per-client pipeline repository (the `<slug>-pipeline` repository), the model-routing logic, the agent prompts, the n8n workflow templates, the `forge` CLI, the AI Ops dashboard, and any operational documentation under `docs/mothership/` or `docs/operator/`. Operator Tooling is and remains the exclusive property of Operator. Client receives no right, title, or licence to Operator Tooling other than the right to access the Deliverables it produces during the term of this Agreement.
+> "Operator Tooling" means the Lumivara Forge autopilot, including without limitation the mothership repository, the per-client pipeline repository (the `<slug>-pipeline` repository), the model-routing logic, the agent prompts, the n8n workflow templates, the `forge` CLI, the AI Ops dashboard, and any operational documentation under `docs/mothership/` or `docs/operator/`. Operator Tooling is and remains the exclusive property of Operator. Client receives no right, title, or licence to Operator Tooling other than the right to access the Deliverables it produces during the term of this Agreement.
 
 Three corollaries the lawyer should write explicitly into the same section:
 
@@ -324,7 +324,7 @@ The decisions the operator must take to a lawyer (in priority order) before the 
 
 The DoD checkboxes on #121 split deliberately:
 
-- [x] **Risk-protection plan documented (linked from Lumivara Infotech docs)** — closed by this PR.
+- [x] **Risk-protection plan documented (linked from Lumivara Forge docs)** — closed by this PR.
 - [ ] **Operator review and sign-off before client outreach** — post-merge human step. Operator opens this file, walks §1–§8, signs off in `SECURITY_OPS_LOG.md`.
 - [ ] **Legal counsel consulted (human-only step)** — post-merge human step. Operator hands counsel §3 and §4 and walks them through §7 priorities 1–5.
 
@@ -336,9 +336,9 @@ The two unchecked boxes do not block this PR. They block the *first MSA signatur
 
 1. **Cyber-liability insurance rider coverage triggers.** Does a typical cyber-liability policy (CFC, Coalition, Beazley) treat a `data_residency: ca` failure as a covered breach? If it caps payouts on Quebec-resident data, the §4.6 suspension ladder may be the wrong remedy for a Quebec breach. Resolve with insurance broker before the first QC engagement.
 2. **Archived `evidence-log.md` retention window.** §2.1 default is 7 years (mirrors Ontario's general statute-of-limitations clock). PIPEDA itself has shorter mandatory deletion windows for some categories; Law 25 has stricter limits than PIPEDA for sensitive personal information. Confirm with counsel before the first engagement that touches sensitive data; cross-reference [`21 §10`](21-vault-strategy-adr.md#10--open-questions) point 2 which raises the same question for archived per-client vaults.
-3. **`docs/freelance/01-gig-profile.md` cross-link.** This doc is operator-only; the gig profile is the outward-facing pitch. There is no natural anchor in the gig profile that does not bleed operator-internal language into a client-facing surface. **Decision: do not cross-link.** The client-facing summary of §3, §4, and §6 lives in the Engagement Confirmation Memo (§6 step 2), not in the gig profile. Re-evaluate when the gig profile gains a "what we contractually commit to" section.
+3. **`docs/storefront/01-gig-profile.md` cross-link.** This doc is operator-only; the gig profile is the outward-facing pitch. There is no natural anchor in the gig profile that does not bleed operator-internal language into a client-facing surface. **Decision: do not cross-link.** The client-facing summary of §3, §4, and §6 lives in the Engagement Confirmation Memo (§6 step 2), not in the gig profile. Re-evaluate when the gig profile gains a "what we contractually commit to" section.
 4. **Stripe vs. Lemon Squeezy for §4.3 subscription billing.** [`08 §3`](08-future-work.md#3-payment-terms--non-payment-safeguardslegal-business) notes both as candidates. The §4.6 suspension ladder requires the billing platform to surface a webhook for failed-charge events; both support this. Decision deferred to [`08 §3`](08-future-work.md#3-payment-terms--non-payment-safeguardslegal-business) implementation.
-5. **Incorporation jurisdiction.** The MSA is signed by Lumivara Infotech as the operator. The legal entity behind that name is not yet incorporated (operator note). Until incorporation lands, the MSA is signed by the operator personally, which exposes personal assets. Open issue against [`08 §2`](08-future-work.md#2-client-contract-terms-legal); this doc cannot resolve incorporation choice.
+5. **Incorporation jurisdiction.** The MSA is signed by Lumivara Forge as the operator. The legal entity behind that name is not yet incorporated (operator note). Until incorporation lands, the MSA is signed by the operator personally, which exposes personal assets. Open issue against [`08 §2`](08-future-work.md#2-client-contract-terms-legal); this doc cannot resolve incorporation choice.
 6. **Lawyer selection.** [`20 §2`](20-launch-and-operating-cost-model.md#2--one-time-launch-costs) budgets for one Canadian small-business lawyer (~CAD $1,500–2,500 flat fee for the MSA template). Selection is operator-side; this doc cannot recommend a specific firm.
 
 ---

@@ -2,7 +2,7 @@
 
 # Research & Validation Pack — Master Index
 
-This folder is the evidentiary layer behind every Lumivara Forge stakeholder deck. Anything claimed in `docs/decks/`, `docs/freelance/04-slide-deck.md`, or `docs/freelance/06-positioning-slide-deck.md` should trace back to a numbered claim in this folder, and every numbered claim has a citation in `03-source-bibliography.md` with one of three verification states.
+This folder is the evidentiary layer behind every Lumivara Forge stakeholder deck. Anything claimed in `docs/decks/`, `docs/storefront/04-slide-deck.md`, or `docs/storefront/06-positioning-slide-deck.md` should trace back to a numbered claim in this folder, and every numbered claim has a citation in `03-source-bibliography.md` with one of three verification states.
 
 The pack was assembled on **2026-04-29** from Gemini Deep Research outputs commissioned by the operator. Three share URLs were provided; the operator confirmed the third URL is the share link for one of the same PDFs:
 
@@ -41,8 +41,8 @@ The rendered PDFs are the durable artefacts. Gemini share pages return 403 to pr
 | `docs/decks/03-employee-deck.md` | `02` §1 ("Potential Employees"), `06` (engineering realities the new hire will inherit) |
 | `docs/decks/04-prospective-client-deck.md` | `04` (their persona), `05` (the switch case), `01` §1 (validated client benefits) |
 | `docs/decks/05-advisor-deck.md` | `06` (what they're being asked to weigh in on), `03` (claims they should pressure-test) |
-| `docs/freelance/04-slide-deck.md` (existing) | `05` (refreshed switch case), `01` §3 (consumer voice) |
-| `docs/freelance/06-positioning-slide-deck.md` (existing) | All sections — operator-side reconciliation deck |
+| `docs/storefront/04-slide-deck.md` (existing) | `05` (refreshed switch case), `01` §3 (consumer voice) |
+| `docs/storefront/06-positioning-slide-deck.md` (existing) | All sections — operator-side reconciliation deck |
 
 ---
 

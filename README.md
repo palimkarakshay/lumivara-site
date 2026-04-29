@@ -1,12 +1,24 @@
-# Lumivara
+# Lumivara People Advisory — Site Repo (and Lumivara Forge laboratory)
 
-**Lumivara People Advisory** — Beas Banerjee's HR & people-strategy consulting practice in Toronto. **Live site:** [lumivara-site.vercel.app](https://lumivara-site.vercel.app)
+> _Lane: ⚪ Both — Site (Client #1) and Pipeline (Lumivara Forge) co-housed until the P5.6 spinout._
+>
+> **Site (🌐 Client #1):** [Lumivara People Advisory](https://lumivara.ca) — Beas Banerjee's HR & people-strategy consulting practice in Toronto. The Next.js rebuild in this repo currently deploys to [lumivara-site.vercel.app](https://lumivara-site.vercel.app); production DNS cutover to `lumivara.ca` is tracked as item **12** in [`docs/migrations/00-automation-readiness-plan.md`](./docs/migrations/00-automation-readiness-plan.md).
+>
+> **Pipeline (🛠 Lumivara Forge):** the operator framework — autopilot, runbooks, and freelance/storefront pack — is being built _in the same tree_ until the P5.6 spinout moves it to its own private operator repo. Canonical brand domain `lumivara-forge.com` is pending registration; an operator demo URL will be posted under [`palimkarakshays-projects` on Vercel](https://vercel.com/palimkarakshays-projects) until the domain lands.
 
 ---
 
-## Operator vs client framing
+## Two entities, one repo (Pattern C, applied in-tree)
 
-This repo is currently **Client #1's site** (Lumivara People Advisory) and is *also* the laboratory in which the operator framework — **Lumivara Forge** — is being built. After the P5.6 spinout (see `docs/migrations/lumivara-people-advisory-spinout.md`), this repo's `main` becomes purely client-facing and the autopilot relocates to a separate operator-only repo. Until then, the README intentionally names the client because the repo is operationally the client's own; the formal terminology policy that keeps operator docs neutral is in [`docs/mothership/15-terminology-and-brand.md §6`](./docs/mothership/15-terminology-and-brand.md), with the appendix of legitimate client examples in §7.
+This repo currently hosts **two logically separate entities** that will split into two repos at P5.6 per the locked Pattern C architecture in [`docs/mothership/02b-pattern-c-architecture.md`](./docs/mothership/02b-pattern-c-architecture.md):
+
+| Entity | Lane | Lives in (today) | Becomes (after P5.6) |
+|---|---|---|---|
+| **Site repo** — the Client #1 marketing site | 🌐 | `src/`, `public/`, `assets/`, `mdx-components.tsx`, `next.config.ts`, `404.html`, `index.html`, `e2e/`, `vercel.json` | `palimkarakshay/lumivara-people-advisory-site` |
+| **Pipeline / Platform repo** — the operator's autopilot, runbooks, decks, storefront | 🛠 | `.github/workflows/`, `scripts/`, `dashboard/`, `docs/mothership/`, `docs/storefront/`, `docs/decks/`, `docs/research/`, `docs/migrations/`, `docs/n8n-workflows/`, `docs/wiki/`, the operator-scoped `docs/*.md` (`AI_ROUTING.md`, `ADMIN_PORTAL_PLAN.md`, `TEMPLATE_REBUILD_PROMPT.md`, etc.) | `palimkarakshay/lumivara-forge-pipeline` (operator-private) |
+| **Both lanes** | ⚪ | `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `AGENTS.md`, `CLAUDE.md`, `.gitignore`, `.env.local.example`, `package.json`, `tsconfig.json` | Updated in both repos by the spinout runbook |
+
+Until the spinout, every doc in `docs/**` carries a one-line lane banner (`> _Lane: 🛠 Pipeline / 🌐 Site / ⚪ Both._`). Operator-scope docs follow the terminology policy in [`docs/mothership/15-terminology-and-brand.md §6`](./docs/mothership/15-terminology-and-brand.md); the legitimate-Client-#1-example appendix is `§7`. Spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](./docs/migrations/lumivara-people-advisory-spinout.md). Pattern C in-repo enforcement checklist: [`docs/mothership/pattern-c-enforcement-checklist.md`](./docs/mothership/pattern-c-enforcement-checklist.md).
 
 ---
 
@@ -154,7 +166,7 @@ From your desk:
 gh issue create --title "Short description" --body "Full details"
 ```
 
-From your phone: sign in to `/admin` (Auth.js v5 magic link / Google / Entra) and use the capture form. Email and SMS lanes route through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./docs/ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./docs/N8N_SETUP.md). The previous HTTP Shortcuts / phone-PAT path is **deprecated** — see [PHONE_SETUP.md](./PHONE_SETUP.md) for the deprecation notice.
+From your phone: sign in to `/admin` (Auth.js v5 magic link / Google / Entra) and use the capture form. Email and SMS lanes route through n8n. See [`docs/ADMIN_PORTAL_PLAN.md`](./docs/ADMIN_PORTAL_PLAN.md) and [`docs/N8N_SETUP.md`](./docs/N8N_SETUP.md). The previous HTTP Shortcuts / phone-PAT path is **deprecated** — see [`docs/_deprecated/PHONE_SETUP.md`](./docs/_deprecated/PHONE_SETUP.md) for the historical deprecation notice.
 
 ### Lifecycle
 
@@ -193,7 +205,7 @@ git push
 ## 7. Mobile capture
 
 > ⚠️ **Deprecated-doc policy.** The previous phone-PAT + HTTP Shortcuts /
-> Apple Shortcuts mechanism in [`PHONE_SETUP.md`](./PHONE_SETUP.md) is
+> Apple Shortcuts mechanism in [`docs/_deprecated/PHONE_SETUP.md`](./docs/_deprecated/PHONE_SETUP.md) is
 > retained as a deprecation notice only — **do not follow its setup
 > steps**. Canonical replacements:
 >

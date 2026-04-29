@@ -5,17 +5,17 @@
 > locked. Until that happens, every tagline, ICP slice, and channel decision below
 > is a *recommendation*, not a commitment.
 >
-> **Brand-name caveat.** This doc uses **Lumivara Forge** as the working slug for
-> the freelance practice (per `docs/mothership/01-business-plan.md §1` and
-> `docs/mothership/15-terminology-and-brand.md`). The public-facing brand name
-> lock — "Lumivara Forge" vs. "Lumivara Infotech" vs. another candidate — is
-> tracked in a separate issue and will be reconciled before launch. Do not
-> ship public assets that name the brand without checking that lock first.
+> **Brand-name caveat.** Brand locked 2026-04-28 to **Lumivara Forge** (see
+> `docs/mothership/15-terminology-and-brand.md §4`). The retired working
+> name from earlier drafts (the "-Infotech" variant) must not appear in
+> any public asset. Trademark availability check (CIPO Class 42 + USPTO)
+> is still pending in `15 §5` and is the only remaining gate before
+> registering `lumivara-forge.com` and `lumivara-forge.ca`.
 
 This doc is the **canonical source** for how we sell Lumivara Forge: the locked
 pitch + tagline, the ICP, the positioning matrix vs. competitors, the ranked
 channel plan, and the first-90-day launch calendar. It synthesises material
-already drafted across `docs/freelance/` rather than duplicating it; cross-refs
+already drafted across `docs/storefront/` rather than duplicating it; cross-refs
 point you to the original copy when you need verbatim language.
 
 ---
@@ -78,7 +78,7 @@ copy per channel.
 | **Trigger event** | Lost a deal because the site looked dated · changed their service line and can't update the page · agency invoice for a one-line fix arrived · finished a rebrand and the site doesn't match it yet |
 | **Lived pain** | "I can't update my own site without calling someone." "Every fix is $200." "My intern said they'd do it and it's been three months." |
 | **Tier mapping** | T1 (Autopilot Lite) → ~70%; T2 (Autopilot Pro) → ~30% as their practice grows |
-| **Why they say yes** | Phone-edit autonomy + flat fee + the operator already runs the same system on their own site (`lumivara.com` proof) |
+| **Why they say yes** | Phone-edit autonomy + flat fee + the operator already runs the same system on their own site (`lumivara-forge.com` proof) |
 
 Source: `01-gig-profile.md` Part 1 (variant for solo consultants) + Part 8.
 
@@ -151,7 +151,7 @@ by total reach. Reach is cheap; conversion-fit is rare.
 | 1 | **LinkedIn organic posts + warm DMs** | 3–5 hrs | One case study post per week + one "system win" demo per week. Direct DMs to 10 warm-network contacts in week 1. | ≥3 inbound replies; ≥1 discovery call booked | The primary ICP (solo consultants, boutique firms) lives on LinkedIn. The operator has a real network there. Highest signal-to-noise for the first 5 clients. |
 | 2 | **Fiverr — Gig 1 (the headline gig)** | 2 hrs setup wk1, then 30 min/wk maintenance | Gig listing copy from `01-gig-profile.md` Part 5 + 30-second portrait video | ≥2 Fiverr inquiries by day 30; first paid order by day 60 | Volume of small-business buyers + built-in escrow + reviews accumulate fast. Low risk, decent conversion for tier-0/tier-1. |
 | 3 | **Upwork proposals** | 3–4 hrs (5 proposals/day × 30 min) | Three reusable cover-letter shapes (TODO — `00-quick-start.md` "what's still missing") | ≥1 reply per 10 proposals; ≥1 paid contract by day 60 | Higher price ceiling than Fiverr; bid-based so each proposal is custom. Filter for Next.js / modern-stack jobs only. |
-| 4 | **Toptal / Arc.dev / Lemon.io applications** | 2 hrs application wk1, then waiting | Portfolio link + lumivara.com case study + enterprise systems experience claim (operator has it) | Accepted into ≥1 of the three by day 60 | 0% commission, vetted talent platforms, high rates. Once accepted, no cold prospecting. Long screening (2–4 weeks) — start the clock immediately. |
+| 4 | **Toptal / Arc.dev / Lemon.io applications** | 2 hrs application wk1, then waiting | Portfolio link + lumivara-forge.com case study + enterprise systems experience claim (operator has it) | Accepted into ≥1 of the three by day 60 | 0% commission, vetted talent platforms, high rates. Once accepted, no cold prospecting. Long screening (2–4 weeks) — start the clock immediately. |
 | 5 | **Direct partner referrals** | 1 hr | One-pager describing what we sell + the referral fee structure (TBD) | First referral conversation by day 45 | Brand designers, copywriters, accountants — the people whose clients also need a website. The referrer keeps a relationship; we get a warm intro. |
 | 6 | **Cold email (audience-specific, low volume)** | 1–2 hrs | Three intro-email templates (see `assets/intro-email.md`) | Reply rate ≥3% (very low bar; cold is cold) | Last-resort channel for week 8+ if warm channels haven't hit. Audience: Ontario solo practitioners with visibly stale sites (built before 2022). |
 | 7 | **Indie Hackers / X (Twitter) build-in-public** | 1 hr | The Lumivara case-study post (already drafted in `04-slide-deck.md`) | Use as awareness, not direct lead-gen — measure followers, not orders | Direct-to-founder reach for the indie SaaS subset. Slow burn; expect 6+ months before it converts. |
@@ -186,12 +186,12 @@ operationalise the channel plan above into a content cadence and a sales pipe.
 
 | Week | Theme | Concrete actions | Sales target by end of week |
 |---|---|---|---|
-| **W1** | Storefront live | Day 1 — paste `01-gig-profile.md` Part 4 into Fiverr "About" verbatim. Day 2 — publish Gig 1 only with prices from `02-pricing-tiers.md`. Day 3 — apply to Toptal / Arc.dev / Lemon.io (screening clock starts). Day 4 — publish first LinkedIn case-study post about lumivara.com; DM 10 warm-network contacts. | Profile live; 10 DMs sent; 1+ Toptal-tier application in screening |
-| **W2** | First proposals + soft launch | Soft-launch Gig 1 basic tier at –15% for the first 5 orders only (review-base play). Apply to 5 Upwork jobs/day with custom proposals (mention phone-edit in paragraph 1, lumivara.com link in paragraph 2). Record 30-second portrait video for Fiverr gig page. | ≥1 Upwork reply; ≥1 Fiverr inquiry |
+| **W1** | Storefront live | Day 1 — paste `01-gig-profile.md` Part 4 into Fiverr "About" verbatim. Day 2 — publish Gig 1 only with prices from `02-pricing-tiers.md`. Day 3 — apply to Toptal / Arc.dev / Lemon.io (screening clock starts). Day 4 — publish first LinkedIn case-study post about lumivara-forge.com; DM 10 warm-network contacts. | Profile live; 10 DMs sent; 1+ Toptal-tier application in screening |
+| **W2** | First proposals + soft launch | Soft-launch Gig 1 basic tier at –15% for the first 5 orders only (review-base play). Apply to 5 Upwork jobs/day with custom proposals (mention phone-edit in paragraph 1, lumivara-forge.com link in paragraph 2). Record 30-second portrait video for Fiverr gig page. | ≥1 Upwork reply; ≥1 Fiverr inquiry |
 | **W3** | Expand storefront | Publish Gigs 2 and 3 from `01-gig-profile.md` Part 5. Post a second LinkedIn case study (a "system win" — show the phone-edit shortcut in action via a 60-second screen recording). DM 10 more warm-network contacts. Begin compiling outreach list of 30 stale-site solo practitioners (Ontario). | Gigs 2 + 3 live; 2 case studies posted; 20 warm-network touches done |
 | **W4** | First reviews + first close | Decline scope-creep buyers fast. Goal: close one Tier-0 or Tier-1 setup by week's end (the soft-launch cohort). Post first LinkedIn long-form: "30 days of trying to sell a website-as-a-service — what worked." Request reviews from any closed buyers immediately. | First paying client closed; 1+ five-star review; ≥3 LinkedIn replies cumulative |
 | **W5** | Post-launch motion | Deliver the first build inside its quoted SLA — on-time delivery is THE Fiverr ranking factor. Send a 5-minute personalised hand-over video. Ask the closed client for a one-paragraph testimonial within 7 days. Run the first Upwork follow-up cycle on any silent proposals. | First delivery shipped on time; testimonial requested |
-| **W6** | Toptal screening close-out | If Toptal/Arc/Lemon screening response has come in, complete it this week. Run the live test or take-home; cite lumivara.com as the showcase. Continue 5 Upwork proposals/day cadence. Post a third LinkedIn case study (could be the W5 client if they consent — otherwise a behind-the-scenes "what I learned shipping client #1"). | ≥1 vetted-platform decision; second Fiverr inquiry; ≥5 LinkedIn replies cumulative |
+| **W6** | Toptal screening close-out | If Toptal/Arc/Lemon screening response has come in, complete it this week. Run the live test or take-home; cite lumivara-forge.com as the showcase. Continue 5 Upwork proposals/day cadence. Post a third LinkedIn case study (could be the W5 client if they consent — otherwise a behind-the-scenes "what I learned shipping client #1"). | ≥1 vetted-platform decision; second Fiverr inquiry; ≥5 LinkedIn replies cumulative |
 | **W7** | Referrals motion live | Send the partner-referral one-pager to ~5 brand designers / copywriters / accountants in the operator's network. Frame: "I send you logo work; you send me website work." Continue Upwork + LinkedIn cadence. | First referral conversation booked |
 | **W8** | First retainer hits the books | If W4 client was Tier 1 or 2, the first monthly improvement run lands here. Document it publicly (LinkedIn post: "what got shipped on a Forge retainer in month 1") with the client's permission. This becomes the canonical "what does the monthly actually buy?" proof. | First retainer invoice paid; first improvement-run post published |
 | **W9** | Scale the warm channel | Re-DM the warm-network contacts who didn't respond in W1/W3 (acknowledge the gap; share a tangible win). Add 10 new warm contacts to the list. Apply for a fourth vetted platform if appetite (Contra, Comet). | 30+ warm-network touches cumulative |
@@ -220,7 +220,7 @@ before treating any of these as locked.
 
 - [ ] **Tagline lock.** Confirm the recommended tagline (*"Modern websites that update from your phone, not your inbox."*) — or pick a named alternative from § 1 — and use that one **everywhere**. No per-channel variants.
 - [ ] **Long pitch lock.** Confirm the recommended pitch (Part-1 from `01-gig-profile.md`) or replace with the `00-quick-start.md` short version.
-- [ ] **Brand-name lock.** Decide whether the public-facing brand is "Lumivara Forge" (current `mothership` working slug), "Lumivara Infotech" (this issue's title), or another candidate. Track the decision in a separate issue and update this doc + `15-terminology-and-brand.md` in the same PR.
+- [x] **Brand-name lock.** Locked 2026-04-28 to **Lumivara Forge** in `docs/mothership/15-terminology-and-brand.md §4`. Trademark availability check (CIPO Class 42 + USPTO) per `15 §5` is the only remaining pre-launch gate.
 - [ ] **Geo-priority lock.** Confirm Ontario / GTA primary, US east coast secondary, Quebec deferred until French-language pages exist. (Per `06-positioning-slide-deck.md` § Strategic risks.)
 - [ ] **Channel #1 lock.** Confirm LinkedIn organic + warm DMs is the primary channel. The alternative is to lead with Fiverr; the recommendation is LinkedIn because the warm-network signal is stronger for the first 5 closes.
 - [ ] **Pricing posture in cold outreach.** Confirm we **do not** mention price in cold outreach (intro emails, Upwork first-touch). Price is a discovery-call topic. (See `02-pricing-tiers.md` § "How to handle the price objection".)
@@ -237,7 +237,7 @@ before treating any of these as locked.
 
 ---
 
-## 7 · How this doc relates to the others in `docs/freelance/`
+## 7 · How this doc relates to the others in `docs/storefront/`
 
 This is the **synthesis** doc. The pitch language, pricing math, costs, and
 deck slides already exist in the rest of the folder; we don't restate them

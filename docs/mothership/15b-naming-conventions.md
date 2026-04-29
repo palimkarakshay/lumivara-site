@@ -8,11 +8,15 @@ on disk. It is the canonical source the Run S1 rename pass (`16 §5`) targets,
 and every new doc / folder added after S1 must conform to the rules below or
 amend this file in the same PR.
 
-> **Status:** ✅ canonical (drafted 2026-04-29). Pre-Run S1 — the
-> recommendations below are *what the repo will look like after the rename*.
-> The current tree still carries the pre-S1 names (`docs/mothership/`,
-> `docs/freelance/`, `mothership` everywhere). Drift between this file and
-> `15 §1` is a bug.
+> **Status:** ✅ canonical (drafted 2026-04-29). **Run S1 is partial:**
+> `docs/freelance/` → `docs/storefront/` shipped on 2026-04-29 (PR #200);
+> the `docs/mothership/` → `docs/platform/` rename is **deferred** per
+> the operator decision on 2026-04-29 (folder stays as `mothership/`
+> until a later iteration). Prose-terminology drift (`mothership` →
+> `platform` in noun usage; the retired `-Infotech` working name →
+> `Lumivara Forge`) is being swept incrementally — see PR #200's
+> commit log + the `scripts/pattern-c-audit.sh §1` advisory. Drift
+> between this file and `15 §1` is a bug.
 
 ---
 
@@ -42,8 +46,8 @@ Three problems in the current tree this is fixing:
 
 | Today | After S1 | Why |
 |---|---|---|
-| `docs/mothership/` | `docs/platform/` | Matches `15 §1`; "platform" is industry-standard for a fleet-managing control surface. |
-| `docs/freelance/` | `docs/storefront/` | Matches the folder's own README ("the storefront"). Avoids "freelance" connoting hourly contractor work. |
+| `docs/mothership/` | `docs/platform/` (DEFERRED 2026-04-29) | Matches `15 §1`; "platform" is industry-standard for a fleet-managing control surface. Folder rename deferred to a later iteration per operator decision; prose terminology sweep proceeds independently. |
+| `docs/freelance/` → `docs/storefront/` (DONE 2026-04-29 PR #200) | `docs/storefront/` | Matches the folder's own README ("the storefront"). Avoids "freelance" connoting hourly contractor work. |
 | `docs/migrations/` | `docs/migrations/` (keep) | Already plain English; one-shot transitions are universally called migrations. |
 | `docs/ops/` | `docs/ops/` (keep) | Standard. |
 | `docs/research/` | `docs/research/` (keep) | Standard. |

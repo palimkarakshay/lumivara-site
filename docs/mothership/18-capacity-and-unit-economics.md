@@ -2,7 +2,7 @@
 
 # 18 — Capacity & Unit Economics (single source of truth)
 
-This doc owns every number that influences operator cost, capacity, or scaling-cliff timing. Every other operator-pack doc that quotes one of those numbers (`04`, `09`, `freelance/03`, `13`, `10`, `20`) **references an anchor here** instead of restating the value. If you find yourself about to write a minute count, dollar figure, or upgrade-threshold elsewhere — stop, anchor it here, and link.
+This doc owns every number that influences operator cost, capacity, or scaling-cliff timing. Every other operator-pack doc that quotes one of those numbers (`04`, `09`, `storefront/03`, `13`, `10`, `20`) **references an anchor here** instead of restating the value. If you find yourself about to write a minute count, dollar figure, or upgrade-threshold elsewhere — stop, anchor it here, and link.
 
 > **Scope split with [`20-launch-and-operating-cost-model.md`](./20-launch-and-operating-cost-model.md).** This doc (`18`) owns *capacity-coupled* numbers — AI costs, Action minutes, per-tier margin allocations, scaling cliffs. Doc `20` owns *practice-wide* costs that aren't capacity-coupled — legal, payment processing, accounting, insurance, marketing, operator tools — plus the launch budget and breakeven math. They reference each other; neither restates the other's numbers.
 
@@ -33,9 +33,9 @@ Every assumption that downstream sections compute from. Each row has a value, a 
 | `gemini_free_pro_rpd` | Gemini Pro free-tier requests/day | 100 RPD | ai.google.dev/pricing | 2026-04-29 |
 | `gemini_free_flash_rpd` | Gemini Flash free-tier requests/day | 500 RPD | ai.google.dev/pricing | 2026-04-29 |
 | `codex_per_review_usd` | OpenAI / Codex (gpt-5-mini class) per-PR review cost (estimate) | $0.40 USD / review | `13 §2` table | 2026-04-29 |
-| `tax_band_ontario_soleprop` | Ontario sole-prop effective tax band on $100–200k revenue | 25–30% (range, **consult an accountant**) | sole-prop self-assessment, see `freelance/03 §C` | 2026-04-29 |
+| `tax_band_ontario_soleprop` | Ontario sole-prop effective tax band on $100–200k revenue | 25–30% (range, **consult an accountant**) | sole-prop self-assessment, see `storefront/03 §C` | 2026-04-29 |
 | `fx_cad_per_usd` | FX assumption used everywhere CAD ↔ USD conversion appears | 1 USD = 1.39 CAD (CAD 1.00 = USD 0.72) | bank-of-canada.ca FX, ±5% pad | 2026-04-29 |
-| `operator_hard_cap_clients` | Hard cap of active retainer clients before staffing required | 30 clients | `freelance/03 §F` | 2026-04-29 |
+| `operator_hard_cap_clients` | Hard cap of active retainer clients before staffing required | 30 clients | `storefront/03 §F` | 2026-04-29 |
 
 > All AI / SaaS costs are **USD**; all client revenue is **CAD**. The FX row is the only currency conversion authority; do not introduce a second exchange rate downstream.
 
@@ -85,7 +85,7 @@ Where `*_runs_per_month` come from the cron expressions in `04 §1` and `*_min_p
 
 ## §3 — AI usage / cost envelopes
 
-Reconciles `freelance/03 §A` rule-of-thumb ("every 5 clients adds about $40 USD") with `13 §2`'s breakdown. The §A rule was directionally correct but conflated three separate line items; this section names them.
+Reconciles `storefront/03 §A` rule-of-thumb ("every 5 clients adds about $40 USD") with `13 §2`'s breakdown. The §A rule was directionally correct but conflated three separate line items; this section names them.
 
 ### Cost formula
 
@@ -110,7 +110,7 @@ Each row gives **low / base / high** monthly totals in USD. "Base" is what to pu
 | **16–25** | Max 20x (`claude_max20x_cost`) | $200 | $0 / $10 / $40 | $10 / $15 / $25 | **$210 / $225 / $265** |
 | **26+** | Max 20x + 2nd seat (`claude_max20x_cost` × 2) | $400 | $0 / $15 / $80 | $15 / $20 / $35 | **$415 / $435 / $515** |
 
-**Use the "base" column** for projections (`freelance/03 §D` and the cost-of-goods table in §5). The "low" column is for best-case audits; the "high" column is the budget tripwire — if the actual month exceeds "high," investigate before next month closes.
+**Use the "base" column** for projections (`storefront/03 §D` and the cost-of-goods table in §5). The "low" column is for best-case audits; the "high" column is the budget tripwire — if the actual month exceeds "high," investigate before next month closes.
 
 ### Anchor IDs
 
@@ -121,7 +121,7 @@ Each row gives **low / base / high** monthly totals in USD. "Base" is what to pu
 
 ## §4 — Operator time envelope per tier
 
-Hours per client per month, from `freelance/03 §A`'s honest estimates, with min / typical / max ranges added so capacity planning has something to do arithmetic with.
+Hours per client per month, from `storefront/03 §A`'s honest estimates, with min / typical / max ranges added so capacity planning has something to do arithmetic with.
 
 | Tier | Hours/mo/client (min / typical / max) | Includes |
 |---|---|---|
@@ -152,7 +152,7 @@ That's the envelope behind the `operator_hard_cap_clients = 30` row in §1. Abov
 
 ## §5 — Margin model per tier
 
-Reconciles `freelance/03 §A` summary cost-of-goods with §3 (AI cost) and §4 (operator time) so every cell in the table has a derivation, not a vibe. Setup-fee margins live in `freelance/03 §B` and don't change here.
+Reconciles `storefront/03 §A` summary cost-of-goods with §3 (AI cost) and §4 (operator time) so every cell in the table has a derivation, not a vibe. Setup-fee margins live in `storefront/03 §B` and don't change here.
 
 | Tier | Monthly retainer (CAD) | Per-client AI cost (CAD, derived) | Per-client operator time | Marginal cost (cash, CAD) | **Cash margin (CAD)** | Time cost |
 |---|---|---|---|---|---|---|
@@ -197,17 +197,17 @@ Append-only table. Add a row whenever any assumption in §1 changes, when a `04 
 
 | Date | Changed variable | Old value | New value | Reason | Downstream impact |
 |---|---|---|---|---|---|
-| 2026-04-29 | (seeded) `freelance/03 §D` 12-month projection AI-cost column | $140 (M4–M7), $280 (M8–M12) | §3-formula derived: $115 (M4–M7), $225 (M8–M11), $225 (M12) | Reconciliation per #136. Old rule-of-thumb under-counted Codex review and over-counted top-up; corrected via §3. | Year-1 net moves by ~$1,500 CAD per `13 §2`. `freelance/03 §D` table updated; PR body documents the delta. |
+| 2026-04-29 | (seeded) `storefront/03 §D` 12-month projection AI-cost column | $140 (M4–M7), $280 (M8–M12) | §3-formula derived: $115 (M4–M7), $225 (M8–M11), $225 (M12) | Reconciliation per #136. Old rule-of-thumb under-counted Codex review and over-counted top-up; corrected via §3. | Year-1 net moves by ~$1,500 CAD per `13 §2`. `storefront/03 §D` table updated; PR body documents the delta. |
 | 2026-04-29 | (seeded) `09 §1` "≈ 25 active T2 clients fit in 2,000 Action minutes" claim | 25 T2 clients @ 250 min = 6,250 min (3× over Free) | `09 §1` references `#practice-min-saturation` (≈ 1.7k min for a realistic mix; Cliff 2 trips around client #4 on T2-heavy mix) | Reconciliation per #136. Old claim mis-applied the per-client ceiling as if it were the typical run cost. | `09 §1` and `09 §5` upgrade-trigger table replaced with anchor refs into §6 Cliff 2. |
 | 2026-04-29 | (seeded) Pattern C per-client repo count | 1 site repo (Pattern A) | 2 repos: `<slug>-site` + `<slug>-pipeline` (`02b §1`) | Pattern C locked 2026-04-28 per `11 §1`. Pipeline repo runs the cron, not the site repo. | §2 envelopes are stated *per-engagement* (i.e. counting both repos as one client); not double-counted. Open assumption: if Pattern C ever splits cron across both repos, §2 numbers must double. |
 
-> **Open assumption (not a change yet).** Sole-prop tax-band figures are a *range* (`tax_band_ontario_soleprop = 25–30%`). Do not collapse to a single number anywhere downstream; `freelance/03 §C` already says "consult an accountant" and that wording is binding.
+> **Open assumption (not a change yet).** Sole-prop tax-band figures are a *range* (`tax_band_ontario_soleprop = 25–30%`). Do not collapse to a single number anywhere downstream; `storefront/03 §C` already says "consult an accountant" and that wording is binding.
 
 ---
 
 ## §8 — How other docs reference this one
 
-The "single source of truth" rule is mechanical: every numeric reference in `04`, `09`, `freelance/03`, `10`, and `13` points to a named anchor in this doc. The table below is the contract — if you add a new cross-reference, add a row here.
+The "single source of truth" rule is mechanical: every numeric reference in `04`, `09`, `storefront/03`, `10`, and `13` points to a named anchor in this doc. The table below is the contract — if you add a new cross-reference, add a row here.
 
 | Consumer doc | Section | Anchor in this doc |
 |---|---|---|
@@ -217,11 +217,11 @@ The "single source of truth" rule is mechanical: every numeric reference in `04`
 | `09 §1` "2,000 Actions minutes/month" | Inline number | [§1 row `gh_free_action_minutes`](#1--assumptions-table) |
 | `09 §1` "≈ 25 active T2 clients fit" claim | Inline statement | [#practice-min-saturation](#2--per-tier-action-minute-envelopes) (corrected: ~1.7k min, not 6.25k) |
 | `09 §5` upgrade trigger table | Whole table | [#cliffs-table](#6--scale-thresholds-and-trigger-points) |
-| `freelance/03 §A` "every 5 clients adds about $40" rule-of-thumb | Replaced by | [#ai-cost-formula](#3--ai-usage--cost-envelopes) |
-| `freelance/03 §A` "200 min/mo per client" GitHub footnote | Replaced by | [#t2-action-min](#2--per-tier-action-minute-envelopes) (per-client) and [#practice-min-realistic](#2--per-tier-action-minute-envelopes) (practice-level) |
-| `freelance/03 §A` summary cost-of-goods table | Whole table | [§5 margin model per tier](#5--margin-model-per-tier) |
-| `freelance/03 §D` 12-month projection AI-cost column | All AI-cost cells | [#ai-cost-band-pro](#3--ai-usage--cost-envelopes) / [#ai-cost-band-max5x](#3--ai-usage--cost-envelopes) / [#ai-cost-band-max20x](#3--ai-usage--cost-envelopes) |
-| `freelance/03 §E` upgrade trigger table | Whole table | [#cliffs-table](#6--scale-thresholds-and-trigger-points) |
+| `storefront/03 §A` "every 5 clients adds about $40" rule-of-thumb | Replaced by | [#ai-cost-formula](#3--ai-usage--cost-envelopes) |
+| `storefront/03 §A` "200 min/mo per client" GitHub footnote | Replaced by | [#t2-action-min](#2--per-tier-action-minute-envelopes) (per-client) and [#practice-min-realistic](#2--per-tier-action-minute-envelopes) (practice-level) |
+| `storefront/03 §A` summary cost-of-goods table | Whole table | [§5 margin model per tier](#5--margin-model-per-tier) |
+| `storefront/03 §D` 12-month projection AI-cost column | All AI-cost cells | [#ai-cost-band-pro](#3--ai-usage--cost-envelopes) / [#ai-cost-band-max5x](#3--ai-usage--cost-envelopes) / [#ai-cost-band-max20x](#3--ai-usage--cost-envelopes) |
+| `storefront/03 §E` upgrade trigger table | Whole table | [#cliffs-table](#6--scale-thresholds-and-trigger-points) |
 | `10 §2` row 5 "Fix lives in" | Cell | [#practice-min-saturation](#2--per-tier-action-minute-envelopes) |
 | `10 §2` row 6 "Fix lives in" | Cell | [#ai-cost-band-max5x](#3--ai-usage--cost-envelopes) and [#ai-cost-band-max20x](#3--ai-usage--cost-envelopes) |
 | `13 §1`/`§2`/`§3`/`§8` | Status callouts | This whole doc; `13` remains the *critique narrative*, this doc is the *current model*. |
@@ -244,9 +244,9 @@ If you find yourself wanting to deviate from these numbers in another doc "just 
 
 Tracked here so the next operator session knows what `18` does *not* yet contain.
 
-- **Verification script.** Issue #136 asks for "a small verification script (docs check) that compares key numbers referenced in 04/09/freelance/03 against doc 17 anchors and fails if inconsistent." `scripts/*` is in the [planning hard-exclusion list](../../scripts/execute-prompt.md). The doc-side reconciliation in this PR removes the duplications so the verification script's job becomes "no numeric token appears in `04`/`09`/`freelance/03` that is not also defined in §1 of this doc." That's a one-pass `git grep` enforcement; open it as a separate `infra-allowed` issue.
+- **Verification script.** Issue #136 asks for "a small verification script (docs check) that compares key numbers referenced in 04/09/freelance/03 against doc 17 anchors and fails if inconsistent." `scripts/*` is in the [planning hard-exclusion list](../../scripts/execute-prompt.md). The doc-side reconciliation in this PR removes the duplications so the verification script's job becomes "no numeric token appears in `04`/`09`/`storefront/03` that is not also defined in §1 of this doc." That's a one-pass `git grep` enforcement; open it as a separate `infra-allowed` issue.
 - **Pattern C double-counting.** Pattern C (`11 §1`, locked 2026-04-28) doubles the per-engagement repo count, which would arguably double the per-client Action-minute consumption *if* the cron ever runs on both repos simultaneously. Today the cron runs only on `<slug>-pipeline`, so §2 numbers stand. Re-audit when Pattern C propagates to a second cron lane.
-- **Currency drift.** All §3 figures are quoted in USD; CAD conversions only appear in §5 (margin) and `freelance/03 §D`. Do not let CAD rounding drift between docs — there's exactly one FX assumption row in §1.
-- **Tax / accountancy.** §1's `tax_band_ontario_soleprop` is a *range*, deliberately. Do not compute net-after-tax to a single number anywhere — `freelance/03 §C` already binds this with "consult an accountant."
+- **Currency drift.** All §3 figures are quoted in USD; CAD conversions only appear in §5 (margin) and `storefront/03 §D`. Do not let CAD rounding drift between docs — there's exactly one FX assumption row in §1.
+- **Tax / accountancy.** §1's `tax_band_ontario_soleprop` is a *range*, deliberately. Do not compute net-after-tax to a single number anywhere — `storefront/03 §C` already binds this with "consult an accountant."
 
 *Last updated: 2026-04-29.*

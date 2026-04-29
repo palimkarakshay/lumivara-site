@@ -9,11 +9,15 @@
 
 <!-- phase: P4.10 -->
 
-# 10 — Lumivara Infotech Setup Plan
+> _Lane: 🛠 Pipeline — operator-only setup plan; never ships in a client repo._
+
+# 09b — Lumivara Forge Setup Plan
 
 _Concrete, action-oriented setup plan for **Lumivara Forge** (the operator's tech practice). Replaces `{{BRAND}}` placeholders with real slugs throughout. All sections annotated with `# change if different brand` where the slug appears._
 
-> **Brand gate:** This document uses `lumivara-forge` as the concrete slug. If the operator picks a different name from `01-business-plan.md §1`, do a global find-replace of `lumivara-forge` → chosen-slug before executing. All steps below are written for `lumivara-forge`.
+> **Renamed (2026-04-29):** previously `10-lumivara-infotech-setup-plan.md`; numbered `10` collided with `10-critique-executive-summary.md`, and the "Infotech" working name was retired by `15-terminology-and-brand.md §4` in favour of the locked **Lumivara Forge** brand. The companion-to-09 relationship is now expressed by the `09b` prefix.
+>
+> **Brand gate:** This document uses `lumivara-forge` as the concrete slug. If a future rebrand happens, do a global find-replace of `lumivara-forge` → chosen-slug before executing. All steps below are written for `lumivara-forge`.
 
 ---
 
@@ -80,7 +84,7 @@ Steps 1–8 are one-time operator manual actions. Step 9 can be scripted once st
 | Directory / File | Description |
 |---|---|
 | `docs/mothership/` | All operator runbooks (this folder) |
-| `docs/freelance/` | Outward-facing pitch, pricing, cost analysis |
+| `docs/storefront/` | Outward-facing pitch, pricing, cost analysis |
 | `n8n/` | n8n workflow JSON exports |
 | `scripts/` | Triage / execute / plan automation scripts |
 | `workflows-template/` | Reusable GitHub Actions workflow templates |

@@ -5,14 +5,20 @@ sellable service. Optimised for an operator who **vibe-coded the system**
 and now wants to sell the *outcome* of that system to clients without
 having to explain the tech behind it.
 
+> **New here?** Read `00-quick-start.md` first — it's a 5-minute orientation
+> with the 30-day launch checklist and a map of what's in every other file.
+> The rest of this folder is reference; the quick start is action.
+
 ## What's in here
 
 | File | Purpose | Read when |
 |---|---|---|
+| `00-quick-start.md` | 5-minute orientation. The pitch, the 30-day launch plan, where each topic lives, and an issue-#86 deliverables map. **Start here.** | Day 1 — before you read anything else. |
 | `01-gig-profile.md` | The client-facing pitch. Profile copy, gig descriptions, tier cards, FAQ, target customer profiles, and where to list. **Outcome-led, no jargon.** | You're filling in Fiverr / Upwork / Contra forms. |
 | `02-pricing-tiers.md` | Four service tiers (Starter → Business) with what's included, prices in CAD/USD, what each tier *promises*, and a "client decision tree" so you can route inquiries. | A prospect asks "what does it cost?" |
 | `03-cost-analysis.md` | What it actually costs you to run (Claude / Gemini / Codex / Vercel / GitHub / your time per client per month), break-even maths, and the **quit-the-day-job ramp plan** — months 0–24. | Planning whether to scale, when to switch from Pro→Max→Team, when to leave the day job. |
-| `04-slide-deck.md` | A Marp-compatible markdown slide deck. Two halves: (1) the Lumivara case study, (2) "imagine your site here" — a fill-in-the-blank framework so a prospect can visualise their own site/app on the same plumbing. | Sending to a prospect, posting on LinkedIn, demoing on a call. |
+| `04-slide-deck.md` | A Marp-compatible markdown slide deck. Two halves: (1) the Lumivara case study, (2) "imagine your site here" — a fill-in-the-blank framework so a prospect can visualise their own site/app on the same plumbing. Rendered HTML + PDF live alongside the source. | Sending to a prospect, posting on LinkedIn, demoing on a call. |
+| `05-template-hardening-notes.md` | Running list of changes to make the rebuild template harder to repackage and resell without your operator account. Internal only — never share with clients. | Before client #5 — once retainers are real, the template becomes worth protecting. |
 
 ## How to use this pack
 
@@ -55,4 +61,4 @@ Everything inside `docs/mothership/` is operator-only and never ships in a clien
 
 ---
 
-*Last updated: 2026-04-28.*
+*Last updated: 2026-04-29.*

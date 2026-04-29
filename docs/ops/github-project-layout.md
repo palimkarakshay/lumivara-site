@@ -225,18 +225,35 @@ safe to re-run any time).
 
 ### §4.3 — Add the twelve saved views
 
+Already done on 2026-04-29 — left here as reference for re-creating
+a view if one is accidentally deleted, or for spinning up a sibling
+project later (e.g. a per-client repo project in Phase 4).
+
 In the project, top-left **+ New view** for each row in §3.2. For
 each view:
 
-1. Pick the **Type** column from §3.2 (Board / Table / Roadmap).
-2. Tap **Filter** → paste the filter expression.
-3. Tap **Group by** → pick the field.
-4. Tap **Sort** → pick the field + direction.
+1. Pick the **Layout** column from §3.2 (Board / Table / Roadmap).
+2. Tap **Filter** → paste the filter expression verbatim from §3.2.
+3. Set the layout-specific axes (the labels differ per layout):
+   - **Board** layout — set **Column by** (the kanban columns) and,
+     if §3.2 specifies one, **Swimlanes** (horizontal slices).
+     Board has no "Group by" option; that axis is split between
+     Column-by and Swimlanes.
+   - **Roadmap** layout — set **Group by** and **Dates** (the field
+     or pair of fields rendered as the timeline bar). For a
+     duration bar, pick two date fields; for a deadline marker,
+     one.
+   - **Table** layout — set **Group by** and use **Fields** to
+     pick which columns to show.
+4. Tap **Sort by** → pick the field + direction (or leave **manual**
+   if §3.2 says so).
 5. Top-left view tab → long-press → **Rename** to the view name in §3.2.
+   The name is what bots and future-self look up by, so type it
+   verbatim — view-numbers in the URL are not a stable identifier.
 6. Drag the tab into position — order matters for the mobile strip.
 
-Tip: views #1 (`Demo-Day Critical`) and #2 (`POC daily`) are the two
-the operator opens daily; put them first so they're the default tab
+Tip: views `Demo-Day Critical` and `POC daily` are the two the
+operator opens daily; put them first so they're the default tab
 when the project loads.
 
 ### §4.4 — Verify the existing 46 issues are on the project

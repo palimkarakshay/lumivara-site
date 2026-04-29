@@ -21,9 +21,13 @@
 
 # Mothership Business Pack — Master Index
 
-This folder is the **operator-side runbook for the freelance practice that builds, ships, and maintains small-business websites with an AI autopilot**. It is the successor to (and supersedes for operator concerns) `docs/TEMPLATE_REBUILD_PROMPT.md`. The original template stays as a historical artefact; the v3 rebuild prompt lives at `06-operator-rebuild-prompt-v3.md`.
+> _Lane: 🛠 Pipeline — operator-only business pack; never copied to a client repo._
+>
+> **Folder name retained.** Per the operator decision on 2026-04-29, this folder stays as `docs/mothership/` even though [`15b §2`](./15b-naming-conventions.md) locks the long-term rename to `docs/platform/`. Prose terminology (`mothership` → `platform` in noun usage) is being swept incrementally — `scripts/pattern-c-audit.sh` keeps the brand-drift checks green. The companion folder `docs/freelance/` was renamed to `docs/storefront/` on the same day per the same lock.
 
-> **Provisional brand:** *Lumivara Forge* — see `01-business-plan.md §1` for four other options and the trade-offs. Treat the brand as `{{BRAND}}` everywhere in this folder so a global rename is cheap.
+This folder is the **operator-side runbook for the practice that builds, ships, and maintains small-business websites with an AI autopilot**. It is the successor to (and supersedes for operator concerns) `docs/TEMPLATE_REBUILD_PROMPT.md`. The original template stays as a historical artefact; the v3 rebuild prompt lives at `06-operator-rebuild-prompt-v3.md`.
+
+> **Brand locked:** **Lumivara Forge** (2026-04-28; see [`15-terminology-and-brand.md §4`](./15-terminology-and-brand.md)). Slug: `lumivara-forge`. Trademark availability check (CIPO Class 42 + USPTO) per `15 §5` is the only remaining pre-launch gate. `{{BRAND}}` placeholders downstream are gradually being resolved; new docs may use the literal name directly.
 
 ---
 

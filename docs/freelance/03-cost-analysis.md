@@ -7,6 +7,8 @@ Two questions this doc answers:
 
 All figures in CAD. USD where the underlying service is billed in USD (Claude, Gemini, OpenAI, Vercel, etc.).
 
+> **All numeric assumptions in this doc — Action minutes, AI subscription costs, upgrade triggers — are owned by [`docs/mothership/18-capacity-and-unit-economics.md`](../mothership/18-capacity-and-unit-economics.md)** (single source of truth for capacity / cost / cliffs). The tables here cite anchors in `18`; updates flow `18 §1` → `18 §7` (change log) → out to here. If a number in this doc disagrees with `18`, `18` wins.
+
 ---
 
 ## Part A — Cost of running ONE client per month
@@ -17,30 +19,23 @@ Three categories: **AI services**, **infrastructure**, **your time**.
 
 The brain of the autopilot system is Claude, with Gemini as fallback and OpenAI for code review. The key trick: **Claude bills by the OAuth token, not per call**, when you use a Pro/Max subscription as the bot's auth. So the cost doesn't scale linearly with clients — it scales with quota usage.
 
-| Service | Plan | Monthly cost (USD) | What it covers |
-|---|---|---|---|
-| **Claude Pro** | $20/mo | $20 | One operator's bot quota — fine for ~3–5 active clients with light edits |
-| **Claude Max 5x** | $100/mo | $100 | Comfortable for ~10–15 active clients |
-| **Claude Max 20x** | $200/mo | $200 | Comfortable for ~20–30 active clients |
-| **Gemini API (free tier)** | free | $0 | Triage fallback when Claude is throttled; free tier is generous |
-| **OpenAI API** | pay-as-you-go | $5–$15 | Code-review fallback only; very low usage |
-| **Codex CLI / Cursor / Cline** (your own dev tools) | varies | $20–$40 | Your local dev productivity, NOT the client-facing bot |
+Plan-cost numbers (Pro / Max 5x / Max 20x), Gemini and OpenAI usage envelopes, and the cliffs that move you between plans all live in [`mothership/18 §1` (assumption rows `claude_pro_cost`, `claude_max5x_cost`, `claude_max20x_cost`)](../mothership/18-capacity-and-unit-economics.md#1--assumptions-table) and [`18 §3` (low/base/high cost envelopes per active-client band)](../mothership/18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes).
 
-**Rule of thumb:** every 5 clients adds about $40 USD/month of AI cost when you're on Max. Below 5 clients, Pro at $20 is plenty.
+The previous draft of this section carried a "every 5 clients adds about $40 USD/month" rule-of-thumb. That rule conflated three separate line items (base subscription, Claude console top-up, Codex review) and under-counted the seat-doubling at client #26. The replacement is the explicit formula in [`18 §3` `#ai-cost-formula`](../mothership/18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes); use it for projections instead of the old rule.
 
 ### Infrastructure (per client, mostly free)
 
 Each client site lives under **the client's own** GitHub + Vercel account. They pay $0 because:
 
-- **Vercel free tier** handles small-business traffic comfortably (100 GB bandwidth, 1M function invocations).
-- **GitHub free tier** gives 2,000 Action minutes/month — well over what a small site needs (~200 minutes/month with hourly triage and 6×daily execute crons).
+- **Vercel free tier** handles small-business traffic comfortably. Limits in [`mothership/18 §1`](../mothership/18-capacity-and-unit-economics.md#1--assumptions-table) rows `vercel_free_bandwidth` / `vercel_free_invocations`.
+- **GitHub free tier** gives the org-level Action-minute budget in [`18 §1` `gh_free_action_minutes`](../mothership/18-capacity-and-unit-economics.md#1--assumptions-table). The per-client typical run cost (~T2 typical) is in [`18 §2 #t2-action-min`](../mothership/18-capacity-and-unit-economics.md#2--per-tier-action-minute-envelopes); the practice-level total (where Cliff 2 trips) is in [`18 §2 #practice-min-realistic` / `#practice-min-saturation`](../mothership/18-capacity-and-unit-economics.md#2--per-tier-action-minute-envelopes).
 - **Domain registrar:** the client pays directly, ~CAD $20/year.
-- **Email (Resend free tier):** 3,000 emails/month free, plenty for a contact form.
+- **Email (Resend free tier):** [`18 §1 resend_free_emails`](../mothership/18-capacity-and-unit-economics.md#1--assumptions-table) covers a contact form by an order of magnitude.
 - **Cloudflare DNS / proxy:** free tier.
 
 **What you pay per client/month for infra: $0.** That's the leverage.
 
-If a client outgrows the free tier (high-traffic blog or growing SaaS), Vercel Pro at $20/USD/month is on them, not you.
+If a client outgrows the free tier (high-traffic blog or growing SaaS), Vercel Pro at $20 USD/month is on them, not you.
 
 ### Your time per client per month
 
@@ -59,13 +54,15 @@ So 20 clients ≈ 40–60 hours/month of operator time = a comfortable part-time
 
 ### Summary: cost-of-goods per client/month
 
-| Tier | Your AI cost share | Infra cost | Your time | **Total cost** | **Tier price** | **Margin** |
-|---|---|---|---|---|---|---|
-| Tier 1 (Lite) | ~$3 USD (≈ $4 CAD) | $0 | ~1.5 hrs | $4 CAD + 1.5 hrs | $99 CAD/mo | $95 + buy back 1.5 hrs of life |
-| Tier 2 (Pro) | ~$5 USD (≈ $7 CAD) | $0 | ~2.5 hrs | $7 CAD + 2.5 hrs | $249 CAD/mo | $242 + buy back 2.5 hrs |
-| Tier 3 (Business) | ~$10 USD (≈ $14 CAD) | $0 | ~4 hrs | $14 CAD + 4 hrs | $599 CAD/mo | $585 + buy back 4 hrs |
+The full margin model — per-tier AI-cost allocation, operator hours, marginal cost, cash margin, and the T0-loss-leader note — lives in [`mothership/18 §5`](../mothership/18-capacity-and-unit-economics.md#5--margin-model-per-tier). Headline numbers:
 
-The marginal cost of each new client is dominated by your time, not infrastructure. That's exactly the shape you want a service business to have.
+| Tier | Per-client AI cost (CAD, derived from `18 §3`) | Per-client operator time (`18 §4`) | **Cash margin (CAD/mo)** |
+|---|---|---|---|
+| Tier 1 (Lite) | see [`18 §5 #margin-t1`](../mothership/18-capacity-and-unit-economics.md#5--margin-model-per-tier) | see [`18 §4 #t1-operator-hours`](../mothership/18-capacity-and-unit-economics.md#4--operator-time-envelope-per-tier) | $97 + buys back 1.5 hrs of life |
+| Tier 2 (Pro) | see [`18 §5 #margin-t2`](../mothership/18-capacity-and-unit-economics.md#5--margin-model-per-tier) | see [`18 §4 #t2-operator-hours`](../mothership/18-capacity-and-unit-economics.md#4--operator-time-envelope-per-tier) | $244 + buys back 2.5 hrs |
+| Tier 3 (Business) | see [`18 §5 #margin-t3`](../mothership/18-capacity-and-unit-economics.md#5--margin-model-per-tier) | see [`18 §4 #t3-operator-hours`](../mothership/18-capacity-and-unit-economics.md#4--operator-time-envelope-per-tier) | $589 + buys back 4 hrs |
+
+The marginal cost of each new client is dominated by your time, not infrastructure. That's exactly the shape you want a service business to have. Tier 0 is an explicit loss-leader (~$10 cash loss per change at notional $200/h internal rate); see [`18 §5 #margin-t0-loss-leader`](../mothership/18-capacity-and-unit-economics.md#5--margin-model-per-tier).
 
 ---
 
@@ -124,33 +121,33 @@ Your day-job replacement number depends on your tax situation. Pick yours from t
 
 - **Churn is real.** Plan for ~10% annual churn on retainers. That means a steady-state of 30 clients requires you to win ~3 new retainer clients per year just to stay flat.
 - **Not every prospect closes.** Plan for a 20–30% close rate on Fiverr / Upwork inquiries. So 4 closes/month = ~15 inquiries to manage. Time on prospect calls is not free.
-- **Your Pro / Max quota is shared.** When you cross ~10 active clients on autopilot, you'll feel quota pressure. The fix is to upgrade to Max ($100 → $200 USD/mo) — but only when you're sure the new revenue covers it.
+- **Your Pro / Max quota is shared.** Cliff timing (when to upgrade Pro → Max 5x → Max 20x → 2nd seat) lives in [`mothership/18 §6`](../mothership/18-capacity-and-unit-economics.md#6--scale-thresholds-and-trigger-points). Upgrade when triggered, not pre-emptively, but never *during* a new-client onboarding.
 - **One bad client costs more than ten good ones earn.** Be ruthless with the "say no to" list in `01-gig-profile.md`. Energy spent on a problem client is energy stolen from acquiring four more good ones.
 
 ---
 
 ## Part D — Operating cost projection (12-month spreadsheet)
 
-Assume Month 0 = today, day-job not yet quit, side hustle operational.
+Assume Month 0 = today, day-job not yet quit, side hustle operational. AI-cost cells are derived from the §3 envelope in `18` (base column), with the cliff transitions named in [`18 §6`](../mothership/18-capacity-and-unit-economics.md#6--scale-thresholds-and-trigger-points). Cliff 1 (Pro → Max 5x) trips at client #6; Cliff 4 (Max 5x → Max 20x) at client #16; Cliff 5 (2nd seat) at client #26.
 
-| Month | Active clients | MRR (CAD) | Setup-fees-this-month (CAD) | Gross revenue | AI cost (USD→CAD) | Other infra | **Net before tax & your time** |
-|---|---|---|---|---|---|---|---|
-| 1 | 2 | $200 | $3,000 | $3,200 | $28 | $20 | $3,152 |
-| 2 | 4 | $500 | $5,000 | $5,500 | $28 | $20 | $5,452 |
-| 3 | 7 | $1,200 | $7,500 | $8,700 | $28 | $20 | $8,652 |
-| 4 | 10 | $2,000 | $9,000 | $11,000 | $140 | $30 | $10,830 |
-| 5 | 13 | $2,800 | $10,000 | $12,800 | $140 | $30 | $12,630 |
-| 6 | 16 | $3,800 | $11,000 | $14,800 | $140 | $30 | $14,630 |
-| 7 | 19 | $4,800 | $12,000 | $16,800 | $140 | $30 | $16,630 |
-| 8 | 22 | $5,800 | $12,000 | $17,800 | $280 | $40 | $17,480 |
-| 9 | 25 | $6,800 | $13,000 | $19,800 | $280 | $40 | $19,480 |
-| 10 | 28 | $7,800 | $13,000 | $20,800 | $280 | $40 | $20,480 |
-| 11 | 30 | $8,500 | $14,000 | $22,500 | $280 | $40 | $22,180 |
-| 12 | 32 | $9,200 | $14,000 | $23,200 | $280 | $40 | $22,880 |
+| Month | Active clients | Quota tier (`18 §3`) | MRR (CAD) | Setup-fees-this-month (CAD) | Gross revenue | AI cost (USD base / CAD) | Other infra | **Net before tax & your time** |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 2 | Pro ([`#ai-cost-band-pro`](../mothership/18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes)) | $200 | $3,000 | $3,200 | $20 / $28 | $20 | $3,152 |
+| 2 | 4 | Pro | $500 | $5,000 | $5,500 | $20 / $28 | $20 | $5,452 |
+| 3 | 7 | Max 5x ([`#ai-cost-band-max5x`](../mothership/18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes)) | $1,200 | $7,500 | $8,700 | $115 / $160 | $20 | $8,520 |
+| 4 | 10 | Max 5x | $2,000 | $9,000 | $11,000 | $115 / $160 | $30 | $10,810 |
+| 5 | 13 | Max 5x | $2,800 | $10,000 | $12,800 | $115 / $160 | $30 | $12,610 |
+| 6 | 16 | Max 20x ([`#ai-cost-band-max20x`](../mothership/18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes)) | $3,800 | $11,000 | $14,800 | $225 / $313 | $30 | $14,457 |
+| 7 | 19 | Max 20x | $4,800 | $12,000 | $16,800 | $225 / $313 | $30 | $16,457 |
+| 8 | 22 | Max 20x | $5,800 | $12,000 | $17,800 | $225 / $313 | $40 | $17,447 |
+| 9 | 25 | Max 20x | $6,800 | $13,000 | $19,800 | $225 / $313 | $40 | $19,447 |
+| 10 | 28 | 2nd seat ([`#ai-cost-band-2seat`](../mothership/18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes)) | $7,800 | $13,000 | $20,800 | $435 / $605 | $40 | $20,155 |
+| 11 | 30 | 2nd seat | $8,500 | $14,000 | $22,500 | $435 / $605 | $40 | $21,855 |
+| 12 | 32 | 2nd seat | $9,200 | $14,000 | $23,200 | $435 / $605 | $40 | $22,555 |
 
-**Year-1 gross: ~$177k CAD. Year-1 net (before personal income tax): ~$172k.**
+**Year-1 gross: ~$177k CAD. Year-1 net (before personal income tax): ~$170.5k.** This is ~$1,500 CAD lower than the previous draft of this table — the difference is captured in [`18 §7`](../mothership/18-capacity-and-unit-economics.md#7--assumption-change-log) (assumption change log).
 
-After personal income tax in Ontario at sole-prop rates (~25–30% effective on this band), take-home is roughly **$120k–$130k CAD net** — comfortably above most software-engineer day-job nets.
+After personal income tax in Ontario at sole-prop rates (see [`18 §1 tax_band_ontario_soleprop`](../mothership/18-capacity-and-unit-economics.md#1--assumptions-table) — a *range*, not a single number; consult an accountant), take-home is roughly **$118k–$128k CAD net** — comfortably above most software-engineer day-job nets.
 
 ### Realistic adjustments to make this honest
 
@@ -163,13 +160,13 @@ After personal income tax in Ontario at sole-prop rates (~25–30% effective on 
 
 ## Part E — When to upgrade your tooling
 
+The five capacity cliffs (Claude plan, GitHub Actions, Railway, second seat) live in [`mothership/18 §6 #cliffs-table`](../mothership/18-capacity-and-unit-economics.md#6--scale-thresholds-and-trigger-points) — that's the operational source of truth. Add-ons specific to *staffing* (not capacity) live here:
+
 | Trigger | Action |
 |---|---|
-| Cross 5 active clients | Upgrade Claude Pro → Max 5x ($100/mo) |
-| Cross 15 active clients | Upgrade Max 5x → Max 20x ($200/mo) |
-| Cross 25 active clients | Hire a part-time VA (5 hrs/week, ~$300/mo CAD) for client comms triage |
-| Cross 35 active clients | Hire a part-time second engineer for monthly improvement runs |
-| Cross 50 active clients | You've built an agency. Decide if that's what you wanted. |
+| Cross ~25 active clients | Hire a part-time VA (5 hrs/week, ~$300/mo CAD) for client comms triage |
+| Cross ~35 active clients | Hire a part-time second engineer for monthly improvement runs (the 2nd Anthropic seat from `18 §6` Cliff 5 unlocks this) |
+| Cross ~50 active clients | You've built an agency. Decide if that's what you wanted. |
 
 ---
 

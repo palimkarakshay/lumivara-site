@@ -207,6 +207,8 @@ DOD:
 
 ## §2 — Run B: Close the security gaps
 
+> **Canonical implementation note (2026-04-29):** the doc-side fixes from this Run B prompt are now landed in [`03 §3.X`](03-secure-architecture.md#3x-github-app-identity-model-canonical-vendor-auth) (App identity), [`03 §3.Y`](03-secure-architecture.md#3y-two-phase-rotation-pattern-for-hmac-style-secrets) (two-phase HMAC rotation), [`09 §1.5`](09-github-account-topology.md#15-break-glass-topology-single-owner-is-not-survivable) + [`§2.5`](09-github-account-topology.md#25-adding-the-second-owner-break-glass-setup) (break-glass), and [`03b`](03b-security-operations-checklist.md) (operator cadence). The CI/security hygiene check (gitleaks, doc-lint) remains future work — the doc-side spec for the lint pass is `03b §5`. Use the prompt below as a re-runnable migration playbook only; the canonical homes are the ones above.
+
 **Goal:** close the items in `12 §1`–`§6`. Land the break-glass topology, per-client Resend keys, two-phase HMAC rotation, GitHub-App swap (or PAT alarm), gitleaks, and audit-trail sanitisation that wasn't done in Run A.
 
 **Estimated:** Opus 4.7 Max, ~80–120 turns, ~1.5–2.5 h wall time.

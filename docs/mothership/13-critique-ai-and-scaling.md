@@ -8,6 +8,8 @@ The pack assumes the AI lane scales linearly with clients. It doesn't — there 
 
 ## §1 — 🟠 GitHub Actions minutes maths is wrong
 
+> **Status (2026-04-29): closed.** Reconciliation now lives in [`18 §2`](18-capacity-and-unit-economics.md#2--per-tier-action-minute-envelopes) (per-tier envelopes + practice-level totals) with the `gh_free_action_minutes` constant in [`18 §1`](18-capacity-and-unit-economics.md#1--assumptions-table). The critique below is preserved as the audit trail.
+
 ### What the docs claim
 
 | Source | Claim |
@@ -37,6 +39,8 @@ The cost-firewall principle still holds — Action minutes are operator-paid —
 ---
 
 ## §2 — 🟠 AI cost numbers don't reconcile
+
+> **Status (2026-04-29): closed.** The cost formula and three-scenario envelope live in [`18 §3`](18-capacity-and-unit-economics.md#3--ai-usage--cost-envelopes); the table below is the source the new envelope was derived from. `freelance/03 §D` 12-month projection has been recomputed against `18 §3`'s base column (year-1 net moves ~$1,500 CAD; documented in [`18 §7`](18-capacity-and-unit-economics.md#7--assumption-change-log)).
 
 ### What the docs claim
 
@@ -79,6 +83,8 @@ Update `freelance/03 §D` with these numbers; the year-1 net changes by ~$1,500 
 ---
 
 ## §3 — 🔴 Three scaling cliffs the pack does not name
+
+> **Status (2026-04-29): closed.** The cliffs are now formalised in [`18 §6`](18-capacity-and-unit-economics.md#6--scale-thresholds-and-trigger-points) as an operational triggers/actions table — five rows (Cliffs 1–5: Pro→Max5x, GH Free→Team, Railway free→Hobby, Max5x→Max20x, single seat → 2nd seat). The narrative below remains the rationale.
 
 The pack treats scaling as continuous. It is not — three step-changes are non-trivial transitions:
 
@@ -173,6 +179,8 @@ Both are sustainability moves disguised as risk-management. Skip them and the bu
 ---
 
 ## §8 — Summary action list for Run C
+
+> **Status (2026-04-29): closed for the maths-reconciliation items (§1, §2, §3).** Items (1)–(2) are closed via [`18`](18-capacity-and-unit-economics.md). The remaining items in the checklist (Twilio retry queue, AI_ROUTING.md updates, AGENTS.md wording, SUCCESSOR_PROTOCOL.md) are independent and remain open.
 
 Single Claude Code session that closes the maths and quota inconsistencies:
 

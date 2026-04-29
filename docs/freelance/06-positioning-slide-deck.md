@@ -437,3 +437,337 @@ Everything else can flex. These two cannot.
 > Pitch line: *"Lock the brand, harden the product, then sell — in that order."*
 
 ---
+
+<!-- _class: lead -->
+
+# 7 · Project plan
+
+*Phased, with status as of 2026-04-29.*
+
+---
+
+## The phased build plan (mothership pack)
+
+| Phase | Deliverable | Status |
+|---|---|---|
+| **P0 — Survey** | Read existing repo, freelance pack, template prompt, AI routing, admin-portal plan | ✅ Done |
+| **P1 — Foundation docs** | `00-INDEX`, `01-business-plan`, `02-architecture`, `03-secure-architecture` | ✅ Done |
+| **P2 — Operations docs** | `04-tier-based-agent-cadence`, `05-mothership-repo-buildout-plan` | ✅ Done |
+| **P3 — Engagement playbooks** | `06-operator-rebuild-prompt-v3`, `07-client-handover-pack` | ✅ Done |
+| **P4 — Future-work stubs** | `08-future-work.md` (legal, vault, contracts, payments, market research) | ✅ Done |
+| **P4.5 — External critique** | Docs `10`–`15` + `16` prompt-pack | ✅ Done |
+| **P4.6 — Critique closure** | Runs A–D: cron flaw, security gaps, maths, ops sweep | ⏳ **In progress** |
+| **P5 — Mothership repo bootstrap** | Build empty `palimkarakshay/lumivara-forge-mothership` end-to-end | ⏳ After P4.6 |
+| **P6 — Migrate Client #1** | Re-scaffold Lumivara People Advisory into a clean per-client repo | ⏳ After P5 |
+| **P7 — Hardening tasks** | Walk `05-template-hardening-notes.md` items into mothership issues | ⏳ After P6 |
+| **P8 — Legal & vault** | PIPEDA, contracts, secrets vault, market study | ⏳ Months 2–6 |
+
+Source: `docs/mothership/00-INDEX.md` "Phased build plan".
+
+---
+
+## Months 1–3 — Side-hustle viable
+
+- 2 × Tier-0 builds (CAD $2,400 setup)
+- 3 × Tier-1 retainer signups ($7,200 setup + $297 MRR)
+- 1 × Tier-2 retainer signup ($4,500 setup + $249 MRR)
+- Total months 1–3: **~$14,100 setup + $546 MRR**, average **~$5,200/mo gross**.
+- Day-job still on. Side hustle pays for AI tools and eats evenings.
+
+Trigger work in this window: MSA + SOW (before client #2), payment automation, PIPEDA before client #3.
+
+Source: `docs/freelance/03-cost-analysis.md` Part C, milestone 1.
+
+---
+
+## Months 4–9 — Day-job-replaceable
+
+- 3–4 new clients/month, mostly Tier 2.
+- Typical mix: 1 × T0 + 1 × T1 + 2 × T2 = $12,600 setup/month.
+- MRR climbs by ~$597/month new.
+- By month 9, MRR ≈ **$5,000–$7,000** on top of $10–14k/month setup lumps.
+- Total monthly gross: **$15,000–$21,000**.
+- Status: comfortably above day-job replacement number; start de-risking.
+
+Trigger work: 1Password vault by client #5; Claude Pro → Max 5x at client #6; Max 5x → Max 20x at client #16.
+
+Source: `docs/freelance/03-cost-analysis.md` Part C, milestone 2.
+
+---
+
+## Months 10–12 — Quitting milestone
+
+- MRR alone covers fixed personal expenses (rent + groceries + utilities + insurance).
+- 6 months of personal expenses saved as runway.
+- Two enterprise referrals lined up via LinkedIn for buffer.
+- **Then quit.**
+
+By month 12: ~32 active clients, ~$22k/month gross, year-1 take-home ~$118k–$128k after Ontario sole-prop tax.
+
+Source: `docs/freelance/03-cost-analysis.md` Part C, milestone 3 + Part D.
+
+---
+
+## The 12-month operating cost projection (headline rows)
+
+| Month | Active clients | Quota tier | MRR (CAD) | Gross | Net before personal tax |
+|---|---|---|---|---|---|
+| 1 | 2 | Pro | $200 | $3,200 | $3,152 |
+| 3 | 7 | Max 5x | $1,200 | $8,700 | $8,520 |
+| 6 | 16 | Max 20x | $3,800 | $14,800 | $14,457 |
+| 9 | 25 | Max 20x | $6,800 | $19,800 | $19,447 |
+| 12 | 32 | 2nd seat | $9,200 | $23,200 | $22,555 |
+
+**Year-1 gross: ~$177k. Year-1 net before personal tax: ~$170.5k.**
+
+Source: `docs/freelance/03-cost-analysis.md` Part D + `mothership/18-capacity-and-unit-economics.md §3 / §6`.
+
+---
+
+## Section recap — Project plan
+
+- **Phases P0–P4.5 are done.** P4.6 critique-closure is the immediate work.
+- **P5–P7** are the mothership repo bootstrap and Client #1 spinout — months 1–2.
+- **P8** legal + vault is staged across months 2–6, gated on client count.
+- **Revenue ramp:** $5k/mo (months 1–3) → $15–21k/mo (months 4–9) → $22k/mo (month 12).
+- **Day job replaced** between months 9 and 12.
+
+> Pitch line: *"Twelve months from today: 30 retainer clients, the day job gone, and ~$120k take-home."*
+
+---
+
+<!-- _class: lead -->
+
+# 8 · Possible challenges
+
+*The risks that can knock the plan off course.*
+
+---
+
+## Top-tier risks (already mitigated in the system)
+
+| Risk | Likelihood | Impact | Mitigation already built |
+|---|---|---|---|
+| Anthropic outage / throttle | Med | High | Multi-AI fallback ladder (`AI_ROUTING.md`) — Claude → Gemini → OpenAI Codex on triage and execute. |
+| One client floods the queue | Low | Med | Per-client rate limit + tier cadence (`04-tier-based-agent-cadence.md`). |
+| Operator burnout | Med | High | 30-client cap until hire; budget charter; weekly cadence; 2-week break before client #25. |
+| Secret leak (token in client repo) | Low | Critical | Org-level secrets, vendor PAT, `.claudeignore`, audit checklist (`03 §3`). |
+| Bot ships breaking change to prod | Low | High | Auto-merge gate is opt-in per label; design/critical paths excluded; Vercel preview required. |
+| Client refuses to pay | Med | Med | Stripe auto-charge; pause autopilot at +14 days; full lockout at +30 days (`08-future-work §3`). |
+| Client demands the autopilot when leaving | Low | Med | Contract: "site = client; system = operator-licensed". |
+
+Source: `docs/mothership/01-business-plan.md §8`.
+
+---
+
+## Strategic risks (less mitigated, watch carefully)
+
+- **Demand-side:** the market may exist but our reach doesn't. Fix is more posting and outreach, not lower prices. (`03-cost-analysis.md` Part G.)
+- **Competitive:** Framer, Vercel v0, or an Anthropic-built site agent could close the phone-as-CMS gap. Watch list maintained; reassess every 2 months.
+- **Regulatory:** Quebec Law 25 is materially stricter than PIPEDA; needs a French-language privacy page if we sell in QC. Defer until first QC client.
+- **Model deprecation:** a Claude / Gemini model retirement breaks pinned IDs. Mitigation: review pinned IDs every 2 months in `AI_ROUTING.md`.
+- **Single bad client.** "One bad client costs more than ten good ones earn." Be ruthless with the say-no list.
+
+---
+
+## Capacity cliffs (when the system has to evolve)
+
+| Cliff | Trigger | Action |
+|---|---|---|
+| **Cliff 1** | Client #6 | Claude Pro → Max 5x |
+| **Cliff 2** | GitHub Free Action minutes saturate | Pay-as-you-go on Actions or move CI to a paid runner |
+| **Cliff 3** | n8n free tier saturated | Railway Pro |
+| **Cliff 4** | Client #16 | Max 5x → Max 20x |
+| **Cliff 5** | Client #26 | 2nd Anthropic seat (unlocks 2nd engineer hire) |
+
+If a cliff hits *during* an onboarding, finish the onboarding first, upgrade after. Never upgrade pre-emptively. Source: `mothership/18-capacity-and-unit-economics.md §6`.
+
+---
+
+## Failure modes specific to the autopilot
+
+1. **The bot makes a "confident wrong" change.** Mitigation: every change waits for client tap; auto-merge limited to trivial labels; design/critical paths human-only.
+2. **The plan-then-execute gate adds latency clients don't want.** Mitigation: Tier 3 cadence runs hourly; Tier 0 explicitly opts out of automation entirely.
+3. **The phone-edit shortcut breaks on iOS / Android update.** Mitigation: web-based admin portal is the canonical surface; SMS + email are fallback channels.
+4. **HMAC rotation goes wrong.** Mitigation: two-phase HMAC rotation in `03-secure-architecture §3.Y`; recovery drill in `03b-security-operations-checklist`.
+5. **Cron drift between site and pipeline repos.** Mitigation: Pattern C puts cron only on the pipeline repo's `main` (canonical GitHub Actions path); enforced by `pattern-c-enforcement-checklist.md`.
+
+---
+
+## Section recap — Challenges
+
+- **Operationally** mitigated: outages, queue starvation, secret leaks, payment defaults — all have prepared playbooks.
+- **Strategically** unsettled: demand reach, competitive moves, model deprecation, regulatory expansion.
+- **Capacity cliffs** are scheduled, not surprises.
+- **Burnout is the single biggest existential risk.** The cap, charter, and cadence exist to prevent it.
+
+> Pitch line: *"We've named the risks, mitigated the operational ones, and watch-listed the strategic ones."*
+
+---
+
+<!-- _class: lead -->
+
+# 9 · Resources required
+
+*Money, time, tooling, people.*
+
+---
+
+## Money — month-1 outlay
+
+| Line item | Cost (CAD) | Notes |
+|---|---|---|
+| Domain (`lumivara-forge.com / .ca`) | ~$40 | Annual. |
+| GitHub org (free tier ok) | $0 | Free for unlimited private repos; minutes via the GitHub Free Action allotment. |
+| Vercel Hobby | $0 | Free tier covers small-business traffic; clients pay if they outgrow it. |
+| Resend (free tier) | $0 | Covers magic-link emails for all clients to ~3,000 emails/month. |
+| Twilio (per-client #) | ~$1.15/mo USD | Pay-as-you-go, billed per client. |
+| Anthropic Claude Pro | ~$20 USD/mo | Pro until client #6, then Max 5x ($100), then Max 20x ($200). |
+| Gemini API | $0 | Free tier (500 RPD on Flash) covers our volume. |
+| OpenAI / Codex | $0 → ~$30/mo USD | Pay-go; modest spend in code-review path. |
+| n8n on Railway | ~$5–$10/mo | Hobby tier; Pro at Cliff 3. |
+| **Total month-1** | **~CAD $90–$120** | Almost all of which is AI subscriptions. |
+
+Source: `docs/freelance/03-cost-analysis.md` Part A; `mothership/18 §1`.
+
+---
+
+## Money — month-12 outlay (scaled to ~30 clients)
+
+| Line item | Cost (CAD) | Notes |
+|---|---|---|
+| Anthropic Max 20x + 2nd seat | ~$605 / mo | Triggered at client #26. |
+| OpenAI / Codex (review at scale) | ~$50–$100 / mo | More PRs reviewed. |
+| 1Password Business Teams | ~$11 / mo | One operator seat. |
+| Bitwarden self-hosted backup | ~$5 / mo | On Railway. |
+| Twilio per-client × 30 | ~$50 / mo USD | $1.15 × 30. |
+| Railway (n8n Pro) | ~$25 / mo | Cliff 3 upgrade. |
+| Accountant + bookkeeping | ~$100–$170 / mo | $1k–$2k / yr smoothed. |
+| Insurance (professional liability) | ~$35 / mo | $400/yr Ontario sole prop, triggered above $50k revenue. |
+| **Total month-12** | **~CAD $900–$1,100** | Still a tiny fraction of MRR. |
+
+The infrastructure cost stays under 5% of revenue at 30 clients. The dominant cost is operator time.
+
+---
+
+## One-time legal + IP setup
+
+| Item | Cost (CAD) | Trigger |
+|---|---|---|
+| MSA + SOW templates from a Canadian small-business lawyer | $1,500 – $2,500 | Before client #2 |
+| Privacy / PIPEDA review (optional) | $0 (DIY) or $500 | Before client #3 |
+| Trademark check (CIPO Class 42 + USPTO) | $400 – $800 | Before public branding |
+| 1Password Business + break-glass envelope | $100 / yr | Before client #5 |
+| **Total one-time** | **~CAD $2,000 – $3,800** | Spread across months 1–4 |
+
+Source: `docs/mothership/08-future-work.md §6` sequencing.
+
+---
+
+## Time — operator hours per month
+
+| Activity | Hours / mo at 1 client | Hours / mo at 30 clients |
+|---|---|---|
+| Per-client PR review + monitoring | 2–3 | 60–90 |
+| Monthly improvement runs (T2/T3) | 1.5 | 25–35 |
+| Client communications | 0.5 | 7–15 |
+| Quarterly strategy calls | 0.3 | 8–10 |
+| Sales / new client onboarding | varies | 10–20 |
+| Mothership maintenance | 2–4 | 4–6 (fixed cost) |
+| **Total** | **~6** | **~115–175** |
+
+At 30 clients the operator is **at the cap**. That's the trigger for VA + 2nd-engineer hires (months 9–12).
+
+Source: `docs/freelance/03-cost-analysis.md` Part A "Your time" + Part E.
+
+---
+
+## People — the hire ladder
+
+| Trigger | Role | Hours / cost |
+|---|---|---|
+| Cross 25 active clients | Part-time VA for client comms triage | 5 hrs/wk · ~CAD $300/mo |
+| Cross 35 active clients | Part-time second engineer for monthly improvement runs | Variable · unlocked by Cliff 5 (2nd Anthropic seat) |
+| Cross 50 active clients | "You've built an agency. Decide if that's what you wanted." | Stage 2 / 3 conversation |
+
+The hire ladder is deliberately *late*. The autopilot exists so the operator can hold ~30 clients without help.
+
+Source: `docs/freelance/03-cost-analysis.md` Part E.
+
+---
+
+## Tooling — the operator stack
+
+- **Claude Pro/Max** — primary AI; OAuth-bound to GitHub Actions via `CLAUDE_CODE_OAUTH_TOKEN`.
+- **Gemini API + OpenAI API** — fallback ladder.
+- **n8n on Railway** — capture and dispatch hub.
+- **GitHub** — source of truth (Issues, Actions, Project v2).
+- **Vercel** — hosting + preview builds + deploy hooks.
+- **Resend** — magic-link emails.
+- **Twilio** — per-client SMS numbers.
+- **Auth.js v5 + Octokit** — admin portal stack.
+- **1Password + YubiKey** — secrets vault.
+- **GitHub Pages SPA** — operator dashboard (mobile-first).
+
+Most of this is already wired up for Lumivara People Advisory; the work is to **separate** it cleanly into mothership + per-client repos.
+
+---
+
+## Section recap — Resources
+
+- **Month 1 cash outlay: ~CAD $90–$120** (mostly AI subs).
+- **Month 12 cash outlay: ~CAD $900–$1,100** (still <5% of revenue).
+- **One-time legal + vault: ~CAD $2,000–$3,800** spread over months 1–4.
+- **Operator time scales linearly** to 115–175 hrs/mo at 30 clients — the cap.
+- **First hire is a VA at client #25**; first engineer at client #35.
+
+> Pitch line: *"For under $5k of cash and 60 hours a month, this practice produces ~$120k take-home in year 1."*
+
+---
+
+<!-- _class: lead -->
+
+# Closing
+
+---
+
+## The one-sentence summary
+
+> **Lumivara Forge** sells small-business websites that you edit from your phone and that quietly improve themselves every month — for a flat subscription fee, on a real codebase you own outright.
+
+Built on the **autopilot** that already runs lumivara.com. Packaged as a four-tier ladder (T0 / T1 / T2 / T3). Run by one operator, with a hire-ladder that kicks in at 25 / 35 / 50 clients.
+
+Year-1 destination: **30 active clients, ~$120k take-home, day job replaced.**
+
+---
+
+## What every slide collapses to
+
+| Question | The answer in one line |
+|---|---|
+| Benefits | The site stops decaying; flat fee replaces $200/edit invoices. |
+| Differentiators | Phone-as-CMS over a real codebase, multi-AI fallback, Pattern C operator/client split. |
+| Customer voice | Autonomy + predictability + ownership + custom looks. |
+| Competitor claims | Squarespace owns "edit yourself"; we own "edit yourself + own the code". |
+| End goal | 30 retainer clients in Stage 1; agency or SaaS optional later. |
+| Steps | Brand → critique-closure → mothership → Client #1 → storefront → cliffs at 6/16/26/30. |
+| Project plan | $5k → $15–21k → $22k MRR over months 1–3 / 4–9 / 10–12. |
+| Challenges | Outages mitigated; burnout is the single biggest existential risk. |
+| Resources | <$5k cash + 60 op-hrs/mo through year 1. |
+
+---
+
+<!-- _class: lead -->
+
+# Thank you.
+
+<br/>
+
+*Operator deck — confidential.*
+
+Source files reconciled in this deck:
+`docs/mothership/00-INDEX.md` · `01-business-plan.md` · `02b-pattern-c-architecture.md` · `04-tier-based-agent-cadence.md` · `08-future-work.md` · `18-capacity-and-unit-economics.md`
+`docs/freelance/00-quick-start.md` · `01-gig-profile.md` · `02-pricing-tiers.md` · `03-cost-analysis.md` · `04-slide-deck.md` · `05-template-hardening-notes.md`
+`docs/AI_ROUTING.md` · `docs/ADMIN_PORTAL_PLAN.md` · `docs/BACKLOG.md`
+
+<span class="small">© 2026 — system proprietary, licensed per engagement.</span>

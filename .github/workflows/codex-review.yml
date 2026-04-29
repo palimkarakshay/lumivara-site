@@ -1,17 +1,27 @@
 name: Codex review (OpenAI gpt-5.5)
 
-# Runs OpenAI gpt-5.5 (ChatGPT Plus tier) on issues that the router has tagged
-# for code review or diff analysis. Posts the review as a comment on the issue
-# (and on the linked PR, if any). No code commits.
+# Runs OpenAI gpt-5.5 (ChatGPT Plus tier) on issues OR pull requests for code
+# review / diff analysis. Posts the review as a comment on the issue (and on
+# the linked PR, if any). No code commits.
 #
-# Triggered by execute.yml when an issue is labeled `model/codex`, or
-# manually via workflow_dispatch.
+# Triggered three ways:
+#   1. `pull_request` (opened, reopened, synchronize, ready_for_review) —
+#      every new PR gets a Codex consistency review automatically. The
+#      review is posted as a PR comment and labels the PR
+#      `codex-reviewed`. If Codex flags blocker/major findings, the PR is
+#      additionally labeled `codex-blockers` so auto-merge.yml gates the
+#      merge until the findings are addressed.
+#   2. `workflow_dispatch` — operator-invoked review on a specific issue.
+#   3. Indirect dispatch by `execute.yml` when an issue carries
+#      `model/codex` (the router path).
 #
 # OPENAI_API_KEY is OPTIONAL on this repo — if missing or quota-exhausted,
-# the workflow exits cleanly with a warning and re-labels the issue back to
-# the Claude path so the work isn't lost.
+# the workflow exits cleanly with a warning. For dispatch-on-issue runs it
+# also re-labels the issue back to the Claude path so the work isn't lost.
 
 on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
   workflow_dispatch:
     inputs:
       issue:
@@ -47,20 +57,59 @@ jobs:
       - name: Install Codex CLI
         run: npm install -g @openai/codex
 
+      # ── Resolve target ────────────────────────────────────────────────────
+      # The workflow runs in two modes:
+      #   - mode=pr     → triggered by `pull_request`; review the PR diff.
+      #   - mode=issue  → triggered by `workflow_dispatch`; review an issue
+      #                   (and any PR it references in its body).
+      # All later steps key off `steps.target.outputs.mode`.
+      - name: Resolve target (PR vs issue)
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_ISSUE: ${{ inputs.issue }}
+          INPUT_MODEL: ${{ inputs.model }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          MODEL="${INPUT_MODEL:-gpt-5.5}"
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "mode=pr" >> "$GITHUB_OUTPUT"
+            echo "pr=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+            echo "issue=" >> "$GITHUB_OUTPUT"
+            echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+            echo "Resolved target: PR #$PR_NUMBER (model=$MODEL)"
+          else
+            echo "mode=issue" >> "$GITHUB_OUTPUT"
+            echo "pr=" >> "$GITHUB_OUTPUT"
+            echo "issue=$INPUT_ISSUE" >> "$GITHUB_OUTPUT"
+            echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+            echo "Resolved target: issue #$INPUT_ISSUE (model=$MODEL)"
+          fi
+
       - name: Verify Codex CLI + key
         id: verify
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
           GH_TOKEN: ${{ github.token }}
+          MODE: ${{ steps.target.outputs.mode }}
+          ISSUE: ${{ steps.target.outputs.issue }}
+          PR: ${{ steps.target.outputs.pr }}
         run: |
           if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP missing — re-routing issue to Claude."
-            gh issue comment ${{ inputs.issue }} \
-              --repo palimkarakshay/lumivara-site \
-              --body "Codex review requested but neither OPENAI_API_KEY nor OPENAI_API_KEY_BACKUP is configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
-            gh issue edit ${{ inputs.issue }} \
-              --repo palimkarakshay/lumivara-site \
-              --remove-label "model/codex" || true
+            echo "::warning::OPENAI_API_KEY/OPENAI_API_KEY_BACKUP missing — Codex review skipped."
+            if [ "$MODE" = "issue" ] && [ -n "$ISSUE" ]; then
+              gh issue comment "$ISSUE" \
+                --repo palimkarakshay/lumivara-site \
+                --body "Codex review requested but neither OPENAI_API_KEY nor OPENAI_API_KEY_BACKUP is configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
+              gh issue edit "$ISSUE" \
+                --repo palimkarakshay/lumivara-site \
+                --remove-label "model/codex" || true
+            elif [ "$MODE" = "pr" ] && [ -n "$PR" ]; then
+              gh pr comment "$PR" \
+                --repo palimkarakshay/lumivara-site \
+                --body "_Codex auto-review skipped: OPENAI_API_KEY not configured. Re-run after the operator wires the key, or have a human reviewer assess consistency._" || true
+            fi
             echo "ok=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -72,56 +121,89 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
           GH_TOKEN: ${{ github.token }}
-          ISSUE: ${{ inputs.issue }}
-          MODEL: ${{ inputs.model }}
+          MODE: ${{ steps.target.outputs.mode }}
+          ISSUE: ${{ steps.target.outputs.issue }}
+          PR_INPUT: ${{ steps.target.outputs.pr }}
+          MODEL: ${{ steps.target.outputs.model }}
         run: |
           set -euo pipefail
           REPO=palimkarakshay/lumivara-site
 
-          gh issue view "$ISSUE" --repo "$REPO" \
-            --json number,title,body,labels > /tmp/issue.json
-
-          TITLE=$(python3 -c 'import json; print(json.load(open("/tmp/issue.json"))["title"])')
-          BODY=$(python3 -c 'import json; print(json.load(open("/tmp/issue.json")).get("body") or "(empty)")')
-
-          # If the issue body references a PR ("PR #N"), grab that diff for review.
-          PR_NUM=$(python3 - <<'PY'
+          # ── Gather diff + context, regardless of mode ─────────────────────
+          if [ "$MODE" = "pr" ]; then
+            PR_NUM="$PR_INPUT"
+            gh pr view "$PR_NUM" --repo "$REPO" \
+              --json number,title,body,labels > /tmp/pr.json
+            TITLE=$(python3 -c 'import json; print(json.load(open("/tmp/pr.json"))["title"])')
+            BODY=$(python3 -c 'import json; print(json.load(open("/tmp/pr.json")).get("body") or "(empty)")')
+            ISSUE_REF=""
+          else
+            gh issue view "$ISSUE" --repo "$REPO" \
+              --json number,title,body,labels > /tmp/issue.json
+            TITLE=$(python3 -c 'import json; print(json.load(open("/tmp/issue.json"))["title"])')
+            BODY=$(python3 -c 'import json; print(json.load(open("/tmp/issue.json")).get("body") or "(empty)")')
+            PR_NUM=$(python3 - <<'PY'
           import json, re
           body = json.load(open("/tmp/issue.json")).get("body") or ""
           m = re.search(r"PR\s*#?(\d+)", body, re.IGNORECASE)
           print(m.group(1) if m else "")
           PY
           )
+            ISSUE_REF="$ISSUE"
+          fi
 
           DIFF=""
           if [ -n "$PR_NUM" ]; then
-            echo "Found referenced PR #$PR_NUM — fetching diff."
+            echo "Fetching diff for PR #$PR_NUM."
             gh pr diff "$PR_NUM" --repo "$REPO" 2>/dev/null \
               | head -c 60000 > /tmp/diff.txt || true
             DIFF=$(cat /tmp/diff.txt)
           fi
 
-          # Build the prompt + call OpenAI REST in one python step so we don't
-          # have to round-trip large strings through shell variables (which
-          # mangles quotes in diffs and titles).
-          export ISSUE TITLE BODY DIFF MODEL OPENAI_API_KEY PR_NUM
+          # ── Build prompt + call OpenAI ────────────────────────────────────
+          # Keep the prompt structured so apply-codex-fixes.yml can reliably
+          # find blocker/major findings and propose code-level fixes for them.
+          export MODE TITLE BODY DIFF MODEL OPENAI_API_KEY PR_NUM ISSUE_REF
           python3 - <<'PY' > /tmp/review.md
           import json, os, sys, urllib.request, urllib.error
 
+          mode = os.environ["MODE"]
           parts = [
-              "You are reviewing code for the Lumivara site repo.",
-              "Be concrete: cite file paths and line numbers. Flag issues by",
-              "severity (blocker/major/minor/nit). No filler.",
+              "You are the Codex consistency reviewer for the Lumivara site",
+              "repo. Read the change below and produce a focused review",
+              "with two goals (in order):",
               "",
-              f"## Issue #{os.environ['ISSUE']}: {os.environ['TITLE']}",
+              "1. Consistency with project conventions (AGENTS.md, AI_ROUTING.md,",
+              "   docs/ structure, label scheme, file layout, naming, the model",
+              "   routing rubric in scripts/lib/routing.py).",
+              "2. Code correctness, security, accessibility, and performance.",
               "",
-              os.environ.get("BODY") or "(empty)",
+              "Format requirements (the downstream auto-fixer parses this):",
+              "- Use these exact section headers, in this order:",
+              "  `## Consistency findings`, `## Correctness findings`,",
+              "  `## Suggested fixes`, `## Verdict`.",
+              "- Under each findings section, list items as:",
+              "  `- [severity] path/to/file.ext:LN — description`",
+              "  where severity ∈ {blocker, major, minor, nit}.",
+              "- `## Suggested fixes` lists concrete, mechanical edits a bot",
+              "  could apply (one per finding when possible). Each item:",
+              "  `- path/to/file.ext: <what to change, in one sentence>`.",
+              "- `## Verdict` is one of: `approve`, `approve-with-nits`,",
+              "  `request-changes`. One line, no preamble.",
+              "- If a finding is speculative, mark severity `nit` and prefix",
+              "  description with `(speculative)`. Do NOT invent files. If you",
+              "  can't cite a real path, omit the finding.",
+              "",
           ]
+          if mode == "pr":
+              parts += [f"## PR #{os.environ['PR_NUM']}: {os.environ['TITLE']}", "", os.environ.get("BODY") or "(empty)"]
+          else:
+              parts += [f"## Issue #{os.environ['ISSUE_REF']}: {os.environ['TITLE']}", "", os.environ.get("BODY") or "(empty)"]
           diff = os.environ.get("DIFF") or ""
           if diff.strip():
-              parts += ["", "## PR diff under review", "```diff", diff, "```"]
+              parts += ["", "## Diff under review", "```diff", diff, "```"]
           else:
-              parts += ["", "_No referenced PR found; review the issue's described change against the current codebase._"]
+              parts += ["", "_No diff available; review the described change against the current codebase._"]
           prompt = "\n".join(parts)
 
           key = os.environ["OPENAI_API_KEY"].strip()
@@ -159,17 +241,52 @@ jobs:
             echo ""
             echo "---"
             echo "_Posted by codex-review.yml. Review only — no code changes._"
+            echo "_Auto-fix dispatcher (codex-pr-fix.yml) parses the_"
+            echo "_\`## Suggested fixes\` section above to propose follow-up commits._"
           } > /tmp/comment.md
 
-          gh issue comment "$ISSUE" --repo "$REPO" --body-file /tmp/comment.md
+          # ── Post the review ───────────────────────────────────────────────
           if [ -n "$PR_NUM" ]; then
             gh pr comment "$PR_NUM" --repo "$REPO" --body-file /tmp/comment.md
           fi
+          if [ "$MODE" = "issue" ] && [ -n "$ISSUE_REF" ]; then
+            gh issue comment "$ISSUE_REF" --repo "$REPO" --body-file /tmp/comment.md
+            gh issue edit "$ISSUE_REF" --repo "$REPO" \
+              --add-label "status/awaiting-review" \
+              --remove-label "status/planned" || true
+          fi
 
-          gh issue edit "$ISSUE" --repo "$REPO" \
-            --add-label "status/awaiting-review" \
-            --remove-label "status/planned" || true
+          # ── PR labelling ──────────────────────────────────────────────────
+          # Tag the PR `codex-reviewed` (so we don't re-review every push to
+          # an already-reviewed PR unnecessarily — synchronize will still
+          # re-run for new commits, but humans can filter on this label).
+          # If the verdict is `request-changes` OR any blocker/major finding
+          # exists, additionally label `codex-blockers` so auto-merge.yml
+          # gates the merge.
+          if [ -n "$PR_NUM" ]; then
+            # Ensure the labels exist (idempotent — `|| true` swallows
+            # "already exists" errors). Without this, the very first PR
+            # this workflow runs against would `gh pr edit --add-label`
+            # against a non-existent label and silently fail.
+            gh label create "codex-reviewed" --repo "$REPO" \
+              --color "0e8a16" --description "Codex consistency review posted" 2>/dev/null || true
+            gh label create "codex-blockers" --repo "$REPO" \
+              --color "b60205" --description "Codex flagged blocker/major findings — gates auto-merge" 2>/dev/null || true
+            gh pr edit "$PR_NUM" --repo "$REPO" --add-label "codex-reviewed" || true
+            BLOCKERS=$(grep -ciE '\[(blocker|major)\]' /tmp/review.md || true)
+            VERDICT=$(grep -iE '^## Verdict' -A 2 /tmp/review.md | tail -n +2 | head -n 1 || true)
+            if [ "${BLOCKERS:-0}" -gt 0 ] || echo "$VERDICT" | grep -qiE 'request-changes'; then
+              echo "Codex flagged blocker/major findings (count=$BLOCKERS, verdict=$VERDICT). Labelling \`codex-blockers\`."
+              gh pr edit "$PR_NUM" --repo "$REPO" --add-label "codex-blockers" || true
+            else
+              echo "No blocker/major findings; not adding \`codex-blockers\`."
+              gh pr edit "$PR_NUM" --repo "$REPO" --remove-label "codex-blockers" || true
+            fi
+          fi
 
-          echo "## Codex review summary" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Posted review on issue #$ISSUE${PR_NUM:+ + PR #$PR_NUM} using $MODEL." >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## Codex review summary"
+            echo ""
+            echo "Mode: $MODE"
+            echo "Posted review on${PR_NUM:+ PR #$PR_NUM}${ISSUE_REF:+ issue #$ISSUE_REF} using $MODEL."
+          } >> "$GITHUB_STEP_SUMMARY"

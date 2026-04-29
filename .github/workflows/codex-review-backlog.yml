@@ -1,0 +1,84 @@
+name: Seed Codex review backlog
+
+# Walks already-merged PRs and creates one backlog issue per PR that
+# never went through Codex's consistency lens (i.e., merged before
+# `codex-review.yml`'s `pull_request` trigger existed). Each issue is
+# labelled `status/needs-triage` + `model/codex` + `type/code-review` so
+# the next triage pass classifies it and the next execute pass dispatches
+# `codex-review.yml` to perform the review.
+#
+# Manually triggered. Default is a dry-run preview; pass `apply=true` to
+# actually create issues. Capped at 25 new issues per run (matches the
+# triage queue cap in `scripts/triage-prompt.md`) so a single seed run
+# can't flood the Inbox.
+#
+# Hallucination guard: the seeder script only creates issues for PRs the
+# GitHub API actually returns. It never invents PR numbers or titles.
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Set to true to actually create issues (default: dry-run)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      limit:
+        description: "Max merged PRs to scan"
+        required: false
+        default: "100"
+      since:
+        description: "Only PRs merged on or after this date (YYYY-MM-DD; blank = all)"
+        required: false
+        default: ""
+      max_create:
+        description: "Hard cap on issues created in this run"
+        required: false
+        default: "25"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: codex-review-backlog-runtime
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run seeder (dry-run by default)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APPLY: ${{ inputs.apply }}
+          LIMIT: ${{ inputs.limit }}
+          SINCE: ${{ inputs.since }}
+          MAX_CREATE: ${{ inputs.max_create }}
+        run: |
+          set -euo pipefail
+          ARGS=(--limit "$LIMIT" --max-create "$MAX_CREATE")
+          if [ -n "$SINCE" ]; then ARGS+=(--since "$SINCE"); fi
+          if [ "$APPLY" = "true" ]; then ARGS+=(--apply); fi
+          echo "Invoking: python3 scripts/seed-codex-review-backlog.py ${ARGS[@]}"
+          python3 scripts/seed-codex-review-backlog.py "${ARGS[@]}" \
+            | tee /tmp/seed.log
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Codex review backlog — seed outcome"
+            echo ""
+            echo "Mode: ${{ inputs.apply == 'true' && 'APPLY (issues created)' || 'dry-run (preview only)' }}"
+            echo ""
+            echo '```'
+            cat /tmp/seed.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

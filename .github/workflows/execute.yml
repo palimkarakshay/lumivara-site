@@ -355,6 +355,11 @@ jobs:
           if echo "$ALL" | grep -qE '(type/design-cosmetic|area/design)'; then
             eligible=false
           fi
+          # Codex consistency gate — same rule as auto-merge.yml.
+          if echo "$ALL" | grep -q 'codex-blockers'; then
+            eligible=false
+            echo "PR #$PR_NUM has codex-blockers — skipping auto-merge until resolved."
+          fi
 
           if [ "$eligible" = "true" ]; then
             echo "PR #$PR_NUM is auto-merge eligible. Enabling auto-merge (squash)."

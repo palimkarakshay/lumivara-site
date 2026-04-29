@@ -64,6 +64,8 @@ Trigger: before client #2.
 
 ## 4. IP / business-secrets vault
 
+> **Companion doc:** the *legal* layer of IP protection (inventory, copyright / trademark / trade-secret posture, contractor IP assignment, insurance, jurisdictional triggers, lawyer-review checklist) is owned by [`21-ip-protection-strategy.md`](./21-ip-protection-strategy.md). This section is the *operational* layer. Both must land — vault discipline reinforces the trade-secret "reasonable steps" requirement (`21 §2.3`).
+
 **Why later:** today's `pass` + YubiKey works. **Target:** survive operator's laptop being stolen + survive operator being hospitalised.
 
 **What to set up:**

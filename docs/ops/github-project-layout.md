@@ -13,34 +13,36 @@
 > which custom-field values to set on a new issue.
 >
 > **Status.** Drafted 2026-04-29 on branch
-> `claude/github-project-setup-rJorr`. Existing project today:
-> `Lumivara Backlog` (user-level, created via
-> `scripts/bootstrap-kanban.sh` step 2). This doc *extends* that
-> project rather than replacing it — no issue migration is required
-> for the 46 currently-open issues.
+> `claude/github-project-setup`. The ten custom fields in §3.1 were
+> created on the existing `Lumivara Backlog` project (user-level, ID
+> `PVT_kwHOARsRls4BVg_H`) on the same day via
+> `scripts/bootstrap-forge-project.sh`. No issue migration was
+> required — the 46 currently-open issues stay on the same project,
+> they just need bulk-classification.
 
 ## §0 — Reading order
 
 1. §1 — the recommendation and why one project (not many).
 2. §2 — does the operator (or the bot) need new GitHub access?
-3. §3 — the field & view spec (what to actually create).
-4. §4 — web-UI runbook (Android browser, ~15 minutes).
-5. §5 — scripted runbook (Termux on phone, fallback for bulk
-   classification once 50+ issues exist).
+3. §3 — the field & view spec (what was created and what's still manual).
+4. §4 — web-UI runbook (Android browser, ~15 minutes) — used for the
+   12 saved views (the GraphQL API does not yet support view creation).
+5. §5 — scripted runbook (Termux on phone, or Git Bash on Windows).
 6. §6 — migration safety: how the existing 46 issues survive the
    field rollout with no data loss and no manual re-add.
 7. §7 — Phase 4 transfer playbook: how the project survives the
    org birth and per-client repo births in
-   [`00-automation-readiness-plan.md §4`](../migrations/00-automation-readiness-plan.md).
+   [`00-automation-readiness-plan.md`](../migrations/00-automation-readiness-plan.md).
 
-If you only have 5 minutes: read §1, §3.1 (the 11 fields), and §4
-(the click-path).
+If you only have 5 minutes: read §1, §3.1 (the 10 fields), and §4.3
+(the views to add in the web UI).
 
 ## §1 — Recommendation
 
-**One** user-level GitHub Project named `Lumivara Forge — operator hub`
-(or keep the current `Lumivara Backlog` name; the rename is cosmetic).
-Free tier covers it: private user-level projects allow unlimited custom
+**One** user-level GitHub Project named `Lumivara Backlog` (the
+existing one, created via `scripts/bootstrap-kanban.sh` step 2).
+Optional cosmetic rename to `Lumivara Forge — operator hub`. Free
+tier covers it: private user-level projects allow unlimited custom
 fields and up to ~1,200 items, which is decades of throughput at
 current cadence.
 
@@ -86,25 +88,29 @@ Today it has zero.
 | Actor | What's needed | When |
 |---|---|---|
 | Operator (web UI) | Existing GitHub login. Nothing new. | Day 1 setup; ongoing visualisation. |
-| Operator (gh CLI from Termux/laptop) | One-time `gh auth refresh -s project,read:project`. | Only if running the §5 scripted bulk-classifier. |
-| Bot (Claude Code Action runs) | Optional fine-grained PAT secret with `Projects: Read & write` and `Contents: Read`, scoped to this user's projects. Stored as `PROJECT_PAT` in repo secrets. | Only when the bot is asked to set custom-field values during triage. The current `triage.yml` does not need this. |
-| Bot (this session, MCP) | The MCP GitHub toolset available in interactive sessions has **no Project v2 create/edit tools**. The operator must run §4 or §5 — Claude cannot click the project together for you from chat. | n/a |
+| Operator (gh CLI from Termux/laptop) | One-time `gh auth refresh -s project,read:project`. The operator's existing token already had `project` scope as of 2026-04-29. | Only if running the §5 scripted bootstrap. |
+| Bot (Claude Code Action runs) | Optional fine-grained PAT secret with `Projects: Read & write` and `Contents: Read`. Stored as `PROJECT_PAT` in repo secrets. | Only when the bot is asked to set custom-field values during triage. The current `triage.yml` does not need this. |
+| Bot (interactive Claude session) | The MCP GitHub toolset has **no Project v2 create/edit tools**, but the bot can still run `gh api graphql` calls through the PowerShell/Bash tools when it's running in a session that has the operator's local `gh` auth (laptop). It can NOT do this from a CI run without the `PROJECT_PAT` secret above. | n/a |
 
-No OAuth app changes are required. No new repo secrets are required
-unless and until you ask the bot to write field values from CI.
+No OAuth app changes are required.
 
 ## §3 — Field & view spec
 
 The project has **one shared schema** (§1.3). Every issue gets a row
 in this schema even if a few fields are blank for that workstream.
 
-### §3.1 — Custom fields
+### §3.1 — Custom fields (already created)
 
-| # | Field | Type | Options / format | Why it exists |
+All ten fields below were created on `Lumivara Backlog` on 2026-04-29
+by `scripts/bootstrap-forge-project.sh`. They are non-destructive
+to existing items — every row of the 46 currently-open issues kept
+its existing values; the new fields land empty until classified.
+
+| # | Field | Type | Options | Why it exists |
 |---|---|---|---|---|
 | 1 | `Workstream` | Single-select | `POC`, `GTM`, `Comms`, `Operator-Manual`, `Technical`, `Functional`, `Research`, `Advisory`, `DummyClient`, `ProspectClient`, `Legal+Vault` | The cross-cutting axis the existing `type/*` labels don't fully capture. One issue can only have one workstream — pick the *primary*. |
 | 2 | `Phase` | Single-select | `0-rename`, `1-poc`, `2-runs1`, `3-platform`, `4-spinout`, `5-greenfield`, `6-clientops`, `none` | Maps to the six phases in [`00-automation-readiness-plan.md`](../migrations/00-automation-readiness-plan.md). `none` for evergreen ops work. |
-| 3 | `Gate` | Single-select | `§1-migration`, `§6-demo`, `§7-operator`, `none` | The three gates in [`01-poc-perfection-plan.md §0.1`](../migrations/01-poc-perfection-plan.md). Used to find every blocker for a single gate at once. |
+| 3 | `Gate` | Single-select | `section1-migration`, `section6-demo`, `section7-operator`, `none` | The three gates in [`01-poc-perfection-plan.md §0.1`](../migrations/01-poc-perfection-plan.md). The `section` prefix avoids `§` Unicode-through-shell escaping issues. |
 | 4 | `Owner-Type` | Single-select | `Operator`, `Bot`, `External` | Who can actually move this forward. `External` = a third party (lawyer, advisor, vendor). |
 | 5 | `Demo-Day Critical` | Single-select | `yes`, `no` | The first-demo blocker filter. Kept as single-select (not boolean) so it shows in mobile views as a coloured chip. |
 | 6 | `Drop-Dead Date` | Date | YYYY-MM-DD | The L (latest-acceptable) date from `01-poc-perfection-plan.md §7.1` for operator tasks; for everything else, the date past which the issue is moot. Blank = no hard deadline. |
@@ -112,13 +118,18 @@ in this schema even if a few fields are blank for that workstream.
 | 8 | `Repo-Destination-Post-Migration` | Single-select | `platform`, `advisory-site`, `advisory-pipeline`, `demo-site`, `stays-here`, `archive`, `obsolete` | The single most important field: bulk-classifying every open issue here turns Phase 4 (issue transfer) from a research task into a script. See §6. |
 | 9 | `Effort` | Single-select | `xs`, `s`, `m`, `l`, `xl` | T-shirt sizing for roadmap views. Not a substitute for the existing `complexity/*` labels — `complexity/*` is bot-readable, `Effort` is operator-readable. |
 | 10 | `Confidence` | Single-select | `high`, `medium`, `low`, `unknown` | How sure the operator is the issue is well-scoped. Drives the "what to clarify next" view. |
-| 11 | `Status` | Single-select (built-in) | `Inbox`, `Triaged`, `In Progress`, `Review`, `Done`, `Blocked` | Already exists from `bootstrap-kanban.sh`. Mirrored from labels by the cron — do **not** edit by hand. |
 
-### §3.2 — Saved views
+`Status` is the **built-in** field — already exists, do not re-create.
+The five values `Inbox`, `Triaged`, `In Progress`, `Review`, `Done`
+come from `bootstrap-kanban.sh` and are read by the `triage`/`execute`
+cron paths.
 
-Twelve views, each one click on the phone. Order matters: the
-view-strip on mobile scrolls left-to-right and the operator's most-used
-ones go first.
+### §3.2 — Saved views (still manual)
+
+GitHub's GraphQL API does not currently expose `ProjectV2View`
+creation, so the twelve views below are added in the web UI per
+§4.3. Order matters: the view-strip on mobile scrolls left-to-right
+and the operator's most-used ones go first.
 
 | # | View | Type | Filter | Group-by | Sort | Use |
 |---|---|---|---|---|---|---|
@@ -126,8 +137,8 @@ ones go first.
 | 2 | **POC daily** | Board | `Phase: 1-poc` AND `Status ≠ Done` | `Status` | `priority/* desc` | Mirrors `01-poc-perfection-plan.md §3` day-by-day plan. |
 | 3 | **Operator drop-dead** | Roadmap | `Owner-Type: Operator` AND `Drop-Dead Date is not empty` | none | `Drop-Dead Date asc` | The §7 deadline sheet, visualised on a calendar strip. |
 | 4 | **By Workstream** | Table | `Status ≠ Done` | `Workstream` | `priority/* desc` | The "what's on every track at once" master table. |
-| 5 | **Demo-readiness** | Board | `Gate: §6-demo` AND `Status ≠ Done` | `Status` | `Drop-Dead Date asc` | Mirrors `01-poc-perfection-plan.md §6`. |
-| 6 | **Migration gate** | Board | `Gate: §1-migration` AND `Status ≠ Done` | `Status` | `priority/* desc` | The Phase-2-blocker view. |
+| 5 | **Demo-readiness** | Board | `Gate: section6-demo` AND `Status ≠ Done` | `Status` | `Drop-Dead Date asc` | Mirrors `01-poc-perfection-plan.md §6`. |
+| 6 | **Migration gate** | Board | `Gate: section1-migration` AND `Status ≠ Done` | `Status` | `priority/* desc` | The Phase-2-blocker view. |
 | 7 | **Phase 0–6 roadmap** | Roadmap | `Phase ≠ none` | `Phase` | `Drop-Dead Date asc` | Strategic-pacing view across all phases. |
 | 8 | **External / human-only** | Table | `Owner-Type: External` OR `Owner-Type: Operator` | `Owner-Type` | `Drop-Dead Date asc` | The "things bots cannot do" list. |
 | 9 | **Triage inbox** | Board | `Status: Inbox` | `Workstream` | `created asc` | First stop for new issues — operator assigns Workstream + Phase + Gate before bot triage. |
@@ -141,8 +152,8 @@ Milestones live on the **repo**, not on the project. Use them only as
 **outcome checkpoints** (not as workstream containers — that's what
 `Workstream` is for):
 
-- `§1 green` — migration gate has flipped (all `01-poc-perfection-plan §1.*` rows ticked).
-- `§6 green` — demo-readiness gate has flipped.
+- `section1 green` — migration gate has flipped (all `01-poc-perfection-plan §1.*` rows ticked).
+- `section6 green` — demo-readiness gate has flipped.
 - `first demo done` — at least one §9 audience #1 demo completed.
 - `first contract signed` — first paid client.
 - `Client #2 onboarded` — second paid client; proves the cookie-cutter.
@@ -150,52 +161,29 @@ Milestones live on the **repo**, not on the project. Use them only as
 Per-client repos (Phase 4+) get their own milestones inside their own
 project space.
 
-## §4 — Web-UI runbook (Android browser, ~15 minutes)
+## §4 — Web-UI runbook
 
-This is the **default** path. Everything below is clickable on a phone.
-No terminal, no PAT, no `gh` CLI. Login as the user who owns
-`palimkarakshay/lumivara-site`.
+Used for the twelve saved views in §3.2. The ten custom fields are
+already created — re-running §5 is idempotent and safe.
 
 ### §4.1 — Open the existing project
 
-1. Visit https://github.com/palimkarakshay?tab=projects on phone.
-2. Tap **`Lumivara Backlog`** (the project created by
-   `bootstrap-kanban.sh` step 2). If it doesn't exist, tap
-   **New project → Board → name it `Lumivara Forge — operator hub`
-   → Create**.
+1. Visit https://github.com/palimkarakshay?tab=projects.
+2. Tap **`Lumivara Backlog`**.
 3. (Optional) Top-right `…` → **Settings → Rename** →
    `Lumivara Forge — operator hub`. The rename is cosmetic; URLs and
    item membership are preserved.
 
-### §4.2 — Add the eleven custom fields
+### §4.2 — Verify the ten custom fields
 
-In the project, top-right `…` → **Settings → Custom fields → New field**.
-For each of the eleven rows in §3.1, tap **+ New field**, pick the
-type from the spec, paste the option list verbatim. The phone keyboard
-remembers the last typed option, so the second field onwards is fast.
-
-Order tip: create them in the order listed in §3.1 — that order
-matches the field-strip you'll see when opening an issue card on
-mobile, which is the order the operator reads in.
-
-Field-creation gotchas on mobile:
-
-- The `Drop-Dead Date` and `Earliest-Sensible Date` fields require
-  type = **Date**. Free tier supports as many date fields as you
-  want.
-- `Demo-Day Critical` is **Single-select** with two options
-  (`yes`, `no`) — not the GitHub built-in `Iteration` or `Number`
-  types.
-- For `Status`, **don't** create a new field. The board view's
-  built-in `Status` column is the one used. If you renamed any
-  columns earlier (e.g. removed `Inbox`), restore them to the five
-  in §3.1 row 11 — `bootstrap-kanban.sh` and the `triage`/`execute`
-  cron paths read these names.
+Project → top-right `…` → **Settings → Custom fields**. Every row
+in §3.1 must be present. If any are missing, re-run §5 (idempotent —
+safe to re-run any time).
 
 ### §4.3 — Add the twelve saved views
 
-In the project, top-left **+ New view** for each row in §3.2.
-For each:
+In the project, top-left **+ New view** for each row in §3.2. For
+each view:
 
 1. Pick the **Type** column from §3.2 (Board / Table / Roadmap).
 2. Tap **Filter** → paste the filter expression.
@@ -226,8 +214,7 @@ filter and `Status: Open` is the trigger. Re-saving forces a backfill.
 
 ### §4.5 — Bulk-classify in the web UI
 
-This is the slow step on mobile. The fast path is §5 (scripted). On
-phone:
+This is the slow step on mobile:
 
 1. Open the **By Workstream** view.
 2. For each row, tap the row → fill `Workstream`, `Phase`, `Gate`,
@@ -237,51 +224,46 @@ phone:
    recent picks per field, so it's not 46 × 6 = 276 typed values —
    it's 46 × 6 taps after the first round.
 
-### §4.6 — Done. Smoke test.
+### §4.6 — Smoke test
 
-Open the **Demo-Day Critical** view. It should now show only issues
+Open the **Demo-Day Critical** view. It should show only issues
 the operator marked yes in §4.5. If it shows zero rows but you
 marked some, the filter is wrong — tap **Filter** and confirm it's
-`Demo-Day Critical: yes` (case-sensitive on the *field* name; the
-*value* dropdown is case-insensitive).
+`Demo-Day Critical: yes`.
 
-## §5 — Scripted runbook (Termux on phone)
+## §5 — Scripted bootstrap
 
-Faster than §4 for the eleven-field create step (it's idempotent and
-runs in seconds), and the only sensible path if 50+ issues need to be
-bulk-classified later.
+Only relevant if §3.1 fields need to be re-created (e.g. on a fresh
+project or after a misconfigured run). Idempotent — safe to re-run.
 
-### §5.1 — One-time Termux setup
+### §5.1 — On Windows (VSCode + PowerShell)
 
-1. Install **Termux** from F-Droid (the Play Store build is stale and
-   cannot install packages — F-Droid only).
-2. In Termux:
-   ```
-   pkg update && pkg install gh git
-   gh auth login                                 # opens device-code flow
-   gh auth refresh -s project,read:project       # adds the project scope
-   ```
-3. Clone the repo (if not already cloned):
-   ```
-   gh repo clone palimkarakshay/lumivara-site
-   cd lumivara-site
-   ```
+Pre-reqs already on the operator's laptop: GitHub CLI, Git for
+Windows (which provides Git Bash), token has `project` scope.
 
-This is a **one-time** setup. Subsequent runs are just step 5.2.
+```powershell
+$env:PROJECT_TITLE = "Lumivara Backlog"
+& "C:\Program Files\Git\bin\bash.exe" scripts/bootstrap-forge-project.sh
+```
 
-### §5.2 — Run the bootstrap
+The Windows `bash` on PATH is **WSL bash**, not Git Bash. WSL would
+try to run `gh` in a separate Linux subsystem where it's not
+authenticated. Always invoke Git Bash explicitly via its full path.
+
+### §5.2 — On Android (Termux)
 
 ```
+pkg update -y && pkg install -y git gh
+gh auth login
+gh auth refresh -s project,read:project
+gh repo clone palimkarakshay/lumivara-site
+cd lumivara-site
+git checkout claude/github-project-setup
 PROJECT_TITLE="Lumivara Backlog" bash scripts/bootstrap-forge-project.sh
 ```
 
-(Override `PROJECT_TITLE` only if you renamed the project per §4.1.)
-
-The script is idempotent: it skips fields that already exist, so it's
-safe to re-run after a partial failure or after the spec changes. It
-creates only the ten custom fields from §3.1 — saved views (§3.2)
-remain a §4.3 manual step because GitHub's GraphQL API does not yet
-expose ProjectV2View creation.
+Termux is from F-Droid only — the Play Store build cannot install
+packages.
 
 ### §5.3 — Bulk classification (deferred)
 
@@ -309,31 +291,31 @@ This section answers two distinct "is it safe?" questions:
 
 ### §6.1 — Field rollout is non-destructive
 
-Adding a custom field to an existing Project v2 is purely additive:
+Adding a custom field to an existing Project v2 is purely additive,
+and this was confirmed live on 2026-04-29:
 
-- Existing items keep their existing field values (Status, Title,
+- Existing items kept their existing field values (Status, Title,
   Assignees, Labels mirror).
-- New fields land on every item with the value **empty** — no row
-  is dropped, no row is duplicated.
+- New fields landed on every item with the value **empty** — no row
+  was dropped, no row was duplicated.
 - The auto-add workflow (`bootstrap-kanban.sh` step 2) keeps adding
   new issues as before.
 - Removing a field later deletes its values across all items but
   does not touch the items themselves.
 
-Therefore: run §4 or §5, eyeball **By Workstream** view, classify at
-your pace. If you misclassify, edit; there is no rollback to do.
+Therefore: classify at your pace. If you misclassify, edit; there is
+no rollback to do.
 
 ### §6.2 — The single most important bulk-classification pass
 
-Of the eleven fields, the one that **earns its keep most** is
+Of the ten fields, the one that **earns its keep most** is
 `Repo-Destination-Post-Migration`. Filling it on every open issue
 once turns the Phase 4 issue-transfer step from "audit every open
 issue and decide where it goes" into "filter the project by
 destination and run `gh issue transfer` per group."
 
 The §3 D-1 row of `01-poc-perfection-plan.md` ("walk every open
-issue") is the natural moment to do this in one sitting. Cross-link
-added in that file's §3 row D-1 once this PR lands.
+issue") is the natural moment to do this in one sitting.
 
 ### §6.3 — Label cloning, when new repos appear
 

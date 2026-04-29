@@ -77,28 +77,24 @@ create_single_select() {
     echo "  · field exists: $name"
     return
   fi
-  # Build the options JSON array from positional args.
-  local options_json="["
-  local first=1
+  # Inline the options array into the mutation literal — gh api -f only
+  # supports string scalars, so [ProjectV2SingleSelectFieldOptionInput!]!
+  # has to be expressed in GraphQL input-object syntax inside the query.
+  local options=""
   for opt in "$@"; do
-    [[ $first -eq 1 ]] || options_json+=","
-    options_json+="{\"name\":\"$opt\",\"color\":\"GRAY\",\"description\":\"\"}"
-    first=0
+    [[ -n "$options" ]] && options+=","
+    options+="{name:\"$opt\",color:GRAY,description:\"\"}"
   done
-  options_json+="]"
 
-  gh api graphql -f query='
-    mutation($projectId: ID!, $name: String!, $options: [ProjectV2SingleSelectFieldOptionInput!]!) {
+  gh api graphql -f query="
+    mutation {
       createProjectV2Field(input: {
-        projectId: $projectId,
+        projectId: \"$PROJECT_ID\",
         dataType: SINGLE_SELECT,
-        name: $name,
-        singleSelectOptions: $options
+        name: \"$name\",
+        singleSelectOptions: [$options]
       }) { projectV2Field { ... on ProjectV2FieldCommon { name } } }
-    }' \
-    -f projectId="$PROJECT_ID" \
-    -f name="$name" \
-    -f options="$options_json" >/dev/null
+    }" >/dev/null
   echo "  + field: $name (single-select, $# options)"
 }
 
@@ -108,16 +104,14 @@ create_date() {
     echo "  · field exists: $name"
     return
   fi
-  gh api graphql -f query='
-    mutation($projectId: ID!, $name: String!) {
+  gh api graphql -f query="
+    mutation {
       createProjectV2Field(input: {
-        projectId: $projectId,
+        projectId: \"$PROJECT_ID\",
         dataType: DATE,
-        name: $name
+        name: \"$name\"
       }) { projectV2Field { ... on ProjectV2FieldCommon { name } } }
-    }' \
-    -f projectId="$PROJECT_ID" \
-    -f name="$name" >/dev/null
+    }" >/dev/null
   echo "  + field: $name (date)"
 }
 
@@ -132,7 +126,7 @@ create_single_select "Phase" \
   "5-greenfield" "6-clientops" "none"
 
 create_single_select "Gate" \
-  "§1-migration" "§6-demo" "§7-operator" "none"
+  "section1-migration" "section6-demo" "section7-operator" "none"
 
 create_single_select "Owner-Type" \
   "Operator" "Bot" "External"

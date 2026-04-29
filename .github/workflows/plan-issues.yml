@@ -79,32 +79,47 @@ jobs:
         if: steps.pick.outputs.issues == ''
         run: echo "Nothing to plan this run. Exiting cleanly."
 
-      # ── Preferred: Claude Opus writes the plan ────────────────────────────
-      - name: "Plan with Claude Opus (preferred)"
+      # ── Preferred: Claude Opus writes the plan, Codex sanity-checks it ────
+      # Two-pass for consistency:
+      #   1. Claude drafts the plan to /tmp/plan-<N>.md (does NOT post yet).
+      #   2. scripts/codex-plan-review.py asks gpt-5.5 to spot-check the
+      #      draft for consistency with project conventions.
+      #   3. Claude reads the review, optionally revises the plan, and
+      #      posts the final version (with the Codex review appended as a
+      #      collapsible details block so the audit trail is preserved).
+      # If OPENAI_API_KEY is missing, the review script returns a graceful
+      # "skipped" marker and the planning pipeline continues unchanged.
+      - name: "Plan with Claude Opus (preferred) + Codex consistency review"
         id: claude_plan
         if: steps.pick.outputs.issues != ''
         continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           settings: |
             {
               "permissions": {
-                "allow": ["Bash", "Read", "Glob", "Grep"]
+                "allow": ["Bash", "Read", "Glob", "Grep", "Write", "Edit"]
               }
             }
           prompt: |
             You are the PLANNING stage. For each issue number in the list
-            below, write a detailed implementation plan and post it as a
-            comment. Then label the issue `plan/detailed`. Do NOT touch
-            source files — planning only.
+            below, draft a detailed implementation plan, get it reviewed by
+            Codex for consistency, then post the final plan as a comment
+            and label the issue `plan/detailed`. Do NOT touch source files
+            outside of `/tmp/` — planning only.
 
             Issues to plan: ${{ steps.pick.outputs.issues }}
 
-            For each issue:
-            1. Fetch it: gh issue view <N> --repo palimkarakshay/lumivara-site --json number,title,body,labels
-            2. Skim relevant src/ files to ground the plan in real paths.
-            3. Write a comment in this exact format:
+            For each issue N:
+
+            1. Fetch it:
+               `gh issue view N --repo palimkarakshay/lumivara-site --json number,title,body,labels`
+            2. Skim relevant `src/` files to ground the plan in real paths.
+            3. Draft the plan into `/tmp/plan-N.md` in this exact format
+               (note: do NOT post yet — file only):
 
                **Detailed plan (Claude Opus)**
 
@@ -128,15 +143,51 @@ jobs:
                - [ ] `npm run lint` passes
                - [ ] ...
 
-            4. Post via: gh issue comment <N> --repo palimkarakshay/lumivara-site --body-file /tmp/plan-<N>.md
-            5. Label: gh issue edit <N> --repo palimkarakshay/lumivara-site --add-label plan/detailed
+            4. **Codex consistency review** — run:
+               `python3 scripts/codex-plan-review.py N /tmp/plan-N.md > /tmp/codex-review-N.md`
+               This asks gpt-5.5 to spot-check the draft against project
+               conventions (file layout, label rubric, hard-exclusion list,
+               plan-format requirements). The script always exits 0; if
+               OpenAI is unreachable it writes a "skipped" marker.
 
-            Hard exclusions in plans: .github/workflows/*, .env*, scripts/*,
-            src/app/api/contact/*, package.json deps. If an issue genuinely
-            needs to touch one of those, list it in "Risks / open questions"
-            instead of planning the change.
+            5. **Read** `/tmp/codex-review-N.md`. For each non-speculative
+               finding at severity `blocker` or `major`, revise
+               `/tmp/plan-N.md` to address it (UNLESS the finding is wrong
+               — Codex hallucinations do happen). For `minor`/`nit`
+               findings, use judgement: apply when clearly correct, ignore
+               when not. Treat a `revise-before-posting` verdict as a
+               strong signal to re-draft.
+
+               If you ignore a finding, briefly note why at the top of the
+               final plan under a `### Codex review notes` subsection so
+               the audit trail is explicit. Do NOT silently skip Codex
+               recommendations — either fix or justify.
+
+            6. Compose the final comment by concatenating the (possibly
+               revised) plan with a collapsible Codex-review block:
+
+               ```
+               cat /tmp/plan-N.md > /tmp/comment-N.md
+               echo "" >> /tmp/comment-N.md
+               echo "<details><summary>Codex consistency review</summary>" >> /tmp/comment-N.md
+               echo "" >> /tmp/comment-N.md
+               cat /tmp/codex-review-N.md >> /tmp/comment-N.md
+               echo "" >> /tmp/comment-N.md
+               echo "</details>" >> /tmp/comment-N.md
+               ```
+
+            7. Post:
+               `gh issue comment N --repo palimkarakshay/lumivara-site --body-file /tmp/comment-N.md`
+
+            8. Label:
+               `gh issue edit N --repo palimkarakshay/lumivara-site --add-label plan/detailed`
+
+            Hard exclusions in plans: `.github/workflows/*`, `.env*`,
+            `scripts/*`, `src/app/api/contact/*`, `package.json` deps. If
+            an issue genuinely needs to touch one of those, list it in
+            "Risks / open questions" instead of planning the change.
           claude_args: |
-            --max-turns 200
+            --max-turns 250
             --model claude-opus-4-7
 
       # ── Fallback: Gemini Pro / OpenAI gpt-5.5 via plan-issue.py ───────────

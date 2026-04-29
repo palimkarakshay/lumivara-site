@@ -2,11 +2,13 @@
 
 > <!-- do-not-copy:v1 -->
 > **🛠 Do not copy to client repos.** This page describes operator-side machinery that
-> lives on the mothership repo or on the `operator/main` overlay branch of a client
-> repo. A client cloning their `main` will never see this content. If you are the
-> operator scaffolding a new client repo, **omit this page from the per-client wiki**.
+> lives in the platform repo or in a per-client pipeline repo (`<brand-slug>/<client-slug>-pipeline`).
+> Under [Pattern C (locked 2026-04-28)](../mothership/02b-pattern-c-architecture.md), a client cloning
+> their `<client-slug>-site` repo cannot reach the pipeline repo at all — they are not added as
+> a collaborator. If you are the operator scaffolding a new client repo, **omit this page from
+> the per-client wiki**.
 
-> **Operator lane.** This pipeline runs on the **`operator/main`** overlay branch of every client repo (and on the mothership's own `main`). Clients never see the workflow YAML, the bot playbooks, or this page. See `docs/mothership/02-architecture.md §1` for the two-branch model and Pattern C overall.
+> **Pipeline lane.** Workflow YAML lives in the **pipeline repo** (`<slug>-pipeline`), and cron schedules fire from its `main` (the canonical GitHub Actions default-branch path — no overlay tricks). The site repo's `.github/workflows/` directory is empty by design. See [`docs/mothership/02b-pattern-c-architecture.md`](../mothership/02b-pattern-c-architecture.md) for the canonical two-repo model.
 
 The day-to-day operation of the autopilot is automated. Here's how the pipeline works.
 
@@ -15,8 +17,10 @@ The day-to-day operation of the autopilot is automated. Here's how the pipeline 
 ```
 Phone / terminal → GitHub Issue → Triage bot → Execute bot → Vercel preview → Operator merges
                                                        │
-                                                       └── runs against `<client-repo>` `main`,
-                                                           workflow YAML lives on `operator/main`
+                                                       └── reads issues from <slug>-site via the
+                                                           GitHub App; pushes auto/issue-N to
+                                                           <slug>-site `main`. The workflow YAML
+                                                           itself lives in <slug>-pipeline.
 ```
 
 ## Step by step
@@ -38,13 +42,13 @@ The triage bot (Claude Opus via GitHub Actions, with Gemini Flash + gpt-5.5 as f
 ### 3. Execute (every hour)
 The execute bot (Claude Opus via GitHub Actions in the quality-first phase):
 1. Picks the top-ranked `auto-routine` issue
-2. Creates branch `auto/issue-<n>` *on the client repo's `main`* (the YAML driving this lives on `operator/main`)
+2. Creates branch `auto/issue-<n>` *on the site repo* via the GitHub App's installation token (the YAML driving this lives in the matched pipeline repo, which the client has no Read access to)
 3. Implements the change
 4. Runs `tsc` and `lint`
 5. Opens a PR: `feedback(#n): <summary>`
 6. Labels the issue `status/awaiting-review`
 
-> On the *current* Client #1 + mothership-in-progress repo, `auto/issue-*` branches sit alongside `main` because the two-branch overlay has not landed yet. On a clean per-client repo, the workflow YAML and `scripts/` live on `operator/main` only and are invisible to the client's `main`.
+> On *this* repo (Phase 1 POC, pre-spinout), `auto/issue-*` branches sit alongside `main` and the workflow YAML + `scripts/` are co-housed with the site code. After the P5.6 spinout, the workflows + scripts move to the per-client `<slug>-pipeline` repo (operator-private), and the site repo's `.github/workflows/` directory is empty by design — invisible to the client by **permission**, not by branch listing.
 >
 > _Client example — see `docs/mothership/15-terminology-and-brand.md §7`._ The current Client #1 repo is `palimkarakshay/lumivara-site`; that mapping is one specific engagement, not the operator's default framing.
 

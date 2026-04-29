@@ -64,6 +64,7 @@ print_section "§1 — Stale brand: 'Lumivara Infotech' should be 'Lumivara Forg
 mapfile -t INFOTECH_HITS < <(
   git grep -nIE 'Lumivara[ -]Infotech' \
     -- ':!scripts/pattern-c-audit.sh' \
+       ':!.github/workflows/pattern-c-watcher.yml' \
        ':!CHANGELOG.md' \
        ':!docs/storefront/04-slide-deck.pdf' \
        ':!docs/storefront/04-slide-deck.html' \

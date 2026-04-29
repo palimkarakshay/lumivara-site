@@ -535,3 +535,67 @@ By **month 24**:
 | Tier 4 — Agency | 0% | 0% | Custom-quote only; not promoted. |
 
 <span class="small">Source: `docs/freelance/02-pricing-tiers.md` (each tier's "role"), `docs/freelance/03-cost-analysis.md` Part C.</span>
+
+---
+
+<!-- _class: lead -->
+
+# 8 · Possible challenges
+## Risks, with mitigations already in place
+
+---
+
+## Top-7 risk register
+
+<br/>
+
+| Risk | Likelihood | Impact | Mitigation already built |
+|---|---|---|---|
+| **Anthropic outage / throttle** | Med | High | Multi-AI fallback ladder (Claude → Gemini → OpenAI); triage + execute survive Claude-down. |
+| **Single client floods the queue** | Low | Med | Per-client `CONCURRENCY_CAP` Variable; tier cadence; "noisy client" rule defers work. |
+| **Operator burnout** | Med | High | Hard cap of 30 retainers until VA hired; budget charter (50%/80% gates); cap weekly hours. |
+| **Client demands the autopilot when they leave** | Low | Med | Contract: "site = client; system = operator-licensed." Pattern C makes this physically true — the autopilot was never on their repo. |
+| **Secret leak (token in client repo)** | Low | Critical | Org-level secrets only; vendor GitHub App (no PAT); `.claudeignore`; `pattern-c-enforcement-checklist.md`. |
+| **Bot ships breaking change to prod** | Low | High | Auto-merge gate is opt-in per label; design + critical paths excluded; Vercel preview always required; every change waits for client tap on T0/T1. |
+| **Client refuses to pay** | Med | Med | Stripe auto-charge; pause autopilot at +14 days; full lockout at +30; site stays live (it's their domain). |
+
+<span class="small">Source: `docs/mothership/01-business-plan.md §8`, `docs/freelance/03-cost-analysis.md` Part F.</span>
+
+---
+
+## Strategic risks (longer horizon)
+
+<br/>
+
+| Risk | Why it matters | Where we'd respond |
+|---|---|---|
+| **AI provider pricing shifts** (Claude or Gemini becomes 3× more expensive) | Could compress margin from 70% to 40%. | Multi-provider router already swaps provider per task; raise prices at next tier-rev cycle. |
+| **A model deprecation breaks the bot** | Workflows pin specific model IDs. | `docs/AI_ROUTING.md` reviewed every 2 months; weekly `ai-smoke-test.yml`. |
+| **A client's site has a security incident** | Reputation hit + possible PIPEDA notification. | Hard exclusions in the bot; Vercel handles the prod stack; carry pro-liability insurance once revenue > $50k (~$400/yr). |
+| **Quebec / EU client requires Law 25 / GDPR overlay** | Bot doesn't speak French; privacy posture isn't formal. | Geo expansion deferred until `08-future-work.md §1` is complete. |
+| **A larger player (Webflow, Framer) ships an AI-edit feature** | Could compress the differentiation from 4 layers to 3. | Pattern C ownership claim is structurally hard to copy without changing their business model. |
+| **Solo-operator dependency** | Operator hospitalised → clients have no operator. | Break-glass envelope, successor protocol, vault redundancy (1Password Business + Bitwarden self-host). Trigger: client #5 OR MRR > $3k. |
+
+<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part F, `docs/mothership/08-future-work.md §4` (vault).</span>
+
+---
+
+## The "is this even worth it?" sanity check
+
+<br/>
+
+The doc asks the operator to run a **4-week test before betting the practice on this**:
+
+1. Post the Lumivara case study on LinkedIn with: *"I built this. If you'd want one for your business, reply 'tell me more'."*
+2. DM 20 people in your network with the same one-paragraph pitch.
+3. Run a single Fiverr Tier-2 gig for 4 weeks.
+
+By week 4, success looks like:
+
+- ≥ 3 inbound replies from LinkedIn
+- ≥ 5 DM responses from your network
+- ≥ 2 Fiverr inquiries
+
+> If you have those, the market exists. If you don't, the bottleneck is **reach**, not product — fix is more posting, not more features.
+
+<span class="small">Source: `docs/freelance/03-cost-analysis.md` Part G.</span>

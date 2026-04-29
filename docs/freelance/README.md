@@ -19,6 +19,7 @@ having to explain the tech behind it.
 | `03-cost-analysis.md` | What it actually costs you to run (Claude / Gemini / Codex / Vercel / GitHub / your time per client per month), break-even maths, and the **quit-the-day-job ramp plan** — months 0–24. | Planning whether to scale, when to switch from Pro→Max→Team, when to leave the day job. |
 | `04-slide-deck.md` | A Marp-compatible markdown slide deck. Two halves: (1) the Lumivara case study, (2) "imagine your site here" — a fill-in-the-blank framework so a prospect can visualise their own site/app on the same plumbing. Rendered HTML + PDF live alongside the source. | Sending to a prospect, posting on LinkedIn, demoing on a call. |
 | `05-template-hardening-notes.md` | Running list of changes to make the rebuild template harder to repackage and resell without your operator account. Internal only — never share with clients. | Before client #5 — once retainers are real, the template becomes worth protecting. |
+| `06-product-strategy-deck.md` | Operator-only **strategy** companion to `04-slide-deck.md`. Answers the nine product-strategy questions (benefits / differentiation / customer voice / competitor claims / end goal / steps / plan / risks / resources) by synthesising `docs/mothership/` + the rest of `docs/freelance/`. | Internal review, planning sessions, investor-style conversations. Never share verbatim with clients. |
 
 ## How to use this pack
 

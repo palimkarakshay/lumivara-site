@@ -245,5 +245,6 @@ registry row, because they are language / runtime built-ins:
 existing tooling) or POSIX shell. Tool name:
 `scripts/check-undocumented-vars.{py,sh}`.
 
-**Follow-up issue:** to be filed alongside the PR that closes #142;
-linked from the PR description and from `docs/BACKLOG.md`.
+**Follow-up issue:** **#163** — *Add `scripts/check-undocumented-vars`
+and CI gate (deferred from #142)*. Linked from the PR that closes
+#142 and from `docs/BACKLOG.md` "Deferred follow-ups".

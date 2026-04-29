@@ -122,6 +122,8 @@ Each sub-phase opens an issue in the mothership repo and goes through the standa
 
 **Estimated turns:** 40–60.
 
+> **Canonical runbook:** [`docs/migrations/lumivara-people-advisory-spinout.md §1`](../migrations/lumivara-people-advisory-spinout.md) operationalises this phase. The DOD list below remains the success criteria; the runbook owns the per-step procedure, dry-run/rollback, and acceptance greps.
+
 The existing `lumivara-site` repo is *de facto* Client #1's repo today. Make it official:
 
 1. In the mothership, create `docs/clients/lumivara-people-advisory/`.
@@ -141,6 +143,8 @@ The existing `lumivara-site` repo is *de facto* Client #1's repo today. Make it 
 ## P5.6 — Migrate `lumivara-site` to clean per-client repo 🟢 (partly manual)
 
 **Estimated turns:** 60–80 + manual GitHub UI clicks.
+
+> **Canonical runbook:** [`docs/migrations/lumivara-people-advisory-spinout.md §2–§9`](../migrations/lumivara-people-advisory-spinout.md) is the copy-pasteable procedure (allow/deny tables, Vercel + n8n + Twilio wiring, dry run, rollback, acceptance). The §0 pre-flight in that runbook also revisits the *rename vs. fresh repo* decision and recommends fresh-repo + selective copy. The DOD list below remains the success criteria.
 
 1. **Operator (manual):** rename `palimkarakshay/lumivara-site` to `palimkarakshay/lumivara-people-advisory-site` in the GitHub UI.
 2. **Operator (manual):** push the new mothership repo's main first; verify it works.

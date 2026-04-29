@@ -683,3 +683,65 @@ These already exist; the value is in keeping them updated:
 > **The IP isn't the codebase. It's the runbooks + the cadence + the licensed system around the codebase.** That's what we license per engagement and reverts on termination.
 
 <span class="small">Source: `docs/mothership/00-INDEX.md` quick links, `docs/freelance/05-template-hardening-notes.md`.</span>
+
+---
+
+<!-- _class: lead -->
+
+# Recap
+## The nine answers, on one page
+
+---
+
+## Strategy on one slide
+
+<br/>
+
+| Question | One-line answer |
+|---|---|
+| **Benefits for the customer** | A site that doesn't decay; phone-edits in 30s; flat fee; full ownership. |
+| **What we provide that others don't** | Phone-edit + multi-AI autopilot + Pattern C "autopilot is hidden" + monthly improvements baked in. Empty quadrant. |
+| **What customers say they want** | Edit it themselves without learning anything; no surprise invoices; no lock-in. |
+| **What competitors provide** | Templates (Squarespace), per-edit billing (agencies), one-shot AI (Durable). Nobody covers all four. |
+| **End goal** | 30 retainers @ ~$8.5–10k MRR, year-1 take-home ~$100–110k CAD; Stage-2 agency optional. |
+| **Steps** | P5 mothership repo → P6 Client #1 spinout → 30-day GTM ladder → Cliffs 1/4/5 as MRR scales. |
+| **Project plan** | 12-month spreadsheet ends at 32 clients, $23.2k/mo gross, $22.5k pre-tax. |
+| **Challenges** | AI provider risk, single-operator risk, lock-in perception. All seven mitigated in-flight. |
+| **Resources** | Operator + lawyer (one-off) + accountant + VA at #25; ~$700–900/mo recurring tools at scale. |
+
+---
+
+## Source index
+
+<br/>
+
+The deck is a *synthesis* of these canonical docs. When in doubt, the doc wins:
+
+- `docs/mothership/00-INDEX.md` — master map
+- `docs/mothership/01-business-plan.md` — positioning, mothership-vs-client separation, risk register
+- `docs/mothership/02-architecture.md` + `02b-pattern-c-architecture.md` — two-repo Pattern C
+- `docs/mothership/04-tier-based-agent-cadence.md` — cron + model + auto-merge per tier
+- `docs/mothership/08-future-work.md` — legal, vault, payment automation, market research
+- `docs/mothership/18-capacity-and-unit-economics.md` — single source of truth for cost / cliffs
+- `docs/freelance/01-gig-profile.md` — outward pitch + audience matrix
+- `docs/freelance/02-pricing-tiers.md` — four-tier ladder
+- `docs/freelance/03-cost-analysis.md` — break-even + quit-the-day-job ramp
+- `docs/freelance/04-slide-deck.md` — prospect-facing deck (this one's sibling)
+- `docs/freelance/05-template-hardening-notes.md` — IP / licensing / Stage-3 thinking
+- `docs/AI_ROUTING.md` — multi-AI router + resilience ladder
+
+---
+
+<!-- _class: lead -->
+
+# Thank you.
+
+<br/>
+
+*Strategy deck companion to the prospect-facing `04-slide-deck.md`.*
+
+*This deck is operator-only — never share with clients verbatim.*
+
+<br/>
+
+<span class="small">© 2026. Generated 2026-04-29 from `docs/mothership/` + `docs/freelance/`. Subject to revision as the cost-optimisation phase begins (see `AGENTS.md`).</span>

@@ -53,7 +53,10 @@ The non-Claude paths produce **research / review comments**, not code commits.
 ## Resilience: triage + execute survive Claude outages
 
 The pipeline has three resilience layers so neither triage nor execute
-ever fails outright when Claude is unavailable.
+ever fails outright when Claude is unavailable. A fourth periodic
+layer (cross-tree drift detection) sits alongside them — not a
+Claude-outage fallback, but a quality safeguard that catches the
+inconsistency the per-PR Codex review can't see.
 
 ### 1. Triage ladder (every 15 min)
 
@@ -100,6 +103,27 @@ The fallback executor refuses to run on issues without a detailed plan
 runs `tsc` + `lint`, opens a draft PR if either fails, otherwise opens a
 ready PR.
 
+### 4. Drift detection (weekly)
+
+`gemini-deep-audit.yml` runs Mondays 08:00 UTC and reads a curated
+subset of the tree (`src/`, `docs/`, top-level configs) as a single
+prompt to **Gemini 2.5 Pro** (1M context). It surfaces clusters of
+inconsistency — groups of 2+ files where one or more deviate from a
+pattern the others establish — and files at most **5 issues per run**
+labelled `Drift: …` + `status/needs-triage` + `type/cleanup`. The
+hallucination guard drops any cluster citing a non-existent path or
+containing fewer than 2 files.
+
+This is the cross-tree counterpart to the per-PR Codex review: the
+Codex loop sees one diff at a time, so cross-tree naming and style
+drift is invisible to it. Full operator contract — output shape,
+hallucination guard, token-budget guard, rate-limit handling, and
+the first-week smoke test — lives in
+[`docs/ops/gemini-deep-audit.md`](./ops/gemini-deep-audit.md). The
+workflow + driver script + unit test land in a separate
+`infra-allowed` issue (the paths are hard-excluded from the
+auto-routine playbook).
+
 ### Cadence summary
 
 | Workflow | Cadence |
@@ -115,6 +139,7 @@ ready PR.
 | `execute-fallback.yml` | dispatched by execute.yml on Claude failure |
 | `bot-usage-monitor.yml` | every 1 hour — rolling-5h + weekly behavioural quota report |
 | `ai-smoke-test.yml` | weekly (Mondays 12:00 UTC) |
+| `gemini-deep-audit.yml` | weekly (Mondays 08:00 UTC) — Gemini 2.5 Pro full-tree drift audit; ≤5 issues/run; runbook: [`docs/ops/gemini-deep-audit.md`](./ops/gemini-deep-audit.md) |
 
 ### Consistency gate (every PR)
 

@@ -8,6 +8,8 @@ Two questions this doc answers:
 All figures in CAD. USD where the underlying service is billed in USD (Claude, Gemini, OpenAI, Vercel, etc.).
 
 > **All numeric assumptions in this doc — Action minutes, AI subscription costs, upgrade triggers — are owned by [`docs/mothership/18-capacity-and-unit-economics.md`](../mothership/18-capacity-and-unit-economics.md)** (single source of truth for capacity / cost / cliffs). The tables here cite anchors in `18`; updates flow `18 §1` → `18 §7` (change log) → out to here. If a number in this doc disagrees with `18`, `18` wins.
+>
+> **Practice-wide costs that aren't per-client** (legal, payment processing, accounting, insurance, marketing, operator tools, one-time launch budget, Year-1 vs Year-3 burn, breakeven) live in [`docs/mothership/20-launch-and-operating-cost-model.md`](../mothership/20-launch-and-operating-cost-model.md). This doc focuses on per-client cost-of-goods + the operator's day-job-replacement ramp; doc `20` is the practice-wide P&L view.
 
 ---
 

@@ -2,7 +2,9 @@
 
 # 18 — Capacity & Unit Economics (single source of truth)
 
-This doc owns every number that influences operator cost, capacity, or scaling-cliff timing. Every other operator-pack doc that quotes one of those numbers (`04`, `09`, `freelance/03`, `13`, `10`) **references an anchor here** instead of restating the value. If you find yourself about to write a minute count, dollar figure, or upgrade-threshold elsewhere — stop, anchor it here, and link.
+This doc owns every number that influences operator cost, capacity, or scaling-cliff timing. Every other operator-pack doc that quotes one of those numbers (`04`, `09`, `freelance/03`, `13`, `10`, `20`) **references an anchor here** instead of restating the value. If you find yourself about to write a minute count, dollar figure, or upgrade-threshold elsewhere — stop, anchor it here, and link.
+
+> **Scope split with [`20-launch-and-operating-cost-model.md`](./20-launch-and-operating-cost-model.md).** This doc (`18`) owns *capacity-coupled* numbers — AI costs, Action minutes, per-tier margin allocations, scaling cliffs. Doc `20` owns *practice-wide* costs that aren't capacity-coupled — legal, payment processing, accounting, insurance, marketing, operator tools — plus the launch budget and breakeven math. They reference each other; neither restates the other's numbers.
 
 The split with `13`: that doc is the *critique narrative* (why the old numbers were wrong); this doc is the *current model* (what the numbers actually are). `13` is preserved as the audit trail.
 

@@ -1,0 +1,113 @@
+name: Bot usage monitor
+
+# Generates a rolling-5h + weekly bot-usage report so the operator can
+# see — at a glance — which provider is doing the work, whether the
+# fallback ladder is firing (i.e. quota pressure), and whether the
+# `review-deferred` / `status/needs-continuation` backlog is growing.
+#
+# Why a rolling window? Anthropic / OpenAI / Google all enforce
+# *rolling* per-window quotas (Claude Max 20x: 5h rolling; ChatGPT
+# Plus: rolling; Gemini free tier: daily). None of the three publishes
+# a programmatic "quota remaining" endpoint at the operator's tier, so
+# this monitor *infers pressure from behaviour*: count fallback
+# dispatches, count `review-deferred` labels, count
+# `codex-reviewed-by-gemini` labels, etc. The thresholds live in
+# scripts/bot-usage-report.py.
+#
+# Output:
+#   1. Markdown report in $GITHUB_STEP_SUMMARY (every run).
+#   2. Single pinned issue titled "Bot usage report (rolling)" — the
+#      body is rewritten each run so the issue stays a fresh snapshot
+#      rather than spamming new issues.
+#
+# Cadence: every 1 hour (matches the execute cadence so a quota
+# spike shows up within one report).
+
+on:
+  schedule:
+    - cron: '23 * * * *'   # hourly, offset 23 min from the hour
+  workflow_dispatch:
+    inputs:
+      window_hours:
+        description: "Rolling window in hours (default 5 = Claude Max)"
+        required: false
+        default: "5"
+      lookback_days:
+        description: "Weekly lookback in days (default 7)"
+        required: false
+        default: "7"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: bot-usage-monitor-runtime
+  cancel-in-progress: true
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WINDOW_HOURS: ${{ inputs.window_hours || '5' }}
+          LOOKBACK_DAYS: ${{ inputs.lookback_days || '7' }}
+          REPORT_OUT: /tmp/report.md
+        run: |
+          python3 scripts/bot-usage-report.py | tee /tmp/stdout.md
+          # /tmp/report.md is the same content via REPORT_OUT, but keep
+          # both so the step summary always has something even if the
+          # script's own write failed.
+          cp /tmp/stdout.md /tmp/report.md
+
+      - name: Append to step summary
+        if: always()
+        run: |
+          cat /tmp/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      # Upsert a single pinned issue. Title is fixed so we can find +
+      # update the same issue every run; body rewrites in place. The
+      # issue is created with `type/observability` so triage skips it
+      # (it's not actionable work — it's a dashboard).
+      - name: Upsert pinned tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          REPO=palimkarakshay/lumivara-site
+          TITLE="Bot usage report (rolling)"
+
+          # Ensure label exists.
+          gh label create "type/observability" --repo "$REPO" \
+            --color "1d76db" --description "Auto-updated dashboard issue" \
+            2>/dev/null || true
+          gh label create "do-not-triage" --repo "$REPO" \
+            --color "ededed" --description "Triage bot should ignore this issue" \
+            2>/dev/null || true
+
+          EXISTING=$(gh issue list --repo "$REPO" \
+            --state open \
+            --search "in:title \"$TITLE\"" \
+            --json number,title --limit 5 \
+            | python3 -c 'import json,sys; rows=json.load(sys.stdin); print(next((r["number"] for r in rows if r["title"]==sys.argv[1]), ""))' "$TITLE")
+
+          if [ -n "$EXISTING" ]; then
+            echo "Updating existing dashboard issue #$EXISTING"
+            gh issue edit "$EXISTING" --repo "$REPO" \
+              --body-file /tmp/report.md \
+              --add-label "type/observability" \
+              --add-label "do-not-triage" || true
+          else
+            echo "Creating new dashboard issue"
+            gh issue create --repo "$REPO" \
+              --title "$TITLE" \
+              --body-file /tmp/report.md \
+              --label "type/observability" \
+              --label "do-not-triage"
+          fi

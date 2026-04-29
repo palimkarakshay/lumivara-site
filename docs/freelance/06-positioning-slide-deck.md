@@ -253,3 +253,187 @@ Source: `docs/freelance/01-gig-profile.md` Part 8.
 > Pitch line: *"Customers don't ask for AI. They ask to stop waiting on a developer."*
 
 ---
+
+<!-- _class: lead -->
+
+# 4 · What competitors say they're providing
+
+*The pitch from the other side of the table.*
+
+---
+
+## Competitor pitch matrix
+
+| Competitor | What they tell SMBs | What they don't tell them |
+|---|---|---|
+| **Squarespace / Wix / Webflow** | "Build a beautiful site in an afternoon, edit it yourself, no code." | The site lives in their walled garden. Export is painful. Performance and SEO ceiling. Plugin sprawl over time. |
+| **Solo Upwork / Fiverr devs** | "Custom build, your code, your ownership, $1k–$5k." | After hand-off, every change is a custom invoice or a Slack message at 11pm. No ongoing improvement. |
+| **Boutique agencies** | "End-to-end design + build + monthly retainer for support." | Retainer pays for *availability*, not for actual edits. Each substantial change still bills $150–$300. |
+| **Headless CMS (Sanity / Contentful / Strapi) + dev** | "Modern stack, structured content, scalable." | Client must learn a CMS. Still needs a developer for layout / component changes. |
+| **AI-site generators (Framer AI, Durable, Bookmark)** | "Type a prompt, get a site." | Templated under the hood. Hosted in their stack. Phone-edit *publishing* is not the loop. |
+
+We sit deliberately in the gap none of them serve: real-codebase ownership + AI-managed maintenance + flat fee.
+
+---
+
+## How they say they handle the four customer asks
+
+| Customer ask | Squarespace | Freelance dev | Agency | **Lumivara Forge** |
+|---|---|---|---|---|
+| "Update without calling someone" | ✅ via their editor | ❌ | ❌ retainer = "ask us" | ✅ phone shortcut |
+| "No surprise invoices" | ✅ flat sub | ❌ per-edit | ⚠️ retainer + overage | ✅ flat sub |
+| "Custom-looking, not templated" | ❌ template-driven | ✅ | ✅ | ✅ |
+| "Own the site outright" | ❌ vendor lock-in | ✅ | ✅ | ✅ |
+
+We're the only column with **four green ticks**. Squarespace is the closest competitor by feature (edit-yourself + flat fee), but they fail on ownership and custom design. Agencies and freelancers are the closest by craft, but they fail on autonomy and predictability.
+
+---
+
+## What competitors are NOT advertising (yet)
+
+These are gaps in the market that, if a well-funded competitor closed, would compress our moat:
+
+- **Phone-as-CMS over a real codebase.** Not promoted by any major builder. Closest: Framer's mobile editor, but it's still inside Framer's stack.
+- **Multi-AI fallback as a sold feature.** Most AI-site tools commit to one model.
+- **Plan-then-execute with a human approval tap.** Some Cursor/Devin-style products do "AI proposes a PR" but no flat-rate SMB packaging.
+- **Two-repo Pattern C operator/client split.** Genuinely uncommon — most operators commingle automation and site code, which makes hand-over messy.
+
+Watch list: Framer (closest substitution risk if they add code-export + n8n), Vercel v0 (if they package retainer), and any Anthropic-built "ship a marketing site" agent.
+
+---
+
+## Section recap — Competitor claims
+
+- Squarespace owns the **edit-yourself** narrative but loses on **ownership + custom**.
+- Freelancers and agencies own **craft** but lose on **predictability + autonomy**.
+- AI-site generators own the **demo wow** but lose on **real ownership + flat-fee maintenance**.
+- Nobody currently bundles all four. That's the wedge.
+
+> Pitch line: *"Squarespace's edit loop, an agency's craft, and a freelancer's ownership — for one flat fee."*
+
+---
+
+<!-- _class: lead -->
+
+# 5 · End goal as a business
+
+*What is Lumivara Forge, fully grown?*
+
+---
+
+## The 12-month decision rule
+
+> If a feature, doc, or tool helps the operator serve **paid retainer clients** better — build it.
+> If it helps serve **prospects, hypothetical SaaS users, or other agencies** better — defer it.
+
+Source: `docs/mothership/01-business-plan.md §9`.
+
+This rule is the antidote to over-engineering. Everything in this deck collapses to it.
+
+---
+
+## What "fully grown" looks like (Stage 1)
+
+- **~25–30 active retainer clients.** Mix: ~70% T2, ~20% T1, ~10% T3. (`02-pricing-tiers.md`.)
+- **MRR ≈ CAD $6,000–$9,000** before setup-fee lumps. (`03-cost-analysis.md` Part D.)
+- **Year-1 gross ~CAD $177k**, take-home ~$118k–$128k after Ontario sole-prop tax.
+- **Operator hours: ≤60 / month** of client-facing work, plus 10–15 hours of monthly improvement runs.
+- **Day job replaced** between months 9 and 12.
+
+This is the explicit target the cost analysis is built around. It's not a "first step toward a unicorn." It's the destination of Stage 1.
+
+Source: `docs/freelance/03-cost-analysis.md` Parts B–D.
+
+---
+
+## What "fully grown" looks like beyond Stage 1
+
+| Stage | Horizon | What it looks like |
+|---|---|---|
+| **Stage 1 — Services + retainer** | now → 12 mo | Operator-run. ~30 clients max. The plan in this deck. |
+| **Stage 2 — Managed-services agency** | 12–24 mo | Hire 1–2 operators. Scale to ~80 clients. Margins compress slightly. |
+| **Stage 3 — Productise the operator side** | 24+ mo | Self-serve onboarding, customer-managed billing. Becomes a SaaS. |
+
+Stage 3 is a different business with different risks (real product-market fit, real on-call). **Don't pre-build for it.** Stay in Stage 1 until genuinely outgrown.
+
+Source: `docs/freelance/05-template-hardening-notes.md` "Long-term: should this become a SaaS?"
+
+---
+
+## What this business is *NOT* trying to become
+
+- **Not a venture-scale SaaS.** No fundraising path. No "10× growth" hockey-stick.
+- **Not an agency.** Hiring is deferred to Stage 2, not built into year-1 ops.
+- **Not a hosting company.** Hosting is the client's, on their card.
+- **Not a labour arbitrage shop.** No offshore team, no per-hour billing.
+- **Not a product company yet.** No standalone software product is sold; the product is the **service experience**.
+
+The strategy is *deliberate smallness with high margin per client*, not scale at any cost.
+
+---
+
+## Section recap — End goal
+
+- Stage 1 destination: **30 retainer clients, ~$120k take-home, ≤60 op-hours/month**.
+- Stage 2 destination: **~80 clients, 1–2 hires, ~24-month horizon**.
+- Stage 3 destination: **SaaS productisation, deferred until 30+ clients prove the model**.
+- The decision rule is: **paid retainers > everything else.**
+
+> Pitch line: *"A 30-client retainer practice that prints predictable margin and gives the operator their evenings back."*
+
+---
+
+<!-- _class: lead -->
+
+# 6 · Steps to achieve the end goal
+
+*Top-of-funnel through retained client #30.*
+
+---
+
+## Steps in plain order
+
+1. **Lock the brand and own the slugs.** `Lumivara Forge` is locked (`01-business-plan.md §1`); buy domain, GitHub org, Resend domain, Twilio sub-account. *(Done / in progress.)*
+2. **Close the architecture critiques** — Pattern C lock, security topology, capacity reconciliation, ops sequencing. *(P4.6 in `00-INDEX.md`; underway.)*
+3. **Bootstrap the mothership repo.** `palimkarakshay/lumivara-forge-mothership`, with workflow templates, scripts, n8n exports. (`05-mothership-repo-buildout-plan.md`, P5.)
+4. **Spin out Client #1 (Lumivara People Advisory)** into its own clean Pattern C pair of repos. Use it as the showcase. (`docs/migrations/lumivara-people-advisory-spinout.md`, P6.)
+5. **Publish the storefront.** Fiverr Gig 1, Upwork profile, Toptal/Arc/Lemon screening, LinkedIn case-study post. (`01-gig-profile.md` Part 10.)
+6. **Sell Client #2 + #3.** Real arms-length retainers. Trigger MSA + payment automation + privacy work. (`08-future-work.md §1–§3`.)
+7. **Cross client #5.** Trigger 1Password vault + break-glass envelope. (`08-future-work.md §4`.)
+8. **Cross client #16.** Upgrade Claude Pro → Max 5x → Max 20x at the cliffs. (`18-capacity-and-unit-economics.md §6`.)
+9. **Cross client #25.** Hire a part-time VA for client comms triage. (`03-cost-analysis.md` Part E.)
+10. **Cross client #30.** Decide: hold (Stage 1), expand (Stage 2 hire), or productise (Stage 3 SaaS).
+
+---
+
+## Steps grouped by theme
+
+| Theme | Steps |
+|---|---|
+| **Identity + IP** | Brand lock; mothership repo; vault; MSA + SOW. |
+| **Product hardening** | Critique closure (Pattern C, security, capacity, ops); admin portal Phases 1–5; multi-AI fallback proven on a live client. |
+| **Go-to-market** | Storefronts (Fiverr, Upwork, Toptal); LinkedIn; first 5 reviews; price step-ups. |
+| **Operations** | Per-engagement provisioning matrix (`18-provisioning-automation-matrix.md`); evidence log per client; monthly + quarterly cadences (`03b-security-operations-checklist.md`). |
+| **Finance + legal** | Stripe Subscriptions; auto-pause schedule; PIPEDA + provincial overlays; insurance once over $50k revenue. |
+| **Scaling decisions** | Plan upgrades at clients 6 / 16 / 26; VA at 25; second engineer at 35. |
+
+---
+
+## The two non-negotiable invariants
+
+1. **The two-repo separation (Pattern C) holds on every client.** No workflows on the site repo. No operator-side IP commingled into the client's tree. (`02b-pattern-c-architecture.md`, `pattern-c-enforcement-checklist.md`.)
+2. **The session-budget charter (50% / 80% / 95% gates) holds on every Claude run.** No client floods the queue. No run exits incomplete on `main`. (`AGENTS.md` "Session charter".)
+
+Everything else can flex. These two cannot.
+
+---
+
+## Section recap — Steps
+
+- **Identity** (brand, repos, vault) → **Product** (close critiques, harden) → **Sales** (storefronts, first 5 clients) → **Scale** (cliffs at 6 / 16 / 26 / 30).
+- The order matters: identity before product, product before sales, sales before scaling decisions.
+- Pattern C and the budget charter are the **invariants** through every step.
+
+> Pitch line: *"Lock the brand, harden the product, then sell — in that order."*
+
+---

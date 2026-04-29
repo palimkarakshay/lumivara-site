@@ -71,6 +71,7 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 15 | `15-terminology-and-brand.md` | "Better names for mothership/operator/agent and brand alternatives" | Operator | Once; rename ships via Run S1 in `16 §5` |
 | 16 | `16-automation-prompt-pack.md` | "Copy-paste prompts for Claude Code in the browser to close the critiques" | Operator | **Per critique-closure run** |
 | — | `pattern-c-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
+| — | `templates/00-templates-index.md` | "Vertical-specific content prompts and intake forms for each client business type — restaurant is full; plumber/realtor/recruiter are stubs; six more verticals planned" | Operator | **Per engagement (restaurant = full; others = stub)** |
 | — | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) | "How do I spin Lumivara People Advisory out into its own client repo, end-to-end?" — phased one-shot runbook with allow/deny tables (`docs/migrations/_artifact-allow-deny.md`), per-phase dry-run / rollback / acceptance, and Pattern C §4/§5 as gate / acceptance set | Operator | **Once (per Client #1 spinout)** |
 
 Existing context that this folder builds on (do not duplicate):
@@ -154,6 +155,7 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 - Cost firewall + zone isolation: `03-secure-architecture.md`
 - **Pattern C enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `pattern-c-enforcement-checklist.md`**
 - **Client #1 spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)**
+- **Vertical content prompt pack: `templates/00-templates-index.md`**
 - Future legal / vault work: `08-future-work.md`
 
 ---

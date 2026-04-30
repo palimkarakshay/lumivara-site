@@ -4,9 +4,9 @@
 
 This repo is operated primarily by an AI automation loop (Claude via GitHub Actions). Human contributions are welcome but follow a specific flow.
 
-## Two co-housed entities (Pattern C)
+## Two co-housed entities (Dual-Lane Repo)
 
-Until the P5.6 spinout, this repo hosts **two logically separate entities** that will split into two repos per the locked architecture in [`docs/mothership/02b-pattern-c-architecture.md`](docs/mothership/02b-pattern-c-architecture.md). Pick which entity your change targets before you start:
+Until the P5.6 spinout, this repo hosts **two logically separate entities** that will split into two repos per the locked architecture in [`docs/mothership/02b-dual-lane-architecture.md`](docs/mothership/02b-dual-lane-architecture.md). Pick which entity your change targets before you start:
 
 | Lane | Entity | If your change touches… |
 |---|---|---|
@@ -14,7 +14,7 @@ Until the P5.6 spinout, this repo hosts **two logically separate entities** that
 | 🛠 **Pipeline** | Lumivara Forge operator framework | `.github/workflows/`, `scripts/`, `dashboard/`, `docs/mothership/`, `docs/storefront/`, `docs/decks/`, `docs/research/`, `docs/migrations/`, `docs/n8n-workflows/`, `docs/_deprecated/`, top-level operator docs (`docs/AI_*.md`, `docs/MONITORING.md`, `docs/N8N_SETUP.md`, `docs/OPERATOR_SETUP.md`, `docs/TEMPLATE_REBUILD_PROMPT.md`, `docs/GEMINI_TASKS.md`) |
 | ⚪ **Both** | Cross-cutting hygiene | `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `AGENTS.md`, `CLAUDE.md`, `package.json`, `tsconfig.json`, `.gitignore`, `.env.local.example` |
 
-The lane map for every doc is in [`docs/00-INDEX.md`](docs/00-INDEX.md). The terminology policy that keeps Client #1 brand identifiers out of operator-scope docs is in [`docs/mothership/15-terminology-and-brand.md §6`](docs/mothership/15-terminology-and-brand.md). Run [`scripts/pattern-c-audit.sh`](scripts/pattern-c-audit.sh) before opening a PR that adds, moves, or renames anything structural.
+The lane map for every doc is in [`docs/00-INDEX.md`](docs/00-INDEX.md). The terminology policy that keeps Client #1 brand identifiers out of operator-scope docs is in [`docs/mothership/15-terminology-and-brand.md §6`](docs/mothership/15-terminology-and-brand.md). Run [`scripts/dual-lane-audit.sh`](scripts/dual-lane-audit.sh) before opening a PR that adds, moves, or renames anything structural.
 
 ## The normal path: create an Issue
 
@@ -89,8 +89,8 @@ The following paths cannot be edited by the bot in a normal `auto-routine` PR. H
 | `.env*` files | Secrets live in Vercel env vars (Site lane) or GitHub Actions org secrets (Pipeline lane); never committed. See [`docs/mothership/03-secure-architecture.md §3`](docs/mothership/03-secure-architecture.md). |
 | `src/app/api/contact/*` | Human-only by design; the contact form is a trust boundary. |
 | `src/auth.ts`, `src/middleware.ts`, `src/lib/admin/*` | The `/admin` portal trust boundary; auth changes need human review per [`docs/ADMIN_PORTAL_PLAN.md`](docs/ADMIN_PORTAL_PLAN.md). |
-| `docs/mothership/02b-pattern-c-architecture.md`, `docs/mothership/pattern-c-enforcement-checklist.md` | Pattern C is locked; changes need an explicit ADR-shaped commit and operator sign-off. |
-| `scripts/pattern-c-audit.sh` allow-lists | Carving an exemption requires explaining the rationale in the same PR. |
+| `docs/mothership/02b-dual-lane-architecture.md`, `docs/mothership/dual-lane-enforcement-checklist.md` | Dual-Lane Repo is locked; changes need an explicit ADR-shaped commit and operator sign-off. |
+| `scripts/dual-lane-audit.sh` allow-lists | Carving an exemption requires explaining the rationale in the same PR. |
 | Deleting existing pages or doc files | Requires human sign-off (the bot can move/rename but not delete). |
 
 When opening a PR that has to touch any of these, name the rule in the PR description and link to the issue that authorises the carve-out.

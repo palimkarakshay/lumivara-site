@@ -17,7 +17,7 @@ Fixes #
 - [ ] Issue-specific DoD checks satisfied (copy from the linked issue's "Definition of done" section)
 - [ ] Visually checked on Vercel preview URL (Vercel posts the URL as a PR comment)
 - [ ] No secrets or `.env` values committed
-- [ ] Pattern C compliance verified — for infra / workflow / scripts / dashboard / n8n changes, walk the relevant MUST / MUST-NOT rows in [`docs/mothership/pattern-c-enforcement-checklist.md`](../docs/mothership/pattern-c-enforcement-checklist.md). N/A is fine; tick once confirmed.
+- [ ] Dual-Lane Repo compliance verified — for infra / workflow / scripts / dashboard / n8n changes, walk the relevant MUST / MUST-NOT rows in [`docs/mothership/dual-lane-enforcement-checklist.md`](../docs/mothership/dual-lane-enforcement-checklist.md). N/A is fine; tick once confirmed.
 
 ## Vercel mirror required?
 

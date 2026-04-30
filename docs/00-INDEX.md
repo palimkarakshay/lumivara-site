@@ -2,23 +2,23 @@
 
 > _Lane: ⚪ Both — this index covers Site (Client #1) and Pipeline (Lumivara Forge) docs co-housed in this repo until the P5.6 spinout._
 
-This file is the **human-readable** doc-by-doc front-door for `docs/**`. The **machine-readable** lane assignment for every tracked file in the repo lives at [`/.pattern-c.yml`](../.pattern-c.yml); the dry-run that proves the manifest covers everything is [`scripts/forge-spinout-dry-run.sh`](../scripts/forge-spinout-dry-run.sh); the daily watcher that flags drift is [`pattern-c-watcher.yml`](../.github/workflows/pattern-c-watcher.yml). Together they make the P5.6 spinout (`docs/migrations/lumivara-people-advisory-spinout.md`) mechanical: only 🌐 and ⚪ docs travel to the client site repo; 🛠 docs stay in the operator-private pipeline repo.
+This file is the **human-readable** doc-by-doc front-door for `docs/**`. The **machine-readable** lane assignment for every tracked file in the repo lives at [`/.dual-lane.yml`](../.dual-lane.yml); the dry-run that proves the manifest covers everything is [`scripts/forge-spinout-dry-run.sh`](../scripts/forge-spinout-dry-run.sh); the daily watcher that flags drift is [`dual-lane-watcher.yml`](../.github/workflows/dual-lane-watcher.yml). Together they make the P5.6 spinout (`docs/migrations/lumivara-people-advisory-spinout.md`) mechanical: only 🌐 and ⚪ docs travel to the client site repo; 🛠 docs stay in the operator-private pipeline repo.
 
-Every doc in this index is stamped with a Pattern C lane (🛠 Pipeline / 🌐 Site / ⚪ Both) so a reader can tell, at a glance, which of the two co-housed entities it belongs to.
+Every doc in this index is stamped with a Dual-Lane Repo lane (🛠 Pipeline / 🌐 Site / ⚪ Both) so a reader can tell, at a glance, which of the two co-housed entities it belongs to.
 
-For the locked architecture itself, read [`mothership/02b-pattern-c-architecture.md`](./mothership/02b-pattern-c-architecture.md). For the locked terminology (`mothership` → `platform`, `agent` → `pipeline`/`run`/`bot`, etc.) read [`mothership/15-terminology-and-brand.md §1`](./mothership/15-terminology-and-brand.md). For the file/folder naming policy read [`mothership/15b-naming-conventions.md`](./mothership/15b-naming-conventions.md). For the active brand + domain decision (2026-04-30: separate operator domain committed; brand-name re-opened pending a cleaner, non-hyphenated alternative) read [`mothership/15c-brand-and-domain-decision.md`](./mothership/15c-brand-and-domain-decision.md).
+For the locked architecture itself, read [`mothership/02b-dual-lane-architecture.md`](./mothership/02b-dual-lane-architecture.md). For the locked terminology (`mothership` → `platform`, `agent` → `pipeline`/`run`/`bot`, etc.) read [`mothership/15-terminology-and-brand.md §1`](./mothership/15-terminology-and-brand.md). For the file/folder naming policy read [`mothership/15b-naming-conventions.md`](./mothership/15b-naming-conventions.md). For the active brand + domain decision (2026-04-30: separate operator domain committed; brand-name re-opened pending a cleaner, non-hyphenated alternative) read [`mothership/15c-brand-and-domain-decision.md`](./mothership/15c-brand-and-domain-decision.md).
 
 ---
 
 ## Lane key
 
-| Badge | Lane | Definition (Pattern C aligned) |
+| Badge | Lane | Definition (Dual-Lane Repo aligned) |
 |:---:|---|---|
 | 🛠 | **Pipeline** | Operator-only machinery: workflows, scripts, prompts, runbooks, decks, storefront, research, vault, tier policy. Lives in the **pipeline repo** (`<brand-slug>/<client-slug>-pipeline`) after spinout. **Never visible to a client.** |
 | 🌐 | **Site** | The per-client Next.js site (the "Site repo" entity in 02b §1). Copy, MDX, design tokens, contact-form trust boundary, admin-portal client surface. The client owns this repo after handover. |
 | ⚪ | **Both** | General hygiene that applies on either repo: TypeScript strict, lint, tests, branch naming, the issue → PR loop. |
 
-> 🛠 Do **not** copy Pipeline-lane docs to a client repo. The spinout runbook (`migrations/lumivara-people-advisory-spinout.md`) and `mothership/pattern-c-enforcement-checklist.md` enforce this.
+> 🛠 Do **not** copy Pipeline-lane docs to a client repo. The spinout runbook (`migrations/lumivara-people-advisory-spinout.md`) and `mothership/dual-lane-enforcement-checklist.md` enforce this.
 
 ---
 
@@ -60,7 +60,7 @@ For the locked architecture itself, read [`mothership/02b-pattern-c-architecture
 2. [`AGENTS.md`](../AGENTS.md) — the active session charter for AI agents working in this repo (Claude Code, Codex, Gemini).
 3. [`CLAUDE.md`](../CLAUDE.md) — Claude Code anchor (one-liner that defers to `AGENTS.md`).
 4. [`CONTRIBUTING.md`](../CONTRIBUTING.md) — human-contributor guide.
-5. [`mothership/02b-pattern-c-architecture.md`](./mothership/02b-pattern-c-architecture.md) — the canonical architecture; load-bearing.
+5. [`mothership/02b-dual-lane-architecture.md`](./mothership/02b-dual-lane-architecture.md) — the canonical architecture; load-bearing.
 6. [`mothership/00-INDEX.md`](./mothership/00-INDEX.md) — operator pack reading order + status table.
 7. [`migrations/lumivara-people-advisory-spinout.md`](./migrations/lumivara-people-advisory-spinout.md) — the runbook that splits this repo into two repos when the time comes.
 
@@ -71,6 +71,6 @@ For the locked architecture itself, read [`mothership/02b-pattern-c-architecture
 - **Lane banner** at the top of every doc: `> _Lane: 🛠 Pipeline / 🌐 Site / ⚪ Both._` Helps grep + helps the eventual `forge spinout` script decide what travels where.
 - **File naming** per [`mothership/15b-naming-conventions.md §3`](./mothership/15b-naming-conventions.md): `NN[a-z]?-kebab-case-title.md` for operator docs; `00-INDEX.md` (ALL CAPS) for folder indexes; `README.md` (mixed case) for human-readable entry points; `Title-Case.md` for wiki pages (GitHub wiki convention).
 - **Forbidden strings** in operator-scope docs per [`mothership/15-terminology-and-brand.md §6`](./mothership/15-terminology-and-brand.md): `Lumivara People Advisory`, `Lumivara People Solutions`, `people advisory`, `lumivara.ca`, `Beas Banerjee` — except inside `15 §7` (the Client #1 example appendix) or a labelled migration-history doc.
-- **Cross-linking**: prefer relative links (`./mothership/02b-pattern-c-architecture.md`) over absolute URLs so the docs travel cleanly when the repo splits.
+- **Cross-linking**: prefer relative links (`./mothership/02b-dual-lane-architecture.md`) over absolute URLs so the docs travel cleanly when the repo splits.
 
 *Last updated: 2026-04-29.*

@@ -12,7 +12,7 @@
   legal counsel as a human-only step; this file does not pretend to substitute
   for it (see §7).
 
-  Pattern C rule: this file never ships in a client repo (`00-INDEX.md`
+  Dual-Lane Repo rule: this file never ships in a client repo (`00-INDEX.md`
   rule 2; `03 §1` rule 2). Quote sections into the MSA / SOW only via the
   carve-outs called out per-section.
 ================================================================================
@@ -116,7 +116,7 @@ The operational controls that back this section live elsewhere; do not duplicate
 - Per-client secret topology: [`03 §3`](03-secure-architecture.md#3-secret-topology).
 - Monthly + quarterly cadence (incl. recovery drill): [`03b §1`](03b-security-operations-checklist.md#1--monthly-checklist-first-monday-of-the-month) + [`§2`](03b-security-operations-checklist.md#2--quarterly-checklist-first-friday-of-the-quarter).
 - Operator-side credential vault (where contracts and per-client correspondence live): [`21-vault-strategy-adr.md §3`](21-vault-strategy-adr.md#3--vault-structure).
-- Pattern C trust boundary (why the client repo and the pipeline repo are separate): [`02b-pattern-c-architecture.md`](02b-pattern-c-architecture.md).
+- Dual-Lane Repo trust boundary (why the client repo and the pipeline repo are separate): [`02b-dual-lane-architecture.md`](02b-dual-lane-architecture.md).
 
 ---
 
@@ -243,9 +243,9 @@ Drafted clause:
 
 > If Client fails to pay any undisputed invoice within fifteen (15) days of its due date, Operator may, after notice to Client, suspend access to the AI-driven website-improvement service ("Autopilot") according to the schedule set out in Schedule [Suspension Ladder]. During suspension, Client's marketing site shall remain live and Client retains all access to its repository, domain, and hosting account. Operator shall restore Autopilot access within five (5) business days of receipt of all overdue amounts plus the late-payment interest in §[Late-Payment Interest] and the NSF fees in §[NSF Fee], if any.
 
-### §4.7 Kill-switch ladder (per Pattern C)
+### §4.7 Kill-switch ladder (per Dual-Lane Repo)
 
-The technical kill-switch is the operator's ability to revoke automation without affecting the client's site. Mapping onto Pattern C ([`02b-pattern-c-architecture.md`](02b-pattern-c-architecture.md)):
+The technical kill-switch is the operator's ability to revoke automation without affecting the client's site. Mapping onto Dual-Lane Repo ([`02b-dual-lane-architecture.md`](02b-dual-lane-architecture.md)):
 
 | Lever | Effect | Reversible? |
 |---|---|---|
@@ -348,7 +348,7 @@ The two unchecked boxes do not block this PR. They block the *first MSA signatur
 - Per-engagement evidence log (where §6 step 3–6 file their entries): [`19-engagement-evidence-log-template.md`](19-engagement-evidence-log-template.md).
 - Operator-side vault for the artefacts §6 produces: [`21-vault-strategy-adr.md §3`](21-vault-strategy-adr.md#3--vault-structure).
 - Per-client runtime secret topology: [`03-secure-architecture.md §3`](03-secure-architecture.md#3-secret-topology).
-- Pattern C (the architectural assumption behind §4.7 kill-switch levers): [`02b-pattern-c-architecture.md`](02b-pattern-c-architecture.md) + [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md).
+- Dual-Lane Repo (the architectural assumption behind §4.7 kill-switch levers): [`02b-dual-lane-architecture.md`](02b-dual-lane-architecture.md) + [`dual-lane-enforcement-checklist.md`](dual-lane-enforcement-checklist.md).
 - Tier-based AI cadence (the surface §4.6 D+7/D+14 pauses): [`04-tier-based-agent-cadence.md`](04-tier-based-agent-cadence.md).
 - Per-client tier prices used in §4 examples: [`src/lib/admin/tiers.ts`](../../src/lib/admin/tiers.ts).
 - Engagement provisioning matrix that §6 step 6 walks: [`18-provisioning-automation-matrix.md`](18-provisioning-automation-matrix.md).

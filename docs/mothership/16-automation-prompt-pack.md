@@ -2,7 +2,7 @@
 
 # 16 — Automation Prompt Pack (Claude Code in the browser, Opus 4.7 Max)
 
-> **Historical / migration spec.** This pack holds the prompts that move the canonical docs from the deprecated `operator/main` + `VENDOR_GITHUB_PAT` design to Pattern C. The `operator/main` and `VENDOR_GITHUB_PAT` strings inside these prompts are quoting the deprecated terms so the rewrite agents know exactly what to replace. The canonical architecture is `02b-pattern-c-architecture.md`. Once Run A and Run B have merged across the practice, this pack remains useful as a re-runnable migration playbook but is no longer aspirational.
+> **Historical / migration spec.** This pack holds the prompts that move the canonical docs from the deprecated `operator/main` + `VENDOR_GITHUB_PAT` design to Dual-Lane Repo. The `operator/main` and `VENDOR_GITHUB_PAT` strings inside these prompts are quoting the deprecated terms so the rewrite agents know exactly what to replace. The canonical architecture is `02b-dual-lane-architecture.md`. Once Run A and Run B have merged across the practice, this pack remains useful as a re-runnable migration playbook but is no longer aspirational.
 
 Three closes-the-critique prompts (Run A, B, C) plus a fourth optional cleanup (Run D) and three supplementary one-shot prompts (S1, S2, S3) to hand to Claude Code in the browser. Each prompt is self-contained — paste it, hit run, walk away.
 
@@ -12,18 +12,18 @@ Three closes-the-critique prompts (Run A, B, C) plus a fourth optional cleanup (
 
 ---
 
-## §1 — Run A: Adopt the two-repo (Pattern C) architecture
+## §1 — Run A: Adopt the two-repo (Dual-Lane Repo) architecture
 
-**Goal:** close the items in `11 §1` and `11 §2`. The operator chose **Pattern C** (separate `<slug>-pipeline` repo) as the architectural model. This Run rewrites every dependent doc and ships one PR.
+**Goal:** close the items in `11 §1` and `11 §2`. The operator chose **Dual-Lane Repo** (separate `<slug>-pipeline` repo) as the architectural model. This Run rewrites every dependent doc and ships one PR.
 
-**Estimated:** Opus 4.7 Max, ~120–160 turns, ~2.5–3.5 h wall time. (Pattern C is more invasive than the original Pattern A draft would have been; budget accordingly.)
+**Estimated:** Opus 4.7 Max, ~120–160 turns, ~2.5–3.5 h wall time. (Dual-Lane Repo is more invasive than the original Pattern A draft would have been; budget accordingly.)
 
-**Branch:** `claude/pattern-c-two-repo-architecture`.
+**Branch:** `claude/dual-lane-two-repo-architecture`.
 
 **Copy-paste prompt:**
 
 ```
-You are a senior infrastructure architect implementing the Pattern C
+You are a senior infrastructure architect implementing the Dual-Lane Repo
 two-repo architecture chosen by the operator on 2026-04-28. Read in
 order:
 
@@ -41,7 +41,7 @@ workflows on a non-default branch ('operator/main') will fire on cron.
 They will not — cron only fires from workflow files on the default
 branch. The pack as written produces zero scheduled runs.
 
-The chosen fix: Pattern C from 11 §1. Per client engagement, the
+The chosen fix: Dual-Lane Repo from 11 §1. Per client engagement, the
 operator provisions TWO private repos:
   • {{BRAND_SLUG}}/<slug>-site      — client-readable; Next.js site
                                        only; transferred to client at
@@ -58,8 +58,8 @@ repo only.
 
 Concretely, in this PR:
 
-1. Create a NEW file 'docs/mothership/02b-pattern-c-architecture.md'
-   that documents Pattern C as canonical:
+1. Create a NEW file 'docs/mothership/02b-dual-lane-architecture.md'
+   that documents Dual-Lane Repo as canonical:
      - Diagram showing both repos + the GitHub App flow.
      - Repo provisioning order (site first, pipeline second).
      - GitHub App installation procedure (one-time per org; per-repo
@@ -162,7 +162,7 @@ Concretely, in this PR:
      - Update P4.6 row to mark Run A as in-progress (with PR link).
 
 Constraints:
-  - One PR. Branch: claude/pattern-c-two-repo-architecture.
+  - One PR. Branch: claude/dual-lane-two-repo-architecture.
   - Commit per logical unit:
       1. 02b new file
       2. 02 rewrite
@@ -185,7 +185,7 @@ DOD:
     and 00-INDEX.
   - All section anchors in cross-references resolve.
   - 'git grep -nE "operator/main"' returns matches ONLY in
-    historical CHANGELOG.md / docs marked 'pre-Pattern-C' /
+    historical CHANGELOG.md / docs marked 'pre-Dual-Lane' /
     docs that explicitly explain the deprecated pattern.
   - 'git grep -nE "VENDOR_GITHUB_PAT"' returns ZERO matches
     in 02/03/05/06/09 (replaced by APP_INSTALLATION_TOKEN /
@@ -587,7 +587,7 @@ just the brand swap. Apply in order:
        'agent' where it refers to a specific Claude/Codex agent
        technology (e.g., 'Claude agent SDK').
      - 'operator overlay' / 'operator/main branch' → 'pipeline
-       repo' / 'pipeline-repo main' (Pattern C is now canonical
+       repo' / 'pipeline-repo main' (Dual-Lane Repo is now canonical
        per Run A).
      - 'autopilot' → LEAVE UNCHANGED (customer-facing term).
      - 'tier' / 'cadence' / 'zone' / 'engagement' / 'client' →

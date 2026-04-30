@@ -1,6 +1,6 @@
 # 17 — GitHub Issue Seeding Pack (Lumivara Forge Mothership → Client #1 Spinout)
 
-> **Historical / migration spec.** This file is a seeding pack for issue bodies. The `operator/main` strings appearing inside example acceptance-criteria blocks are quoting the deprecated term so the seeded issues' grep-DoD lines work as written. The canonical architecture is `02b-pattern-c-architecture.md`.
+> **Historical / migration spec.** This file is a seeding pack for issue bodies. The `operator/main` strings appearing inside example acceptance-criteria blocks are quoting the deprecated term so the seeded issues' grep-DoD lines work as written. The canonical architecture is `02b-dual-lane-architecture.md`.
 
 This file contains copy-ready **issue titles and bodies** for creating planning and execution issues in this repository. The sequence is optimized to spin out **Lumivara People Advisory** as Client #1 from **Lumivara Forge** with strict separation-of-trust, minimal manual steps, and high-confidence automation.
 

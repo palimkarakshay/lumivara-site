@@ -4,7 +4,7 @@
 
 How often the autopilot runs, which models it uses, and how aggressive its review is — set per client by tier. The rule of thumb: **higher tier = more cron, fancier model, lighter human review**. Lower tier = sparser cron, cheaper model, heavier human review.
 
-This is implemented as **per-client labels** read by the workflows in each `<slug>-pipeline` repo (Pattern C — see `02b`), plus a single per-client config file `docs/operator/clients/<slug>/cadence.json` in the mothership repo.
+This is implemented as **per-client labels** read by the workflows in each `<slug>-pipeline` repo (Dual-Lane Repo — see `02b`), plus a single per-client config file `docs/operator/clients/<slug>/cadence.json` in the mothership repo.
 
 > **Numbers in this doc are owned by `18-capacity-and-unit-economics.md`** (the single source of truth for capacity / cost / cliffs). Cells in §1 that quote a minute count, dollar figure, or upgrade threshold reference an anchor in `18`; this doc does not redefine them. If a number here disagrees with `18`, `18` wins — open a fix in `18 §7` (change log) and propagate.
 

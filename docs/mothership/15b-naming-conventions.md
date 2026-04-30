@@ -15,7 +15,7 @@ amend this file in the same PR.
 > until a later iteration). Prose-terminology drift (`mothership` →
 > `platform` in noun usage; the retired `-Infotech` working name →
 > `Lumivara Forge`) is being swept incrementally — see PR #200's
-> commit log + the `scripts/pattern-c-audit.sh §1` advisory. Drift
+> commit log + the `scripts/dual-lane-audit.sh §1` advisory. Drift
 > between this file and `15 §1` is a bug.
 
 ---
@@ -37,7 +37,7 @@ Three problems in the current tree this is fixing:
 3. **Two folders use casing that diverges from the rest.**
    `docs/wiki/` mixes `Title-Case.md` page names with kebab-case partials
    (`docs/wiki/_partials/lane-key.md`). The mothership folder uses
-   numeric-prefix-kebab-case (`02b-pattern-c-architecture.md`). New docs
+   numeric-prefix-kebab-case (`02b-dual-lane-architecture.md`). New docs
    keep guessing.
 
 ---
@@ -156,7 +156,7 @@ docs/
 │   ├─ 00-INDEX.md
 │   ├─ 01-business-plan.md
 │   ├─ 02-architecture.md
-│   ├─ 02b-pattern-c-architecture.md      ← canonical Pattern C
+│   ├─ 02b-dual-lane-architecture.md      ← canonical Dual-Lane Repo
 │   ├─ 03-secure-architecture.md
 │   ├─ 03b-security-operations-checklist.md
 │   ├─ 04-tier-based-agent-cadence.md
@@ -177,7 +177,7 @@ docs/
 │   ├─ 21-ip-protection-strategy.md
 │   ├─ 21-vault-strategy-adr.md
 │   ├─ 22-engagement-risk-protection.md
-│   ├─ pattern-c-enforcement-checklist.md
+│   ├─ dual-lane-enforcement-checklist.md
 │   └─ templates/
 │       └─ 00-templates-index.md
 ├─ storefront/                ← outward-facing pack (was: freelance/)
@@ -223,7 +223,7 @@ top-level docs.
 
 - **Diátaxis framework** — *Tutorials / How-to / Reference / Explanation*
   quadrants. Our `00-quick-start.md` is a tutorial; `06-engagement-
-  playbook.md` is a how-to; `02b-pattern-c-architecture.md` is reference;
+  playbook.md` is a how-to; `02b-dual-lane-architecture.md` is reference;
   `01-business-plan.md` is explanation. We don't sub-folder by quadrant
   (too rigid for a small repo) but the read-order numbering keeps
   tutorials low and reference high.

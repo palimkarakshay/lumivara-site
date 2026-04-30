@@ -2,15 +2,15 @@
 
 # 03 — Secure Architecture: Zone Isolation & Cost Firewall
 
-> **⚠️ Mixed canonical / historical as of 2026-04-29.** §3 (secret topology, App identity model `§3.X`, two-phase HMAC rotation `§3.Y`), §7 (client-zone checklist), and §8 (incident response) are **canonical** — Pattern C aligned, App-first, per-client Resend. The branch-overlay text in §2.1, §2.2, and §2.4 (`operator/main` overlay as a branch within a single client repo) is **deprecated**; the two-repo Pattern C statement is canonical in [`02b-pattern-c-architecture.md`](02b-pattern-c-architecture.md), and the §2.x rewrite is owned by the Pattern C propagation issue, not this file. Until that propagation lands, treat §2.1–§2.4 as historical context describing the deprecated pattern; apply §1 / §3 / §4 / §5 / §6 / §7 / §8 as written, and cross-reference `02b` whenever the §2.x mechanics conflict with Pattern C. The recurring operator cadence lives in [`03b-security-operations-checklist.md`](03b-security-operations-checklist.md).
+> **⚠️ Mixed canonical / historical as of 2026-04-29.** §3 (secret topology, App identity model `§3.X`, two-phase HMAC rotation `§3.Y`), §7 (client-zone checklist), and §8 (incident response) are **canonical** — Dual-Lane Repo aligned, App-first, per-client Resend. The branch-overlay text in §2.1, §2.2, and §2.4 (`operator/main` overlay as a branch within a single client repo) is **deprecated**; the two-repo Dual-Lane Repo statement is canonical in [`02b-dual-lane-architecture.md`](02b-dual-lane-architecture.md), and the §2.x rewrite is owned by the Dual-Lane Repo propagation issue, not this file. Until that propagation lands, treat §2.1–§2.4 as historical context describing the deprecated pattern; apply §1 / §3 / §4 / §5 / §6 / §7 / §8 as written, and cross-reference `02b` whenever the §2.x mechanics conflict with Dual-Lane Repo. The recurring operator cadence lives in [`03b-security-operations-checklist.md`](03b-security-operations-checklist.md).
 
 The single most important property of this practice: **a curious client cannot see the operator's secrets, costs, or tools, even by inspecting their own repo.** This document is the rule-set that makes that true.
 
-> **Canonical enforcement surface:** [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md). The four rules below mirror C-MUST-NOT-1 through C-MUST-NOT-4 in that file byte-for-byte; any drift between the two locations is a bug. Edit both in the same PR.
+> **Canonical enforcement surface:** [`dual-lane-enforcement-checklist.md`](dual-lane-enforcement-checklist.md). The four rules below mirror C-MUST-NOT-1 through C-MUST-NOT-4 in that file byte-for-byte; any drift between the two locations is a bug. Edit both in the same PR.
 
 ## 1. The four "never" rules (memorise these)
 
-<!-- mirrors pattern-c-enforcement-checklist.md §3 C-MUST-NOT-1..4 -->
+<!-- mirrors dual-lane-enforcement-checklist.md §3 C-MUST-NOT-1..4 -->
 
 1. **Never** put an operator API key, OAuth token, or vendor PAT into a client repo file — not in `.env.local.example`, not in a comment, not in a workflow `env:` block. Org-level secrets only.
 2. **Never** copy `docs/mothership/`, `docs/storefront/`, `docs/operator/`, `n8n/*.json`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/lib/routing.py`, or `dashboard/` into a client repo's `main`. They live on `operator/main` (overlay) or in the mothership repo only.
@@ -19,7 +19,7 @@ The single most important property of this practice: **a curious client cannot s
 
 If a future bot or sub-agent asks Claude "should I commit this to the client repo's main?" — the answer is "only if it would be in the `client-template/` folder of the mothership." Anything else: no.
 
-The full list (including C-MUST-NOT-5 "no-PAT-on-the-phone" and C-MUST-NOT-6 "no operator-account pushes to client `main`") and the *verify* commands for each row live in [`pattern-c-enforcement-checklist.md §3`](pattern-c-enforcement-checklist.md#3--must-not-controls).
+The full list (including C-MUST-NOT-5 "no-PAT-on-the-phone" and C-MUST-NOT-6 "no operator-account pushes to client `main`") and the *verify* commands for each row live in [`dual-lane-enforcement-checklist.md §3`](dual-lane-enforcement-checklist.md#3--must-not-controls).
 
 ---
 
@@ -93,7 +93,7 @@ If a client device is lost, the client clicks "Sign out everywhere" in `/admin/s
 
 | Secret | Why it gets prose here |
 |---|---|
-| `CLAUDE_CODE_OAUTH_TOKEN` | The single OAuth token that bills every autopilot run against the operator's Claude Pro/Max subscription. Org-scoped; never a per-repo secret in the canonical Pattern C model. Rotation = re-run `claude setup-token`; no expiry. The blast radius is "every client repo's autopilot stops" — visible failure, not silent compromise, which is why no expiry is acceptable. |
+| `CLAUDE_CODE_OAUTH_TOKEN` | The single OAuth token that bills every autopilot run against the operator's Claude Pro/Max subscription. Org-scoped; never a per-repo secret in the canonical Dual-Lane Repo model. Rotation = re-run `claude setup-token`; no expiry. The blast radius is "every client repo's autopilot stops" — visible failure, not silent compromise, which is why no expiry is acceptable. |
 | `VENDOR_GITHUB_PAT` | The bot account's fine-grained PAT used by n8n for issue / comment / label writes. 90-day rotation; the calendar reminder lives in the operator's pass tree. Blast radius if leaked = anyone can open / close issues across every client repo (no code write); recovery = revoke in GitHub → Tokens, regenerate, update every n8n credential row. |
 | `N8N_HMAC_SECRET` | Per-client. Signs every Vercel ↔ n8n webhook over `${unixTimestamp}.${rawBody}`. Two-phase rotation (issue new → both accepted → retire old) — see §4. The HMAC + the vendor PAT together are what gates the autopilot from accepting a forged webhook; either one alone is useless. |
 | Secret | Lives in | Used by | Rotation |
@@ -147,7 +147,7 @@ The vendor identity is a **GitHub App**, not a personal-access token. The App li
 - No user-facing expiry — the App is durable; only its private key has a rotation policy.
 - A narrow, declared permission set (see below) that cannot be widened by accident.
 - A clean audit trail in `Org settings → Audit log → app/...` events distinct from human pushes.
-- Cross-repo authority — the App is the **only** identity that can simultaneously read pipeline-repo state and write to a site repo without putting a vendor PAT into either side. This is what makes Pattern C's two-repo split architecturally enforceable.
+- Cross-repo authority — the App is the **only** identity that can simultaneously read pipeline-repo state and write to a site repo without putting a vendor PAT into either side. This is what makes Dual-Lane Repo's two-repo split architecturally enforceable.
 
 **Permissions the App requests** (per `02b §3` and `09 §2 step 5`; granted at install time per repo):
 
@@ -195,7 +195,7 @@ The token is scoped to a single repo, lives ≤ 1 h, and is auto-redacted in wor
 
 **Audit-log location.** All App actions appear at `https://github.com/organizations/{{BRAND_SLUG}}/settings/audit-log?q=action:integration_installation+OR+action:installation`. Diff this monthly against the active-client roster (`03b §1`) — any installation on a repo you don't recognise is an incident.
 
-**Pattern C dependency.** Pattern C (`11 §1`) is locked but the cross-repo write requirement that the App's `Contents:RW` enables only matters once Pattern C ships per client. Until then, the App's installation scope is the mothership repo + Client #1's site repo; the App-first model is still the strict upgrade vs. PAT regardless. See `02b §3` for the canonical Pattern C statement and `09 §2.5` for the second-Owner requirement that protects the App's private key.
+**Dual-Lane Repo dependency.** Dual-Lane Repo (`11 §1`) is locked but the cross-repo write requirement that the App's `Contents:RW` enables only matters once Dual-Lane Repo ships per client. Until then, the App's installation scope is the mothership repo + Client #1's site repo; the App-first model is still the strict upgrade vs. PAT regardless. See `02b §3` for the canonical Dual-Lane Repo statement and `09 §2.5` for the second-Owner requirement that protects the App's private key.
 
 **GitHub plan tier.** GitHub Apps are free at every plan tier. The App does **not** trigger any of the Team/Enterprise upgrade paths in `09 §5`.
 

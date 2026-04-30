@@ -1,8 +1,8 @@
-<!-- OPERATOR-ONLY. Pattern C canonical as of 2026-04-28. Pair with 02b-pattern-c-architecture.md. -->
+<!-- OPERATOR-ONLY. Dual-Lane Repo canonical as of 2026-04-28. Pair with 02b-dual-lane-architecture.md. -->
 
-# 02 — Architecture: Mothership Repo + Two Per-Client Repos (Pattern C)
+# 02 — Architecture: Mothership Repo + Two Per-Client Repos (Dual-Lane Repo)
 
-> **Pattern C is canonical (2026-04-28).** The branch-overlay description that previously appeared here — "the autopilot files live on `operator/main` of each client repo" — has been superseded. See `02b-pattern-c-architecture.md` for the canonical statement and `11 §1` for the decision history.
+> **Dual-Lane Repo is canonical (2026-04-28).** The branch-overlay description that previously appeared here — "the autopilot files live on `operator/main` of each client repo" — has been superseded. See `02b-dual-lane-architecture.md` for the canonical statement and `11 §1` for the decision history.
 
 ## 1. The three-repo shape, in one diagram
 
@@ -92,9 +92,9 @@
 
 The defining property: **the autopilot lives in a separate operator-only `<slug>-pipeline` repo the client never has Read access to.** A curious client cloning their `<slug>-site` repo sees a clean Next.js + admin-portal codebase — no workflows, no scripts, no prompts. The cron schedules fire from the pipeline repo's default branch (`main`), the canonical GitHub Actions path. End-of-engagement: archive or delete the pipeline repo, uninstall the App from the site repo, transfer the site repo to the client, the autopilot stops, and the client keeps a vanilla repo.
 
-The full canonical statement of Pattern C — including the GitHub App, token lifecycle, and trust zones — lives in `02b-pattern-c-architecture.md`.
+The full canonical statement of Dual-Lane Repo — including the GitHub App, token lifecycle, and trust zones — lives in `02b-dual-lane-architecture.md`.
 
-> **Enforcement:** every assertion in this section is enforced by an explicit MUST / MUST-NOT row in [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md). When a future change to the architecture would break a row there, update both files in the same PR.
+> **Enforcement:** every assertion in this section is enforced by an explicit MUST / MUST-NOT row in [`dual-lane-enforcement-checklist.md`](dual-lane-enforcement-checklist.md). When a future change to the architecture would break a row there, update both files in the same PR.
 
 ---
 
@@ -216,7 +216,7 @@ The teardown command does the inverse — see `06-operator-rebuild-prompt-v3.md 
 
 ---
 
-## 4. Trust zones — the canonical version (Pattern C)
+## 4. Trust zones — the canonical version (Dual-Lane Repo)
 
 This refines `docs/TEMPLATE_REBUILD_PROMPT.md §1.1` with the two-repo split. The canonical statement lives in `02b §6`; the table here is the operator's quick-reference copy.
 
@@ -235,7 +235,7 @@ The "client cannot see the autopilot" claim is now an architectural fact: the wo
 - The pipeline repo never has the client as a collaborator; the App is the only non-operator identity with access, and the App is operator-owned.
 - At graceful exit (`teardown` CLI), the App is uninstalled from the site repo, the pipeline repo is archived/deleted, branch protections on the site repo are relaxed, the site repo is transferred to the client's account.
 
-> **Enforcement:** trust-zone separation is enforced by C-MUST-1, C-MUST-2, C-MUST-4, and C-MUST-NOT-2 in [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md). The pre-migration gate (§4) and post-migration verification (§5) of that file are what gate every client spinout.
+> **Enforcement:** trust-zone separation is enforced by C-MUST-1, C-MUST-2, C-MUST-4, and C-MUST-NOT-2 in [`dual-lane-enforcement-checklist.md`](dual-lane-enforcement-checklist.md). The pre-migration gate (§4) and post-migration verification (§5) of that file are what gate every client spinout.
 
 ---
 
@@ -259,11 +259,11 @@ The shared secret `N8N_HMAC_SECRET`:
 - 5-minute skew window prevents replay.
 - Rotation: every 12 months, re-run `cli/rotate-hmac.ts`.
 
-This handshake is unchanged from the deprecated branch-overlay design — Pattern C touched the GitHub side, not the admin-portal-to-n8n side.
+This handshake is unchanged from the deprecated branch-overlay design — Dual-Lane Repo touched the GitHub side, not the admin-portal-to-n8n side.
 
 ---
 
-## 6. The autopilot's view of the world (Pattern C)
+## 6. The autopilot's view of the world (Dual-Lane Repo)
 
 When a workflow in the **pipeline repo** runs (cron-triggered on its own `main`), it:
 
@@ -288,19 +288,19 @@ Run `npx forge teardown --client-slug <slug>` and pick a mode:
 | `--mode handover` | Uninstall the App from the site repo. Drop branch protections on the site repo's `main`. Transfer the site repo to the client's GitHub account. Archive the pipeline repo (read-only) or delete it after a 30-day grace period; export Actions logs to the operator's vault first. Email the client a vanilla README. |
 | `--mode archive` | Same as handover, but the client takes a tarball of the site repo, not a transferred repo. Pipeline repo handled the same way. |
 | `--mode pause` | (Non-payment.) Set `vars.AUTOPILOT_DISABLED=true` on the pipeline repo so cron exits early; label every open issue on the site repo `paused/non-payment`; leave both repos and the App install otherwise intact. Re-enable on `--mode resume` once paid. |
-| `--mode rebuild-vanilla` | Per the contract clause "we'll happily rebuild your site automation-free" — no-op for the site repo (it is already autopilot-free under Pattern C); archive the pipeline repo; uninstall the App; transfer the site repo as in handover. |
+| `--mode rebuild-vanilla` | Per the contract clause "we'll happily rebuild your site automation-free" — no-op for the site repo (it is already autopilot-free under Dual-Lane Repo); archive the pipeline repo; uninstall the App; transfer the site repo as in handover. |
 
 This is the operator's safety valve. Document it in the contract and the client never feels locked in.
 
 ---
 
-## 8. Migration note — Pattern C canonical as of 2026-04-28
+## 8. Migration note — Dual-Lane Repo canonical as of 2026-04-28
 
 The legacy "two-branch overlay" architecture (workflows on `operator/main` of each client repo, with `VENDOR_GITHUB_PAT` as the vendor identity) is **deprecated**. It survives only in:
 
-- `11 §1` — the critique that recorded the cron-on-default-branch bug and chose Pattern C as the fix. The deprecated branch-overlay description is preserved there as decision history.
-- `10 §2` and `12 §4` — the executive-summary and security-critique entries that name the failure modes Pattern C closes.
+- `11 §1` — the critique that recorded the cron-on-default-branch bug and chose Dual-Lane Repo as the fix. The deprecated branch-overlay description is preserved there as decision history.
+- `10 §2` and `12 §4` — the executive-summary and security-critique entries that name the failure modes Dual-Lane Repo closes.
 
-When you read the deprecated text in those critiques, treat it as historical context. The canonical architecture is Pattern C, defined in `02b-pattern-c-architecture.md` and operationalised in this file's §1–§7.
+When you read the deprecated text in those critiques, treat it as historical context. The canonical architecture is Dual-Lane Repo, defined in `02b-dual-lane-architecture.md` and operationalised in this file's §1–§7.
 
 *Last updated: 2026-04-28.*

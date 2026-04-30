@@ -2,7 +2,7 @@
 
 # 12 — Critique: Security, Secrets & Cost-Firewall Gaps
 
-> **Historical / decision record.** This file enumerates security gaps identified before Pattern C was chosen on 2026-04-28 and before the GitHub App replaced the legacy `VENDOR_GITHUB_PAT`. The `operator/main` and `VENDOR_GITHUB_PAT` references throughout describe the *deprecated* mechanics so the security argument that justified replacing them remains auditable. The canonical architecture is `02b-pattern-c-architecture.md`; the App spec is `03b-github-app-spec.md` (Run B).
+> **Historical / decision record.** This file enumerates security gaps identified before Dual-Lane Repo was chosen on 2026-04-28 and before the GitHub App replaced the legacy `VENDOR_GITHUB_PAT`. The `operator/main` and `VENDOR_GITHUB_PAT` references throughout describe the *deprecated* mechanics so the security argument that justified replacing them remains auditable. The canonical architecture is `02b-dual-lane-architecture.md`; the App spec is `03b-github-app-spec.md` (Run B).
 
 The security posture in `03-secure-architecture` gets the *concept* right (org-level secrets, HMAC handshake, cost firewall) but has three concrete gaps that compromise the cost firewall in practice. This doc lists them and the precise fix per gap.
 

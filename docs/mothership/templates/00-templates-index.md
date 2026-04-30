@@ -16,7 +16,7 @@
     3. Generated prompt outputs (hero copy, MDX, JSON-LD) ship into
        the per-client repo, not back into this folder.
 
-  See `../00-INDEX.md` for the surrounding doc set and the Pattern C
+  See `../00-INDEX.md` for the surrounding doc set and the Dual-Lane Repo
   architecture that defines client repos vs. mothership repo.
 ================================================================================
 -->
@@ -86,7 +86,7 @@ Run this on a per-client basis, after the structural scaffold from `../06-operat
 
 The intake forms ask questions a competitor could not easily answer (signature dish margins, OpenTable IDs, parking notes, founder backstory). The prompts encode the operator's house style — the warm-but-restrained voice, the JSON-LD discipline, the way `GlassCard` and `SectionShell` are composed. Both leak the operator's edge if shared.
 
-Per Pattern C (`../02b-pattern-c-architecture.md`), this folder lives only in the mothership repo. The per-client repos see the *outputs* (hero copy, MDX) but never the *prompts*.
+Per Dual-Lane Repo (`../02b-dual-lane-architecture.md`), this folder lives only in the mothership repo. The per-client repos see the *outputs* (hero copy, MDX) but never the *prompts*.
 
 ---
 

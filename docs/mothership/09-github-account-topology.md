@@ -19,7 +19,7 @@ So the topology is: **2 GitHub identities + 1 organisation**, all on free tier.
 | Identity | Type | Role | Cost |
 |---|---|---|---|
 | `palimkarakshay` (existing) | Personal user | Owner of the mothership org and of every per-client site + pipeline repo (until handover). The "Akshay" signing identity. | Free |
-| `{{BRAND_SLUG}}-pipeline-bot` (new — e.g. `lumivara-forge-pipeline-bot`) | **GitHub App** (org-owned) | Canonical vendor identity under Pattern C. Installed per engagement on each `<slug>-site` repo; the pipeline repo's workflows mint short-lived installation tokens to push branches and open PRs against the site repo. Replaces the legacy machine-user PAT. See `02b §3` and `03b-github-app-spec.md` (Run B). | Free |
+| `{{BRAND_SLUG}}-pipeline-bot` (new — e.g. `lumivara-forge-pipeline-bot`) | **GitHub App** (org-owned) | Canonical vendor identity under Dual-Lane Repo. Installed per engagement on each `<slug>-site` repo; the pipeline repo's workflows mint short-lived installation tokens to push branches and open PRs against the site repo. Replaces the legacy machine-user PAT. See `02b §3` and `03b-github-app-spec.md` (Run B). | Free |
 | `{{BRAND_SLUG}}` (new — e.g. `lumivara-forge`) | Organisation | Houses org-level Action secrets, branch-protection rulesets, the mothership repo, dashboards, and **two repos per engagement** (`<slug>-site` and `<slug>-pipeline`). | Free |
 
 GitHub Free tier includes — for organisations on private repos — everything the autopilot needs:
@@ -46,7 +46,7 @@ The first applies as soon as you have a T2-heavy book; the latter two don't appl
 
 ### Required components
 
-| Requirement | What it is | Implementation today | Implementation post-Pattern-C / multi-client |
+| Requirement | What it is | Implementation today | Implementation post-Dual-Lane / multi-client |
 |---|---|---|---|
 | **Second Owner** | A second identity with org-Owner permission | One human (trusted co-founder, sibling, accountant) **or** one machine identity `{{BRAND_SLUG}}-recovery` whose recovery codes live in the off-platform envelope (see below). Pick one path; document the choice in `docs/operator/RECOVERY_DRILL_LOG.md`. | Same. The choice can change, but the doc must reflect what is true today. |
 | **2-of-2 rule on org settings changes** | A norm-and-process rule, not a GitHub feature on Free tier | Document in this file + `03b §1` monthly checklist; the operator self-enforces by waiting for the second Owner's ack before changing branch protections, repo collaborators, or org secrets. | Enforce via Enterprise's `Require admin approval` ruleset (post-month-6, when Team or Enterprise lands). Until then, the rule is procedural and the audit log is the evidence trail. |
@@ -80,7 +80,7 @@ A canonical step-by-step for adding the second Owner lives in §2.5.
    For each: **Repository access = "Selected repositories"** — leave empty for now; add each pipeline repo during provision.
 8. **Create the mothership repo inside the org** — `gh repo create {{BRAND_SLUG}}/{{BRAND_SLUG}}-mothership --private`. Move all the docs from `palimkarakshay/lumivara-site` into here per `05-mothership-repo-buildout-plan.md §P5.1`.
 
-> **Pattern C migration note (deprecated fallback path).** Earlier drafts of this checklist created a machine-user account `{{BRAND_SLUG}}-bot` and a fine-grained PAT (`VENDOR_GITHUB_PAT`, 90-day expiry) as the vendor identity. That has been deprecated as of 2026-04-28. The GitHub App in step 5 is the canonical replacement. The bot-account / PAT path now exists **only** as a named exception:
+> **Dual-Lane Repo migration note (deprecated fallback path).** Earlier drafts of this checklist created a machine-user account `{{BRAND_SLUG}}-bot` and a fine-grained PAT (`VENDOR_GITHUB_PAT`, 90-day expiry) as the vendor identity. That has been deprecated as of 2026-04-28. The GitHub App in step 5 is the canonical replacement. The bot-account / PAT path now exists **only** as a named exception:
 >
 > - The bot account remains as a fallback identity for tasks the App genuinely cannot do today. The App's permissions in step 5a cover every workflow-side action; the only remaining caller is the n8n credential that writes issues/comments on the site repos. n8n core does not natively understand GitHub App installation tokens (they need refreshing every hour), so the PAT survives there until `forge` ships an n8n-token-refresh helper (`05 §P5.4f`).
 > - The PAT is tracked as the single named exception row in `03 §3` and is scheduled for retirement in the issue **"Operator: install GitHub App in place of VENDOR_GITHUB_PAT"** (see `16 §7`).
@@ -130,7 +130,7 @@ Use this when there is no trusted human, or when the operator prefers a machine-
 
 ---
 
-## 3. Where client repos live (Pattern C — two repos per engagement)
+## 3. Where client repos live (Dual-Lane Repo — two repos per engagement)
 
 Each engagement gets **two private repos** in the `{{BRAND_SLUG}}` org, both during the engagement:
 
@@ -141,7 +141,7 @@ Each engagement gets **two private repos** in the `{{BRAND_SLUG}}` org, both dur
 
 The site repo holds the Next.js app and the admin portal. The pipeline repo holds every workflow file, prompt, and operator-side script. The client cannot read the pipeline repo because they are not a collaborator on it; the GitHub App from §1 bridges the two at workflow runtime via short-lived installation tokens.
 
-This is the **canonical model as of 2026-04-28** (Pattern C — see `02b-pattern-c-architecture.md`). The earlier "single repo with `operator/main` overlay" pattern was deprecated when `11 §1` documented that scheduled workflows on non-default branches do not fire.
+This is the **canonical model as of 2026-04-28** (Dual-Lane Repo — see `02b-dual-lane-architecture.md`). The earlier "single repo with `operator/main` overlay" pattern was deprecated when `11 §1` documented that scheduled workflows on non-default branches do not fire.
 
 The alternative of putting client repos under the `palimkarakshay` personal account remains a non-starter for the same reason it always was: org-level secrets don't reach personal-account repos, and the App scope is org-bound.
 

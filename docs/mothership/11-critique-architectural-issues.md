@@ -2,7 +2,7 @@
 
 # 11 — Critique: Architectural & Structural Issues
 
-> **Historical / decision record.** This file documents the cron-on-default-branch bug that motivated the move from the deprecated `operator/main` branch-overlay design to Pattern C. The `operator/main` and `VENDOR_GITHUB_PAT` references throughout this file describe the *deprecated* pattern as part of the decision history; they are preserved here so the choice of Pattern C remains auditable. The canonical architecture is `02b-pattern-c-architecture.md`.
+> **Historical / decision record.** This file documents the cron-on-default-branch bug that motivated the move from the deprecated `operator/main` branch-overlay design to Dual-Lane Repo. The `operator/main` and `VENDOR_GITHUB_PAT` references throughout this file describe the *deprecated* pattern as part of the decision history; they are preserved here so the choice of Dual-Lane Repo remains auditable. The canonical architecture is `02b-dual-lane-architecture.md`.
 
 The pack's architecture is sound in shape but has one critical correctness bug and several boundary leaks. This doc lists them in priority order with concrete fixes the operator can implement.
 
@@ -20,7 +20,7 @@ GitHub's `schedule:` trigger **only fires from workflow files that exist on the 
 
 So as written, **no cron in any client repo will ever fire**. The whole tier-cadence matrix in `04` is non-functional out of the gate.
 
-### Three viable fixes — operator chose Pattern C (2026-04-28)
+### Three viable fixes — operator chose Dual-Lane Repo (2026-04-28)
 
 | Pattern | Sketch | Pros | Cons | Status |
 |---|---|---|---|---|
@@ -28,9 +28,9 @@ So as written, **no cron in any client repo will ever fire**. The whole tier-cad
 | **B. Single repo, single `main`; workflows are present on `main` but gated** | Workflows live on `main`. Use `if: github.actor == '<bot>'` and `concurrency:` + label gates to keep them invisible-by-effect rather than invisible-by-location. | One branch; simpler; no cron surprise. | Workflows are fully visible to client-as-Read; `.claudeignore` only protects the LLM context, not human readers. The "client cannot see the autopilot" claim becomes a marketing line, not an architectural fact. | Rejected — leaks the pipeline. |
 | **C. Two repos: `<slug>-site` (client) + `<slug>-pipeline` (operator-owned)** | The client repo has only the site. A second private repo, owned by the operator's org and **not** shared with the client, holds the workflows. Workflows use `repository_dispatch` / a GitHub App with `Contents: write` on `<slug>-site` to push branches and open PRs. | Cleanest separation. Client genuinely cannot see workflows. Survives turning the client repo public. The "system = operator-licensed" contractual claim becomes architecturally enforceable. | Two repos per client (operations overhead — but `forge provision` automates both). Requires a GitHub App with cross-repo Contents:RW. Auto-merge gate runs in the pipeline repo and writes to the site repo. | ✅ **CHOSEN — locked 2026-04-28.** |
 
-**Why Pattern C wins:** the operator chose enforceable separation over operational simplicity. Doc 12 §4 already recommends a GitHub App (no PATs); Pattern C makes that recommendation a load-bearing architectural piece, not a nice-to-have. The provisioning CLI absorbs the two-repo overhead, and the client genuinely never sees the pipeline — turning the cost-firewall promise into a permission boundary instead of a marketing line.
+**Why Dual-Lane Repo wins:** the operator chose enforceable separation over operational simplicity. Doc 12 §4 already recommends a GitHub App (no PATs); Dual-Lane Repo makes that recommendation a load-bearing architectural piece, not a nice-to-have. The provisioning CLI absorbs the two-repo overhead, and the client genuinely never sees the pipeline — turning the cost-firewall promise into a permission boundary instead of a marketing line.
 
-### What to update in the existing pack (Pattern C propagation)
+### What to update in the existing pack (Dual-Lane Repo propagation)
 
 - **`02 §1` diagram** — replace the dual-branch box with the two-repo model: `<slug>-site` (client-readable) and `<slug>-pipeline` (operator-only, never shared).
 - **`02 §3` provisioning flow** — add a step "create the pipeline repo" between current steps 2 and 3; the flow becomes 12 steps, not 11.
@@ -40,7 +40,7 @@ So as written, **no cron in any client repo will ever fire**. The whole tier-cad
 - **`03 §3` secret topology** — `VENDOR_GITHUB_PAT` is replaced by the GitHub App installation token (per `12 §4` recommendation, now locked).
 - **`05 §P5.6`** — rewrite to provision two repos for Beas's engagement, not one. The step list becomes "create site repo → create pipeline repo → push workflows to pipeline → push site to site".
 - **`06 §3` Prompt B1** — fundamentally changes: workflows are pushed to the pipeline repo's `main`, not to a branch of the site repo.
-- **`09 §3`** — Pattern C means client repos always live in the operator's org during engagement (they have to, for the App's installation scope). At handover, the App is uninstalled from the site repo, the pipeline repo is deleted/archived, and the site repo transfers cleanly.
+- **`09 §3`** — Dual-Lane Repo means client repos always live in the operator's org during engagement (they have to, for the App's installation scope). At handover, the App is uninstalled from the site repo, the pipeline repo is deleted/archived, and the site repo transfers cleanly.
 
 Run A in `16 §1` does the full propagation.
 
@@ -54,11 +54,11 @@ This invalidates the "the autopilot is invisible to the client" claim and weaken
 
 **Fix options:**
 
-1. Move to **Pattern C** in §1 — the workflows live in a separate operator-owned repo the client never sees.
+1. Move to **Dual-Lane Repo** in §1 — the workflows live in a separate operator-owned repo the client never sees.
 2. If staying on Pattern A: **don't add the client as a Read collaborator on the site repo at all** during the engagement. Give them read access only via the deployed Vercel preview + the `/admin` portal. They become Read collaborators (or repo Owners) only at handover, after `operator/*` branches are deleted.
 3. As a belt-and-braces compromise: name the operator branch with a `_internal` suffix (`internal/automation`) and add a `.github/CODEOWNERS` block + branch protection that tells anyone clicking it "this branch is operator-only; do not edit." Doesn't actually prevent reads, but makes it self-documenting.
 
-The recommendation depends on §1's choice. If §1 picks **Pattern C**, this issue dissolves.
+The recommendation depends on §1's choice. If §1 picks **Dual-Lane Repo**, this issue dissolves.
 
 ---
 
@@ -164,7 +164,7 @@ The single Claude Code session that closes the architectural fixes:
 [ ] Update 05 P5.6 step 3 to match.
 [ ] Update 03 §2.1 / §2.2 branch-protection rules.
 [ ] Open a tracking issue "operator/main → operator/* migration" so that
-    if Pattern A is chosen now, Pattern C can be revisited at client #3.
+    if Pattern A is chosen now, Dual-Lane Repo can be revisited at client #3.
 ```
 
 Estimated turns: 60–100 in one Opus 4.7 session. Prompt body lives in `16 §1`.

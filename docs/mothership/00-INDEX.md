@@ -27,7 +27,7 @@
 
 This folder is the **operator-side runbook for the practice that builds, ships, and maintains small-business websites with an AI autopilot**. It is the successor to (and supersedes for operator concerns) `docs/TEMPLATE_REBUILD_PROMPT.md`. The original template stays as a historical artefact; the v3 rebuild prompt lives at `06-operator-rebuild-prompt-v3.md`.
 
-> **Brand locked:** **Lumivara Forge** (2026-04-28; see [`15-terminology-and-brand.md §4`](./15-terminology-and-brand.md)). Slug: `lumivara-forge`. Trademark availability check (CIPO Class 42 + USPTO) per `15 §5` is the only remaining pre-launch gate. `{{BRAND}}` placeholders downstream are gradually being resolved; new docs may use the literal name directly.
+> **Brand under reconsideration (2026-04-30).** `Lumivara Forge` was locked 2026-04-28 (`15 §4`); on 2026-04-30 the operator re-opened the decision wanting a cleaner, leaner, non-hyphenated alternative. See [`15c-brand-and-domain-decision.md`](./15c-brand-and-domain-decision.md). Pre-vetted shortlist in [`15 §2`](./15-terminology-and-brand.md). Domain strategy is committed and unaffected: separate registered operator domain, **not** co-hosted on `lumivara.ca` (which follows Client #1 to her repo at Phase 4 spinout). Phase 0 of the migration plan, the second drift sweep, and `src/lib/site-config.ts` builder URL are all blocked on the brand decision.
 
 ---
 
@@ -73,6 +73,7 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 13 | `13-critique-ai-and-scaling.md` | "Do the maths reconcile? Where are the scaling cliffs?" — Action minutes, AI cost, Claude/Actions/n8n cliffs, model-rubric notes | Operator | Once; closed by Run C in `16 §3` |
 | 14 | `14-critique-operations-sequencing.md` | "What sequencing/coherency gaps need closing?" — Tier-0 honesty, OAuth manual scope, rollback paths, backups, engagement-log schema | Operator | Once; closed by Run D in `16 §4` |
 | 15 | `15-terminology-and-brand.md` | "Better names for mothership/operator/agent, brand alternatives, terminology policy (§6), and the client-example appendix (§7) that anchors all legitimate Client #1 references" | Operator | Once; rename ships via Run S1 in `16 §5`; §6 + §7 enforced reviewer-side until a CI lint lands |
+| 15c | `15c-brand-and-domain-decision.md` | "ADR (2026-04-30): D1 commits the operator umbrella to a separate registered domain (no co-hosting with `lumivara.ca`); D2 re-opens the `Lumivara Forge` brand decision pending a cleaner, leaner, non-hyphenated alternative — Phase 0, second drift sweep, and `src/lib/site-config.ts` builder URL all blocked on D2" | Operator | Once; close by amending §3 with a "Resolved" stanza when D2 lands |
 | 16 | `16-automation-prompt-pack.md` | "Copy-paste prompts for Claude Code in the browser to close the critiques" | Operator | **Per critique-closure run** |
 | 18 | `18-provisioning-automation-matrix.md` | "Every per-engagement provisioning step keyed by Step ID, with system owner, automation status, blocking deps, validation command, and evidence artefact." | Operator | **Per engagement, every step** |
 | 19 | `19-engagement-evidence-log-template.md` | "Per-client evidence log the operator copies into `docs/clients/<slug>/evidence-log.md` and appends to as each provisioning step lands." | Operator | **Per engagement, appended throughout** |

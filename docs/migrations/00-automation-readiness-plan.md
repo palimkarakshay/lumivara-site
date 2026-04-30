@@ -83,15 +83,17 @@ methods.
 
 ### §2.1 — Pre-flight (settle decisions before clicking)
 
+> **2026-04-30 update.** Row 0.1 (brand name) is **re-opened** per [`docs/mothership/15c-brand-and-domain-decision.md §3`](../mothership/15c-brand-and-domain-decision.md). Phase 0 cannot start until the operator picks a name from the `15 §2` shortlist (or coins one) and runs the verification block. Rows 0.6 (trademark) and §2.2 row 1 (domain purchase) inherit the block. Row 0.2 (org slug) does too — slug is permanent without paid migration.
+
 | # | Decision | Source of truth | Confirm? |
 |---|---|---|---|
-| 0.1 | Brand name = `Lumivara Forge`; slug = `lumivara-forge` | `15 §4` | ☐ |
-| 0.2 | Org strategy: one new org `lumivara-forge`, free tier | `09 §1` | ☐ |
-| 0.3 | Bot identity: GitHub App `lumivara-forge-pipeline-bot` (App-first; legacy machine-user PAT only as named exception) | `02b §3`, `09 §2 step 5` | ☐ |
+| 0.1 | **Brand name (under reconsideration 2026-04-30)** — pick from `15 §2` shortlist (Cadence, Continuum, Loom, Helm, Lighthouse, Compass, Plumbline) or coin a new word; verify per `15 §2` checklist; lock by amending `15 §4`/§5 and `15c §3` "Resolved" stanza. | `15 §4`, `15c §3` | ☐ |
+| 0.2 | Org strategy: one new org `<brand-slug>`, free tier (slug from row 0.1) | `09 §1` | ☐ |
+| 0.3 | Bot identity: GitHub App `<brand-slug>-pipeline-bot` (App-first; legacy machine-user PAT only as named exception) | `02b §3`, `09 §2 step 5` | ☐ |
 | 0.4 | Break-glass second-Owner path: trusted human OR machine identity (pick **one** before clicking) | `09 §1.5` | ☐ |
 | 0.5 | Vault: 1Password Business (per `21-vault-strategy-adr.md`) — account opened, MFA on, recovery kit printed | `21 §3` | ☐ |
-| 0.6 | Trademark search filed (CIPO + USPTO Class 35 + 42) **before** registering the org slug — slug is permanent without paid migration | `15 §2` | ☐ |
-| 0.7 | Payment methods ready: a Forge-only credit card (so personal vs business spend never mingles), and the GitHub Enterprise upgrade path documented | `20 §3` | ☐ |
+| 0.6 | Trademark search filed (CIPO + USPTO Class 35 + 42) **for the row-0.1 name** — search target is blocked on row 0.1; slug is permanent without paid migration | `15 §2`, `15c §3` | ☐ |
+| 0.7 | Payment methods ready: a brand-only credit card (so personal vs business spend never mingles), and the GitHub Enterprise upgrade path documented | `20 §3` | ☐ |
 
 If any row is unchecked, do not start §2.2.
 
@@ -102,8 +104,8 @@ column is what to capture into 1Password before moving on.
 
 | # | Action | Where | Verify (capture into 1Password as a note) |
 |---|---|---|---|
-| 1 | Buy `lumivara-forge.com` and `lumivara-forge.ca` | Cloudflare or Namecheap | Registrar order #, expiry, DNS provider |
-| 2 | Create GitHub Org `lumivara-forge`, Free plan | <https://github.com/organizations/new> | Org URL, Owner = `palimkarakshay`, base permissions = "No permission" |
+| 1 | Buy **`<brand>.com` and `<brand>.ca`** (operator umbrella; brand from §2.1 row 0.1; **separate from `lumivara.ca` per [`15c §2`](../mothership/15c-brand-and-domain-decision.md) — NOT a subdomain or path on Client #1's domain**) | Cloudflare or Namecheap | Registrar order #, expiry, DNS provider |
+| 2 | Create GitHub Org `<brand-slug>`, Free plan (slug from §2.1 row 0.1) | <https://github.com/organizations/new> | Org URL, Owner = `palimkarakshay`, base permissions = "No permission" |
 | 3 | Add second Owner per chosen path in 0.4 | Org → People → Invite | Second-Owner login, recovery codes envelope sealed, drill date booked |
 | 4 | Create the GitHub App `lumivara-forge-pipeline-bot` | Org Settings → Developer settings → GitHub Apps → New | `APP_ID` (public), PEM downloaded once and stored in 1Password vault `forge / app / private-key` |
 | 5 | Install the App on the (yet-empty) platform repo only | App settings → Install | `installation_id` for platform repo |

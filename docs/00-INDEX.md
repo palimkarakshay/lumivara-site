@@ -6,7 +6,7 @@ This file is the **human-readable** doc-by-doc front-door for `docs/**`. The **m
 
 Every doc in this index is stamped with a Pattern C lane (🛠 Pipeline / 🌐 Site / ⚪ Both) so a reader can tell, at a glance, which of the two co-housed entities it belongs to.
 
-For the locked architecture itself, read [`mothership/02b-pattern-c-architecture.md`](./mothership/02b-pattern-c-architecture.md). For the locked terminology (`mothership` → `platform`, `agent` → `pipeline`/`run`/`bot`, etc.) read [`mothership/15-terminology-and-brand.md §1`](./mothership/15-terminology-and-brand.md). For the file/folder naming policy read [`mothership/15b-naming-conventions.md`](./mothership/15b-naming-conventions.md).
+For the locked architecture itself, read [`mothership/02b-pattern-c-architecture.md`](./mothership/02b-pattern-c-architecture.md). For the locked terminology (`mothership` → `platform`, `agent` → `pipeline`/`run`/`bot`, etc.) read [`mothership/15-terminology-and-brand.md §1`](./mothership/15-terminology-and-brand.md). For the file/folder naming policy read [`mothership/15b-naming-conventions.md`](./mothership/15b-naming-conventions.md). For the active brand + domain decision (2026-04-30: separate operator domain committed; brand-name re-opened pending a cleaner, non-hyphenated alternative) read [`mothership/15c-brand-and-domain-decision.md`](./mothership/15c-brand-and-domain-decision.md).
 
 ---
 

@@ -6,9 +6,9 @@
 >
 > **Brand domain banner.** Operator-brand domain `lumivara-forge.com` is **pending registration** (see [`docs/mothership/15-terminology-and-brand.md §5`](../mothership/15-terminology-and-brand.md)). Decks reference it as the locked operator domain; until registration completes the URL will not resolve. The interim demo URL lives under [`palimkarakshays-projects` on Vercel](https://vercel.com/palimkarakshays-projects).
 
-Five decks, one per audience, plus this index. Every deck cites `docs/research/03-source-bibliography.md` for its load-bearing claims and follows the verification posture set in `docs/research/00-INDEX.md`.
+Five stakeholder decks, one master deck, plus this index. Every deck cites `docs/research/03-source-bibliography.md` for its load-bearing claims and follows the verification posture set in `docs/research/00-INDEX.md`.
 
-> **Audience-fit rule.** Every deck is written *to* one audience and *from* one voice. Never mix audiences in a single deck — make a new deck instead.
+> **Audience-fit rule.** Every stakeholder deck is written *to* one audience and *from* one voice. Never mix audiences in a single deck — make a new deck instead. The master deck (`06-master-deck.md`) is the one exception: it is operator-scope and explicitly multi-audience, intended as the canonical synthesis the stakeholder decks read out from.
 
 ---
 
@@ -21,6 +21,7 @@ Five decks, one per audience, plus this index. Every deck cites `docs/research/0
 | 03 | `03-employee-deck.md` | A first hire (contract engineer or VA) considering joining | Honest about the work + the culture | External, single recipient | ~12 slides |
 | 04 | `04-prospective-client-deck.md` | A solo professional / health practice / boutique firm comparing options | Persona-aware, plain, no jargon | External, persona-tailored | ~14 slides |
 | 05 | `05-advisor-deck.md` | A senior advisor / mentor the operator is asking to pressure-test the plan | Operator-honest, drawbacks first | External, single recipient | ~12 slides |
+| 06 | `06-master-deck.md` | **Master synthesis** — the nine product-positioning questions answered in one deck for operator self-review and as the canonical source the stakeholder decks read out from | Operator-honest, exhaustive | **Operator-scope; do not share without selecting a stakeholder deck first** | ~50 slides |
 
 ---
 
@@ -29,14 +30,16 @@ Five decks, one per audience, plus this index. Every deck cites `docs/research/0
 Two decks already exist in `docs/storefront/`:
 
 - `04-slide-deck.md` is the **outward-facing prospect deck used at top-of-funnel**. The new `04-prospective-client-deck.md` is **persona-tailored** and meant for second-touch / discovery-call conversion. Use the freelance deck for cold outreach; use the new deck for warm-lead conversion.
-- `06-positioning-slide-deck.md` is the **operator-internal nine-questions deck**. The new decks here are **stakeholder-specific** and read out from that operator-internal version. Update the freelance deck first; the stakeholder decks inherit.
+- `06-positioning-slide-deck.md` is the **operator-internal nine-questions deck**. The stakeholder decks here are **audience-specific** and read out from that operator-internal version. Update the freelance deck first; the stakeholder decks inherit.
+
+The master deck (`06-master-deck.md` in this folder) is the deck-pack-side counterpart of the storefront positioning deck: same nine questions, but written across all audiences in one place so a single read of it gives an operator (or a sufficiently trusted reviewer) the whole picture. The five stakeholder decks are voice-tuned subsets; the master deck is the union.
 
 Reading order for a new operator session that needs to understand the deck pack:
 
 1. `docs/storefront/06-positioning-slide-deck.md` — operator's own internal answer
 2. `docs/research/00-INDEX.md` → `01` → `04` → `05` → `06` — the evidentiary layer
 3. This file
-4. The specific deck the audience needs
+4. `06-master-deck.md` if you want the whole picture in one read; otherwise the specific stakeholder deck the audience needs
 
 ---
 
@@ -58,4 +61,4 @@ Before any deck in this folder is shared externally, walk these checks:
 
 ---
 
-*Last updated: 2026-04-29 — initial five-deck stakeholder pack.*
+*Last updated: 2026-04-30 — six-deck pack (added `06-master-deck.md`, the operator-scope synthesis of the nine product-positioning questions).*

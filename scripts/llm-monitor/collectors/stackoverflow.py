@@ -35,6 +35,7 @@ Run standalone:
 from __future__ import annotations
 
 import os
+import time
 import urllib.parse
 from datetime import datetime, timedelta, timezone
 
@@ -43,6 +44,13 @@ from _common import (
 )
 
 API = "https://api.stackexchange.com/2.3/questions"
+PAGE_SIZE = 50
+# Hard cap on pages per tag — defends against a runaway tag (e.g.
+# next.js over a multi-day window if lookback gets cranked up) blowing
+# up the analyzer prompt budget. At PAGE_SIZE=50 this caps at 250
+# records per tag per sweep, which is plenty headroom over the
+# anonymous quota maths in the module docstring.
+MAX_PAGES = 5
 
 
 def fetch_tag(tag: str, since_ts: int, key: str) -> list[dict]:
@@ -53,31 +61,53 @@ def fetch_tag(tag: str, since_ts: int, key: str) -> list[dict]:
     # after it was first posted (codex-review P2 on PR #241): if we
     # filtered by creation we'd permanently miss any answer that
     # lands later than the next sweep.
-    params = {
-        "order": "desc",
-        "sort": "activity",
-        "tagged": tag,
-        "site": "stackoverflow",
-        "pagesize": "50",
-        "min": str(since_ts),
-        # `withbody` returns the question body so the analyzer can
-        # see actual repro steps instead of just titles.
-        "filter": "withbody",
-    }
-    if key:
-        params["key"] = key
-    url = f"{API}?{urllib.parse.urlencode(params)}"
-    try:
-        resp = http_get_json(url)
-    except Exception as e:  # noqa: BLE001
-        warn(f"stackoverflow: tag {tag!r} fetch failed: {e}")
-        return []
-    # StackExchange embeds rate-limit info — surface it on stderr so a
-    # stuck cron is easy to diagnose.
-    backoff = resp.get("backoff")
-    if backoff:
-        warn(f"stackoverflow: backoff requested by API for {tag!r}: {backoff}s")
-    return resp.get("items", [])
+    #
+    # Pagination (also codex-review P2 on PR #241): a single 50-item
+    # page silently drops everything beyond 50 for a busy tag. Loop
+    # on `page` until `has_more=false` or MAX_PAGES, honouring API
+    # backoff between requests.
+    items: list[dict] = []
+    for page in range(1, MAX_PAGES + 1):
+        params = {
+            "order": "desc",
+            "sort": "activity",
+            "tagged": tag,
+            "site": "stackoverflow",
+            "pagesize": str(PAGE_SIZE),
+            "page": str(page),
+            "min": str(since_ts),
+            # `withbody` returns the question body so the analyzer can
+            # see actual repro steps instead of just titles.
+            "filter": "withbody",
+        }
+        if key:
+            params["key"] = key
+        url = f"{API}?{urllib.parse.urlencode(params)}"
+        try:
+            resp = http_get_json(url)
+        except Exception as e:  # noqa: BLE001
+            warn(f"stackoverflow: tag {tag!r} page {page} fetch failed: {e}")
+            break
+
+        items.extend(resp.get("items", []))
+
+        # StackExchange asks for a back-off sleep when nearing rate
+        # limits. Honour it before issuing the next page request.
+        backoff = resp.get("backoff")
+        if backoff:
+            warn(f"stackoverflow: backoff requested by API for {tag!r}: {backoff}s")
+            time.sleep(min(int(backoff), 30))
+
+        if not resp.get("has_more"):
+            break
+    else:
+        # Loop exhausted MAX_PAGES without has_more=False — note in stderr
+        # so the operator can spot a tag that consistently caps out.
+        warn(f"stackoverflow: tag {tag!r} hit MAX_PAGES={MAX_PAGES} cap "
+             f"({len(items)} items pulled); consider tightening lookback or "
+             f"raising the cap if this trips often.")
+
+    return items
 
 
 def main() -> int:

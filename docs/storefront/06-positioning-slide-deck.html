@@ -194,7 +194,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <td>4</td>
 <td><strong>Full ownership.</strong></td>
 <td>Code, domain, hosting account — all in the client's name on day one.</td>
-<td>Pattern C two-repo isolation (<code>[V] §B-Self</code>).</td>
+<td>two-repo isolation (Dual-Lane Repo) (<code>[V] §B-Self</code>).</td>
 </tr>
 <tr>
 <td>5</td>
@@ -427,7 +427,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <li><strong>Multi-AI autopilot with deterministic fallback.</strong> Claude Opus → Gemini → OpenAI Codex. Triage, plan, execute, review — each stage has a fallback so a single-vendor outage never blocks the queue. (<code>docs/AI_ROUTING.md</code>.)</li>
 <li><strong>Plan-then-execute pipeline.</strong> Every routine issue gets a structured AI plan as a comment <em>before</em> code is written. The client can read what's about to happen.</li>
 <li><strong>Tier-based cadence.</strong> T0 manual; T1 daily; T2 every 2 h; T3 every hour. The bot's &quot;energy&quot; is a sold feature. (<code>docs/mothership/04-tier-based-agent-cadence.md</code>.)</li>
-<li><strong>Pattern C two-repo isolation.</strong> Client gets a clean <code>&lt;slug&gt;-site</code> repo (private → transferable). The pipeline, prompts, and operator IP live in a separate <code>&lt;slug&gt;-pipeline</code> repo the client never sees. (<code>docs/mothership/02b-pattern-c-architecture.md</code>.)</li>
+<li><strong>two-repo isolation (Dual-Lane Repo).</strong> Client gets a clean <code>&lt;slug&gt;-site</code> repo (private → transferable). The pipeline, prompts, and operator IP live in a separate <code>&lt;slug&gt;-pipeline</code> repo the client never sees. (<code>docs/mothership/02b-dual-lane-architecture.md</code>.)</li>
 </ol>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 60px 80px; }
@@ -479,7 +479,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <td>The pipeline reads tier from a per-client variable; cron, model, and auto-merge gates all branch on it. Not a feature flag — a whole product surface.</td>
 </tr>
 <tr>
-<td>Pattern C isolation</td>
+<td>Dual-Lane Repo isolation</td>
 <td>A GitHub App + two-repo split + per-engagement install ID. Operator IP stays operator-side; the client repo is genuinely &quot;vanilla&quot; if they ever leave.</td>
 </tr>
 </tbody>
@@ -546,7 +546,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <ul>
 <li><strong>Phone-as-CMS</strong> is the headline feature. Nobody in our price band offers it.</li>
 <li><strong>Multi-AI fallback</strong> turns a single-vendor risk into a product feature (&quot;we don't pause when one provider hiccups&quot;).</li>
-<li><strong>Pattern C</strong> lets us license the system per engagement while the <em>site</em> is genuinely the client's.</li>
+<li><strong>Dual-Lane Repo</strong> lets us license the system per engagement while the <em>site</em> is genuinely the client's.</li>
 <li><strong>Tier cadence</strong> turns &quot;how aggressive is the bot&quot; into a sold dial.</li>
 </ul>
 <blockquote>
@@ -952,7 +952,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <li><strong>Phone-as-CMS over a real codebase.</strong> Not promoted by any major builder. Closest: Framer's mobile editor, but it's still inside Framer's stack.</li>
 <li><strong>Multi-AI fallback as a sold feature.</strong> Most AI-site tools commit to one model.</li>
 <li><strong>Plan-then-execute with a human approval tap.</strong> Some Cursor/Devin-style products do &quot;AI proposes a PR&quot; but no flat-rate SMB packaging.</li>
-<li><strong>Two-repo Pattern C operator/client split.</strong> Genuinely uncommon — most operators commingle automation and site code, which makes hand-over messy.</li>
+<li><strong>Two-repo Dual-Lane Repo operator/client split.</strong> Genuinely uncommon — most operators commingle automation and site code, which makes hand-over messy.</li>
 </ul>
 <p>Watch list: Framer (closest substitution risk if they add code-export + n8n), Vercel v0 (if they package retainer), and any Anthropic-built &quot;ship a marketing site&quot; agent.</p>
 </section>
@@ -1253,9 +1253,9 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <h2 id="steps-in-plain-order">Steps in plain order</h2>
 <ol>
 <li><strong>Lock the brand and own the slugs.</strong> <code>Lumivara Forge</code> is locked (<code>01-business-plan.md §1</code>); buy domain, GitHub org, Resend domain, Twilio sub-account. <em>(Done / in progress.)</em></li>
-<li><strong>Close the architecture critiques</strong> — Pattern C lock, security topology, capacity reconciliation, ops sequencing. <em>(P4.6 in <code>00-INDEX.md</code>; underway.)</em></li>
+<li><strong>Close the architecture critiques</strong> — Dual-Lane Repo lock, security topology, capacity reconciliation, ops sequencing. <em>(P4.6 in <code>00-INDEX.md</code>; underway.)</em></li>
 <li><strong>Bootstrap the mothership repo.</strong> <code>palimkarakshay/lumivara-forge-mothership</code>, with workflow templates, scripts, n8n exports. (<code>05-mothership-repo-buildout-plan.md</code>, P5.)</li>
-<li><strong>Spin out Client #1 (Lumivara People Advisory)</strong> into its own clean Pattern C pair of repos. Use it as the showcase. (<code>docs/migrations/lumivara-people-advisory-spinout.md</code>, P6.)</li>
+<li><strong>Spin out Client #1 (Lumivara People Advisory)</strong> into its own clean Dual-Lane Repo pair of repos. Use it as the showcase. (<code>docs/migrations/lumivara-people-advisory-spinout.md</code>, P6.)</li>
 <li><strong>Publish the storefront.</strong> Fiverr Gig 1, Upwork profile, Toptal/Arc/Lemon screening, LinkedIn case-study post. (<code>01-gig-profile.md</code> Part 10.)</li>
 <li><strong>Sell Client #2 + #3.</strong> Real arms-length retainers. Trigger MSA + payment automation + privacy work. (<code>08-future-work.md §1–§3</code>.)</li>
 <li><strong>Cross client #5.</strong> Trigger 1Password vault + break-glass envelope. (<code>08-future-work.md §4</code>.)</li>
@@ -1302,7 +1302,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 </tr>
 <tr>
 <td><strong>Product hardening</strong></td>
-<td>Critique closure (Pattern C, security, capacity, ops); admin portal Phases 1–5; multi-AI fallback proven on a live client.</td>
+<td>Critique closure (Dual-Lane Repo, security, capacity, ops); admin portal Phases 1–5; multi-AI fallback proven on a live client.</td>
 </tr>
 <tr>
 <td><strong>Go-to-market</strong></td>
@@ -1348,7 +1348,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 ;color:#1f1f1f;background-color:#fafaf7;background-image:none;" data-marpit-pagination-total="59" data-size="16:9">
 <h2 id="the-two-non-negotiable-invariants">The two non-negotiable invariants</h2>
 <ol>
-<li><strong>The two-repo separation (Pattern C) holds on every client.</strong> No workflows on the site repo. No operator-side IP commingled into the client's tree. (<code>02b-pattern-c-architecture.md</code>, <code>pattern-c-enforcement-checklist.md</code>.)</li>
+<li><strong>The two-repo separation (Dual-Lane Repo) holds on every client.</strong> No workflows on the site repo. No operator-side IP commingled into the client's tree. (<code>02b-dual-lane-architecture.md</code>, <code>dual-lane-enforcement-checklist.md</code>.)</li>
 <li><strong>The session-budget charter (50% / 80% / 95% gates) holds on every Claude run.</strong> No client floods the queue. No run exits incomplete on <code>main</code>. (<code>AGENTS.md</code> &quot;Session charter&quot;.)</li>
 </ol>
 <p>Everything else can flex. These two cannot.</p>
@@ -1380,7 +1380,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <ul>
 <li><strong>Identity</strong> (brand, repos, vault) → <strong>Product</strong> (close critiques, harden) → <strong>Sales</strong> (storefronts, first 5 clients) → <strong>Scale</strong> (cliffs at 6 / 16 / 26 / 30).</li>
 <li>The order matters: identity before product, product before sales, sales before scaling decisions.</li>
-<li>Pattern C and the budget charter are the <strong>invariants</strong> through every step.</li>
+<li>Dual-Lane Repo and the budget charter are the <strong>invariants</strong> through every step.</li>
 </ul>
 <blockquote>
 <p>Pitch line: <em>&quot;Lock the brand, harden the product, then sell — in that order.&quot;</em></p>
@@ -1951,7 +1951,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <li><strong>The plan-then-execute gate adds latency clients don't want.</strong> Mitigation: Tier 3 cadence runs hourly; Tier 0 explicitly opts out of automation entirely.</li>
 <li><strong>The phone-edit shortcut breaks on iOS / Android update.</strong> Mitigation: web-based admin portal is the canonical surface; SMS + email are fallback channels.</li>
 <li><strong>HMAC rotation goes wrong.</strong> Mitigation: two-phase HMAC rotation in <code>03-secure-architecture §3.Y</code>; recovery drill in <code>03b-security-operations-checklist</code>.</li>
-<li><strong>Cron drift between site and pipeline repos.</strong> Mitigation: Pattern C puts cron only on the pipeline repo's <code>main</code> (canonical GitHub Actions path); enforced by <code>pattern-c-enforcement-checklist.md</code>.</li>
+<li><strong>Cron drift between site and pipeline repos.</strong> Mitigation: Dual-Lane Repo puts cron only on the pipeline repo's <code>main</code> (canonical GitHub Actions path); enforced by <code>dual-lane-enforcement-checklist.md</code>.</li>
 </ol>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="47" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 60px 80px; }
@@ -2537,7 +2537,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 </tr>
 <tr>
 <td>Differentiators</td>
-<td>Phone-as-CMS over a real codebase, multi-AI fallback, Pattern C operator/client split.</td>
+<td>Phone-as-CMS over a real codebase, multi-AI fallback, Dual-Lane Repo operator/client split.</td>
 </tr>
 <tr>
 <td>Customer voice</td>
@@ -2597,7 +2597,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <br />
 <p><em>Operator deck — confidential.</em></p>
 <p>Source files reconciled in this deck:<br />
-<code>docs/mothership/00-INDEX.md</code> · <code>01-business-plan.md</code> · <code>02b-pattern-c-architecture.md</code> · <code>04-tier-based-agent-cadence.md</code> · <code>08-future-work.md</code> · <code>18-capacity-and-unit-economics.md</code><br />
+<code>docs/mothership/00-INDEX.md</code> · <code>01-business-plan.md</code> · <code>02b-dual-lane-architecture.md</code> · <code>04-tier-based-agent-cadence.md</code> · <code>08-future-work.md</code> · <code>18-capacity-and-unit-economics.md</code><br />
 <code>docs/storefront/00-quick-start.md</code> · <code>01-gig-profile.md</code> · <code>02-pricing-tiers.md</code> · <code>03-cost-analysis.md</code> · <code>04-slide-deck.md</code> · <code>05-template-hardening-notes.md</code><br />
 <code>docs/AI_ROUTING.md</code> · <code>docs/ADMIN_PORTAL_PLAN.md</code> · <code>docs/BACKLOG.md</code></p>
 <p><span class="small">© 2026 — system proprietary, licensed per engagement.</span></p>

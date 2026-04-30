@@ -21,7 +21,7 @@ Eight risks to the Lumivara Forge model, ranked by severity × likelihood. Each 
 
 **Residual risk.** A subtle bug that passes the lint, type, and Lighthouse gates but breaks a real-world flow — the contact form silently dropping submissions, a navigation regression that only shows on a specific device. Mitigation: weekly synthetic checks via the `ai-smoke-test.yml` workflow + a per-client evidence log of every published change.
 
-**Severity.** High. **Likelihood.** Medium. **Net.** This is the single biggest engineering risk and the reason the budget charter, HITL gates, and Pattern C all exist.
+**Severity.** High. **Likelihood.** Medium. **Net.** This is the single biggest engineering risk and the reason the budget charter, HITL gates, and Dual-Lane Repo all exist.
 
 ---
 
@@ -89,10 +89,10 @@ Eight risks to the Lumivara Forge model, ranked by severity × likelihood. Each 
 
 ## D6 — Adoption drag of a "two-repo" model on the operator side
 
-**The failure mode.** Pattern C (two-repo isolation, `docs/mothership/02b-pattern-c-architecture.md`) is non-trivial to operate. Mistakes — pushing operator IP into the client repo, mis-configuring the GitHub App installation — leak the moat.
+**The failure mode.** Dual-Lane Repo (two-repo isolation, `docs/mothership/02b-dual-lane-architecture.md`) is non-trivial to operate. Mistakes — pushing operator IP into the client repo, mis-configuring the GitHub App installation — leak the moat.
 
 **Mitigation in this repo.**
-- `docs/mothership/pattern-c-enforcement-checklist.md` runs on every spinout + quarterly.
+- `docs/mothership/dual-lane-enforcement-checklist.md` runs on every spinout + quarterly.
 - `docs/mothership/03b-security-operations-checklist.md` schedules monthly + quarterly secret-rotation cadences.
 - Per-engagement evidence log (`docs/mothership/19-engagement-evidence-log-template.md`) records every provisioning step with a validation command.
 
@@ -125,7 +125,7 @@ Eight risks to the Lumivara Forge model, ranked by severity × likelihood. Each 
 **Mitigation in this repo.**
 - Watch list maintained in `docs/storefront/06-positioning-slide-deck.md` Section 4 ("What competitors are NOT advertising").
 - Stage-1 strategy is *deliberate smallness with high margin per client*, not scale-at-all-costs (`docs/mothership/01-business-plan §6`). Even partial substitution still leaves a defensible per-client retainer business.
-- Pattern C operator-side IP isn't visible to the client; even if a competitor copies the front-end experience, the operational leverage is harder to replicate.
+- Dual-Lane Repo operator-side IP isn't visible to the client; even if a competitor copies the front-end experience, the operational leverage is harder to replicate.
 
 **Residual risk.** Real but slow. Substitutes typically take 12–24 months to ship; that's enough runway to either reposition or graduate to Stage 2 / 3.
 
@@ -142,7 +142,7 @@ Eight risks to the Lumivara Forge model, ranked by severity × likelihood. Each 
 | D3 — Operator burnout | Critical | Medium | Capped at 30 clients; weekly cadence; planned hire ladder |
 | D4 — Provider outage | High | Low (single) | Multi-AI fallback ladder |
 | D5 — ADA legal liability | High | Low | CI gates + insurance |
-| D6 — Pattern C operator error | Medium-High | Low (with checklist) | Enforcement checklist + evidence log |
+| D6 — Dual-Lane Repo operator error | Medium-High | Low (with checklist) | Enforcement checklist + evidence log |
 | D7 — Bad client | Medium | Medium | Intake filter + cap + payment gate |
 | D8 — Competitive substitution | Medium-High | Medium (24mo) | Watched; reassess every 2 months |
 

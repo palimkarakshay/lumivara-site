@@ -83,7 +83,7 @@ Source: `docs/storefront/01-gig-profile.md` Part 2.
 | 1 | **No decay.** | The site stays current because making it current is a 30-second job, not a $200 invoice. | 75% of consumers abandon outdated sites (`[V] §B-Outdated-75`). |
 | 2 | **No developer phone calls.** | Edits go in by phone, email, or SMS. The laptop stays closed. | 50% of SMB owners cite "lack of skill" as primary digital-adoption barrier (`[S] §B-SMB-Mobile`). |
 | 3 | **Predictable monthly cost.** | One flat fee covers AI, monitoring, edits, improvements. Zero surprise invoices. | Boutique agency edits run $75–$150/hr (`[S] §B-Boutique-Agency`). |
-| 4 | **Full ownership.** | Code, domain, hosting account — all in the client's name on day one. | Pattern C two-repo isolation (`[V] §B-Self`). |
+| 4 | **Full ownership.** | Code, domain, hosting account — all in the client's name on day one. | two-repo isolation (Dual-Lane Repo) (`[V] §B-Self`). |
 | 5 | **Quality on autopilot.** | 90+ Lighthouse on every page. Accessibility regressions caught before they ship. | 95.9% of top-1M pages fail WCAG with 56.8 errors/page avg (`[V] §B-WebAIM`); 3,117 ADA lawsuits in 2025, +27% YoY (`[V] §B-ADA-Lawsuits`). |
 | 6 | **Nothing publishes without consent.** | Every change waits for a tap on the client's phone. | HITL gate mitigates SWE-bench ~33% AI-coding-agent failure rate (`[S] §B-SWE-bench`). |
 
@@ -148,7 +148,7 @@ Source: `docs/storefront/01-gig-profile.md` Closing note.
 2. **Multi-AI autopilot with deterministic fallback.** Claude Opus → Gemini → OpenAI Codex. Triage, plan, execute, review — each stage has a fallback so a single-vendor outage never blocks the queue. (`docs/AI_ROUTING.md`.)
 3. **Plan-then-execute pipeline.** Every routine issue gets a structured AI plan as a comment *before* code is written. The client can read what's about to happen.
 4. **Tier-based cadence.** T0 manual; T1 daily; T2 every 2 h; T3 every hour. The bot's "energy" is a sold feature. (`docs/mothership/04-tier-based-agent-cadence.md`.)
-5. **Pattern C two-repo isolation.** Client gets a clean `<slug>-site` repo (private → transferable). The pipeline, prompts, and operator IP live in a separate `<slug>-pipeline` repo the client never sees. (`docs/mothership/02b-pattern-c-architecture.md`.)
+5. **two-repo isolation (Dual-Lane Repo).** Client gets a clean `<slug>-site` repo (private → transferable). The pipeline, prompts, and operator IP live in a separate `<slug>-pipeline` repo the client never sees. (`docs/mothership/02b-dual-lane-architecture.md`.)
 
 ---
 
@@ -160,7 +160,7 @@ Source: `docs/storefront/01-gig-profile.md` Closing note.
 | Multi-AI fallback | Requires three live API contracts, a deterministic router, and prompt-pack parity across providers. Most freelancers hold one key. |
 | Plan-then-execute | Every routine issue gets an AI-authored plan comment before code lands. Few competitors run this gate. |
 | Tier cadence | The pipeline reads tier from a per-client variable; cron, model, and auto-merge gates all branch on it. Not a feature flag — a whole product surface. |
-| Pattern C isolation | A GitHub App + two-repo split + per-engagement install ID. Operator IP stays operator-side; the client repo is genuinely "vanilla" if they ever leave. |
+| Dual-Lane Repo isolation | A GitHub App + two-repo split + per-engagement install ID. Operator IP stays operator-side; the client repo is genuinely "vanilla" if they ever leave. |
 
 The site is a commodity. The **system around the site** is the moat.
 
@@ -182,7 +182,7 @@ The boundaries are the strategy. They keep the operator under 60 hours a month a
 
 - **Phone-as-CMS** is the headline feature. Nobody in our price band offers it.
 - **Multi-AI fallback** turns a single-vendor risk into a product feature ("we don't pause when one provider hiccups").
-- **Pattern C** lets us license the system per engagement while the *site* is genuinely the client's.
+- **Dual-Lane Repo** lets us license the system per engagement while the *site* is genuinely the client's.
 - **Tier cadence** turns "how aggressive is the bot" into a sold dial.
 
 > Pitch line: *"Other people sell you a website. We sell you a website that updates itself."*
@@ -302,7 +302,7 @@ These are gaps in the market that, if a well-funded competitor closed, would com
 - **Phone-as-CMS over a real codebase.** Not promoted by any major builder. Closest: Framer's mobile editor, but it's still inside Framer's stack.
 - **Multi-AI fallback as a sold feature.** Most AI-site tools commit to one model.
 - **Plan-then-execute with a human approval tap.** Some Cursor/Devin-style products do "AI proposes a PR" but no flat-rate SMB packaging.
-- **Two-repo Pattern C operator/client split.** Genuinely uncommon — most operators commingle automation and site code, which makes hand-over messy.
+- **Two-repo Dual-Lane Repo operator/client split.** Genuinely uncommon — most operators commingle automation and site code, which makes hand-over messy.
 
 Watch list: Framer (closest substitution risk if they add code-export + n8n), Vercel v0 (if they package retainer), and any Anthropic-built "ship a marketing site" agent.
 
@@ -400,9 +400,9 @@ The strategy is *deliberate smallness with high margin per client*, not scale at
 ## Steps in plain order
 
 1. **Lock the brand and own the slugs.** `Lumivara Forge` is locked (`01-business-plan.md §1`); buy domain, GitHub org, Resend domain, Twilio sub-account. *(Done / in progress.)*
-2. **Close the architecture critiques** — Pattern C lock, security topology, capacity reconciliation, ops sequencing. *(P4.6 in `00-INDEX.md`; underway.)*
+2. **Close the architecture critiques** — Dual-Lane Repo lock, security topology, capacity reconciliation, ops sequencing. *(P4.6 in `00-INDEX.md`; underway.)*
 3. **Bootstrap the mothership repo.** `palimkarakshay/lumivara-forge-mothership`, with workflow templates, scripts, n8n exports. (`05-mothership-repo-buildout-plan.md`, P5.)
-4. **Spin out Client #1 (Lumivara People Advisory)** into its own clean Pattern C pair of repos. Use it as the showcase. (`docs/migrations/lumivara-people-advisory-spinout.md`, P6.)
+4. **Spin out Client #1 (Lumivara People Advisory)** into its own clean Dual-Lane Repo pair of repos. Use it as the showcase. (`docs/migrations/lumivara-people-advisory-spinout.md`, P6.)
 5. **Publish the storefront.** Fiverr Gig 1, Upwork profile, Toptal/Arc/Lemon screening, LinkedIn case-study post. (`01-gig-profile.md` Part 10.)
 6. **Sell Client #2 + #3.** Real arms-length retainers. Trigger MSA + payment automation + privacy work. (`08-future-work.md §1–§3`.)
 7. **Cross client #5.** Trigger 1Password vault + break-glass envelope. (`08-future-work.md §4`.)
@@ -417,7 +417,7 @@ The strategy is *deliberate smallness with high margin per client*, not scale at
 | Theme | Steps |
 |---|---|
 | **Identity + IP** | Brand lock; mothership repo; vault; MSA + SOW. |
-| **Product hardening** | Critique closure (Pattern C, security, capacity, ops); admin portal Phases 1–5; multi-AI fallback proven on a live client. |
+| **Product hardening** | Critique closure (Dual-Lane Repo, security, capacity, ops); admin portal Phases 1–5; multi-AI fallback proven on a live client. |
 | **Go-to-market** | Storefronts (Fiverr, Upwork, Toptal); LinkedIn; first 5 reviews; price step-ups. |
 | **Operations** | Per-engagement provisioning matrix (`18-provisioning-automation-matrix.md`); evidence log per client; monthly + quarterly cadences (`03b-security-operations-checklist.md`). |
 | **Finance + legal** | Stripe Subscriptions; auto-pause schedule; PIPEDA + provincial overlays; insurance once over $50k revenue. |
@@ -427,7 +427,7 @@ The strategy is *deliberate smallness with high margin per client*, not scale at
 
 ## The two non-negotiable invariants
 
-1. **The two-repo separation (Pattern C) holds on every client.** No workflows on the site repo. No operator-side IP commingled into the client's tree. (`02b-pattern-c-architecture.md`, `pattern-c-enforcement-checklist.md`.)
+1. **The two-repo separation (Dual-Lane Repo) holds on every client.** No workflows on the site repo. No operator-side IP commingled into the client's tree. (`02b-dual-lane-architecture.md`, `dual-lane-enforcement-checklist.md`.)
 2. **The session-budget charter (50% / 80% / 95% gates) holds on every Claude run.** No client floods the queue. No run exits incomplete on `main`. (`AGENTS.md` "Session charter".)
 
 Everything else can flex. These two cannot.
@@ -438,7 +438,7 @@ Everything else can flex. These two cannot.
 
 - **Identity** (brand, repos, vault) → **Product** (close critiques, harden) → **Sales** (storefronts, first 5 clients) → **Scale** (cliffs at 6 / 16 / 26 / 30).
 - The order matters: identity before product, product before sales, sales before scaling decisions.
-- Pattern C and the budget charter are the **invariants** through every step.
+- Dual-Lane Repo and the budget charter are the **invariants** through every step.
 
 > Pitch line: *"Lock the brand, harden the product, then sell — in that order."*
 
@@ -596,7 +596,7 @@ If a cliff hits *during* an onboarding, finish the onboarding first, upgrade aft
 2. **The plan-then-execute gate adds latency clients don't want.** Mitigation: Tier 3 cadence runs hourly; Tier 0 explicitly opts out of automation entirely.
 3. **The phone-edit shortcut breaks on iOS / Android update.** Mitigation: web-based admin portal is the canonical surface; SMS + email are fallback channels.
 4. **HMAC rotation goes wrong.** Mitigation: two-phase HMAC rotation in `03-secure-architecture §3.Y`; recovery drill in `03b-security-operations-checklist`.
-5. **Cron drift between site and pipeline repos.** Mitigation: Pattern C puts cron only on the pipeline repo's `main` (canonical GitHub Actions path); enforced by `pattern-c-enforcement-checklist.md`.
+5. **Cron drift between site and pipeline repos.** Mitigation: Dual-Lane Repo puts cron only on the pipeline repo's `main` (canonical GitHub Actions path); enforced by `dual-lane-enforcement-checklist.md`.
 
 ---
 
@@ -752,7 +752,7 @@ Year-1 destination: **30 active clients, ~$120k take-home, day job replaced.**
 | Question | The answer in one line |
 |---|---|
 | Benefits | The site stops decaying; flat fee replaces $200/edit invoices. |
-| Differentiators | Phone-as-CMS over a real codebase, multi-AI fallback, Pattern C operator/client split. |
+| Differentiators | Phone-as-CMS over a real codebase, multi-AI fallback, Dual-Lane Repo operator/client split. |
 | Customer voice | Autonomy + predictability + ownership + custom looks. |
 | Competitor claims | Squarespace owns "edit yourself"; we own "edit yourself + own the code". |
 | End goal | 30 retainer clients in Stage 1; agency or SaaS optional later. |
@@ -772,7 +772,7 @@ Year-1 destination: **30 active clients, ~$120k take-home, day job replaced.**
 *Operator deck — confidential.*
 
 Source files reconciled in this deck:
-`docs/mothership/00-INDEX.md` · `01-business-plan.md` · `02b-pattern-c-architecture.md` · `04-tier-based-agent-cadence.md` · `08-future-work.md` · `18-capacity-and-unit-economics.md`
+`docs/mothership/00-INDEX.md` · `01-business-plan.md` · `02b-dual-lane-architecture.md` · `04-tier-based-agent-cadence.md` · `08-future-work.md` · `18-capacity-and-unit-economics.md`
 `docs/storefront/00-quick-start.md` · `01-gig-profile.md` · `02-pricing-tiers.md` · `03-cost-analysis.md` · `04-slide-deck.md` · `05-template-hardening-notes.md`
 `docs/AI_ROUTING.md` · `docs/ADMIN_PORTAL_PLAN.md` · `docs/BACKLOG.md`
 

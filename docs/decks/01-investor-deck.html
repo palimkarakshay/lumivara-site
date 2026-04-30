@@ -422,7 +422,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <li><strong>Multi-AI fallback ladder</strong> (Claude → Gemini → OpenAI) — single-vendor outage doesn't pause the queue (<code>docs/AI_ROUTING.md</code>).</li>
 <li><strong>Plan-then-Execute pipeline</strong> — every routine issue gets a structured AI plan as a PR comment <em>before</em> code is written; client reads the plan first.</li>
 <li><strong>Tier-based cadence</strong> — T0 manual, T1 daily, T2 every 2h, T3 hourly. The bot's &quot;energy&quot; is a sold feature.</li>
-<li><strong>Pattern C two-repo isolation</strong> — clean <code>&lt;slug&gt;-site</code> for the client, separate <code>&lt;slug&gt;-pipeline</code> repo for the operator. Operator IP and AI prompts never touch the client's tree (<code>docs/mothership/02b-pattern-c-architecture.md</code>).</li>
+<li><strong>two-repo isolation (Dual-Lane Repo)</strong> — clean <code>&lt;slug&gt;-site</code> for the client, separate <code>&lt;slug&gt;-pipeline</code> repo for the operator. Operator IP and AI prompts never touch the client's tree (<code>docs/mothership/02b-dual-lane-architecture.md</code>).</li>
 </ol>
 <p>The site is a commodity. The system <em>around</em> the site is the moat.</p>
 </section>

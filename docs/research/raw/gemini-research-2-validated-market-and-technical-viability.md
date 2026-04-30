@@ -87,7 +87,7 @@ production without the Human-in-the-Loop (HITL) consent mechanism, the agency wi
 ● Building the robust prompts, testing edge cases, interpreting API validation errors, and
 configuring strict JSON schema outputs will require an estimated 150 to 300 engineering hours for a skilled developer. It requires building custom AI evaluations to ensure the model doesn't inject malicious code or break the React frontend. Replicability, IP, and the Proprietor's Vision
 ● Can it be replicated? Yes and no. The front-end experience (a fast website) can be
-easily replicated. However, the operational leverage—the n8n workflows, the proprietary Claude prompts, and the integration glue (Pattern C Architecture)—is hidden in the backend. A paying customer will only see a GitHub repo with standard Next.js code. They will never see the prompt engineering that generated it.
+easily replicated. However, the operational leverage—the n8n workflows, the proprietary Claude prompts, and the integration glue (Dual-Lane Repo Architecture)—is hidden in the backend. A paying customer will only see a GitHub repo with standard Next.js code. They will never see the prompt engineering that generated it.
 ● Lack of Vision: The risk is that the proprietor views this as a "set and forget" passive
 income stream. APIs change, LLMs deprecate, and Vercel updates its deployment rules. The operator must remain technically vigilant to maintain the pipeline. Legal Diligence and Insurance Requirements Running autonomous AI agents on client infrastructure carries legal liability.
 1. ADA Compliance Liability: In 2025, over 3,100 website accessibility lawsuits were filed

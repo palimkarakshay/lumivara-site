@@ -62,7 +62,7 @@ The seven empirically grounded reasons a prospect should switch from their curre
 
 **The pain.** Vendor lock-in is the historic agency-client grievance. Migration off a Squarespace account is painful; off a custom CMS hosted in the agency's account is worse.
 
-**The arbitrage.** Pattern C (`docs/mothership/02b-pattern-c-architecture.md`) puts the domain, the code, and the hosting account in the client's name from day one. If they cancel, they keep the running site. The autopilot stops; nothing else changes.
+**The arbitrage.** Dual-Lane Repo (`docs/mothership/02b-dual-lane-architecture.md`) puts the domain, the code, and the hosting account in the client's name from day one. If they cancel, they keep the running site. The autopilot stops; nothing else changes.
 
 **Best for personas.** P1, P2, P3, E1.
 

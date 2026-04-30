@@ -141,7 +141,7 @@ Five operational features only Lumivara Forge ships in this combination today (f
 2. **Multi-AI fallback ladder** (Claude → Gemini → OpenAI) — single-vendor outage doesn't pause the queue (`docs/AI_ROUTING.md`).
 3. **Plan-then-Execute pipeline** — every routine issue gets a structured AI plan as a PR comment *before* code is written; client reads the plan first.
 4. **Tier-based cadence** — T0 manual, T1 daily, T2 every 2h, T3 hourly. The bot's "energy" is a sold feature.
-5. **Pattern C two-repo isolation** — clean `<slug>-site` for the client, separate `<slug>-pipeline` repo for the operator. Operator IP and AI prompts never touch the client's tree (`docs/mothership/02b-pattern-c-architecture.md`).
+5. **two-repo isolation (Dual-Lane Repo)** — clean `<slug>-site` for the client, separate `<slug>-pipeline` repo for the operator. Operator IP and AI prompts never touch the client's tree (`docs/mothership/02b-dual-lane-architecture.md`).
 
 The site is a commodity. The system *around* the site is the moat.
 

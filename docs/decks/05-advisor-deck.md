@@ -49,7 +49,7 @@ If you want to push on something else, push there. We'll re-route the slides on 
 
 > A solo operator (with a possible second hand on the wheel) builds and maintains marketing websites for high-LTV professional-services SMBs. Sites run on a real Next.js codebase the client owns; an AI autopilot orchestrated by n8n + Claude + Gemini + OpenAI ships preview PRs that the client approves with a tap. Cap at 30 clients in Stage 1; year-1 destination CAD ~$170.5k net before personal tax, ~CAD $118 – $128k take-home after Ontario sole-prop tax, ≤175 operator hours/month at saturation.
 
-The mechanism is not novel; the *combination* — phone-edit + Pattern C + multi-AI fallback + flat fee — is. The thesis is "deliberate smallness with high margin per client beats scale-at-all-costs."
+The mechanism is not novel; the *combination* — phone-edit + Dual-Lane Repo + multi-AI fallback + flat fee — is. The thesis is "deliberate smallness with high margin per client beats scale-at-all-costs."
 
 ---
 
@@ -59,7 +59,7 @@ You don't need to push on these:
 
 - **The wedge exists.** The "missing middle" between $17/mo DIY and $4,995/mo DesignJoy is empirically real (verified competitor pricing in `docs/research/03 §B`).
 - **The buyer pain is documented.** 75% / 3,117 / 95.9% — all `[V]`. (`docs/research/03 §B-Outdated-75`, `§B-ADA-Lawsuits`, `§B-WebAIM`.)
-- **The technology is production-grade.** lumivara-forge.com runs the full pipeline. Multi-AI fallback is wired, Pattern C is locked, evidence logs are templated.
+- **The technology is production-grade.** lumivara-forge.com runs the full pipeline. Multi-AI fallback is wired, Dual-Lane Repo is locked, evidence logs are templated.
 - **The risk register is named and partially mitigated.** `docs/research/06-drawbacks-and-honest-risks.md`.
 
 If you find a hole in any of the above, please push — but the load-bearing question is below.
@@ -123,7 +123,7 @@ These don't have answers in the deck pack yet. Your read on each would directly 
 
 1. **Should we lock the brand to "Lumivara Forge" or pivot to "Lumivara Cadence"?** Both are operator-acceptable. The cadence-mirrors-mechanic property of "Cadence" is unique; "Forge" is more direct. (`docs/mothership/01 §1`.)
 2. **Do we open Stage 2 (small-team) at client #25 or wait until #35?** The hire-ladder in `docs/storefront/03-cost-analysis.md` Part E says VA at 25, engineer at 35. A faster engineer hire compresses operator hours but also compresses partner-share economics.
-3. **Do we publish a public lumivara-forge.com case-study site this quarter, or stay quiet until Client #2 closes?** A public site accelerates inbound; a quiet posture protects Pattern C IP positioning.
+3. **Do we publish a public lumivara-forge.com case-study site this quarter, or stay quiet until Client #2 closes?** A public site accelerates inbound; a quiet posture protects Dual-Lane Repo IP positioning.
 
 ---
 

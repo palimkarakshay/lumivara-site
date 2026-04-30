@@ -72,10 +72,10 @@ The work has measurable consequence. That's not always true in services.
 
 ## What you'd actually work on (engineer track)
 
-- **PR review.** The bot ships preview PRs into client repos via Pattern C (`docs/mothership/02b-pattern-c-architecture.md`). You review the preview, leave inline comments, merge greens, kick reds back to the issue.
+- **PR review.** The bot ships preview PRs into client repos via Dual-Lane Repo (`docs/mothership/02b-dual-lane-architecture.md`). You review the preview, leave inline comments, merge greens, kick reds back to the issue.
 - **Monthly improvement runs (T2 / T3).** Per-client 60 – 90 minute audit: Lighthouse trend, accessibility regressions, content-freshness, link-rot, image weight. You ship 3 – 5 issues per client.
 - **AI-routing reliability.** When Claude / Gemini / OpenAI return weird outputs, you tighten prompts in `docs/AI_ROUTING.md` and the relevant `scripts/*-prompt.md`. Multi-vendor fallback is real.
-- **Pattern C audits.** Quarterly, walk `docs/mothership/pattern-c-enforcement-checklist.md` against every active client repo. Verify operator IP hasn't leaked.
+- **Dual-Lane Repo audits.** Quarterly, walk `docs/mothership/dual-lane-enforcement-checklist.md` against every active client repo. Verify operator IP hasn't leaked.
 - **Vertical content prompt packs.** Right now restaurant is the only fully-fleshed pack; plumber, realtor, recruiter are stubs (`docs/mothership/templates/`). Each one you complete is a sellable acceleration on a new client onboarding.
 
 You'd not be writing site CSS from scratch. The bot does that. You're the reviewer, the prompt-engineer, and the monthly-audit hand.
@@ -89,7 +89,7 @@ You'd not be writing site CSS from scratch. The bot does that. You're the review
 - **Per-client check-in cadence.** Monthly health-check email (T1 +). The bot drafts; you proofread and send.
 - **Inbox sweep on the operator dashboard.** Mon AM and Wed PM, surface anything aging out.
 
-Importantly: you do *not* answer technical questions, do not access client GitHub repos, do not touch n8n credentials, and do not see the operator vault. Pattern C is enforced for the VA role exactly the same as for the operator.
+Importantly: you do *not* answer technical questions, do not access client GitHub repos, do not touch n8n credentials, and do not see the operator vault. Dual-Lane Repo is enforced for the VA role exactly the same as for the operator.
 
 ---
 
@@ -149,7 +149,7 @@ What we don't have: kombucha, foosball, or "unlimited PTO." We do have predictab
 | 1Password | Secrets vault | Operator account; engineer gets specific items, not the whole vault |
 | Twilio | Per-client SMS numbers | Operator account |
 
-Everything you need is documented in `docs/mothership/` and the wiki. Onboarding is a 90-minute read of `00-INDEX.md` + `06-operator-rebuild-prompt-v3.md` + `pattern-c-enforcement-checklist.md`.
+Everything you need is documented in `docs/mothership/` and the wiki. Onboarding is a 90-minute read of `00-INDEX.md` + `06-operator-rebuild-prompt-v3.md` + `dual-lane-enforcement-checklist.md`.
 
 ---
 
@@ -174,7 +174,7 @@ Full pack: `docs/research/06-drawbacks-and-honest-risks.md`. The four that matte
 |---|---|
 | **D1 — AI hallucination** | Your job *is* the second pair of eyes. PR review is the load-bearing gate. |
 | **D3 — Operator burnout** | Capped + cadenced + 2-week-break-scheduled. But: notice when it's coming, and say so. |
-| **D6 — Pattern C operator error** | Your quarterly audit catches this. Don't skip the checklist. |
+| **D6 — Dual-Lane Repo operator error** | Your quarterly audit catches this. Don't skip the checklist. |
 | **D7 — Single bad client** | Escalate to operator immediately. The cap is the protection. |
 
 If any of these breaks the deal for you, say it now — not at month 6.
@@ -197,6 +197,6 @@ In order:
 
 <br/>
 
-*Source files for this deck: `docs/research/06-drawbacks-and-honest-risks.md` · `docs/storefront/03-cost-analysis.md` Part E · `docs/mothership/01-business-plan.md`, `04-tier-based-agent-cadence.md`, `18-capacity-and-unit-economics.md`, `pattern-c-enforcement-checklist.md` · `AGENTS.md`*
+*Source files for this deck: `docs/research/06-drawbacks-and-honest-risks.md` · `docs/storefront/03-cost-analysis.md` Part E · `docs/mothership/01-business-plan.md`, `04-tier-based-agent-cadence.md`, `18-capacity-and-unit-economics.md`, `dual-lane-enforcement-checklist.md` · `AGENTS.md`*
 
 <span class="small">© 2026 — confidential. Operator IP is licensed per-engagement.</span>

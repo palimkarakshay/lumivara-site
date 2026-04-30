@@ -145,11 +145,11 @@ Five layers, from "table stakes" to "uniquely ours":
 2. **Phone-edit shortcut** — submit a change from a phone in 30 seconds.
 3. **AI autopilot that implements + previews changes** — multi-AI router (Claude → Gemini → OpenAI), plan-then-execute pipeline.
 4. **Tier-based cadence** — T1 ships next morning, T2 within 2 hours, T3 within 1 hour.
-5. **Pattern C two-repo architecture** — autopilot lives in an operator-only pipeline repo; the client's site repo is a clean Next.js codebase they own outright.
+5. **two-repo architecture (Dual-Lane Repo)** — autopilot lives in an operator-only pipeline repo; the client's site repo is a clean Next.js codebase they own outright.
 
 > Layers 2–5 are what nobody else is shipping in this market segment.
 
-<span class="small">Source: `docs/AI_ROUTING.md`, `docs/mothership/02b-pattern-c-architecture.md`, `docs/mothership/04-tier-based-agent-cadence.md`.</span>
+<span class="small">Source: `docs/AI_ROUTING.md`, `docs/mothership/02b-dual-lane-architecture.md`, `docs/mothership/04-tier-based-agent-cadence.md`.</span>
 
 ---
 
@@ -163,10 +163,10 @@ Five layers, from "table stakes" to "uniquely ours":
 | **Multi-AI router** | Claude Opus primary; Gemini 2.5 Pro for 1M-context audits; gpt-5.5 for code review. **Outage in one provider doesn't pause the client's site.** |
 | **Plan-then-execute** | Every routine issue gets a structured implementation plan first, *then* code. Plans are explainable to the operator before any code is written. |
 | **Auto-merge gate** | Trivial/easy non-design PRs auto-merge once the Vercel preview check is green. Design and critical-path changes always wait for a human tap. |
-| **Pattern C** | Two private repos per client: `<slug>-site` (clean, client-readable, transferable) + `<slug>-pipeline` (operator-only, holds workflows + prompts + cron). The client cannot see the autopilot — at end of engagement they get a vanilla repo. |
+| **Dual-Lane Repo** | Two private repos per client: `<slug>-site` (clean, client-readable, transferable) + `<slug>-pipeline` (operator-only, holds workflows + prompts + cron). The client cannot see the autopilot — at end of engagement they get a vanilla repo. |
 | **Codex second-opinion** | T3 PRs are reviewed by gpt-5.5 before merge. Two opinions before anything ships. |
 
-<span class="small">Source: `docs/AI_ROUTING.md`, `docs/ADMIN_PORTAL_PLAN.md`, `docs/mothership/02b-pattern-c-architecture.md §1`, `docs/mothership/04-tier-based-agent-cadence.md §1`.</span>
+<span class="small">Source: `docs/AI_ROUTING.md`, `docs/ADMIN_PORTAL_PLAN.md`, `docs/mothership/02b-dual-lane-architecture.md §1`, `docs/mothership/04-tier-based-agent-cadence.md §1`.</span>
 
 ---
 
@@ -243,7 +243,7 @@ Five layers, from "table stakes" to "uniquely ours":
 
 > The phone-edit shortcut speaks directly to "I want to edit it myself, but not learn anything new."
 > The retainer speaks directly to "no surprise invoices."
-> Pattern C handover speaks directly to "I won't be locked in."
+> Dual-Lane Repo handover speaks directly to "I won't be locked in."
 
 <span class="small">Source: `docs/storefront/01-gig-profile.md` Parts 4 & 6, `docs/storefront/04-slide-deck.md` "Honest objections."</span>
 
@@ -263,7 +263,7 @@ Five layers, from "table stakes" to "uniquely ours":
 > *Site keeps running. Domain, code, hosting are already in your name. The phone-edit pipeline stops; everything published stays published.*
 
 > **"I'm worried about being locked in."**
-> *You can't be. Pattern C means the autopilot is in our repo, not yours. Cancel any time; you keep a clean Next.js site.*
+> *You can't be. Dual-Lane Repo means the autopilot is in our repo, not yours. Cancel any time; you keep a clean Next.js site.*
 
 <span class="small">Source: `docs/storefront/00-quick-start.md` "Is this marketable?", `docs/storefront/04-slide-deck.md` objections slide.</span>
 
@@ -554,8 +554,8 @@ By **month 24**:
 | **Anthropic outage / throttle** | Med | High | Multi-AI fallback ladder (Claude → Gemini → OpenAI); triage + execute survive Claude-down. |
 | **Single client floods the queue** | Low | Med | Per-client `CONCURRENCY_CAP` Variable; tier cadence; "noisy client" rule defers work. |
 | **Operator burnout** | Med | High | Hard cap of 30 retainers until VA hired; budget charter (50%/80% gates); cap weekly hours. |
-| **Client demands the autopilot when they leave** | Low | Med | Contract: "site = client; system = operator-licensed." Pattern C makes this physically true — the autopilot was never on their repo. |
-| **Secret leak (token in client repo)** | Low | Critical | Org-level secrets only; vendor GitHub App (no PAT); `.claudeignore`; `pattern-c-enforcement-checklist.md`. |
+| **Client demands the autopilot when they leave** | Low | Med | Contract: "site = client; system = operator-licensed." Dual-Lane Repo makes this physically true — the autopilot was never on their repo. |
+| **Secret leak (token in client repo)** | Low | Critical | Org-level secrets only; vendor GitHub App (no PAT); `.claudeignore`; `dual-lane-enforcement-checklist.md`. |
 | **Bot ships breaking change to prod** | Low | High | Auto-merge gate is opt-in per label; design + critical paths excluded; Vercel preview always required; every change waits for client tap on T0/T1. |
 | **Client refuses to pay** | Med | Med | Stripe auto-charge; pause autopilot at +14 days; full lockout at +30; site stays live (it's their domain). |
 
@@ -573,7 +573,7 @@ By **month 24**:
 | **A model deprecation breaks the bot** | Workflows pin specific model IDs. | `docs/AI_ROUTING.md` reviewed every 2 months; weekly `ai-smoke-test.yml`. |
 | **A client's site has a security incident** | Reputation hit + possible PIPEDA notification. | Hard exclusions in the bot; Vercel handles the prod stack; carry pro-liability insurance once revenue > $50k (~$400/yr). |
 | **Quebec / EU client requires Law 25 / GDPR overlay** | Bot doesn't speak French; privacy posture isn't formal. | Geo expansion deferred until `08-future-work.md §1` is complete. |
-| **A larger player (Webflow, Framer) ships an AI-edit feature** | Could compress the differentiation from 4 layers to 3. | Pattern C ownership claim is structurally hard to copy without changing their business model. |
+| **A larger player (Webflow, Framer) ships an AI-edit feature** | Could compress the differentiation from 4 layers to 3. | Dual-Lane Repo ownership claim is structurally hard to copy without changing their business model. |
 | **Solo-operator dependency** | Operator hospitalised → clients have no operator. | Break-glass envelope, successor protocol, vault redundancy (1Password Business + Bitwarden self-host). Trigger: client #5 OR MRR > $3k. |
 
 <span class="small">Source: `docs/storefront/03-cost-analysis.md` Part F, `docs/mothership/08-future-work.md §4` (vault).</span>
@@ -677,7 +677,7 @@ These already exist; the value is in keeping them updated:
 - **`scripts/`** — triage prompts, execute prompts, multi-AI router, plan-issue, bootstrap-kanban.
 - **`n8n/`** — workflow JSON exports (intake-web/email/sms, notify, record, deploy-confirmed).
 - **`client-template/`** — Next.js 16 scaffold with admin portal, Auth.js v5, design tokens.
-- **`pattern-c-enforcement-checklist.md`** — MUST / MUST-NOT rows that gate every client spinout.
+- **`dual-lane-enforcement-checklist.md`** — MUST / MUST-NOT rows that gate every client spinout.
 - **`docs/wiki/`** — dual-lane operator/client wiki, scaffolded into each client repo at engagement time.
 
 > **The IP isn't the codebase. It's the runbooks + the cadence + the licensed system around the codebase.** That's what we license per engagement and reverts on termination.
@@ -700,7 +700,7 @@ These already exist; the value is in keeping them updated:
 | Question | One-line answer |
 |---|---|
 | **Benefits for the customer** | A site that doesn't decay; phone-edits in 30s; flat fee; full ownership. |
-| **What we provide that others don't** | Phone-edit + multi-AI autopilot + Pattern C "autopilot is hidden" + monthly improvements baked in. Empty quadrant. |
+| **What we provide that others don't** | Phone-edit + multi-AI autopilot + Dual-Lane Repo "autopilot is hidden" + monthly improvements baked in. Empty quadrant. |
 | **What customers say they want** | Edit it themselves without learning anything; no surprise invoices; no lock-in. |
 | **What competitors provide** | Templates (Squarespace), per-edit billing (agencies), one-shot AI (Durable). Nobody covers all four. |
 | **End goal** | 30 retainers @ ~$8.5–10k MRR, year-1 take-home ~$100–110k CAD; Stage-2 agency optional. |
@@ -719,7 +719,7 @@ The deck is a *synthesis* of these canonical docs. When in doubt, the doc wins:
 
 - `docs/mothership/00-INDEX.md` — master map
 - `docs/mothership/01-business-plan.md` — positioning, mothership-vs-client separation, risk register
-- `docs/mothership/02-architecture.md` + `02b-pattern-c-architecture.md` — two-repo Pattern C
+- `docs/mothership/02-architecture.md` + `02b-dual-lane-architecture.md` — two-repo Dual-Lane Repo
 - `docs/mothership/04-tier-based-agent-cadence.md` — cron + model + auto-merge per tier
 - `docs/mothership/08-future-work.md` — legal, vault, payment automation, market research
 - `docs/mothership/18-capacity-and-unit-economics.md` — single source of truth for cost / cliffs

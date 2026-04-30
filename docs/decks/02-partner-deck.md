@@ -152,7 +152,7 @@ You would *not* be choosing into:
 
 - A venture-scale grind. Not the goal.
 - A "we'll figure out the contract later" arrangement. We won't engage you operationally until the MSA + profit-share is signed.
-- Hosting any client's primary infrastructure on personal accounts. Pattern C two-repo isolation is mandatory; secrets stay org-side.
+- Hosting any client's primary infrastructure on personal accounts. two-repo isolation (Dual-Lane Repo) is mandatory; secrets stay org-side.
 
 ---
 
@@ -163,7 +163,7 @@ A blunt list. Things that sometimes worry partners about new ventures, that aren
 - **Product-market fit on the existing client.** lumivara-forge.com runs the full pipeline daily.
 - **Pricing has a defensible floor and ceiling.** `docs/storefront/02-pricing-tiers.md` four-tier ladder, validated against verified competitor pricing in `docs/research/03 §B`.
 - **Provider risk is mitigated.** Multi-AI fallback ladder in `docs/AI_ROUTING.md`. We don't pause when Anthropic hiccups.
-- **Operator IP is protected.** Pattern C (`docs/mothership/02b-pattern-c-architecture.md`) is locked. The client's repo is genuinely vanilla; the pipeline never crosses over.
+- **Operator IP is protected.** Dual-Lane Repo (`docs/mothership/02b-dual-lane-architecture.md`) is locked. The client's repo is genuinely vanilla; the pipeline never crosses over.
 - **The legal sequence is documented.** `docs/mothership/08-future-work.md` schedules MSA, PIPEDA, vault, insurance — none of it is "TBD."
 
 ---

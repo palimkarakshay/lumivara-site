@@ -113,26 +113,48 @@ jobs:
               sys.exit(0)
 
           eligible.sort()
-          _, _, _, num, title, labels = eligible[0]
-          decision = decide(labels)
 
+          # Lane exclusivity (forge-Claude): forge-execute.yml is the sole
+          # Claude implementer for area/forge issues. Walk the sorted
+          # eligible list and skip any forge-tagged item whose router
+          # decision is Claude — but DO NOT exit on the first skip; keep
+          # walking so non-forge work further down the queue is not
+          # starved. (Codex review caught this on PR #223: an early exit
+          # on a single forge-Claude top item was blocking unrelated
+          # general-lane auto-routine work.) Non-Claude routes
+          # (gemini-research, codex-review) fall through because
+          # forge-execute does not handle those.
+          chosen = None
+          deferred_forge: list[int] = []
+          for prio, comp, created, num, title, labels in eligible:
+              decision = decide(labels)
+              if decision.workflow == "claude" and "area/forge" in labels:
+                  deferred_forge.append(num)
+                  emit(
+                      f"\n  - Skipping issue #{num} ({title}) — area/forge + "
+                      "Claude route → owned by forge-execute.yml; continuing "
+                      "to next candidate."
+                  )
+                  continue
+              chosen = (num, title, labels, decision)
+              break
+
+          if deferred_forge:
+              emit(
+                  f"\nDeferred {len(deferred_forge)} forge-Claude issue(s) "
+                  f"to forge-execute.yml: {deferred_forge}"
+              )
+
+          if chosen is None:
+              out.write("issue=0\nworkflow=none\nmodel=\nprovider=\n")
+              emit("No non-forge-Claude eligible issues this run. Exiting cleanly.")
+              sys.exit(0)
+
+          num, title, labels, decision = chosen
           emit(f"\nSelected issue #{num} — {title}")
           emit("```")
           emit(decision.audit())
           emit("```")
-
-          # Lane exclusivity: forge-execute.yml is the sole Claude
-          # implementer for area/forge issues. If routing picks the Claude
-          # path on an area/forge issue, defer to the forge cron and exit
-          # cleanly. Non-Claude dispatches (gemini-research, codex-review)
-          # fall through because forge-execute does not handle those.
-          if decision.workflow == "claude" and "area/forge" in labels:
-              emit(
-                  f"\nSelected issue #{num} carries area/forge; deferring "
-                  "Claude implementation to forge-execute.yml. Exiting cleanly."
-              )
-              out.write("issue=0\nworkflow=none\nmodel=\nprovider=\n")
-              sys.exit(0)
 
           # Code-edit workflows always run on Claude. Gemini and Codex
           # paths produce research / review artefacts, not code commits.

@@ -29,6 +29,7 @@ The rendered PDFs are the durable artefacts. Gemini share pages return 403 to pr
 | 04 | `04-client-personas.md` | Three target ICPs and one explicit anti-ICP, with budget bands, pain points, and the deck where each appears | Sales, deck authors |
 | 05 | `05-reasons-to-switch-to-lumivara-forge.md` | The seven empirically grounded "why switch" arguments — each with a primary alternative and the dollar/time arbitrage | Sales, all client-facing decks |
 | 06 | `06-drawbacks-and-honest-risks.md` | The risks, choke points, and engineering realities — published so the operator can answer them straight | Operator, investor & partner decks |
+| 07 | `07-pipeda-breach-notification.md` | PIPEDA breach-notification trigger, "as soon as feasible" window, 24-month record-keeping floor, plus PHIPA (Ontario) + Law 25 (Quebec) overlays — sourced seed for the future compliance checklist | Operator, future PIPEDA-checklist authors |
 
 ---
 

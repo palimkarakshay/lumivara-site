@@ -302,14 +302,18 @@ jobs:
           echo "engine=$ENGINE" >> "$GITHUB_OUTPUT"
 
           # Engine label tracks the script's ladder. Gemini leg defaults
-          # to gemini-2.5-flash (per AI_ROUTING.md §Policy "Code review
-          # on PR diff"); GEMINI_MODEL env can override.
+          # The script tags the review body with the actual engine
+          # used. We mirror that in the GitHub comment header so the
+          # operator can see at a glance which leg of the ladder
+          # produced this review.
           GEMINI_LABEL="${GEMINI_MODEL:-gemini-2.5-flash}"
           case "$ENGINE" in
-            openai)  ENGINE_LABEL="Codex $MODEL" ;;
-            gemini)  ENGINE_LABEL="$GEMINI_LABEL (OpenAI unavailable)" ;;
-            deferred) ENGINE_LABEL="DEFERRED — both OpenAI and Gemini unavailable" ;;
-            *) ENGINE_LABEL="$ENGINE" ;;
+            openai)     ENGINE_LABEL="Codex $MODEL" ;;
+            gemini)     ENGINE_LABEL="$GEMINI_LABEL (OpenAI unavailable)" ;;
+            github)     ENGINE_LABEL="GitHub Models (OpenAI + Gemini unavailable)" ;;
+            openrouter) ENGINE_LABEL="OpenRouter (all upstream legs unavailable)" ;;
+            deferred)   ENGINE_LABEL="DEFERRED — every review leg unavailable" ;;
+            *)          ENGINE_LABEL="$ENGINE" ;;
           esac
           {
             echo "## Code review ($ENGINE_LABEL)"

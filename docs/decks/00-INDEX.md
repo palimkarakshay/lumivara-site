@@ -24,6 +24,18 @@ Five stakeholder decks, one master deck (with a shareable companion), plus this 
 | 06 | `06-master-deck.md` | **Master synthesis** — the nine product-positioning questions answered in one deck for operator self-review and as the canonical source the stakeholder decks read out from | Operator-honest, exhaustive | **Operator-scope; do not share without selecting a stakeholder deck first** | ~50 slides |
 | 06a | `06a-master-deck-shareable.md` | **Shareable companion to the master deck** — same nine questions, generalised for external readers (advisor / prospective partner / sophisticated investor / serious prospect doing diligence) | Externally-presentable, range-based | External, NDA-friendly; reader's pre-share checklist on the closing slide | ~50 slides |
 
+**Pre-rendered HTML.** Every deck in this folder ships with a self-contained HTML build sitting next to its source — drop-in shareable, no Markdown viewer required, arrow keys / space advance slides:
+
+- [`01-investor-deck.html`](01-investor-deck.html)
+- [`02-partner-deck.html`](02-partner-deck.html)
+- [`03-employee-deck.html`](03-employee-deck.html)
+- [`04-prospective-client-deck.html`](04-prospective-client-deck.html)
+- [`05-advisor-deck.html`](05-advisor-deck.html)
+- [`06-master-deck.html`](06-master-deck.html)
+- [`06a-master-deck-shareable.html`](06a-master-deck-shareable.html)
+
+The freelance / positioning / product-strategy decks under `docs/storefront/` are rendered the same way (`04-slide-deck.html`, `06-positioning-slide-deck.html`, `06-product-strategy-deck.html`). Regenerate any HTML after edits with `npx -y @marp-team/marp-cli --html <source.md> -o <output.html>`. To produce a PDF, open the HTML in a browser and use **Print → Save as PDF** (PDF rendering through marp-cli requires a Chrome / Edge / Firefox binary on the build machine).
+
 ---
 
 ## How the decks relate to existing material

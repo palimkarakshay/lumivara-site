@@ -15,6 +15,11 @@ export const homeContent = {
       "At Lumivara, we bring the light of clarity, structure, and direction to complex people challenges. We design customized talent, leadership, and people systems that solve real business problems — and build the capability needed to deliver results.",
     primaryCta: { label: "Book a Discovery Call", href: "/contact" },
     secondaryCta: { label: "See how we work", href: "/how-we-work" },
+    forgeBadge: {
+      label: "Forge",
+      href: "/about",
+      ariaLabel: "Lumivara Forge — about",
+    },
   },
 
   comingSoonProof: {

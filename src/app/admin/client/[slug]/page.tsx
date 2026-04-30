@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/admin/EmptyState";
 import { IssueCard } from "@/components/admin/IssueCard";
 import { MetricTile } from "@/components/admin/MetricTile";
 import { Section } from "@/components/admin/Section";
+import { isSuggestion } from "@/lib/admin/categories";
 import { findClient } from "@/lib/admin/clients";
 import { isGithubConfigured, listOpenIssues } from "@/lib/admin/github";
 import { statusFromLabels } from "@/lib/admin/status-map";
@@ -33,6 +34,8 @@ export default async function ClientRequestsPage({
     const status = statusFromLabels(it.labels);
     return status === null || !status.internal;
   });
+
+  const draftCount = visible.filter((it) => isSuggestion(it.labels)).length;
 
   const inProgress = visible.filter((it) =>
     it.labels.includes("status/in-progress"),
@@ -77,6 +80,21 @@ export default async function ClientRequestsPage({
             requests through the New tab; they&rsquo;ll appear here as soon
             as we sync.
           </p>
+        </Card>
+      ) : null}
+
+      {draftCount > 0 ? (
+        <Card emphasis="warning" className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-body-sm text-ink">
+            {draftCount} {draftCount === 1 ? "suggestion" : "suggestions"}{" "}
+            waiting in Draft.
+          </p>
+          <Link
+            href={`/admin/client/${slug}/draft`}
+            className="inline-flex min-h-[40px] items-center justify-center rounded-md border border-border-subtle bg-canvas px-4 text-body-sm font-medium text-ink hover:bg-parchment"
+          >
+            Review drafts
+          </Link>
         </Card>
       ) : null}
 

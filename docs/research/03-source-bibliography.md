@@ -107,4 +107,14 @@ Re-verify these high-risk rows every 90 days. They drive headline claims in the 
 
 ---
 
-*Last updated: 2026-04-29 — initial assembly + 7-stat independent verification pass.*
+## D — Audit log
+
+Cross-walk audits between this bibliography and the decks that depend on it. Each entry names the audit, the date, and the verdict.
+
+| Date | Audit | Scope | Verdict |
+|---|---|---|---|
+| 2026-04-30 | POC §6.2 row 6.7 cross-walk | Every `[V]`-flagged claim in `docs/decks/04-prospective-client-deck.md` (75%, 3,117, 27% YoY, 95.9% / 56.8 errors, $17–$139, $4,995–$7,995, $79–$447, $120k–$150k legal SEO + 96% search-start, plus 71% DIY-at-first-click in the objections slide) cross-walked to a bibliography row. All 8 anchors resolve cleanly to `§B-Outdated-75`, `§B-ADA-Lawsuits`, `§B-WebAIM`, `§B-Wix-Squarespace`, `§B-DesignJoy`, `§B-WP-Buffs`, `§B-Law-Firm-Spend` — every row currently `[V]` with a `Verified` date of 2026-04-29 (one day prior; within the 90-day refresh window). The two `[S]` anchors the deck cites (`§B-Boutique-Agency`, `§B-Dental-Spend`) are correctly labelled — no silent deletion, no upgrade candidate without a primary-source URL that does not exist for those categories. | PASS |
+
+---
+
+*Last updated: 2026-04-30 — POC §6.2 row 6.7 cross-walk audit (PR for issue #217). Underlying row verifications stamped 2026-04-29 in §B; this audit confirms cross-walk integrity, not a fresh URL re-fetch.*

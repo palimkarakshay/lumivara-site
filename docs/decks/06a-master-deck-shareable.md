@@ -284,3 +284,65 @@ The product wins the moment that feeling goes away. Phone-shortcut + plain-Engli
 > Pitch line: *"Customers don't ask for AI. They ask to stop waiting on a developer."*
 
 ---
+
+<!-- _class: lead -->
+
+# 4 · What competitors say they're providing
+
+*The pitch from the other side of the table — verbatim, then dissected.*
+
+---
+
+## Competitor pitch matrix
+
+| Competitor | Verified pricing (2026-04) | What they tell SMBs | What they don't tell them |
+|---|---|---|---|
+| **Squarespace / Wix / Webflow** | $17 – $139 / mo | "Build a beautiful site in an afternoon, edit it yourself, no code." | The site lives in their walled garden. Export is painful. Performance and SEO ceilings. Plugin sprawl over time. 71% of consumers spot a DIY at first click. |
+| **Solo Upwork / Fiverr devs** | $1k – $5k upfront, then per-edit | "Custom build, your code, your ownership, $1k–$5k." | After hand-off, every change is a custom invoice or a Slack message at 11pm. No ongoing improvement. |
+| **Boutique agencies** | $6k – $12k upfront + $75 – $150/hr edits + $600 – $3,000/yr retainer | "End-to-end design + build + monthly retainer for support." | Retainer pays for *availability*, not for actual edits. Each substantial change still bills $75–$150/hr. |
+| **DesignJoy / Midday / Superside** | $4,995 / mo Standard, $7,995 / mo Pro, + $999 / mo Webflow add-on | "Unlimited design requests, async Trello, 48h turnarounds." | Webflow-hosted. Designed for funded SaaS / enterprise marketing teams. ~10× our blended ARPU. |
+| **WP Buffs maintenance** | $79 – $447 / mo across 5 tiers; "Perform" $219 / mo most popular | "24/7 monitoring, weekly core updates, basic edits, speed optimisation." | Locks the client onto the underlying decaying WordPress. Doesn't include the initial build. |
+| **Headless CMS (Sanity / Contentful / Strapi) + dev** | $0 – $1,000 / mo CMS + dev hourly | "Modern stack, structured content, scalable." | Client must learn a CMS. Still needs a developer for layout / component changes. |
+| **AI-site generators (Framer AI, Durable, Bookmark)** | $20 – $100 / mo | "Type a prompt, get a site." | Templated under the hood. Hosted in their stack. Phone-edit *publishing* is not the loop. |
+
+We sit deliberately in the gap none of them serve: real-codebase ownership + AI-managed maintenance + flat fee.
+
+---
+
+## How they handle the four customer asks
+
+| Customer ask | Squarespace | Freelance dev | Agency | AI generator | **Lumivara Forge** |
+|---|---|---|---|---|---|
+| "Update without calling someone" | ✅ via their editor | ❌ | ❌ retainer = "ask us" | ✅ via their editor | ✅ phone shortcut |
+| "No surprise invoices" | ✅ flat sub | ❌ per-edit | ⚠️ retainer + overage | ✅ flat sub | ✅ flat sub |
+| "Custom-looking, not templated" | ❌ template-driven | ✅ | ✅ | ❌ template-driven | ✅ |
+| "Own the site outright" | ❌ vendor lock-in | ✅ | ✅ | ❌ vendor lock-in | ✅ |
+
+We're the only column with **four green ticks**. Squarespace and AI generators are the closest by edit-loop; agencies and freelancers the closest by craft. Nobody currently bundles all four.
+
+---
+
+## What competitors are NOT advertising (yet)
+
+These are gaps in the market that, if a well-funded competitor closed, would compress our moat:
+
+- **Phone-as-CMS over a real codebase.** Not promoted by any major builder. Closest: Framer's mobile editor, but it's still inside Framer's stack.
+- **Multi-vendor AI fallback as a sold feature.** Most AI-site tools commit to one model; outage → queue stops.
+- **Plan-then-execute with a human approval tap.** Some Cursor / Devin-style products do "AI proposes a PR" but no flat-rate SMB packaging.
+- **A clean two-repo operator/client split.** Genuinely uncommon — most operators commingle automation and site code, which makes hand-over messy.
+
+Watch list reassessed every two months: **Framer** (closest substitution risk if they add code-export and automation hooks), **Vercel v0** (if they package retainer), and any **first-party "ship a marketing site" agent** from the major model vendors.
+
+---
+
+## Section recap — Competitor claims
+
+- Squarespace owns the **edit-yourself** narrative but loses on **ownership + custom**.
+- Freelancers and agencies own **craft** but lose on **predictability + autonomy**.
+- AI-site generators own the **demo wow** but lose on **real ownership + flat-fee maintenance**.
+- WordPress maintenance shops own **monitoring** but lock clients onto a decaying stack.
+- Nobody currently bundles ownership + autonomy + flat fee + custom craft. That's the wedge.
+
+> Pitch line: *"Squarespace's edit loop, an agency's craft, and a freelancer's ownership — for one flat fee."*
+
+---

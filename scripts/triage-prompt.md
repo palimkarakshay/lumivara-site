@@ -48,7 +48,7 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - `complexity/trivial` — typo, single-line, metadata tweak. → add `model/opus`. Cron-eligible.
    - `complexity/easy` — one file, obvious change, < 30 min. → add `model/opus`. Cron-eligible.
    - `complexity/medium` — a handful of files or non-trivial logic, 1–3h. → add `model/opus`. Cron-eligible.
-   - `complexity/complex` — spans many files, architectural decision, or > 3h. → add `model/opus` AND `manual-only` (cron skips; execute-complex.yml runs the Opus plan + Opus implement pipeline).
+   - `complexity/complex` — spans many files, architectural decision, or > 3h. → add `model/opus`. Cron-eligible via `execute-complex.yml`'s 4-hourly cron (offset :47); the operator may still apply `manual-only` explicitly to opt out of cron when an item genuinely needs human dispatch.
    (When the cost-optimisation phase lands, `complexity/trivial|easy → model/haiku` and `medium → model/sonnet` will return; until then, default to Opus.)
 
 3b. Decide **provider routing** (override the default Claude path when a different model is a better fit).
@@ -97,7 +97,7 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - `type/code-review` — Diff analysis / second opinion on a PR (pairs with `model/codex`).
    If you genuinely cannot pick one, default to `type/tech-site` and note your uncertainty in the rationale comment.
 5. Decide **auto-routine eligibility**:
-   - Add `auto-routine` label if: task is self-contained AND has all the info needed in the issue body. Any complexity is OK — `complex` issues are still bot-workable, they just get `manual-only` (step 3) so cron skips them.
+   - Add `auto-routine` label if: task is self-contained AND has all the info needed in the issue body. Any complexity is OK — `complex` issues are bot-workable and now also cron-eligible (via `execute-complex.yml`'s 4-hourly cron). Apply `manual-only` only when you have a specific reason to keep the bot off (e.g. high-blast-radius schema change, irreversible infra, or a class of decision that the operator wants to attest manually each time).
    - In the quality-first phase, lean **toward** `auto-routine` rather than away from it. The bot is running on Opus across the board, so even mid-complexity work with light ambiguity is worth letting it attempt.
    - Add `human-only` ONLY if a human truly must do it (e.g., requires design judgement, needs Vercel dashboard access, requests changes to `.github/workflows/`, requires reading a local file path that doesn't exist on the runner).
    - If the issue is ambiguous (you're guessing what it means), instead add `status/needs-clarification`, leave `status/needs-triage`, and post a comment listing the specific questions that block triage. Do NOT add priority/complexity/model/auto-routine in that case.
@@ -111,7 +111,7 @@ Then, in your own logic, filter out issues that already have a `priority/*` labe
    - Routing: claude-opus (quality-first default)
    - Auto-routine: yes (cron-eligible)
    ```
-   For complex / manual-only items, the last line reads `Auto-routine: yes (manual-only — fire execute-complex.yml to run)`.
+   For `manual-only` items (any complexity), the last line reads `Auto-routine: yes (manual-only — fire execute-complex.yml to run)`. For `complexity/complex` without `manual-only`, the line reads `Auto-routine: yes (cron-eligible via execute-complex.yml every 4h)`.
    When you assign a non-Claude provider label, the `Routing:` line names it explicitly:
    `Routing: gemini-pro (full-tree SEO audit needs >Claude context)` or
    `Routing: codex-gpt-5.5 (PR diff review)`. If you applied `model/cline`, note the substitution:

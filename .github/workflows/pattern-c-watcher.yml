@@ -26,9 +26,10 @@ name: Pattern C watcher
 
 on:
   schedule:
-    # Daily at 14:00 UTC (= 09:00 EST / 10:00 EDT) so the operator sees fresh
-    # results when they open the playbook in the morning.
-    - cron: "0 14 * * *"
+    # Twice daily — 02:00 UTC (overnight catch) + 14:00 UTC (morning brief).
+    # Aggressive deploy-push phase: drift surfaces within 12h instead of 24h.
+    # Per `docs/ops/automation-future-work.md §2.4`.
+    - cron: "0 2,14 * * *"
   workflow_dispatch:
     inputs:
       strict:

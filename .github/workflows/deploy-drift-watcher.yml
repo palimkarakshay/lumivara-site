@@ -11,7 +11,10 @@ name: Deploy drift watcher
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    # Every 15 min — aggressive deploy-push phase. Vercel ↔ main drift
+    # surfaces in 15 min instead of 30. Per `automation-future-work.md §2.5`.
+    # Vercel API has plenty of headroom for this cadence.
+    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       open_issue:

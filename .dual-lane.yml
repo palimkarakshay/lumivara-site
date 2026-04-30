@@ -91,7 +91,10 @@ lanes:
     - docs/N8N_SETUP.md
     - docs/OPERATOR_SETUP.md
     - docs/TEMPLATE_REBUILD_PROMPT.md
-    - recordings/                    # operator recording archive (READMEs only; raw media gitignored)
+    # Operator recording archive — only the section READMEs are tracked
+    # (raw media / transcripts / analyses / manifest stay gitignored).
+    # See recordings/README.md and docs/mothership/23-operator-recording-pipeline.md.
+    - recordings/
 
   # ============================================================
   # BOTH — Cross-cutting hygiene; copies to both repos with optional transform

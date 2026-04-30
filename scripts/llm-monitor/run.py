@@ -43,8 +43,11 @@ import store        # noqa: E402
 import analyzer     # noqa: E402
 import digest as digest_mod  # noqa: E402  (avoid shadowing stdlib hashlib digest)
 import feedback     # noqa: E402
+import newsletters  # noqa: E402
 
-DIGEST_DIR = ROOT.parents[1] / "docs" / "mothership" / "llm-monitor" / "digests"
+LLM_MONITOR_DIR = ROOT.parents[1] / "docs" / "mothership" / "llm-monitor"
+DIGEST_DIR = LLM_MONITOR_DIR / "digests"
+NEWSLETTERS_DIR = LLM_MONITOR_DIR / "newsletters"
 
 
 def run_collector(name: str) -> list[str]:
@@ -124,19 +127,29 @@ def main() -> int:
     digest_path.write_text(digest_md)
     print(f"[run] digest written to {digest_path}", file=sys.stderr)
 
-    # --- 5. Feedback ---
-    body = feedback.render_known_issues(
-        classified.get("records", []),
-        classified.get("originals_by_id", {}),
-    )
-    changed = feedback.update_known_issues(body)
-    print(f"[run] KNOWN_ISSUES.md changed: {changed}", file=sys.stderr)
+    # --- 5. Newsletters (operator + client) ---
+    NEWSLETTERS_DIR.mkdir(parents=True, exist_ok=True)
+    op_path = NEWSLETTERS_DIR / f"operator-{today}.md"
+    cl_path = NEWSLETTERS_DIR / f"client-{today}.md"
+    op_path.write_text(newsletters.render_operator(classified, today=today))
+    cl_path.write_text(newsletters.render_client(classified, today=today))
+    print(f"[run] newsletters written to {op_path}, {cl_path}", file=sys.stderr)
+
+    # --- 6. Feedback (KNOWN_ISSUES + RECOMMENDATIONS + auto-issues) ---
+    records = classified.get("records", [])
+    originals = classified.get("originals_by_id", {})
+
+    ki_body = feedback.render_known_issues(records, originals)
+    ki_changed = feedback.update_known_issues(ki_body)
+    print(f"[run] KNOWN_ISSUES.md changed: {ki_changed}", file=sys.stderr)
+
+    rec_body = feedback.render_recommendations(records, originals)
+    rec_changed = feedback.update_recommendations(rec_body)
+    print(f"[run] RECOMMENDATIONS.md changed: {rec_changed}", file=sys.stderr)
 
     if not args.no_issues:
         filed = feedback.open_issues_for_high_signal(
-            classified.get("records", []),
-            classified.get("originals_by_id", {}),
-            dry_run=args.dry_run,
+            records, originals, dry_run=args.dry_run,
         )
         print(f"[run] issues filed: {len(filed)} {filed}", file=sys.stderr)
 

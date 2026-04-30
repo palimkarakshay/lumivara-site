@@ -109,7 +109,9 @@ jobs:
           # Stage only the artifacts the pipeline owns. state/ is
           # gitignored so it never leaks.
           git add docs/mothership/llm-monitor/digests/ \
-                  docs/mothership/llm-monitor/KNOWN_ISSUES.md || true
+                  docs/mothership/llm-monitor/newsletters/ \
+                  docs/mothership/llm-monitor/KNOWN_ISSUES.md \
+                  docs/mothership/llm-monitor/RECOMMENDATIONS.md || true
 
           if git diff --staged --quiet; then
             echo "No digest / KNOWN_ISSUES changes to commit."

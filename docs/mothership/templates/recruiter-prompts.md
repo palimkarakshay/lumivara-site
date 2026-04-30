@@ -18,8 +18,8 @@
 
   This template is for placement firms — agencies that source candidates
   and earn fees on placements. It is NOT for HR-advisory practices, and
-  Client #1 brand identifiers (`Lumivara People Advisory`,
-  `Lumivara People Solutions`, `people advisory`, `lumivara.ca`,
+  Client #1 brand identifiers (`Lumivara People Advisory`, <!-- pattern-c-audit:allow — forbid-list, not a use of the strings -->
+  `Lumivara People Solutions`, `people advisory`, `lumivara.ca`, <!-- pattern-c-audit:allow — forbid-list -->
   `Beas Banerjee`) MUST NOT appear in any output. Keep generated copy
   vertical-generic.
 ================================================================================
@@ -44,7 +44,7 @@ This file is a sequence of 12 prompts (10 required + 2 conditional) that turn a 
 
 If those primitives are missing, the structural rebuild prompt (`../06-operator-rebuild-prompt-v3.md`) hasn't run yet — fix that before running these.
 
-7. **Brand-string check.** Before pasting any output into a client repo, search the output for the strings `Lumivara People Advisory`, `Lumivara People Solutions`, `people advisory`, `lumivara.ca`, `Beas Banerjee`. If any match: reject the output and regenerate with a tightened prompt — those identifiers belong only to Client #1 and must never appear in another firm's site copy.
+7. **Brand-string check.** Before pasting any output into a client repo, search the output for the strings `Lumivara People Advisory`, `Lumivara People Solutions`, `people advisory`, `lumivara.ca`, `Beas Banerjee`. If any match: reject the output and regenerate with a tightened prompt — those identifiers belong only to Client #1 and must never appear in another firm's site copy. <!-- pattern-c-audit:allow — forbid-list, not a use of the strings -->
 
 ---
 
@@ -490,8 +490,8 @@ Constraints:
   ("expert", "specialist" used as a noun).
 - Title pattern: prefer `[BUSINESS_NAME] — [FUNCTION_FOCUS] search for [INDUSTRIES_PRIMARY_SHORT]`.
   Drop the industry vertical if it pushes past 60 chars.
-- Do NOT include the strings "Lumivara People Advisory", "Lumivara People
-  Solutions", "people advisory", "lumivara.ca", or "Beas Banerjee" in any
+- Do NOT include the strings "Lumivara People Advisory", "Lumivara People <!-- pattern-c-audit:allow — forbid-list inside Opus prompt -->
+  Solutions", "people advisory", "lumivara.ca", or "Beas Banerjee" in any <!-- pattern-c-audit:allow — forbid-list inside Opus prompt -->
   field — those identifiers belong only to Client #1.
 ```
 
@@ -783,7 +783,7 @@ No emoji. No exclamation marks.
 2. Open the dev server and walk every section in `npm run dev`. Pay particular attention to the dual-audience flow — toggle the radio in Prompt 10's contact form, click both sides of Prompt 12's dual-CTA, and confirm each path is intelligible on its own.
 3. Verify the JSON-LD with Google's [Rich Results Test](https://search.google.com/test/rich-results) before pushing — `EmploymentAgency` and `JobPosting` both have stricter validation than generic `LocalBusiness`. Pay particular attention to `hiringOrganization` on confidential roles (Prompt 11) — Google penalises postings without a real `hiringOrganization.name` and a confidential-client label is the legitimate way to satisfy this without leaking the client.
 4. **Verify factual claims** against the intake form one more time before pushing: fee structure, guarantee terms, jurisdiction, EE / AA statement, candidate-confidentiality posture, Ontario THA licence number. These are the claims that get a recruitment firm in trouble; the prompts won't catch a mis-typed licence number.
-5. **Brand-string sweep.** `rg -i 'Lumivara People (Advisory|Solutions)|people advisory|lumivara\.ca|Beas Banerjee'` against the generated client repo must return zero matches — those identifiers belong only to Client #1.
+5. **Brand-string sweep.** `rg -i 'Lumivara People (Advisory|Solutions)|people advisory|lumivara\.ca|Beas Banerjee'` against the generated client repo must return zero matches — those identifiers belong only to Client #1. <!-- pattern-c-audit:allow — rg pattern, not a use of the strings -->
 6. **Permission audit on logos and testimonials.** Cross-check every logo on the wall (Prompt 7) and every testimonial (Prompt 6) against `docs/clients/<slug>/logo-permissions.md` and `docs/clients/<slug>/testimonials.md` in the mothership repo. If any row lacks "permission granted in writing", remove it before push.
 7. Update the "Prompts run" checklist in `docs/clients/<slug>/intake.md`.
 8. Open a PR titled `feat(<slug>): recruiter content scaffold`.

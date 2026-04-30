@@ -28,9 +28,9 @@ What we sell, who we sell it to, who we sell against, where the business is goin
 
 <br/>
 
-*Compiled 2026-04-30. Reconciles `docs/storefront/06-positioning-slide-deck.md` (operator-internal nine-questions deck) with the five stakeholder decks in `docs/decks/01`–`05`.*
+*Compiled 2026-04-30 (refreshed end-of-day after the same-day pipeline-lane work landed: brand + domain ADR `15c`, extended five-leg `codex-review` fallback ladder, `llm-monitor` bot self-awareness pipeline, `record-ingest` operator recording pipeline, doc-task seeder per OWASP LLM08, plumber + recruiter vertical templates promoted Stub → Full, PIPEDA breach-notification research seed). Reconciles `docs/storefront/06-positioning-slide-deck.md` (operator-internal nine-questions deck) with the five stakeholder decks in `docs/decks/01`–`05`.*
 
-<span class="small">Operator-scope deck — confidential. Stakeholder-specific subsets live in `docs/decks/01`–`05`. Every load-bearing statistic cites a `[V]` / `[S]` / `[C]` row in `docs/research/03-source-bibliography.md`.</span>
+<span class="small">Operator-scope deck — confidential. Stakeholder-specific subsets live in `docs/decks/01`–`05`. Every load-bearing statistic cites a `[V]` / `[S]` / `[C]` row in `docs/research/03-source-bibliography.md`. **Brand-name reconsideration (D2) is open** per [`docs/mothership/15c-brand-and-domain-decision.md`](../mothership/15c-brand-and-domain-decision.md); this deck continues to use `Lumivara Forge` as a placeholder until D2 lands.</span>
 
 ---
 
@@ -173,13 +173,14 @@ Source: `docs/storefront/01-gig-profile.md` Closing note.
 
 ---
 
-## Five things only we ship today
+## Six things only we ship today
 
 1. **Phone-as-CMS** over a real codebase. A shortcut on the client's phone routes through n8n + Claude into a GitHub PR with a Vercel preview. No CMS to log into. (`docs/ADMIN_PORTAL_PLAN.md`.)
-2. **Multi-AI fallback ladder.** Claude Opus → Gemini → OpenAI Codex. Triage, plan, execute, review — each stage has a fallback so a single-vendor outage never blocks the queue. (`docs/AI_ROUTING.md`.)
+2. **Multi-vendor AI fallback ladder.** Claude Opus 4.7 primary on every stage; on outage the path falls through Gemini 2.5 Pro → Gemini 2.5 Flash → GitHub Models (Llama 3.3-70B + GPT-4.1-mini) → OpenRouter (DeepSeek R1 + Qwen3-Coder, both free tier) before deferring. The five-leg `codex-review` ladder is the deepest, but every stage has at least a primary + two fallbacks. Single-vendor outage never blocks the queue. (`docs/AI_ROUTING.md`; `scripts/codex-review-fallback.py`.)
 3. **Plan-then-Execute pipeline.** Every routine issue gets a structured AI plan as a PR comment *before* code is written. The client reads the plan first.
-4. **Tier-based cadence.** T0 manual, T1 daily, T2 every 2h, T3 hourly. The bot's "energy" is a sold dial. (`docs/mothership/04-tier-based-agent-cadence.md`.)
-5. **two-repo isolation (Dual-Lane Repo).** Client gets a clean `<slug>-site` repo (private → transferable). The pipeline, prompts, and operator IP live in a separate `<slug>-pipeline` repo the client never sees. (`docs/mothership/02b-dual-lane-architecture.md`.)
+4. **Tier-based cadence with 24/7 utilisation.** T0 manual, T1 daily, T2 every 2h, T3 hourly *plus* the operator-side watch tier — `triage` every 15 min and `llm-monitor-watch` every 15 min — so the bot's "energy" is a sold dial *and* the queue never sleeps. (`docs/mothership/04-tier-based-agent-cadence.md`; `docs/AI_ROUTING.md §1`.)
+5. **Two-repo isolation (Dual-Lane Repo).** Client gets a clean `<slug>-site` repo (private → transferable). The pipeline, prompts, and operator IP live in a separate `<slug>-pipeline` repo the client never sees. (`docs/mothership/02b-dual-lane-architecture.md`.)
+6. **Bot self-awareness pipeline.** `llm-monitor` watches Anthropic / Gemini / OpenAI status pages, four LLM-bot RSS feeds, and a Stack Overflow collector, then auto-rewrites `KNOWN_ISSUES.md` and `RECOMMENDATIONS.md`. Triage / plan / execute prompts ingest those files at runtime, so when an upstream provider quirk lands, the fleet steers around it without a human in the loop. (`docs/mothership/llm-monitor/runbook.md`.)
 
 ---
 
@@ -188,10 +189,11 @@ Source: `docs/storefront/01-gig-profile.md` Closing note.
 | Feature | What protects it |
 |---|---|
 | Phone-as-CMS | Requires Auth.js v5 + n8n workflows + HMAC + Octokit + Vercel deploy hooks wired together. ~5 phases of build (`docs/ADMIN_PORTAL_PLAN.md`). |
-| Multi-AI fallback | Requires three live API contracts, a deterministic router, and prompt-pack parity across providers. Most freelancers hold one key. |
+| Multi-vendor fallback | Requires *five* live API surfaces (Anthropic + Google + OpenAI + GitHub Models + OpenRouter), a deterministic router, prompt-pack parity across providers, and per-stage probes that detect "the model returned 200 but the body is unfinished." Most freelancers hold one key. |
 | Plan-then-Execute | Every routine issue gets an AI-authored plan comment before code lands. Few competitors run this gate at all. |
-| Tier cadence | The pipeline reads tier from a per-client variable; cron schedule, model selection, and auto-merge gates all branch on it. Not a feature flag — a whole product surface. |
+| Tier cadence + watch tier | The pipeline reads tier from a per-client variable; cron, model selection, and auto-merge gates all branch on it. The watch-tier (`triage` every 15 min + `llm-monitor-watch` every 15 min + `llm-monitor` sweep every 2h) keeps the queue moving 24/7. Not a feature flag — a whole product surface. |
 | Dual-Lane Repo isolation | A GitHub App + two-repo split + per-engagement install ID. Operator IP stays operator-side; the client repo is genuinely "vanilla" if they ever leave. |
+| Bot self-awareness | `llm-monitor` ingests provider status, RSS, Stack Overflow → auto-rewrites `KNOWN_ISSUES.md` + `RECOMMENDATIONS.md` → the fleet's prompts read those files. The whole closed loop is operator-hosted; competitors copying any one piece wouldn't get the compounding effect. |
 
 The site is a commodity. The **system around the site** is the moat.
 
@@ -212,9 +214,10 @@ The boundaries *are* the strategy. They keep the operator under 175 hours a mont
 ## Section recap — Differentiators
 
 - **Phone-as-CMS** is the headline feature. Nobody in our price band offers it.
-- **Multi-AI fallback** turns a single-vendor risk into a sold feature ("we don't pause when one provider hiccups").
+- **Multi-vendor fallback** turns a single-vendor risk into a sold feature ("we don't pause when one provider hiccups"). Five legs deep on the deepest stage; any single provider can drop and the queue keeps moving.
 - **Dual-Lane Repo** lets us license the system per engagement while the *site* is genuinely the client's.
-- **Tier cadence** turns "how aggressive is the bot" into a sold dial, not an internal toggle.
+- **Tier cadence + watch tier** turns "how aggressive is the bot" into a sold dial, plus a 24/7 watch loop on the operator side.
+- **Bot self-awareness** (`llm-monitor`) closes the loop on upstream-provider quirks: the prompts learn from yesterday's bugs without an operator typing.
 - **The negative list** (what we don't sell) is itself a differentiator — boundaries clients can read and trust.
 
 > Pitch line: *"Other people sell you a website. We sell you a website that updates itself."*
@@ -539,14 +542,16 @@ If a step doesn't have a verifiable artefact, it isn't done.
 | **P3 — Engagement playbooks** | `06-operator-rebuild-prompt-v3`, `07-client-handover-pack` | ✅ Done |
 | **P4 — Future-work stubs** | `08-future-work.md` (legal, vault, contracts, payments, market research) | ✅ Done |
 | **P4.5 — External critique** | Docs `10`–`15` + `16` prompt-pack | ✅ Done |
-| **P4.6 — Critique closure** | Runs A–D: cron flaw, security gaps, maths, ops sweep | ⏳ **In progress** |
-| **P5 — Pipeline repo bootstrap** | Build empty `palimkarakshay/lumivara-forge-pipeline` end-to-end | ⏳ After P4.6 |
+| **P4.6 — Critique closure** | Runs A–D: cron flaw, security gaps, maths, ops sweep | ⏳ **In progress** — D-1 close-merged sub-pass landed 2026-04-30 (20 awaiting-review issues closed). |
+| **P5 — Pipeline repo bootstrap** | Build empty `palimkarakshay/lumivara-forge-pipeline` end-to-end | ⏳ After P4.6 — blocked on the brand-name decision (`15c` D2). |
 | **P5.6 — Dual-Lane Repo spinout** | Split this combined repo into Site + Pipeline pair | ⏳ After P5 |
 | **P6 — Migrate Client #1** | Re-scaffold Client #1 site into a clean per-client Dual-Lane Repo pair | ⏳ After P5.6 |
 | **P7 — Hardening tasks** | Walk `05-template-hardening-notes.md` items into pipeline issues | ⏳ After P6 |
-| **P8 — Legal & vault** | PIPEDA, contracts, secrets vault, market study | ⏳ Months 2–6 |
+| **P8 — Legal & vault** | PIPEDA, contracts, secrets vault, market study | ⏳ Months 2–6 — PIPEDA breach-notification research seed at [`docs/research/07-pipeda-breach-notification.md`](../research/07-pipeda-breach-notification.md) (added 2026-04-30). |
 
 Source: `docs/mothership/00-INDEX.md` "Phased build plan" + `docs/migrations/00-automation-readiness-plan.md`.
+
+**Bot-fleet maturity (operator side, status as of end-of-day 2026-04-30):** restaurant + plumber + recruiter vertical templates are now Full (only realtor remains a stub); the doc-task seeder ([`docs/ops/doc-task-seeder.md`](../ops/doc-task-seeder.md)) ships four-tier self-automation per OWASP LLM08; the `record-ingest` operator recording pipeline is conservative + drift-guarded with a CI smoke test; and `llm-monitor` runs an aggressive watch tier (every 15 min) plus a sweep tier (every 2h) so the bot fleet improves itself between client engagements.
 
 ---
 
@@ -632,7 +637,7 @@ Source: `docs/storefront/03-cost-analysis.md` Part D + `docs/mothership/18-capac
 
 | Risk | Likelihood | Impact | Mitigation already built |
 |---|---|---|---|
-| Anthropic outage / throttle | Med | High | Multi-AI fallback ladder (`docs/AI_ROUTING.md`) — Claude → Gemini → OpenAI Codex on triage and execute. |
+| Anthropic outage / throttle | Med | High | Multi-vendor fallback ladder (`docs/AI_ROUTING.md`) — Claude Opus → Gemini Pro → Gemini Flash → GitHub Models (Llama / GPT-4.1-mini) → OpenRouter (DeepSeek / Qwen) on the deepest stage; every stage has a primary + at least two fallbacks. |
 | One client floods the queue | Low | Med | Per-client rate limit + tier cadence (`docs/mothership/04-tier-based-agent-cadence.md`). |
 | Operator burnout | Med | High | 30-client cap until hire; budget charter; weekly cadence; planned 2-week break before client #25. |
 | Secret leak (token in client repo) | Low | Critical | Org-level secrets, vendor PAT, `.claudeignore`, audit checklist (`docs/mothership/03 §3`). |
@@ -794,7 +799,7 @@ Source: `docs/storefront/03-cost-analysis.md` Part E.
 ## Tooling — the operator stack
 
 - **Claude Pro/Max** — primary AI; OAuth-bound to GitHub Actions via `CLAUDE_CODE_OAUTH_TOKEN`.
-- **Gemini API + OpenAI API** — fallback ladder.
+- **Gemini API + OpenAI API + GitHub Models + OpenRouter** — five-leg fallback ladder on the deepest stage (`codex-review`); shorter ladders on triage / plan / execute. All four fallback surfaces are free-tier-accessible, so the failover doesn't move the cost line meaningfully.
 - **n8n on Railway** — capture and dispatch hub.
 - **GitHub** — source of truth (Issues, Actions, Project v2).
 - **Vercel** — hosting + preview builds + deploy hooks.
@@ -854,7 +859,7 @@ Year-1 destination: **30 active clients, ~$120k take-home, day job replaced.**
 | Section | The answer in one line |
 |---|---|
 | 1 — Benefits | The site stops decaying; flat fee replaces $200/edit invoices. |
-| 2 — Differentiators | Phone-as-CMS over a real codebase, multi-AI fallback, Dual-Lane Repo operator/client split. |
+| 2 — Differentiators | Phone-as-CMS over a real codebase, five-leg multi-vendor fallback, Dual-Lane Repo operator/client split, bot self-awareness (`llm-monitor`). |
 | 3 — Customer voice | Autonomy + predictability + ownership + custom looks. |
 | 4 — Competitor claims | Squarespace owns "edit yourself"; we own "edit yourself + own the code". |
 | 5 — End goal | 30 retainer clients in Stage 1; agency or SaaS optional later. |

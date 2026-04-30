@@ -110,9 +110,44 @@ DRY_RUN=1 python3 "$HERE/seed-inbox-issue.py" \
   > "$TEST_ROOT/seed.out" 2>&1
 grep -q 'trigger=false; skipping' "$TEST_ROOT/seed.out" && pass "seed-inbox-issue.py skipped on stub trigger=false" || fail "seed-inbox-issue.py did not skip as expected"
 
-# --- §8: validator unit tests ---
+# --- §8: seeded issue body uses caller-provided paths (Codex P2 regression) ---
 echo
-echo "=== §8: drift-guard validator unit tests ==="
+echo "=== §8: seeded issue body honours --transcript / --source ==="
+# Synthetic analysis with a real trigger; pretend the artefacts live under
+# the temp RECORDINGS_ROOT so the issue body MUST cite that path, not the
+# hard-coded recordings/... default.
+fake_analysis="$TEST_ROOT/analysis/fake-trigger.json"
+cat > "$fake_analysis" <<EOF
+{
+  "id": "fake-trigger",
+  "section": "musings",
+  "self_automation_trigger": true,
+  "summary": "Operator follow-up needed by Tuesday",
+  "action_items": [
+    {"text": "Email investor", "owner": "operator", "ts": "00:00:12",
+     "requires_action": true, "urgency": "high"}
+  ]
+}
+EOF
+DRY_RUN=1 python3 "$HERE/seed-inbox-issue.py" \
+  --analysis "$fake_analysis" \
+  --section musings \
+  --transcript "$TEST_ROOT/transcripts/fake-trigger.md" \
+  --source "$TEST_ROOT/archive/musings/fake-source.m4a" \
+  > "$TEST_ROOT/seed-trigger.out" 2>&1
+grep -q "transcript: \`$TEST_ROOT/transcripts/fake-trigger.md\`" "$TEST_ROOT/seed-trigger.out" \
+  && pass "issue body cites caller-provided transcript path" \
+  || fail "issue body did not cite the caller-provided transcript path (Codex P2 regression)"
+grep -q "source:     \`$TEST_ROOT/archive/musings/fake-source.m4a\`" "$TEST_ROOT/seed-trigger.out" \
+  && pass "issue body cites caller-provided source path" \
+  || fail "issue body did not cite the caller-provided source path"
+grep -q '`recordings/transcripts/fake-trigger.md`' "$TEST_ROOT/seed-trigger.out" \
+  && fail "issue body still contains hard-coded recordings/ path (Codex P2 regression)" \
+  || pass "no hard-coded recordings/ path leaked into issue body"
+
+# --- §9: validator unit tests ---
+echo
+echo "=== §9: drift-guard validator unit tests ==="
 python3 "$HERE/test-validator.py" && pass "validator unit tests passed" || fail "validator unit tests failed"
 
 # --- summary ---

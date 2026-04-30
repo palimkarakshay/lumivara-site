@@ -165,9 +165,13 @@ PY
     "$dest" "$transcript_path" "$analysis_json"
 
   if [[ "${SEED_ISSUES:-0}" == "1" ]]; then
+    # Pass real on-disk paths so issue links stay correct under any
+    # RECORDINGS_ROOT (tests / alternate archives), not just the default.
     python3 "$HERE/seed-inbox-issue.py" \
       --analysis "$analysis_json" \
-      --section "$section" || true
+      --section "$section" \
+      --transcript "$transcript_path" \
+      --source "$dest" || true
   fi
 }
 

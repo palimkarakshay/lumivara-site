@@ -46,6 +46,15 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--analysis", required=True)
     ap.add_argument("--section", required=True)
+    # Optional path overrides — ingest.sh passes these so the issue body links
+    # to the actual on-disk artefacts even when RECORDINGS_ROOT is non-default
+    # (tests, alternate archive locations). When absent, fall back to the
+    # default recordings/transcripts/ + recordings/analysis/ layout for
+    # backward compatibility with manual invocations.
+    ap.add_argument("--transcript", default=None,
+                    help="Path to the transcript markdown for this recording.")
+    ap.add_argument("--source", default=None,
+                    help="Path to the archived source recording (audio/image/etc.).")
     args = ap.parse_args()
 
     analysis = json.loads(Path(args.analysis).read_text())
@@ -89,12 +98,18 @@ def main() -> int:
             f"- [ ] **[{ai.get('urgency', '?')}]** {ai.get('text', '')}"
             f"  _(transcript [{ai.get('ts', '?')}])_"
         )
+    transcript_path = args.transcript or f"recordings/transcripts/{analysis['id']}.md"
+    analysis_path = args.analysis  # always the real on-disk path passed by caller
     body_lines += [
         "",
         "## Source",
         "",
-        f"- transcript: `recordings/transcripts/{analysis['id']}.md`",
-        f"- analysis:   `recordings/analysis/{analysis['id']}.json`",
+        f"- transcript: `{transcript_path}`",
+        f"- analysis:   `{analysis_path}`",
+    ]
+    if args.source:
+        body_lines.append(f"- source:     `{args.source}`")
+    body_lines += [
         "",
         "_The recording pipeline does not edit code or send external messages_",
         "_directly. This issue lets the existing triage → plan → execute_",

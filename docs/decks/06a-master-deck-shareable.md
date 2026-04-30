@@ -495,3 +495,89 @@ If a step doesn't have a verifiable artefact, it isn't done.
 > Pitch line: *"Lock the brand, harden the product, then sell — in that order."*
 
 ---
+
+<!-- _class: lead -->
+
+# 7 · Project plan
+
+*Phased, with status as of 2026-04-30.*
+
+---
+
+## The phased build plan, at a milestone level
+
+| Phase | Deliverable | Status |
+|---|---|---|
+| **Survey** | Read existing repo, freelance pack, template prompt, AI routing, admin-portal plan | ✅ Done |
+| **Foundation docs** | Index, business plan, architecture, secure architecture | ✅ Done |
+| **Operations docs** | Tier-based agent cadence, pipeline-repo buildout plan | ✅ Done |
+| **Engagement playbooks** | Operator rebuild prompt, client handover pack | ✅ Done |
+| **Future-work stubs** | Legal, vault, contracts, payments, market research | ✅ Done |
+| **External critique** | Drawbacks doc, terminology lock, deck pack | ✅ Done |
+| **Critique closure** | Cron, security gaps, maths, ops sweep | ⏳ **In progress** |
+| **Pipeline-repo bootstrap** | Stand up the operator-side pipeline repository end-to-end | ⏳ Next |
+| **Two-repo spinout** | Split the combined repo into Site + Pipeline pair | ⏳ After bootstrap |
+| **Showcase client migration** | Re-scaffold the showcase client into a clean per-client pair | ⏳ After spinout |
+| **Hardening tasks** | Walk template-hardening notes into pipeline issues | ⏳ After migration |
+| **Legal & vault** | PIPEDA, contracts, secrets vault, market study | ⏳ Months 2–6 |
+
+Each ⏳ row has an opening issue when work begins, a tracking checklist while it's underway, and a verification artefact when it lands.
+
+---
+
+## Months 1–3 — Side-hustle viable
+
+- A small handful of paid setups (mix of one-off and retainer signups).
+- Recurring revenue starting to compound on top of setup-fee lumps.
+- Day-job still on. Side hustle pays for AI tools and eats evenings.
+
+Trigger work in this window: MSA + SOW templates (before client #2), payment automation, PIPEDA review (before client #3).
+
+---
+
+## Months 4–9 — Day-job-replaceable
+
+- Three-to-four new clients per month, weighted toward the mid-tier.
+- Setup-fee lumps continue while monthly recurring revenue compounds.
+- By the end of this window, recurring revenue alone is materially above the day-job replacement threshold; total monthly gross is comfortably higher.
+- Status: comfortably above day-job replacement; start de-risking with cash buffer + lined-up enterprise referrals.
+
+Trigger work: secrets vault around client #5; AI-quota tier upgrades at the documented client-count cliffs.
+
+---
+
+## Months 10–12 — Quitting milestone
+
+- Recurring revenue alone covers fixed personal expenses (rent + groceries + utilities + insurance).
+- Six months of personal expenses saved as runway.
+- Two enterprise referrals lined up via LinkedIn for buffer.
+- **Then quit.**
+
+By month 12: a bounded retainer book, comfortable monthly gross, and enough margin headroom to absorb one or two surprise quarters.
+
+---
+
+## Year-1 ramp at a glance
+
+| Quarter | Active clients (rough) | Monthly recurring | Monthly gross | What's happening |
+|---|---|---|---|---|
+| Q1 | low single digits | small | side-hustle scale | Setting up; closing first signed retainers; legal templates landing. |
+| Q2 | mid single digits → low teens | growing | day-job-supplementing | Quota tier steps; vault in place; storefront reviews compounding. |
+| Q3 | mid teens → low twenties | day-job-replacing | comfortably above day-job | Quota tier steps; first VA conversation; LinkedIn case studies. |
+| Q4 | through the Stage 1 cap | meeting fixed-expense bar | runway buffer in place | Quitting milestone hit; Stage 2 / Stage 3 decision opens. |
+
+Numbers presented as ranges and qualitative bands rather than point forecasts — this is the operator's plan, not a guarantee to a counterparty.
+
+---
+
+## Section recap — Project plan
+
+- **The early phases are done.** Critique-closure is the immediate work.
+- **Pipeline-repo bootstrap → two-repo spinout → showcase migration → hardening** is the architectural ramp through months 1–3.
+- **Legal + vault** is staged across months 2–6, gated on client count.
+- **Revenue** ramps from side-hustle scale, through day-job-supplementing, to day-job-replacing across the year.
+- **Day job replaced** between months 9 and 12.
+
+> Pitch line: *"Twelve months from today: a bounded retainer book, the day job gone, and a runway buffer in place."*
+
+---

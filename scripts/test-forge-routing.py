@@ -63,7 +63,12 @@ if fe.is_file():
     on_block_e = fe_yaml.get(on_key_e, {}) if on_key_e is not None else {}
     schedule_block_e = on_block_e.get("schedule", []) if isinstance(on_block_e, dict) else []
     crons = [s.get("cron") for s in schedule_block_e if isinstance(s, dict)]
-    check("forge-execute.yml has 30-min cron", "*/30 * * * *" in crons,
+    # Cadence: aggressive deploy-push phase is `*/15`. Roll back to
+    # `*/30` post-cost-optimisation; either is acceptable here so that
+    # tuning the cadence does not require a smoke-test update in the
+    # same PR.
+    check("forge-execute.yml has aggressive (15-min) or steady (30-min) cron",
+          ("*/15 * * * *" in crons) or ("*/30 * * * *" in crons),
           f"crons={crons}")
     check("forge-execute.yml uses opus model",
           "claude-opus-4-7" in fe.read_text())

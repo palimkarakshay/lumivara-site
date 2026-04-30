@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+"""
+llm-monitor orchestrator. Runs the full pipeline end-to-end:
+
+  collectors/*.py  →  store.ingest_jsonl()  →  analyzer.classify()
+                  →  digest.render() + feedback.update_known_issues()
+                  →  feedback.open_issues_for_high_signal()
+
+Designed to run in CI on a stdlib-only Python 3.11 image (no `pip
+install`). Each collector is invoked as a subprocess so a single
+collector failing (e.g. Reddit 429s on the runner IP) doesn't take
+the rest of the run with it.
+
+Exits 0 on full success, 0 with a stderr warning when individual
+collectors fail (so the cron job stays green), and 1 only on a fatal
+config / IO error.
+
+Env (all optional except where noted):
+    ANTHROPIC_API_KEY  — analyzer; falls back to heuristic stub when absent
+    GH_TOKEN           — collector + feedback (gh CLI). REQUIRED for
+                         CI runs that file issues / commit the digest.
+    REDDIT_CLIENT_ID   — Reddit collector OAuth path
+    REDDIT_CLIENT_SECRET
+    REPO               — default palimkarakshay/lumivara-site
+    LLM_MONITOR_MODEL  — override classifier model (default claude-opus-4-7)
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+COLLECTORS_DIR = ROOT / "collectors"
+COLLECTOR_NAMES = ["hackernews", "rss", "reddit", "github"]
+
+sys.path.insert(0, str(ROOT))
+import store        # noqa: E402
+import analyzer     # noqa: E402
+import digest as digest_mod  # noqa: E402  (avoid shadowing stdlib hashlib digest)
+import feedback     # noqa: E402
+
+DIGEST_DIR = ROOT.parents[1] / "docs" / "mothership" / "llm-monitor" / "digests"
+
+
+def run_collector(name: str) -> list[str]:
+    """Run a single collector and return the JSONL stdout lines.
+    Returns [] if the collector fails — error logged to stderr."""
+    script = COLLECTORS_DIR / f"{name}.py"
+    if not script.exists():
+        print(f"[run] collector {name} missing", file=sys.stderr)
+        return []
+    try:
+        result = subprocess.run(
+            ["python3", str(script)],
+            capture_output=True, text=True, timeout=180,
+            cwd=str(COLLECTORS_DIR),
+            env={**os.environ},
+        )
+    except subprocess.TimeoutExpired:
+        print(f"[run] collector {name} timed out", file=sys.stderr)
+        return []
+    if result.returncode != 0:
+        print(f"[run] collector {name} exited {result.returncode}: "
+              f"{result.stderr.strip()[:300]}", file=sys.stderr)
+    if result.stderr:
+        # Surface collector warnings (one line each).
+        for ln in result.stderr.strip().splitlines()[:5]:
+            print(f"[run] {name}: {ln}", file=sys.stderr)
+    return [ln for ln in result.stdout.splitlines() if ln.strip()]
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--dry-run", action="store_true",
+                    help="Skip Anthropic + gh writes (KNOWN_ISSUES still rewritten locally)")
+    ap.add_argument("--no-issues", action="store_true",
+                    help="Don't file GitHub issues even on real runs")
+    ap.add_argument("--collectors", default=",".join(COLLECTOR_NAMES),
+                    help="Comma-separated subset of collectors to run")
+    args = ap.parse_args()
+
+    selected = [c.strip() for c in args.collectors.split(",") if c.strip()]
+    print(f"[run] starting llm-monitor — collectors={selected} dry_run={args.dry_run}",
+          file=sys.stderr)
+
+    # --- 1. Collect ---
+    all_lines: list[str] = []
+    for name in selected:
+        lines = run_collector(name)
+        print(f"[run] {name}: {len(lines)} raw records", file=sys.stderr)
+        all_lines.extend(lines)
+
+    if not all_lines:
+        print("[run] no records collected; nothing to do", file=sys.stderr)
+        return 0
+
+    # --- 2. Store + dedupe ---
+    seen = store.load_seen()
+    new = store.ingest_jsonl(iter(all_lines), seen)
+    store.save_seen(seen)
+    print(f"[run] {len(new)} new records after dedupe (seen={len(seen)})",
+          file=sys.stderr)
+    if not new:
+        print("[run] all records were duplicates; skipping analyzer", file=sys.stderr)
+        return 0
+
+    # --- 3. Analyze ---
+    classified = analyzer.classify(new, dry_run=args.dry_run)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    analyzer_path = ROOT / "state" / f"analyzer-{today}.json"
+    analyzer_path.parent.mkdir(exist_ok=True)
+    analyzer_path.write_text(json.dumps(classified, ensure_ascii=False, indent=2))
+    print(f"[run] analyzer wrote {analyzer_path}", file=sys.stderr)
+
+    # --- 4. Digest ---
+    digest_md = digest_mod.render(classified, today=today)
+    DIGEST_DIR.mkdir(parents=True, exist_ok=True)
+    digest_path = DIGEST_DIR / f"{today}.md"
+    digest_path.write_text(digest_md)
+    print(f"[run] digest written to {digest_path}", file=sys.stderr)
+
+    # --- 5. Feedback ---
+    body = feedback.render_known_issues(
+        classified.get("records", []),
+        classified.get("originals_by_id", {}),
+    )
+    changed = feedback.update_known_issues(body)
+    print(f"[run] KNOWN_ISSUES.md changed: {changed}", file=sys.stderr)
+
+    if not args.no_issues:
+        filed = feedback.open_issues_for_high_signal(
+            classified.get("records", []),
+            classified.get("originals_by_id", {}),
+            dry_run=args.dry_run,
+        )
+        print(f"[run] issues filed: {len(filed)} {filed}", file=sys.stderr)
+
+    print("[run] done", file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

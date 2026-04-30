@@ -52,10 +52,12 @@ serialised — no two-writer race.
 
 | Secret | Required? | What for | Where to set |
 |---|---|---|---|
-| `ANTHROPIC_API_KEY` | yes (else stub classifier) | analyzer.py | Repo Settings → Secrets → Actions |
+| `ANTHROPIC_API_KEY` | preferred (else fallback ladder) | analyzer.py — Claude Opus | Repo Settings → Secrets → Actions |
+| `GEMINI_API_KEY` | optional (fallback) | analyzer.py — Gemini 2.5 Pro fallback | Repo Settings → Secrets → Actions |
+| `OPENAI_API_KEY` (or `_BACKUP`) | optional (last fallback) | analyzer.py — gpt-5.5 last-resort | Repo Settings → Secrets → Actions |
 | `GITHUB_TOKEN` | yes (auto-provisioned) | gh CLI in collectors + feedback | Auto |
-| `REDDIT_CLIENT_ID` | optional | Reddit OAuth (avoids 429s on shared CI IPs) | Repo Settings → Secrets → Actions |
-| `REDDIT_CLIENT_SECRET` | optional | Reddit OAuth | Repo Settings → Secrets → Actions |
+| `REDDIT_CLIENT_ID` + `_SECRET` | optional | Reddit OAuth (avoids 429s on shared CI IPs) | https://www.reddit.com/prefs/apps |
+| `STACKEXCHANGE_API_KEY` | optional | Stack Overflow higher quota (10k req/day vs 300) | https://stackapps.com/apps/oauth/register |
 
 Without `ANTHROPIC_API_KEY` the analyzer falls back to a heuristic
 classifier — the digest still renders, but `kind` / `severity`

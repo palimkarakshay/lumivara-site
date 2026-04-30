@@ -94,7 +94,8 @@ Configured in [`sources.json`](sources.json). v1 covers:
   Sweep-only.
 * **RSS** — Anthropic news, OpenAI blog, Google DeepMind, Simon
   Willison, Latent Space, Hugging Face, Vercel, Next.js, GitHub
-  changelog. Sweep-only.
+  changelog, **Lobsters**, **Import AI** (Jack Clark),
+  **TLDR AI**, **Pragmatic Engineer**. Sweep-only.
 * **Reddit** — r/LocalLLaMA, r/ClaudeAI, r/OpenAI, r/singularity,
   r/MachineLearning. Public JSON or OAuth (rate limit difference).
   Sweep-only.
@@ -103,6 +104,10 @@ Configured in [`sources.json`](sources.json). v1 covers:
   `anthropics/claude-code`, `openai/openai-python`,
   `googleapis/python-genai`, `vercel/next.js`, `vercel/vercel`).
   Sweep-only.
+* **Stack Overflow** — questions tagged `anthropic`, `claude`,
+  `claude-code`, `openai-api`, `next.js`, `vercel`. Anonymous
+  StackExchange API; `STACKEXCHANGE_API_KEY` optional for higher
+  quota. Sweep-only.
 * **Statuspages** — `/api/v2/status.json` + `/api/v2/incidents/unresolved.json`
   for Anthropic / OpenAI / Vercel / GitHub / Cloudflare / Hugging
   Face. **Used by both watch and sweep tiers.**
@@ -121,6 +126,7 @@ have (`ANTHROPIC_API_KEY`, `GH_TOKEN`). To enable the other collectors:
 | Collector | Secrets to add | Where to get | Cost |
 |---|---|---|---|
 | Reddit (authed)¹ | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | https://www.reddit.com/prefs/apps → "create app" → "script" | Free |
+| Stack Overflow (authed)² | `STACKEXCHANGE_API_KEY` | https://stackapps.com/apps/oauth/register → script-type OAuth | Free |
 | X via Grok | `XAI_API_KEY` | https://console.x.ai | Pay-as-you-go |
 | X via X API | `X_BEARER_TOKEN` | https://developer.x.com → Basic tier | $200/mo |
 | Discord | `DISCORD_BOT_TOKEN` + invite to each server | https://discord.com/developers/applications | Free, but needs server-owner consent |
@@ -129,6 +135,10 @@ have (`ANTHROPIC_API_KEY`, `GH_TOKEN`). To enable the other collectors:
 ¹ Reddit also works **without** auth via the public JSON endpoints, at
 ~60 req/min. The collector falls back to that path automatically if the
 secrets are absent. For continuous CI use, authed mode is recommended.
+
+² Stack Overflow works **without** auth at 300 req/day per IP (plenty
+for our every-2h cadence — ~84 req/day). The key only matters if the
+tag list grows past ~20 entries. Skip until needed.
 
 When ready to enable, add the secret in **Settings → Secrets and
 variables → Actions** and the workflow will pick it up on the next run

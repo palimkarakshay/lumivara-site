@@ -60,6 +60,10 @@ print_pass() { printf '  ✓ %s\n' "$1"; }
 print_fail() { printf '  ✗ %s\n' "$1"; FAIL=1; }
 
 # ----- §1 — Stale brand "Lumivara Infotech" -----
+# Allow-list mirrors §3's migration-history exception: the terminology /
+# brand-decision docs explicitly narrate the past Infotech → Forge rename
+# (PR #200) and need to keep the old string in prose to remain readable.
+# Adding new files here should be rare and explained in the same PR.
 print_section "§1 — Stale brand: 'Lumivara Infotech' should be 'Lumivara Forge'"
 mapfile -t INFOTECH_HITS < <(
   git grep -nIE 'Lumivara[ -]Infotech' \
@@ -68,6 +72,8 @@ mapfile -t INFOTECH_HITS < <(
        ':!CHANGELOG.md' \
        ':!docs/storefront/04-slide-deck.pdf' \
        ':!docs/storefront/04-slide-deck.html' \
+       ':!docs/mothership/15-terminology-and-brand.md' \
+       ':!docs/mothership/15c-brand-and-domain-decision.md' \
     2>/dev/null
 )
 if [ "${#INFOTECH_HITS[@]}" -eq 0 ]; then
@@ -84,6 +90,8 @@ else
          ':!docs/storefront/04-slide-deck.html' \
          ':!scripts/dual-lane-audit.sh' \
          ':!CHANGELOG.md' \
+         ':!docs/mothership/15-terminology-and-brand.md' \
+         ':!docs/mothership/15c-brand-and-domain-decision.md' \
       | while read -r f; do
           # Replace display strings only; keep URL slugs and filenames intact.
           sed -i 's/Lumivara Infotech/Lumivara Forge/g' "$f"

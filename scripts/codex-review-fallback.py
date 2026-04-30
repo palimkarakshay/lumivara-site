@@ -190,6 +190,8 @@ def main() -> int:
     openai_status = status
 
     # 2. Gemini fallback
+    gemini_model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+    openai_model = os.environ.get("OPENAI_MODEL", "gpt-5.5")
     review, status = try_gemini(prompt)
     if review:
         with open(out_path, "w") as f:
@@ -198,7 +200,7 @@ def main() -> int:
             # come from the prompt's required structure, not the engine, so
             # the auto-fixer keeps working unchanged.
             f.write(
-                "_Engine: Gemini 2.5 Pro fallback "
+                f"_Engine: {gemini_model} fallback "
                 "(OpenAI unavailable: " + openai_status + ")._\n\n"
                 + review
             )
@@ -207,12 +209,11 @@ def main() -> int:
     gemini_status = status
 
     # 3. Defer — both providers unavailable.
-    gemini_model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
     with open(out_path, "w") as f:
         f.write(
             "## Code review unavailable\n\n"
-            f"Both OpenAI (gpt-5.5) and {gemini_model} were unavailable "
-            "for this review pass.\n\n"
+            f"Both OpenAI ({openai_model}) and {gemini_model} were "
+            "unavailable for this review pass.\n\n"
             f"- OpenAI status: `{openai_status}`\n"
             f"- Gemini status: `{gemini_status}`\n\n"
             "This PR has been labelled `review-deferred`. A scheduled "

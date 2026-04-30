@@ -256,9 +256,13 @@ jobs:
           ENGINE="${ENGINE:-deferred}"
           echo "engine=$ENGINE" >> "$GITHUB_OUTPUT"
 
+          # Engine label tracks the script's ladder. Gemini leg defaults
+          # to gemini-2.5-flash (per AI_ROUTING.md §Policy "Code review
+          # on PR diff"); GEMINI_MODEL env can override.
+          GEMINI_LABEL="${GEMINI_MODEL:-gemini-2.5-flash}"
           case "$ENGINE" in
             openai)  ENGINE_LABEL="Codex $MODEL" ;;
-            gemini)  ENGINE_LABEL="Gemini 2.5 Pro (OpenAI unavailable)" ;;
+            gemini)  ENGINE_LABEL="$GEMINI_LABEL (OpenAI unavailable)" ;;
             deferred) ENGINE_LABEL="DEFERRED — both OpenAI and Gemini unavailable" ;;
             *) ENGINE_LABEL="$ENGINE" ;;
           esac

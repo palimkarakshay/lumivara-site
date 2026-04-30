@@ -220,3 +220,147 @@ The boundaries *are* the strategy. They keep the operator under 175 hours a mont
 > Pitch line: *"Other people sell you a website. We sell you a website that updates itself."*
 
 ---
+
+<!-- _class: lead -->
+
+# 3 · What customers say they want
+
+*The actual asks, in their own words.*
+
+---
+
+## The four asks we hear repeatedly
+
+From discovery calls, Fiverr inquiries, and the freelance gig-profile work:
+
+1. **"I want to update my own site without calling someone."**
+   The Squarespace promise — but they want it on a real codebase they own.
+2. **"I don't want to pay $200 every time I fix a typo."**
+   Predictable monthly cost beats lumpy invoices, even if the monthly is bigger.
+3. **"I want it to look custom, not like every other Wix site."**
+   Custom palette, type, layout. Moodboard sign-off before any code.
+4. **"I want to own my site outright — no lock-in."**
+   Their domain, their hosting, their code. Cancellable any time.
+
+Source: `docs/storefront/01-gig-profile.md` Parts 1, 6, and 8; `00-quick-start.md` "Is this marketable?"
+
+---
+
+## Direct quotes we plan answers around
+
+> *"Can't I just use Squarespace?"*
+> Yes — and a quarter of small businesses do. The difference is real ownership of the code + free unlimited edits + monthly improvements baked in.
+
+> *"Why pay monthly?"*
+> Because every other dev charges per-edit and disappears between projects. Compare against $200 × 24 months of edits.
+
+> *"What if you go out of business?"*
+> They keep the site. They keep the domain. They keep the hosting. They lose the autopilot. Already in the FAQ and the contract.
+
+> *"I'm worried about being locked in."*
+> They can't be. Code is theirs, domain is theirs, hosting is in their name.
+
+Source: `docs/storefront/00-quick-start.md` "Is this marketable?"; `04-slide-deck.md` honest-objections slide.
+
+---
+
+## Who says yes (the ICP) and who says no
+
+| Says yes | Looks like | Tier |
+|---|---|---|
+| Solo consultant (HR, coach, therapist, accountant, lawyer) | "Relaunching my practice; the Squarespace site looks cheap." | T1 / T2 |
+| Boutique services firm (5–25 staff) | "Site was built in 2019; the intern can't update it." | T2 / T3 |
+| Indie SaaS founder | "Marketing site for my product; modern stack so I can hack on it later." | T2 + retainer |
+| Local trades / clinics / studios | "Want to look professional + an online booking link." | T1 + Cal.com |
+
+**Says no** (anti-personas): agencies wanting half-price white-label, equity-only deals, e-commerce / Shopify, enterprise procurement, sub-$50/mo budgets.
+
+Anti-persona detail: `docs/research/04-client-personas.md` §A1.
+
+---
+
+## The hidden ask underneath
+
+What clients literally say is "I want to update my own site." What they *mean*, almost always, is:
+
+> *"I want to stop feeling stupid every time I open a CMS, and stop feeling guilty every time I delay a change because I don't want to email a developer about it."*
+
+The product wins the moment that feeling goes away. Phone-shortcut + plain-English instruction + tap-to-publish is the shape of the answer because it solves the *feeling*, not just the technical task.
+
+Source: synthesis from `docs/research/04-client-personas.md` and gig-profile pain-point map.
+
+---
+
+## Section recap — Customer voice
+
+- Customers ask for **autonomy** ("I want to fix it myself") and **predictability** ("no surprise invoices").
+- They ask for **ownership** ("no lock-in") and **looks** ("not another Wix site").
+- The **objections** clump into four shapes (Squarespace, monthly cost, vendor risk, lock-in) — all four have prepared answers.
+- The ICP is solo consultants and boutique firms, not e-commerce or enterprise.
+- The hidden ask is emotional: stop feeling stupid, stop feeling guilty about delaying changes.
+
+> Pitch line: *"Customers don't ask for AI. They ask to stop waiting on a developer."*
+
+---
+
+<!-- _class: lead -->
+
+# 4 · What competitors say they're providing
+
+*The pitch from the other side of the table — verbatim, then dissected.*
+
+---
+
+## Competitor pitch matrix
+
+| Competitor | Verified pricing (2026-04-29) | What they tell SMBs | What they don't tell them |
+|---|---|---|---|
+| **Squarespace / Wix / Webflow** | $17 – $139 / mo (`[V] §B-Wix-Squarespace`) | "Build a beautiful site in an afternoon, edit it yourself, no code." | The site lives in their walled garden. Export is painful. Performance and SEO ceilings. Plugin sprawl over time. 71% of consumers spot a DIY at first click (`[V] §B-Outdated-75`). |
+| **Solo Upwork / Fiverr devs** | $1k – $5k upfront, then per-edit | "Custom build, your code, your ownership, $1k–$5k." | After hand-off, every change is a custom invoice or a Slack message at 11pm. No ongoing improvement. |
+| **Boutique agencies** | $6k – $12k upfront + $75 – $150/hr edits + $600 – $3,000/yr retainer (`[S] §B-Boutique-Agency`) | "End-to-end design + build + monthly retainer for support." | Retainer pays for *availability*, not for actual edits. Each substantial change still bills $75–$150/hr. |
+| **DesignJoy / Midday / Superside** | $4,995 / mo Standard, $7,995 / mo Pro, + $999 / mo Webflow add-on (`[V] §B-DesignJoy`) | "Unlimited design requests, async Trello, 48h turnarounds." | Webflow-hosted. Designed for funded SaaS / enterprise marketing teams. ~10× our blended ARPU. |
+| **WP Buffs maintenance** | $79 – $447 / mo across 5 tiers; "Perform" $219 / mo most popular (`[V] §B-WP-Buffs`) | "24/7 monitoring, weekly core updates, basic edits, speed optimisation." | Locks the client onto the underlying decaying WordPress. Doesn't include the initial build. |
+| **Headless CMS (Sanity / Contentful / Strapi) + dev** | $0 – $1,000 / mo CMS + dev hourly | "Modern stack, structured content, scalable." | Client must learn a CMS. Still needs a developer for layout / component changes. |
+| **AI-site generators (Framer AI, Durable, Bookmark)** | $20 – $100 / mo | "Type a prompt, get a site." | Templated under the hood. Hosted in their stack. Phone-edit *publishing* is not the loop. |
+
+We sit deliberately in the gap none of them serve: real-codebase ownership + AI-managed maintenance + flat fee.
+
+---
+
+## How they handle the four customer asks
+
+| Customer ask | Squarespace | Freelance dev | Agency | AI generator | **Lumivara Forge** |
+|---|---|---|---|---|---|
+| "Update without calling someone" | ✅ via their editor | ❌ | ❌ retainer = "ask us" | ✅ via their editor | ✅ phone shortcut |
+| "No surprise invoices" | ✅ flat sub | ❌ per-edit | ⚠️ retainer + overage | ✅ flat sub | ✅ flat sub |
+| "Custom-looking, not templated" | ❌ template-driven | ✅ | ✅ | ❌ template-driven | ✅ |
+| "Own the site outright" | ❌ vendor lock-in | ✅ | ✅ | ❌ vendor lock-in | ✅ |
+
+We're the only column with **four green ticks**. Squarespace and AI generators are the closest by edit-loop; agencies and freelancers the closest by craft. Nobody currently bundles all four.
+
+---
+
+## What competitors are NOT advertising (yet)
+
+These are gaps in the market that, if a well-funded competitor closed, would compress our moat:
+
+- **Phone-as-CMS over a real codebase.** Not promoted by any major builder. Closest: Framer's mobile editor, but it's still inside Framer's stack.
+- **Multi-AI fallback as a sold feature.** Most AI-site tools commit to one model; outage → queue stops.
+- **Plan-then-Execute with a human approval tap.** Some Cursor / Devin-style products do "AI proposes a PR" but no flat-rate SMB packaging.
+- **Two-repo Pattern C operator/client split.** Genuinely uncommon — most operators commingle automation and site code, which makes hand-over messy.
+
+Watch list reassessed every 2 months: **Framer** (closest substitution risk if they add code-export + n8n), **Vercel v0** (if they package retainer), and any **Anthropic-built "ship a marketing site" agent**.
+
+---
+
+## Section recap — Competitor claims
+
+- Squarespace owns the **edit-yourself** narrative but loses on **ownership + custom**.
+- Freelancers and agencies own **craft** but lose on **predictability + autonomy**.
+- AI-site generators own the **demo wow** but lose on **real ownership + flat-fee maintenance**.
+- WordPress maintenance shops own **monitoring** but lock clients onto a decaying stack.
+- Nobody currently bundles ownership + autonomy + flat fee + custom craft. That's the wedge.
+
+> Pitch line: *"Squarespace's edit loop, an agency's craft, and a freelancer's ownership — for one flat fee."*
+
+---

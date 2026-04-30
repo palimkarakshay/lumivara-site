@@ -520,3 +520,182 @@ If a step doesn't have a verifiable artefact, it isn't done.
 > Pitch line: *"Lock the brand, harden the product, then sell — in that order."*
 
 ---
+
+<!-- _class: lead -->
+
+# 7 · Project plan
+
+*Phased, with status as of 2026-04-30.*
+
+---
+
+## The phased build plan (mothership pack)
+
+| Phase | Deliverable | Status |
+|---|---|---|
+| **P0 — Survey** | Read existing repo, freelance pack, template prompt, AI routing, admin-portal plan | ✅ Done |
+| **P1 — Foundation docs** | `00-INDEX`, `01-business-plan`, `02-architecture`, `03-secure-architecture` | ✅ Done |
+| **P2 — Operations docs** | `04-tier-based-agent-cadence`, `05-mothership-repo-buildout-plan` | ✅ Done |
+| **P3 — Engagement playbooks** | `06-operator-rebuild-prompt-v3`, `07-client-handover-pack` | ✅ Done |
+| **P4 — Future-work stubs** | `08-future-work.md` (legal, vault, contracts, payments, market research) | ✅ Done |
+| **P4.5 — External critique** | Docs `10`–`15` + `16` prompt-pack | ✅ Done |
+| **P4.6 — Critique closure** | Runs A–D: cron flaw, security gaps, maths, ops sweep | ⏳ **In progress** |
+| **P5 — Pipeline repo bootstrap** | Build empty `palimkarakshay/lumivara-forge-pipeline` end-to-end | ⏳ After P4.6 |
+| **P5.6 — Pattern C spinout** | Split this combined repo into Site + Pipeline pair | ⏳ After P5 |
+| **P6 — Migrate Client #1** | Re-scaffold Client #1 site into a clean per-client Pattern C pair | ⏳ After P5.6 |
+| **P7 — Hardening tasks** | Walk `05-template-hardening-notes.md` items into pipeline issues | ⏳ After P6 |
+| **P8 — Legal & vault** | PIPEDA, contracts, secrets vault, market study | ⏳ Months 2–6 |
+
+Source: `docs/mothership/00-INDEX.md` "Phased build plan" + `docs/migrations/00-automation-readiness-plan.md`.
+
+---
+
+## Months 1–3 — Side-hustle viable
+
+- 2 × Tier-0 builds (CAD $2,400 setup)
+- 3 × Tier-1 retainer signups ($7,200 setup + $297 MRR)
+- 1 × Tier-2 retainer signup ($4,500 setup + $249 MRR)
+- Total months 1–3: **~$14,100 setup + $546 MRR**, average **~$5,200/mo gross**.
+- Day-job still on. Side hustle pays for AI tools and eats evenings.
+
+Trigger work in this window: MSA + SOW (before client #2), payment automation, PIPEDA before client #3.
+
+Source: `docs/storefront/03-cost-analysis.md` Part C, milestone 1.
+
+---
+
+## Months 4–9 — Day-job-replaceable
+
+- 3–4 new clients/month, mostly Tier 2.
+- Typical mix: 1 × T0 + 1 × T1 + 2 × T2 = $12,600 setup/month.
+- MRR climbs by ~$597/month new.
+- By month 9, MRR ≈ **$5,000–$7,000** on top of $10–14k/month setup lumps.
+- Total monthly gross: **$15,000–$21,000**.
+- Status: comfortably above day-job replacement number; start de-risking.
+
+Trigger work: 1Password vault by client #5; Claude Pro → Max 5x at client #6; Max 5x → Max 20x at client #16.
+
+Source: `docs/storefront/03-cost-analysis.md` Part C, milestone 2.
+
+---
+
+## Months 10–12 — Quitting milestone
+
+- MRR alone covers fixed personal expenses (rent + groceries + utilities + insurance).
+- 6 months of personal expenses saved as runway.
+- Two enterprise referrals lined up via LinkedIn for buffer.
+- **Then quit.**
+
+By month 12: ~32 active clients, ~$22k/month gross, year-1 take-home **~CAD $118k–$128k** after Ontario sole-prop tax.
+
+Source: `docs/storefront/03-cost-analysis.md` Part C, milestone 3 + Part D.
+
+---
+
+## The 12-month operating cost projection (headline rows)
+
+| Month | Active clients | Quota tier | MRR (CAD) | Gross | Net before personal tax |
+|---|---|---|---|---|---|
+| 1 | 2 | Pro | $200 | $3,200 | $3,152 |
+| 3 | 7 | Max 5x | $1,200 | $8,700 | $8,520 |
+| 6 | 16 | Max 20x | $3,800 | $14,800 | $14,457 |
+| 9 | 25 | Max 20x | $6,800 | $19,800 | $19,447 |
+| 12 | 32 | 2nd seat | $9,200 | $23,200 | $22,555 |
+
+**Year-1 gross: ~$177k. Year-1 net before personal tax: ~$170.5k.**
+
+Source: `docs/storefront/03-cost-analysis.md` Part D + `docs/mothership/18-capacity-and-unit-economics.md §3 / §6`.
+
+---
+
+## Section recap — Project plan
+
+- **Phases P0–P4.5 are done.** P4.6 critique-closure is the immediate work.
+- **P5 → P5.6 → P6 → P7** is the pipeline-repo bootstrap, the Pattern C spinout, the Client #1 migration, then hardening — months 1–3.
+- **P8** legal + vault is staged across months 2–6, gated on client count.
+- **Revenue ramp:** $5k/mo (months 1–3) → $15–21k/mo (months 4–9) → $22k/mo (month 12).
+- **Day job replaced** between months 9 and 12.
+
+> Pitch line: *"Twelve months from today: 30 retainer clients, the day job gone, and ~$120k take-home."*
+
+---
+
+<!-- _class: lead -->
+
+# 8 · Possible challenges
+
+*The risks that can knock the plan off course — named, mitigated, residual.*
+
+---
+
+## Top-tier risks (already mitigated in the system)
+
+| Risk | Likelihood | Impact | Mitigation already built |
+|---|---|---|---|
+| Anthropic outage / throttle | Med | High | Multi-AI fallback ladder (`docs/AI_ROUTING.md`) — Claude → Gemini → OpenAI Codex on triage and execute. |
+| One client floods the queue | Low | Med | Per-client rate limit + tier cadence (`docs/mothership/04-tier-based-agent-cadence.md`). |
+| Operator burnout | Med | High | 30-client cap until hire; budget charter; weekly cadence; planned 2-week break before client #25. |
+| Secret leak (token in client repo) | Low | Critical | Org-level secrets, vendor PAT, `.claudeignore`, audit checklist (`docs/mothership/03 §3`). |
+| Bot ships breaking change to prod | Low | High | Auto-merge gate is opt-in per label; design/critical paths excluded; Vercel preview required. |
+| Client refuses to pay | Med | Med | Stripe auto-charge; pause autopilot at +14 days; full lockout at +30 days (`docs/mothership/08-future-work.md §3`). |
+| Client demands the autopilot when leaving | Low | Med | Contract: "site = client; system = operator-licensed". |
+| ADA legal liability | High | High | axe-core in CI; E&O / cyber liability insurance above $50k revenue. |
+
+Source: `docs/mothership/01-business-plan.md §8` + `docs/research/06-drawbacks-and-honest-risks.md`.
+
+---
+
+## Strategic risks (less mitigated, watch carefully)
+
+- **Demand-side:** the market may exist but our reach doesn't. Fix is more posting and outreach, not lower prices. (`docs/storefront/03-cost-analysis.md` Part G.)
+- **Competitive substitution:** Framer, Vercel v0, or an Anthropic-built site agent could close the phone-as-CMS gap. Watch list maintained; reassess every 2 months.
+- **Regulatory:** Quebec Law 25 is materially stricter than PIPEDA; needs a French-language privacy page if we sell in QC. Defer until first QC client.
+- **Model deprecation:** a Claude / Gemini model retirement breaks pinned IDs. Mitigation: review pinned IDs every 2 months in `docs/AI_ROUTING.md`.
+- **Single bad client.** "One bad client costs more than ten good ones earn." Be ruthless with the say-no list.
+
+---
+
+## Capacity cliffs (when the system has to evolve)
+
+| Cliff | Trigger | Action |
+|---|---|---|
+| **Cliff 1** | Client #6 | Claude Pro → Max 5x |
+| **Cliff 2** | GitHub Free Action minutes saturate | Pay-as-you-go on Actions or move CI to a paid runner |
+| **Cliff 3** | n8n free tier saturated | Railway Pro |
+| **Cliff 4** | Client #16 | Max 5x → Max 20x |
+| **Cliff 5** | Client #26 | 2nd Anthropic seat (unlocks 2nd engineer hire) |
+
+If a cliff hits *during* an onboarding, finish the onboarding first, upgrade after. Never upgrade pre-emptively. Source: `docs/mothership/18-capacity-and-unit-economics.md §6`.
+
+---
+
+## Failure modes specific to the autopilot
+
+1. **The bot makes a "confident wrong" change.** Mitigation: every change waits for client tap; auto-merge limited to trivial labels; design / critical paths human-only.
+2. **The plan-then-execute gate adds latency clients don't want.** Mitigation: Tier 3 cadence runs hourly; Tier 0 explicitly opts out of automation entirely.
+3. **The phone-edit shortcut breaks on iOS / Android update.** Mitigation: web-based admin portal is the canonical surface; SMS + email are fallback channels.
+4. **HMAC rotation goes wrong.** Mitigation: two-phase HMAC rotation in `docs/mothership/03-secure-architecture §3.Y`; recovery drill in `03b-security-operations-checklist`.
+5. **Cron drift between site and pipeline repos.** Mitigation: Pattern C puts cron only on the pipeline repo's `main` (canonical GitHub Actions path); enforced by `pattern-c-enforcement-checklist.md`.
+
+---
+
+## The single biggest existential risk
+
+> **Operator burnout** — not the market, not the technology, not a competitor.
+
+The cap (30 clients), the charter (80% / 95% session gates), the cadence (T0–T3), the negative list (no e-commerce, no white-label, no equity-only), and the planned hire ladder (VA at 25, engineer at 35) all exist for one purpose: keep the operator in the chair, healthy, with their evenings back, for the entire ramp.
+
+If any *other* risk lands, the system absorbs it. If burnout lands, the system stops. Treat it accordingly.
+
+---
+
+## Section recap — Challenges
+
+- **Operationally** mitigated: outages, queue starvation, secret leaks, payment defaults, ADA — all have prepared playbooks.
+- **Strategically** unsettled: demand reach, competitive moves, model deprecation, regulatory expansion.
+- **Capacity cliffs** are scheduled, not surprises.
+- **Burnout is the single biggest existential risk.** The cap, charter, and cadence exist to prevent it.
+
+> Pitch line: *"We've named the risks, mitigated the operational ones, watch-listed the strategic ones, and put the operator's wellbeing at the top of the list."*
+
+---

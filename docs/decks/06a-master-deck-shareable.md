@@ -421,3 +421,77 @@ Three forcing functions make a small bounded book the right ceiling, not the con
 > Pitch line: *"A small retainer practice that prints predictable margin and gives the operator their evenings back."*
 
 ---
+
+<!-- _class: lead -->
+
+# 6 · Steps to achieve the end goal
+
+*Top-of-funnel through retained client #N, in plain order.*
+
+---
+
+## Steps in plain order
+
+1. **Lock the brand and own the slugs.** Domain, GitHub org, email sender, SMS sub-account. *(Done / in progress.)*
+2. **Close the architecture critiques.** Operator/client repo separation, security topology, capacity reconciliation, ops sequencing. *(Underway.)*
+3. **Bootstrap the operator-side pipeline.** A clean, separate repository hosting all automation, prompts, and CI workflows.
+4. **Spin out the showcase client into a clean two-repo pair.** Use it as the live demo of the architecture.
+5. **Publish the storefront.** Marketplace gigs, freelance profiles, and a pinned LinkedIn case-study post.
+6. **Sell the next two arms-length retainers.** Real signed contracts. Trigger MSA + payment automation + privacy work.
+7. **Cross the early-cliff thresholds.** Secrets vault and break-glass envelope around client #5.
+8. **Cross the AI-quota cliffs.** Step up the Claude subscription tier at the documented client counts.
+9. **Cross the part-time-help threshold.** Add a virtual assistant for client comms once the operator caps out.
+10. **Cross the Stage 1 cap.** Decide: hold (Stage 1), expand (Stage 2 hire), or productise (Stage 3 SaaS).
+
+---
+
+## Steps grouped by theme
+
+| Theme | Steps |
+|---|---|
+| **Identity + IP** | Brand lock; pipeline repo; secrets vault; MSA + SOW. |
+| **Product hardening** | Critique closure (separation, security, capacity, ops); admin-portal phases; multi-vendor fallback proven on a live client. |
+| **Go-to-market** | Storefronts (marketplace gigs, freelance platforms); LinkedIn; first 5 reviews; price step-ups. |
+| **Operations** | Per-engagement provisioning matrix; evidence log per client; monthly + quarterly cadences. |
+| **Finance + legal** | Stripe Subscriptions; auto-pause schedule; PIPEDA + provincial overlays; insurance once the revenue threshold is crossed. |
+| **Scaling decisions** | Plan upgrades at the documented client-count cliffs; VA at the cap; second engineer well past the cap. |
+
+---
+
+## The two non-negotiable invariants
+
+1. **The two-repo separation holds on every client.** No automation workflows on the site repo. No operator-side IP commingled into the client's tree.
+2. **The session-budget charter holds on every automated run.** No client floods the queue. No run exits incomplete on `main`.
+
+Everything else can flex. These two cannot.
+
+---
+
+## What "step complete" looks like, audit-style
+
+For each numbered step above, the audit question is: *"If a future operator looked at the repo today, could they verify this step shipped?"*
+
+| Step | Verifiable artefact |
+|---|---|
+| 1 — Brand lock | Brand reference doc updated; domain WHOIS recorded. |
+| 2 — Critiques closed | Critique-closure run records linked from the index. |
+| 3 — Pipeline bootstrapped | Pipeline repo exists; CI green on a no-op issue. |
+| 4 — Showcase client spun out | Two repos visible; cross-contamination audit clean. |
+| 5 — Storefront live | Marketplace URLs + LinkedIn pinned post recorded. |
+| 6 — Next clients signed | Signed MSAs filed; recurring billing active. |
+| 7–10 — Cliff triggers | Capacity table records the date each cliff hit. |
+
+If a step doesn't have a verifiable artefact, it isn't done.
+
+---
+
+## Section recap — Steps
+
+- **Identity** (brand, repos, vault) → **Product** (close critiques, harden) → **Sales** (storefronts, first 5 clients) → **Scale** (cliffs through the Stage 1 cap).
+- The order matters: identity before product, product before sales, sales before scaling decisions.
+- Two-repo separation and the budget charter are the **invariants** through every step.
+- Every step has an artefact a future operator can verify.
+
+> Pitch line: *"Lock the brand, harden the product, then sell — in that order."*
+
+---

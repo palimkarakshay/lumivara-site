@@ -35,10 +35,10 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <h3 id="product-positioning--the-nine-questions">Product positioning — the nine questions</h3>
 <p>A working answer to: <em>what are we selling, to whom, against whom, with what plan, and at what cost?</em></p>
 <br />
-<p><em>Source material: <code>docs/mothership/</code> (operator pack), <code>docs/storefront/</code> (go-to-market pack), and <code>docs/research/</code> (Gemini Deep Research outputs + 7-stat independent verification pass), reconciled 2026-04-29.</em></p>
+<p><em>Source material: <code>docs/mothership/</code> (operator pack), <code>docs/storefront/</code> (go-to-market pack), and <code>docs/research/</code> (Gemini Deep Research outputs + 7-stat independent verification pass). <strong>Refreshed 2026-04-30</strong> for the same-day pipeline-lane work — brand + domain ADR <code>15c</code>, extended five-leg <code>codex-review</code> fallback ladder, <code>llm-monitor</code> bot self-awareness pipeline, <code>record-ingest</code> operator recording pipeline, doc-task seeder per OWASP LLM08, plumber + recruiter vertical templates promoted Stub → Full, PIPEDA breach-notification research seed.</em></p>
 <br />
 <p><em>Every load-bearing statistic in this deck cites a row in <code>docs/research/03-source-bibliography.md</code> with a verification state — <code>[V]</code> re-verified, <code>[S]</code> cited but not re-verified, <code>[C]</code> contested or superseded.</em></p>
-<p><span class="small">Operator deck — confidential. Not for client distribution.</span></p>
+<p><span class="small">Operator deck — confidential. Not for client distribution. <strong>Brand-name reconsideration (D2) is open</strong> per <a href="../mothership/15c-brand-and-domain-decision.md"><code>docs/mothership/15c-brand-and-domain-decision.md</code></a>; this deck continues to use <code>Lumivara Forge</code> as a placeholder until D2 lands.</span></p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="2" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 60px 80px; }
 h1 { color: #1f1f1f; font-family: 'Fraunces', Georgia, serif; font-size: 2.4em; }
@@ -421,13 +421,14 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 .center { text-align: center; }
 .two-col { column-count: 2; column-gap: 40px; }
 ;color:#1f1f1f;background-color:#fafaf7;background-image:none;" data-marpit-pagination-total="59" data-size="16:9">
-<h2 id="five-things-only-we-ship-today">Five things only we ship today</h2>
+<h2 id="six-things-only-we-ship-today">Six things only we ship today</h2>
 <ol>
 <li><strong>Phone-as-the-CMS.</strong> A shortcut on the client's phone routes through n8n + Claude into a GitHub PR with a Vercel preview. No CMS to log in to. (<code>docs/ADMIN_PORTAL_PLAN.md</code>.)</li>
-<li><strong>Multi-AI autopilot with deterministic fallback.</strong> Claude Opus → Gemini → OpenAI Codex. Triage, plan, execute, review — each stage has a fallback so a single-vendor outage never blocks the queue. (<code>docs/AI_ROUTING.md</code>.)</li>
+<li><strong>Multi-vendor autopilot with deterministic five-leg fallback.</strong> Claude Opus 4.7 primary on every stage; on outage the deepest stage (<code>codex-review</code>) falls through Gemini 2.5 Pro → Gemini 2.5 Flash → GitHub Models (Llama 3.3-70B + GPT-4.1-mini) → OpenRouter (DeepSeek R1 + Qwen3-Coder, both free tier) before deferring. Triage, plan, execute, review — each stage has a primary + at least two fallbacks. Single-vendor outage never blocks the queue. (<code>docs/AI_ROUTING.md</code>; <code>scripts/codex-review-fallback.py</code>.)</li>
 <li><strong>Plan-then-execute pipeline.</strong> Every routine issue gets a structured AI plan as a comment <em>before</em> code is written. The client can read what's about to happen.</li>
-<li><strong>Tier-based cadence.</strong> T0 manual; T1 daily; T2 every 2 h; T3 every hour. The bot's &quot;energy&quot; is a sold feature. (<code>docs/mothership/04-tier-based-agent-cadence.md</code>.)</li>
-<li><strong>two-repo isolation (Dual-Lane Repo).</strong> Client gets a clean <code>&lt;slug&gt;-site</code> repo (private → transferable). The pipeline, prompts, and operator IP live in a separate <code>&lt;slug&gt;-pipeline</code> repo the client never sees. (<code>docs/mothership/02b-dual-lane-architecture.md</code>.)</li>
+<li><strong>Tier-based cadence + 24/7 watch tier.</strong> T0 manual; T1 daily; T2 every 2 h; T3 every hour. <em>Plus</em> the operator-side watch tier — <code>triage</code> every 15 min and <code>llm-monitor-watch</code> every 15 min, with a <code>llm-monitor</code> sweep every 2 h. The bot's &quot;energy&quot; is a sold feature; the watch tier is the operator-side equivalent of a night shift. (<code>docs/mothership/04-tier-based-agent-cadence.md</code>; <code>docs/AI_ROUTING.md §1</code>.)</li>
+<li><strong>Two-repo isolation (Dual-Lane Repo).</strong> Client gets a clean <code>&lt;slug&gt;-site</code> repo (private → transferable). The pipeline, prompts, and operator IP live in a separate <code>&lt;slug&gt;-pipeline</code> repo the client never sees. (<code>docs/mothership/02b-dual-lane-architecture.md</code>.)</li>
+<li><strong>Bot self-awareness pipeline.</strong> <code>llm-monitor</code> watches Anthropic / Gemini / OpenAI status pages, four LLM-bot RSS feeds, and a Stack Overflow collector, then auto-rewrites <code>KNOWN_ISSUES.md</code> and <code>RECOMMENDATIONS.md</code>. The triage / plan / execute prompts ingest those files at runtime. When an upstream-provider quirk lands, the fleet steers around it without a human in the loop. (<code>docs/mothership/llm-monitor/runbook.md</code>.)</li>
 </ol>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 60px 80px; }
@@ -467,20 +468,24 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <td>Requires Auth.js v5 + n8n workflows + HMAC + Octokit + Vercel deploy hooks wired together. ~5 phases of build (<code>ADMIN_PORTAL_PLAN.md</code>).</td>
 </tr>
 <tr>
-<td>Multi-AI fallback</td>
-<td>Requires three live API contracts, a deterministic router, and prompt-pack parity across providers. Most freelancers hold one key.</td>
+<td>Multi-vendor fallback</td>
+<td>Requires <em>five</em> live API surfaces (Anthropic + Google + OpenAI + GitHub Models + OpenRouter), a deterministic router, prompt-pack parity across providers, and per-stage probes that detect &quot;the model returned 200 but the body is unfinished.&quot; Most freelancers hold one key.</td>
 </tr>
 <tr>
 <td>Plan-then-execute</td>
 <td>Every routine issue gets an AI-authored plan comment before code lands. Few competitors run this gate.</td>
 </tr>
 <tr>
-<td>Tier cadence</td>
-<td>The pipeline reads tier from a per-client variable; cron, model, and auto-merge gates all branch on it. Not a feature flag — a whole product surface.</td>
+<td>Tier cadence + watch tier</td>
+<td>The pipeline reads tier from a per-client variable; cron, model, and auto-merge gates all branch on it. The watch tier (<code>triage</code> every 15 min + <code>llm-monitor-watch</code> every 15 min + <code>llm-monitor</code> sweep every 2 h) keeps the queue moving 24/7. Not a feature flag — a whole product surface.</td>
 </tr>
 <tr>
 <td>Dual-Lane Repo isolation</td>
 <td>A GitHub App + two-repo split + per-engagement install ID. Operator IP stays operator-side; the client repo is genuinely &quot;vanilla&quot; if they ever leave.</td>
+</tr>
+<tr>
+<td>Bot self-awareness</td>
+<td><code>llm-monitor</code> ingests provider status, RSS, Stack Overflow → auto-rewrites <code>KNOWN_ISSUES.md</code> + <code>RECOMMENDATIONS.md</code> → the fleet's prompts read those files. The whole closed loop is operator-hosted; copying any one piece doesn't reproduce the compounding effect.</td>
 </tr>
 </tbody>
 </table>
@@ -545,9 +550,10 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <h2 id="section-recap--differentiators">Section recap — Differentiators</h2>
 <ul>
 <li><strong>Phone-as-CMS</strong> is the headline feature. Nobody in our price band offers it.</li>
-<li><strong>Multi-AI fallback</strong> turns a single-vendor risk into a product feature (&quot;we don't pause when one provider hiccups&quot;).</li>
+<li><strong>Five-leg multi-vendor fallback</strong> turns a single-vendor risk into a product feature (&quot;we don't pause when one provider hiccups&quot;); four of the five legs are free-tier-accessible.</li>
 <li><strong>Dual-Lane Repo</strong> lets us license the system per engagement while the <em>site</em> is genuinely the client's.</li>
-<li><strong>Tier cadence</strong> turns &quot;how aggressive is the bot&quot; into a sold dial.</li>
+<li><strong>Tier cadence + watch tier</strong> turns &quot;how aggressive is the bot&quot; into a sold dial <em>and</em> keeps the queue moving 24/7.</li>
+<li><strong>Bot self-awareness</strong> (<code>llm-monitor</code>) closes the loop on upstream-provider quirks: the prompts learn from yesterday's bugs without an operator typing.</li>
 </ul>
 <blockquote>
 <p>Pitch line: <em>&quot;Other people sell you a website. We sell you a website that updates itself.&quot;</em></p>
@@ -1252,7 +1258,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 ;color:#1f1f1f;background-color:#fafaf7;background-image:none;" data-marpit-pagination-total="59" data-size="16:9">
 <h2 id="steps-in-plain-order">Steps in plain order</h2>
 <ol>
-<li><strong>Lock the brand and own the slugs.</strong> <code>Lumivara Forge</code> is locked (<code>01-business-plan.md §1</code>); buy domain, GitHub org, Resend domain, Twilio sub-account. <em>(Done / in progress.)</em></li>
+<li><strong>Lock the brand and own the slugs.</strong> <code>Lumivara Forge</code> was locked 2026-04-28 (<code>01-business-plan.md §1</code>) and <strong>re-opened 2026-04-30</strong> (ADR <code>15c</code> D2). Domain (committed: separate from <code>lumivara.ca</code>), GitHub org, Resend domain, Twilio sub-account, second mechanical drift sweep — all blocked on D2. <em>(In progress; same-day pause is the smallest possible cost compared to a slug-rewrite mid-Phase-0.)</em></li>
 <li><strong>Close the architecture critiques</strong> — Dual-Lane Repo lock, security topology, capacity reconciliation, ops sequencing. <em>(P4.6 in <code>00-INDEX.md</code>; underway.)</em></li>
 <li><strong>Bootstrap the mothership repo.</strong> <code>palimkarakshay/lumivara-forge-mothership</code>, with workflow templates, scripts, n8n exports. (<code>05-mothership-repo-buildout-plan.md</code>, P5.)</li>
 <li><strong>Spin out Client #1 (Lumivara People Advisory)</strong> into its own clean Dual-Lane Repo pair of repos. Use it as the showcase. (<code>docs/migrations/lumivara-people-advisory-spinout.md</code>, P6.)</li>
@@ -1478,7 +1484,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <tr>
 <td><strong>P4.6 — Critique closure</strong></td>
 <td>Runs A–D: cron flaw, security gaps, maths, ops sweep</td>
-<td><img class="emoji" draggable="false" alt="⏳" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/23f3.svg" data-marp-twemoji=""/> <strong>In progress</strong></td>
+<td><img class="emoji" draggable="false" alt="⏳" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/23f3.svg" data-marp-twemoji=""/> <strong>In progress</strong> — D-1 close-merged sub-pass landed 2026-04-30 (20 awaiting-review issues closed, PR #246).</td>
 </tr>
 <tr>
 <td><strong>P5 — Mothership repo bootstrap</strong></td>
@@ -1786,7 +1792,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <td>Anthropic outage / throttle</td>
 <td>Med</td>
 <td>High</td>
-<td>Multi-AI fallback ladder (<code>AI_ROUTING.md</code>) — Claude → Gemini → OpenAI Codex on triage and execute.</td>
+<td>Five-leg multi-vendor fallback ladder (<code>AI_ROUTING.md</code>) — Claude Opus → Gemini Pro → Gemini Flash → GitHub Models (Llama / GPT-4.1-mini) → OpenRouter (DeepSeek / Qwen) on the deepest stage.</td>
 </tr>
 <tr>
 <td>One client floods the queue</td>
@@ -2397,7 +2403,8 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <h2 id="tooling--the-operator-stack">Tooling — the operator stack</h2>
 <ul>
 <li><strong>Claude Pro/Max</strong> — primary AI; OAuth-bound to GitHub Actions via <code>CLAUDE_CODE_OAUTH_TOKEN</code>.</li>
-<li><strong>Gemini API + OpenAI API</strong> — fallback ladder.</li>
+<li><strong>Gemini API + OpenAI API + GitHub Models + OpenRouter</strong> — five-leg fallback ladder on <code>codex-review</code>; shorter ladders elsewhere. Four of the five legs are free-tier-accessible.</li>
+<li><strong><code>llm-monitor</code></strong> — operator-side bot self-awareness pipeline; runs the watch tier (every 15 min) + sweep tier (every 2 h); auto-rewrites <code>KNOWN_ISSUES.md</code> + <code>RECOMMENDATIONS.md</code>.</li>
 <li><strong>n8n on Railway</strong> — capture and dispatch hub.</li>
 <li><strong>GitHub</strong> — source of truth (Issues, Actions, Project v2).</li>
 <li><strong>Vercel</strong> — hosting + preview builds + deploy hooks.</li>

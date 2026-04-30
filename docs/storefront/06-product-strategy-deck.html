@@ -38,7 +38,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <br />
 <p>A working answer to nine questions:<br />
 <strong>benefits · differentiation · customer voice · competitor claims · end goal · steps · plan · risks · resources.</strong></p>
-<p><span class="small">Operator-only working deck · 2026-04-29 · sourced from <code>docs/mothership/</code> + <code>docs/storefront/</code></span></p>
+<p><span class="small">Operator-only working deck · refreshed 2026-04-30 · sourced from <code>docs/mothership/</code> + <code>docs/storefront/</code>. <strong>Brand-name reconsideration (D2) is open</strong> per <a href="../mothership/15c-brand-and-domain-decision.md"><code>docs/mothership/15c-brand-and-domain-decision.md</code></a>; deck continues to use <code>Lumivara Forge</code> as a placeholder.</span></p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="2" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 56px 72px; }
 h1 { color: #1f1f1f; font-family: 'Fraunces', Georgia, serif; font-size: 2.4em; margin-bottom: 0.2em; }
@@ -376,16 +376,17 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 ;color:#1f1f1f;background-color:#fafaf7;background-image:none;" data-marpit-pagination-total="46" data-size="16:9">
 <h2 id="the-differentiation-stack">The differentiation stack</h2>
 <br />
-<p>Five layers, from &quot;table stakes&quot; to &quot;uniquely ours&quot;:</p>
+<p>Six layers, from &quot;table stakes&quot; to &quot;uniquely ours&quot;:</p>
 <ol>
 <li><strong>Modern Next.js 16 site</strong> — most freelancers can do this. Table stakes.</li>
 <li><strong>Phone-edit shortcut</strong> — submit a change from a phone in 30 seconds.</li>
-<li><strong>AI autopilot that implements + previews changes</strong> — multi-AI router (Claude → Gemini → OpenAI), plan-then-execute pipeline.</li>
-<li><strong>Tier-based cadence</strong> — T1 ships next morning, T2 within 2 hours, T3 within 1 hour.</li>
-<li><strong>two-repo architecture (Dual-Lane Repo)</strong> — autopilot lives in an operator-only pipeline repo; the client's site repo is a clean Next.js codebase they own outright.</li>
+<li><strong>AI autopilot that implements + previews changes</strong> — multi-vendor router (Claude → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter on the deepest stage), plan-then-execute pipeline.</li>
+<li><strong>Tier-based cadence + 24/7 watch tier</strong> — T1 ships next morning, T2 within 2 hours, T3 within 1 hour, plus an operator-side watch tier that sweeps every 15 min.</li>
+<li><strong>Two-repo architecture (Dual-Lane Repo)</strong> — autopilot lives in an operator-only pipeline repo; the client's site repo is a clean Next.js codebase they own outright.</li>
+<li><strong>Bot self-awareness pipeline</strong> — <code>llm-monitor</code> watches provider status + RSS + Stack Overflow, auto-rewrites <code>KNOWN_ISSUES.md</code> + <code>RECOMMENDATIONS.md</code>, and the runtime prompts ingest those files. The fleet learns from yesterday's bugs without an operator typing.</li>
 </ol>
 <blockquote>
-<p>Layers 2–5 are what nobody else is shipping in this market segment.</p>
+<p>Layers 2–6 are what nobody else is shipping in this market segment.</p>
 </blockquote>
 <p><span class="small">Source: <code>docs/AI_ROUTING.md</code>, <code>docs/mothership/02b-dual-lane-architecture.md</code>, <code>docs/mothership/04-tier-based-agent-cadence.md</code>.</span></p>
 </section>
@@ -429,8 +430,8 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <td>iOS/Android Shortcut → admin portal → n8n webhook → GitHub issue → bot. Auth.js v5 + magic-link, Google, or Entra ID.</td>
 </tr>
 <tr>
-<td><strong>Multi-AI router</strong></td>
-<td>Claude Opus primary; Gemini 2.5 Pro for 1M-context audits; gpt-5.5 for code review. <strong>Outage in one provider doesn't pause the client's site.</strong></td>
+<td><strong>Multi-vendor router</strong></td>
+<td>Claude Opus 4.7 primary; Gemini 2.5 Pro for 1M-context audits + planning; gpt-5.5 for code review with a five-leg fallback (Gemini Pro → Flash → GitHub Models → OpenRouter); free-tier-accessible all the way through. <strong>Outage in one provider doesn't pause the client's site.</strong></td>
 </tr>
 <tr>
 <td><strong>Plan-then-execute</strong></td>
@@ -1765,7 +1766,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <td><strong>Anthropic outage / throttle</strong></td>
 <td>Med</td>
 <td>High</td>
-<td>Multi-AI fallback ladder (Claude → Gemini → OpenAI); triage + execute survive Claude-down.</td>
+<td>Five-leg multi-vendor fallback ladder (Claude → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter); every stage has a primary + at least two fallbacks; triage + execute + review all survive Claude-down. <code>llm-monitor</code> ingests provider-status updates so the prompts know when a provider is degraded.</td>
 </tr>
 <tr>
 <td><strong>Single client floods the queue</strong></td>

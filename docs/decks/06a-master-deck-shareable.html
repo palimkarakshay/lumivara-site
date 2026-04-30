@@ -35,8 +35,8 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <h3 id="master-deck--shareable-summary">Master deck — shareable summary</h3>
 <p>What we sell, who we sell it to, who we sell against, where the business is going, and what it costs to get there — in one read.</p>
 <br />
-<p><em>Compiled 2026-04-30. A shareable companion to the operator-scope master deck; the same nine product-positioning questions, with internal-only specifics generalised for external readers.</em></p>
-<p><span class="small">Shareable with serious external readers (advisors, prospective partners, investors, sophisticated prospects). Not a substitute for the audience-specific stakeholder decks (investor / partner / employee / client / advisor) — those remain the right artefact when a single voice is needed.</span></p>
+<p><em>Compiled 2026-04-30 (refreshed end-of-day to reflect the same day's pipeline-lane work — an extended multi-vendor fallback ladder, a bot self-awareness loop that ingests provider quirks into the prompts at runtime, an operator recording pipeline, four-tier doc-task self-automation, two more vertical templates promoted to Full, and a Canadian-privacy-law breach-notification research seed). A shareable companion to the operator-scope master deck; the same nine product-positioning questions, with internal-only specifics generalised for external readers.</em></p>
+<p><span class="small">Shareable with serious external readers (advisors, prospective partners, investors, sophisticated prospects). Not a substitute for the audience-specific stakeholder decks (investor / partner / employee / client / advisor) — those remain the right artefact when a single voice is needed. The brand name shown in this deck is a placeholder under active reconsideration; the architecture and the economics described do not depend on it.</span></p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="2" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 60px 80px; }
 h1 { color: #1f1f1f; font-family: 'Fraunces', Georgia, serif; font-size: 2.4em; }
@@ -517,13 +517,14 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 .footnote { font-size: 0.72em; color: #888; }
 .center { text-align: center; }
 ;color:#1f1f1f;background-color:#fafaf7;background-image:none;" data-marpit-pagination-total="67" data-size="16:9">
-<h2 id="five-things-only-we-ship-today">Five things only we ship today</h2>
+<h2 id="six-things-only-we-ship-today">Six things only we ship today</h2>
 <ol>
 <li><strong>Phone-as-CMS</strong> over a real codebase. A shortcut on the client's phone routes a plain-English instruction into a code change with a live preview. Nothing to log into.</li>
-<li><strong>Multi-vendor AI fallback ladder.</strong> Triage, plan, execute, and review each have a primary model and a fallback so a single-vendor outage never blocks the queue.</li>
+<li><strong>Multi-vendor AI fallback ladder.</strong> Every stage (triage, plan, execute, review) has a primary model plus several fallbacks. The deepest stage runs five legs across three independent providers and two free public model gateways before deferring — so a single-vendor outage never blocks the queue, and the cost line doesn't move when failover fires.</li>
 <li><strong>Plan-then-execute pipeline.</strong> Every routine change gets a structured AI plan written as a comment <em>before</em> code is touched. The client reads the plan first.</li>
-<li><strong>Tier-based cadence.</strong> A sold dial that controls how aggressively the autopilot runs (manual through hourly). The bot's &quot;energy&quot; is part of the price, not an internal toggle.</li>
+<li><strong>Tier-based cadence with a 24/7 watch loop.</strong> A sold dial that controls how aggressively the autopilot runs (manual through hourly), plus an operator-side watch tier that sweeps every 15 minutes. The bot's &quot;energy&quot; is part of the price; the watch loop is the operator-side equivalent of a night shift.</li>
 <li><strong>Two-repo isolation.</strong> The client's site lives in a clean, transferable repository in their own account. The autopilot, prompts, and operator IP live in a separate repository they never see — so if they ever leave, the site is genuinely &quot;vanilla&quot;.</li>
+<li><strong>Bot self-awareness.</strong> A monitoring loop watches provider status pages and developer-community signals, then auto-rewrites a &quot;known issues&quot; file and a &quot;recommendations&quot; file that the runtime prompts read at execution time. When an upstream-provider quirk lands, the fleet steers around it without an operator typing.</li>
 </ol>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="13" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 60px 80px; }
@@ -564,19 +565,23 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 </tr>
 <tr>
 <td>Multi-vendor fallback</td>
-<td>Requires three live API contracts, a deterministic router, and prompt-pack parity across providers. Most freelancers hold one key.</td>
+<td>Requires several live API contracts, a deterministic router, prompt-pack parity across providers, and per-stage probes that detect &quot;the model returned 200 but the body is unfinished.&quot; Most freelancers hold one key.</td>
 </tr>
 <tr>
 <td>Plan-then-execute</td>
 <td>An AI-authored plan comment lands on every routine issue before code does. Few competitors run this gate at all.</td>
 </tr>
 <tr>
-<td>Tier cadence</td>
-<td>Tier reads through the whole pipeline — schedule, model selection, auto-merge gates all branch on it. Not a feature flag; a whole product surface.</td>
+<td>Tier cadence + watch loop</td>
+<td>Tier reads through the whole pipeline — schedule, model selection, auto-merge gates all branch on it. The 24/7 watch loop keeps the queue moving overnight. Not a feature flag; a whole product surface.</td>
 </tr>
 <tr>
 <td>Two-repo isolation</td>
 <td>A per-engagement install split between operator-side automation and client-side site. Operator IP stays operator-side; the client repo is genuinely portable if they ever leave.</td>
+</tr>
+<tr>
+<td>Bot self-awareness</td>
+<td>The monitoring loop ingests provider status, RSS, and developer-community signals → auto-rewrites the runtime context the prompts read. The whole closed loop is operator-hosted; copying any one piece doesn't reproduce the compounding effect.</td>
 </tr>
 </tbody>
 </table>
@@ -641,9 +646,10 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <h2 id="section-recap--differentiators">Section recap — Differentiators</h2>
 <ul>
 <li><strong>Phone-as-CMS</strong> is the headline feature. Nobody in our price band offers it.</li>
-<li><strong>Multi-vendor fallback</strong> turns a single-vendor risk into a sold feature (&quot;we don't pause when one provider hiccups&quot;).</li>
+<li><strong>Multi-vendor fallback</strong> turns a single-vendor risk into a sold feature (&quot;we don't pause when one provider hiccups&quot;). The deepest stage now runs five legs across three providers and two free public model gateways.</li>
 <li><strong>Two-repo isolation</strong> lets us license the system per engagement while the <em>site</em> is genuinely the client's.</li>
-<li><strong>Tier cadence</strong> turns &quot;how aggressive is the bot&quot; into a sold dial, not an internal toggle.</li>
+<li><strong>Tier cadence + watch loop</strong> turns &quot;how aggressive is the bot&quot; into a sold dial, plus an operator-side 24/7 sweep.</li>
+<li><strong>Bot self-awareness</strong> closes the loop on upstream-provider quirks: the prompts learn from yesterday's bugs without an operator typing.</li>
 <li><strong>The negative list</strong> (what we don't sell) is itself a differentiator — boundaries clients can read and trust.</li>
 </ul>
 <blockquote>
@@ -1708,12 +1714,12 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <tr>
 <td><strong>Critique closure</strong></td>
 <td>Cron, security gaps, maths, ops sweep</td>
-<td><img class="emoji" draggable="false" alt="⏳" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/23f3.svg" data-marp-twemoji=""/> <strong>In progress</strong></td>
+<td><img class="emoji" draggable="false" alt="⏳" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/23f3.svg" data-marp-twemoji=""/> <strong>In progress</strong> — close-merged sub-pass landed end-of-day 2026-04-30.</td>
 </tr>
 <tr>
 <td><strong>Pipeline-repo bootstrap</strong></td>
 <td>Stand up the operator-side pipeline repository end-to-end</td>
-<td><img class="emoji" draggable="false" alt="⏳" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/23f3.svg" data-marp-twemoji=""/> Next</td>
+<td><img class="emoji" draggable="false" alt="⏳" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/23f3.svg" data-marp-twemoji=""/> Next — gated on the in-flight brand-name decision.</td>
 </tr>
 <tr>
 <td><strong>Two-repo spinout</strong></td>
@@ -1732,12 +1738,13 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 </tr>
 <tr>
 <td><strong>Legal &amp; vault</strong></td>
-<td>PIPEDA, contracts, secrets vault, market study</td>
-<td><img class="emoji" draggable="false" alt="⏳" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/23f3.svg" data-marp-twemoji=""/> Months 2–6</td>
+<td>PIPEDA (federal-privacy-law), contracts, secrets vault, market study</td>
+<td><img class="emoji" draggable="false" alt="⏳" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/23f3.svg" data-marp-twemoji=""/> Months 2–6 — federal-privacy-law breach-notification research seed landed 2026-04-30.</td>
 </tr>
 </tbody>
 </table>
 <p>Each <img class="emoji" draggable="false" alt="⏳" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/23f3.svg" data-marp-twemoji=""/> row has an opening issue when work begins, a tracking checklist while it's underway, and a verification artefact when it lands.</p>
+<p><strong>Bot-fleet maturity (operator side, end-of-day 2026-04-30):</strong> three vertical content prompt packs are now Full (one earlier; two promoted today); a doc-task seeder runs four-tier self-automation aligned with OWASP LLM08 (the supply-chain-of-instructions risk); an operator recording pipeline ships under a CI smoke test plus drift-guard unit tests; and the monitoring loop runs a watch tier every 15 min plus a sweep tier every 2 h, so the bot fleet improves itself between client engagements.</p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="42" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 60px 80px; }
 h1 { color: #1f1f1f; font-family: 'Fraunces', Georgia, serif; font-size: 2.4em; }
@@ -2000,7 +2007,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <td>Anthropic outage / throttle</td>
 <td>Med</td>
 <td>High</td>
-<td>Multi-vendor fallback ladder — the primary model fails over to two alternates on triage and execute.</td>
+<td>Multi-vendor fallback ladder — the primary model fails over through several alternates across three independent providers and two free public model gateways before deferring.</td>
 </tr>
 <tr>
 <td>One client floods the queue</td>
@@ -2641,7 +2648,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 ;color:#1f1f1f;background-color:#fafaf7;background-image:none;" data-marpit-pagination-total="67" data-size="16:9">
 <h2 id="tooling--the-operator-stack-at-a-category-level">Tooling — the operator stack, at a category level</h2>
 <ul>
-<li><strong>Primary AI subscription</strong> (with two API-based fallbacks).</li>
+<li><strong>Primary AI subscription</strong> (with multiple API-based fallbacks across two more providers and two free public model gateways).</li>
 <li><strong>Workflow automation hub</strong> for capture and dispatch.</li>
 <li><strong>GitHub</strong> as source of truth (Issues, Actions, Project boards).</li>
 <li><strong>Vercel</strong> for hosting + preview builds + deploy hooks.</li>

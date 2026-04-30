@@ -32,11 +32,11 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 .center { text-align: center; }
 ;color:#1f1f1f;background-color:#fafaf7;background-image:none;" data-marpit-pagination-total="14" data-size="16:9">
 <h1 id="lumivara-forge">Lumivara Forge</h1>
-<h3 id="investor-briefing--2026-04-29">Investor briefing — 2026-04-29</h3>
+<h3 id="investor-briefing--refreshed-2026-04-30">Investor briefing — refreshed 2026-04-30</h3>
 <p>A 30-client AI-leveraged services practice with ~95% pre-comp gross margin, deliberately small, optimised for take-home.</p>
 <br />
 <p><em>Confidential. NDA-gated. For investor / family-office circulation only.</em></p>
-<p><span class="small">Every number on every slide cites a verified row in <code>docs/research/03-source-bibliography.md</code>. Conservative band wherever a range exists.</span></p>
+<p><span class="small">Every number on every slide cites a verified row in <code>docs/research/03-source-bibliography.md</code>. Conservative band wherever a range exists. <strong>Brand-name reconsideration (D2) is open</strong> per <a href="../mothership/15c-brand-and-domain-decision.md"><code>docs/mothership/15c-brand-and-domain-decision.md</code></a>; this deck continues to use <code>Lumivara Forge</code> as a placeholder until D2 lands.</span></p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="2" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 60px 80px; }
 h1 { color: #1f1f1f; font-family: 'Fraunces', Georgia, serif; font-size: 2.4em; }
@@ -416,13 +416,14 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 .center { text-align: center; }
 ;color:#1f1f1f;background-color:#fafaf7;background-image:none;" data-marpit-pagination-total="14" data-size="16:9">
 <h2 id="competitive-moat">Competitive moat</h2>
-<p>Five operational features only Lumivara Forge ships in this combination today (full detail: <code>docs/storefront/06-positioning-slide-deck.md</code> §2):</p>
+<p>Six operational features only Lumivara Forge ships in this combination today (full detail: <code>docs/storefront/06-positioning-slide-deck.md</code> §2):</p>
 <ol>
 <li><strong>Phone-as-CMS</strong> over a real codebase — no major SMB builder offers this loop.</li>
-<li><strong>Multi-AI fallback ladder</strong> (Claude → Gemini → OpenAI) — single-vendor outage doesn't pause the queue (<code>docs/AI_ROUTING.md</code>).</li>
+<li><strong>Multi-vendor fallback ladder, five legs deep</strong> — Claude Opus → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter on the deepest stage; every stage has a primary plus at least two fallbacks. Single-vendor outage never blocks the queue, and four of the five legs are free-tier-accessible (<code>docs/AI_ROUTING.md</code>; <code>scripts/codex-review-fallback.py</code>).</li>
 <li><strong>Plan-then-Execute pipeline</strong> — every routine issue gets a structured AI plan as a PR comment <em>before</em> code is written; client reads the plan first.</li>
-<li><strong>Tier-based cadence</strong> — T0 manual, T1 daily, T2 every 2h, T3 hourly. The bot's &quot;energy&quot; is a sold feature.</li>
-<li><strong>two-repo isolation (Dual-Lane Repo)</strong> — clean <code>&lt;slug&gt;-site</code> for the client, separate <code>&lt;slug&gt;-pipeline</code> repo for the operator. Operator IP and AI prompts never touch the client's tree (<code>docs/mothership/02b-dual-lane-architecture.md</code>).</li>
+<li><strong>Tier-based cadence with 24/7 watch tier</strong> — T0 manual, T1 daily, T2 every 2h, T3 hourly <em>plus</em> <code>triage</code> and <code>llm-monitor-watch</code> every 15 min on the operator side. The bot's &quot;energy&quot; is a sold feature; the watch tier keeps the queue moving overnight.</li>
+<li><strong>Two-repo isolation (Dual-Lane Repo)</strong> — clean <code>&lt;slug&gt;-site</code> for the client, separate <code>&lt;slug&gt;-pipeline</code> repo for the operator. Operator IP and AI prompts never touch the client's tree (<code>docs/mothership/02b-dual-lane-architecture.md</code>).</li>
+<li><strong>Bot self-awareness pipeline</strong> — <code>llm-monitor</code> watches provider status, four LLM-bot RSS feeds, and a Stack Overflow collector, then auto-rewrites <code>KNOWN_ISSUES.md</code> and <code>RECOMMENDATIONS.md</code>. The triage / plan / execute prompts ingest those files at runtime, so when an upstream-provider quirk lands, the fleet steers around it without a human in the loop (<code>docs/mothership/llm-monitor/runbook.md</code>).</li>
 </ol>
 <p>The site is a commodity. The system <em>around</em> the site is the moat.</p>
 </section>
@@ -514,8 +515,8 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <tr>
 <td>Provider outage (<code>§D4</code>)</td>
 <td>High</td>
-<td>Multi-AI fallback ladder</td>
-<td>Joint Anthropic + Google + OpenAI outage (rare)</td>
+<td>Five-leg multi-vendor fallback ladder (Anthropic + Google + OpenAI + GitHub Models + OpenRouter)</td>
+<td>Simultaneous outage across three primary providers <em>and</em> two free public model gateways (extremely rare)</td>
 </tr>
 <tr>
 <td>Competitive substitution (<code>§D8</code>)</td>

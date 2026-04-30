@@ -480,7 +480,38 @@ def find_control_issue(token: str) -> dict | None:
     return None
 
 
+def _ensure_label(token: str, name: str, color: str, description: str) -> None:
+    """Idempotently create a label. `gh label create` exits non-zero if the
+    label exists; redirect stderr and ignore non-zero so the seeder never
+    fails just because it raced another workflow that already created it.
+    """
+    subprocess.run(
+        [
+            "gh", "label", "create", name,
+            "--repo", REPO,
+            "--color", color,
+            "--description", description,
+        ],
+        env={**os.environ, "GH_TOKEN": token},
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
 def ensure_control_issue(token: str) -> dict:
+    # Provision the labels the seeder relies on. Idempotent — safe to
+    # re-run on every dry-run pass. Mirrors the pattern used by
+    # bot-usage-monitor.yml / codex-review.yml / forge-triage.yml.
+    _ensure_label(
+        token, APPROVAL_LABEL, "0e8a16",
+        "Operator-attested approval for the next doc-task-seeder --apply run",
+    )
+    _ensure_label(
+        token, "do-not-triage", "ededed",
+        "Triage bot skips this issue (meta / dashboard / control issue)",
+    )
+
     issue = find_control_issue(token)
     if issue:
         return issue

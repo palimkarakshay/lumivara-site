@@ -1,0 +1,5 @@
+# Local-only collector outputs. CI persists state via an artifact, not git.
+raw/
+*.jsonl
+seen.json
+analyzer-*.json

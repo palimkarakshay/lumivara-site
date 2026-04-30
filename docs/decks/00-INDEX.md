@@ -6,9 +6,9 @@
 >
 > **Brand domain banner.** Operator-brand domain `lumivara-forge.com` is **pending registration** (see [`docs/mothership/15-terminology-and-brand.md §5`](../mothership/15-terminology-and-brand.md)). Decks reference it as the locked operator domain; until registration completes the URL will not resolve. The interim demo URL lives under [`palimkarakshays-projects` on Vercel](https://vercel.com/palimkarakshays-projects).
 
-Five stakeholder decks, one master deck, plus this index. Every deck cites `docs/research/03-source-bibliography.md` for its load-bearing claims and follows the verification posture set in `docs/research/00-INDEX.md`.
+Five stakeholder decks, one master deck (with a shareable companion), plus this index. Every deck cites `docs/research/03-source-bibliography.md` for its load-bearing claims and follows the verification posture set in `docs/research/00-INDEX.md`.
 
-> **Audience-fit rule.** Every stakeholder deck is written *to* one audience and *from* one voice. Never mix audiences in a single deck — make a new deck instead. The master deck (`06-master-deck.md`) is the one exception: it is operator-scope and explicitly multi-audience, intended as the canonical synthesis the stakeholder decks read out from.
+> **Audience-fit rule.** Every stakeholder deck is written *to* one audience and *from* one voice. Never mix audiences in a single deck — make a new deck instead. The master deck (`06-master-deck.md`) is the one exception: it is operator-scope and explicitly multi-audience, intended as the canonical synthesis the stakeholder decks read out from. Its shareable companion (`06a-master-deck-shareable.md`) is the same nine-question structure, generalised so it can be handed to a serious external reader without exposing operator-internal specifics.
 
 ---
 
@@ -22,6 +22,7 @@ Five stakeholder decks, one master deck, plus this index. Every deck cites `docs
 | 04 | `04-prospective-client-deck.md` | A solo professional / health practice / boutique firm comparing options | Persona-aware, plain, no jargon | External, persona-tailored | ~14 slides |
 | 05 | `05-advisor-deck.md` | A senior advisor / mentor the operator is asking to pressure-test the plan | Operator-honest, drawbacks first | External, single recipient | ~12 slides |
 | 06 | `06-master-deck.md` | **Master synthesis** — the nine product-positioning questions answered in one deck for operator self-review and as the canonical source the stakeholder decks read out from | Operator-honest, exhaustive | **Operator-scope; do not share without selecting a stakeholder deck first** | ~50 slides |
+| 06a | `06a-master-deck-shareable.md` | **Shareable companion to the master deck** — same nine questions, generalised for external readers (advisor / prospective partner / sophisticated investor / serious prospect doing diligence) | Externally-presentable, range-based | External, NDA-friendly; reader's pre-share checklist on the closing slide | ~50 slides |
 
 ---
 
@@ -32,7 +33,7 @@ Two decks already exist in `docs/storefront/`:
 - `04-slide-deck.md` is the **outward-facing prospect deck used at top-of-funnel**. The new `04-prospective-client-deck.md` is **persona-tailored** and meant for second-touch / discovery-call conversion. Use the freelance deck for cold outreach; use the new deck for warm-lead conversion.
 - `06-positioning-slide-deck.md` is the **operator-internal nine-questions deck**. The stakeholder decks here are **audience-specific** and read out from that operator-internal version. Update the freelance deck first; the stakeholder decks inherit.
 
-The master deck (`06-master-deck.md` in this folder) is the deck-pack-side counterpart of the storefront positioning deck: same nine questions, but written across all audiences in one place so a single read of it gives an operator (or a sufficiently trusted reviewer) the whole picture. The five stakeholder decks are voice-tuned subsets; the master deck is the union.
+The master deck (`06-master-deck.md` in this folder) is the deck-pack-side counterpart of the storefront positioning deck: same nine questions, but written across all audiences in one place so a single read of it gives an operator (or a sufficiently trusted reviewer) the whole picture. The five stakeholder decks are voice-tuned subsets; the master deck is the union. The shareable companion (`06a-master-deck-shareable.md`) is the same union, generalised so it can be forwarded to a vetted external reader without operator-internal point forecasts, internal phase IDs, or specific tooling reveals.
 
 Reading order for a new operator session that needs to understand the deck pack:
 
@@ -61,4 +62,4 @@ Before any deck in this folder is shared externally, walk these checks:
 
 ---
 
-*Last updated: 2026-04-30 — six-deck pack (added `06-master-deck.md`, the operator-scope synthesis of the nine product-positioning questions).*
+*Last updated: 2026-04-30 — added `06a-master-deck-shareable.md`, the externally-presentable companion to the operator-scope master deck.*

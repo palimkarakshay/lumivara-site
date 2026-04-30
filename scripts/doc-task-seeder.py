@@ -68,6 +68,19 @@ DEFAULT_LABELS = ["status/needs-triage", "area/content", "area/forge"]
 FORBIDDEN_LABELS = {"infra-allowed"}  # never auto-applied
 SEEDER_VERSION = "doc-task-bot/v1"
 
+# Tier 4 — Critical-mode operator gate (OWASP LLM08 / NIST AI RMF
+# "Manage" function). The seeder NEVER files on its own authority.
+# Every --apply call requires a fresh operator attestation:
+#   1. The operator edits the control issue's body to add a line
+#      `approved_source_ids: <id> <id> ...` listing the source_ids
+#      they're approving for THIS run.
+#   2. The operator applies the `seeder/approved` label.
+# The seeder reads both. Any candidate whose source_id is missing is
+# dropped; the label is removed automatically after a successful
+# apply so approval is per-run, never standing.
+CONTROL_ISSUE_TITLE = "Doc-task seeder — proposal log + approval gate"
+APPROVAL_LABEL = "seeder/approved"
+
 # Curated manifest of source docs. Each path is scanned for `bot-task:`
 # markers. Adding to this list is intentional; the seeder does not glob
 # the world. Extend the list in a follow-up PR with operator review.
@@ -420,6 +433,131 @@ def load_existing_source_ids(token: str | None) -> set[str]:
     return seen
 
 
+def _gh_json(args: list[str], token: str) -> dict | list:
+    out = subprocess.check_output(
+        ["gh"] + args, env={**os.environ, "GH_TOKEN": token}, text=True
+    )
+    return json.loads(out)
+
+
+def find_control_issue(token: str) -> dict | None:
+    """Return the open control issue (title match) or None."""
+    cmd = [
+        "issue", "list",
+        "--repo", REPO,
+        "--state", "open",
+        "--limit", "100",
+        "--search", f'in:title "{CONTROL_ISSUE_TITLE}"',
+        "--json", "number,title,body,labels",
+    ]
+    data = _gh_json(cmd, token)
+    if not isinstance(data, list):
+        return None
+    for issue in data:
+        if issue.get("title") == CONTROL_ISSUE_TITLE:
+            return issue
+    return None
+
+
+def ensure_control_issue(token: str) -> dict:
+    issue = find_control_issue(token)
+    if issue:
+        return issue
+    body = (
+        "This issue is the operator-attested approval gate for "
+        "`scripts/doc-task-seeder.py`. The seeder posts every dry-run's "
+        "candidate set as a comment here. To approve a run, edit this "
+        "issue's body to include the exact source_id of each candidate "
+        "you authorise on a single `approved_source_ids:` line, then "
+        f"apply the `{APPROVAL_LABEL}` label.\n\n"
+        "Standard applied: OWASP LLM08 (Excessive Agency) + NIST AI RMF "
+        "Manage. The seeder will refuse to file any candidate whose "
+        "source_id is absent from the approved list, even if the "
+        "label is present.\n\n"
+        "approved_source_ids:\n"
+    )
+    cmd = [
+        "issue", "create",
+        "--repo", REPO,
+        "--title", CONTROL_ISSUE_TITLE,
+        "--body", body,
+        "--label", "do-not-triage",
+    ]
+    subprocess.check_output(
+        ["gh"] + cmd, env={**os.environ, "GH_TOKEN": token}, text=True
+    )
+    issue = find_control_issue(token)
+    if not issue:
+        raise RuntimeError("Control issue created but immediate lookup failed.")
+    return issue
+
+
+def parse_approved_source_ids(body: str) -> set[str]:
+    """Read `approved_source_ids:` line(s) out of the control issue body."""
+    ids: set[str] = set()
+    in_block = False
+    for line in body.splitlines():
+        if line.strip().lower().startswith("approved_source_ids:"):
+            in_block = True
+            tail = line.split(":", 1)[1].strip()
+            if tail:
+                ids.update(
+                    t.strip() for t in tail.replace(",", " ").split() if t.strip()
+                )
+            continue
+        if in_block:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            if stripped.startswith("- "):
+                ids.add(stripped[2:].strip())
+            elif re.fullmatch(r"[0-9a-f]{8,}", stripped):
+                ids.add(stripped)
+            else:
+                in_block = False
+    return ids
+
+
+def post_proposal_comment(token: str, issue_number: int, body: str) -> None:
+    subprocess.check_output(
+        [
+            "gh", "issue", "comment", str(issue_number),
+            "--repo", REPO, "--body", body,
+        ],
+        env={**os.environ, "GH_TOKEN": token},
+        text=True,
+    )
+
+
+def remove_approval_label(token: str, issue_number: int) -> None:
+    subprocess.run(
+        [
+            "gh", "issue", "edit", str(issue_number),
+            "--repo", REPO,
+            "--remove-label", APPROVAL_LABEL,
+        ],
+        env={**os.environ, "GH_TOKEN": token},
+        check=False,
+    )
+
+
+def operator_approval_state(token: str) -> tuple[set[str], int | None]:
+    """Return (approved_source_ids, control_issue_number).
+
+    `approved_source_ids` is empty if the approval label is missing.
+    """
+    issue = find_control_issue(token)
+    if not issue:
+        return set(), None
+    labels = {
+        l.get("name") for l in issue.get("labels", []) if isinstance(l, dict)
+    }
+    if APPROVAL_LABEL not in labels:
+        return set(), int(issue["number"])
+    approved = parse_approved_source_ids(issue.get("body") or "")
+    return approved, int(issue["number"])
+
+
 def file_issue(token: str, candidate: Candidate) -> int:
     cmd = [
         "gh", "issue", "create",
@@ -565,16 +703,111 @@ def main() -> int:
             print(f"VERIFY DROP {cand.title}  ({verdicts})")
     plan.candidates = verified
 
+    # Tier 4 — operator-attested approval gate (OWASP LLM08).
+    # Even in --apply, the seeder refuses to file any candidate whose
+    # source_id is not on the operator's approved list AND the
+    # `seeder/approved` label is absent. The cron flow:
+    #   1. Cron run: dry-run posts a proposal comment + lists source_ids.
+    #   2. Operator: edits control-issue body, adds source_ids,
+    #      applies `seeder/approved`.
+    #   3. Operator: workflow_dispatch with apply=true.
+    #   4. Seeder files only approved source_ids; clears the label.
+    approved_ids: set[str] = set()
+    control_issue: int | None = None
+    if token:
+        approved_ids, control_issue = operator_approval_state(token)
+
     if args.apply:
-        for cand in plan.candidates:
-            try:
-                num = file_issue(token, cand)  # type: ignore[arg-type]
-                plan.filed.append((cand, num))
-                print(f"FILED #{num}: {cand.title}  (source={cand.source_path}:{cand.line})")
-            except Exception as exc:  # noqa: BLE001
-                plan.errors.append(f"file_issue failed for {cand.title!r}: {exc}")
-                print(f"FAIL  {cand.title}: {exc}", file=sys.stderr)
+        if control_issue is None:
+            plan.errors.append(
+                "Critical-mode gate: control issue does not exist. "
+                "Run a dry-run first so the seeder can create it."
+            )
+        elif not approved_ids:
+            plan.errors.append(
+                f"Critical-mode gate: control issue #{control_issue} does not "
+                f"have the `{APPROVAL_LABEL}` label, or its body has no "
+                "`approved_source_ids:` entries. Refusing to file. "
+                "(OWASP LLM08 / NIST AI RMF Manage.)"
+            )
+        else:
+            for cand in plan.candidates:
+                if cand.source_id not in approved_ids:
+                    plan.skipped_verification.append(cand)
+                    print(
+                        f"GATE DROP  {cand.title}  "
+                        f"(source_id={cand.source_id} not in operator-approved list)"
+                    )
+                    continue
+                try:
+                    num = file_issue(token, cand)  # type: ignore[arg-type]
+                    plan.filed.append((cand, num))
+                    print(
+                        f"FILED #{num}: {cand.title}  "
+                        f"(source={cand.source_path}:{cand.line})"
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    plan.errors.append(
+                        f"file_issue failed for {cand.title!r}: {exc}"
+                    )
+                    print(f"FAIL  {cand.title}: {exc}", file=sys.stderr)
+            # Approval is per-run, never standing — clear the label
+            # after a successful apply.
+            if plan.filed:
+                remove_approval_label(token, control_issue)  # type: ignore[arg-type]
     else:
+        # Dry-run: ensure the control issue exists and post a proposal
+        # comment so the operator has something to react to. Skipped
+        # silently when no token is available (local dev).
+        if token:
+            try:
+                ctrl = ensure_control_issue(token)
+                control_issue = int(ctrl["number"])
+                lines = ["## Doc-task seeder — proposal", ""]
+                lines.append(f"- Verifier mode: `{args.verify}`")
+                lines.append(f"- Cap: `{args.max_new}`")
+                lines.append(
+                    f"- Critical gate (OWASP LLM08 / NIST AI RMF Manage): "
+                    f"approval label `{APPROVAL_LABEL}` + body line "
+                    "`approved_source_ids: <id> <id> ...`"
+                )
+                lines.append("")
+                if not plan.candidates:
+                    lines.append("_No new candidates this run._")
+                else:
+                    lines.append("### Candidates")
+                    lines.append("")
+                    for cand in plan.candidates:
+                        verdicts = ", ".join(
+                            f"{v.model}={v.verdict}"
+                            for v in cand.verifications
+                        ) or "no-verifiers-ran"
+                        lines.append(
+                            f"- `{cand.source_id}` — **{cand.title}** "
+                            f"(`{cand.source_path}:{cand.line}`, "
+                            f"verifiers: {verdicts})"
+                        )
+                if plan.skipped_verification:
+                    lines.append("")
+                    lines.append("### Dropped by cross-LLM verification")
+                    for cand in plan.skipped_verification:
+                        verdicts = ", ".join(
+                            f"{v.model}={v.verdict}: {v.reason}"
+                            for v in cand.verifications
+                        ) or "no-verifiers-ran"
+                        lines.append(
+                            f"- `{cand.source_id}` — {cand.title} ({verdicts})"
+                        )
+                lines.append("")
+                lines.append(
+                    "_Approve by editing this issue's body to add "
+                    "`approved_source_ids: <id1> <id2> ...` and applying "
+                    f"the `{APPROVAL_LABEL}` label, then re-run with "
+                    "`apply=true`._"
+                )
+                post_proposal_comment(token, control_issue, "\n".join(lines))
+            except Exception as exc:  # noqa: BLE001
+                plan.errors.append(f"control-issue setup failed: {exc}")
         for cand in plan.candidates:
             print(f"DRY   {cand.title}  (source={cand.source_path}:{cand.line}, source_id={cand.source_id})")
         for cand in plan.skipped_existing:

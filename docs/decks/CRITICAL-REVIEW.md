@@ -248,3 +248,80 @@ The most important file in the repo right now is the one that does not yet exist
 > *"Until client #2 has paid an invoice in Canadian dollars, every additional artefact in this repo is a liability, not an asset."*
 
 ---
+
+## Appendix A — Independent second-opinion review
+
+The first half of this document was written by one critic. To stress-test the read, an independent reviewer (a separate Opus agent, briefed without seeing the analysis above) read the same deck pack from scratch and produced their own brutal review. Below are the findings unique to or strongest in their version. Convergence on the central thesis was strong; the agent's distinctive contributions are kept verbatim where the phrasing is sharper than the rephrasing would be.
+
+### A.1 The agent's verdict, verbatim
+
+> *"This is a documentation hobby with a logo. The operator has built a genuinely impressive intellectual artifact — a seven-deck, nine-section, vertical-tailored, source-cited, MARP-rendering, dual-lane-isolated, regulator-citation-paired body of writing — and zero paying clients. One client exists, and that client is the operator's own marketing site (lumivara-forge.com), which is to say the operator is selling to themselves and counting it as product-market fit. … Until somebody who is not the operator pays an invoice in Canadian dollars, this is writing about a business, not a business. Default verdict stands: documentation hobby."*
+
+### A.2 The closed-loop forecast, sharpened
+
+> *"The chain of evidence is: operator wrote a planning doc, operator quoted the planning doc in a deck, operator footnoted the deck back to the planning doc. That is a closed loop, not a forecast. A forecast requires at least one external data point — a closed deal, a churn rate from a real cohort, a CAC computed from a real campaign. There are zero of those."*
+
+### A.3 The cap, sharpened
+
+> *"A vegan restaurant that has never served a customer announcing 'we're capping reservations at 30 a night to preserve quality' is not exhibiting discipline; it is doing pre-emptive face-saving. The honest reading is: the cap will never bind, because the binding constraint is going to be sales, not capacity. The operator has built the floor of a building and put up a sign saying 'we deliberately won't go above 10 stories.'"*
+
+### A.4 The "Lighthouse" naming detail
+
+The agent caught a detail this document missed: the brand-rename shortlist (`Cadence / Continuum / Loom / Helm / Lighthouse / Compass / Plumbline`) includes **Lighthouse** — the name of Google's performance audit tool that the operator's own pipeline runs as a CI gate.
+
+> *"The fact that the operator is naming a web-services brand 'Lighthouse' while running Lighthouse audits as a CI gate is the kind of detail a serious naming exercise catches in 90 seconds. Renaming the brand 48 hours after locking it, in the middle of a stakeholder-deck refresh, after writing seven decks under the old name, is not the behavior of an operator close to first revenue."*
+
+### A.5 The "$120k SEO" stat, sharpened with named comparable
+
+> *"First Page Sage's published benchmarks for legal SEO are aggregations dominated by personal-injury and mass-tort firms that buy national keyword campaigns — i.e., AmLaw 200 and the long tail of lead-aggregator-funded plaintiffs' shops. A solo lawyer in Toronto with a one-paralegal practice spends nothing remotely close to $120k/yr on SEO. They spend $0–$5k/yr, often on a Clio website bundle plus occasional Google Ads. Quoting an industry-aggregate number that includes Morgan & Morgan ($100M+ ad spend) as if it were the line item of the deck's target persona is at best sloppy, at worst dishonest."*
+
+### A.6 The negative list, from the buyer's ear
+
+The agent's framing of how the buyer actually hears the negative list:
+
+> *"After the negative list, the affirmative list looks thin. The negative list is a way of making an underbuilt offer feel principled. It works on the page. In a sales call against an incumbent who has actually delivered something the prospect can point at, it falls apart. The other danger: the negative list is exhausting. Six refusals in a single slide, each with a regulator citation, each with a 'what we do instead' column, on the prospective client deck — this is a deck that respects the prospect's intelligence past the point of exhausting it. A dentist who got burned three times wants a simple answer to 'what do you do and how much.' They don't want a regulatory law-review article."*
+
+### A.7 The agent's five harshest sentences, verbatim
+
+The operator asked for excruciating detail. The agent's closing five sentences are kept here exactly as written:
+
+1. *"You have built a documentation cathedral on top of a single client who is yourself, and every additional deck you write is a load-bearing column in a building with no tenants."*
+
+2. *"The 30-client cap is not protective; it is the velvet rope you have hung in front of an empty restaurant, and your investors and advisors can see it as plainly as I can."*
+
+3. *"The '95% pre-comp gross margin' is what every solo operator with no team and no revenue has, and putting it in an investor deck does not make you exceptional — it makes you indistinguishable from every freelancer who has ever opened a spreadsheet."*
+
+4. *"Your $120k–$150k law-firm SEO benchmark is a number from AmLaw-class plaintiffs' firms applied to solo lawyers who spend two orders of magnitude less, and the first sophisticated reader who notices will throw the rest of the pack out with it."*
+
+5. *"You renamed the brand 48 hours after locking it, in the middle of a deck refresh, while having one paying client (yourself) and zero pipeline — and that single fact is the most honest signal in the entire repo about what kind of work you are willing to do this quarter."*
+
+### A.8 The agent's closing prescription
+
+> *"The most important file is the one that doesn't exist: a single-page list of 50 named local prospects with phone numbers and email addresses, and a column for 'contacted Y/N.' Build that file first. Everything else is decoration."*
+
+(This is the same prescription as §6 above, arrived at independently. Take that convergence as signal, not noise.)
+
+---
+
+## Appendix B — Methodology and limits
+
+This document is one harsh read among many possible reads. It is one-sided on purpose. The kind reads of the same material are already written, in the decks themselves and in the supporting `docs/research/` and `docs/mothership/` packs. This document does not attempt to balance them.
+
+What this document **did** read in full or near-full: the deck index, all five stakeholder decks (`01`–`05`), the prospective-client deck (`04`), the master deck (`06`), the dentists vertical pitch in full, the lawyers vertical pitch in part, and the supporting AGENTS.md / CLAUDE.md charters.
+
+What this document **did not** independently verify:
+
+- The contents of `docs/research/03-source-bibliography.md` row by row. The §2 critique above flags numbers whose citations *as quoted in the decks* are `[S]` or `[C]`; the bibliography may resolve some to `[V]` but the deck doesn't reflect that.
+- Whether `lumivara-forge.com` is actually shipping the phone-edit pipeline as described. The operator's claim is taken as given.
+- The legal-citation accuracy of the negative-list slide (CPSO §2, RCDSO §6, LSO §4.2, FTC Endorsement Guides 2024 final rule, Moffatt v. Air Canada 2024 BCCRT 149, etc.). These read as plausible but a separate legal review would be needed before any prospect-facing use.
+
+What this document **assumes** and what would change the read if false:
+
+- Assumes Client #1 is the operator's own marketing site (per `06-master-deck.md` "the autopilot that already runs on Client #1's site"). If Client #1 is in fact a paying third party, the verdict softens materially. The pack's language strongly implies otherwise, but the operator should verify this is read correctly.
+- Assumes no signed pipeline exists outside what is documented. If the operator has 5 verbal commitments not yet in the decks, the verdict softens.
+
+A future review could be more useful than this one if the operator runs the §6 one-week experiment and brings the spreadsheet back with reply-rate data. That is the conversation worth having.
+
+---
+
+*— End of critical review. 2026-04-30. Operator-scope, do not share.*

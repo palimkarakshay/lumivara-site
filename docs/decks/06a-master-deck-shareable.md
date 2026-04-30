@@ -783,3 +783,59 @@ For partner-shaped contributions (revenue-share, co-operator), see the partner-s
 > Pitch line: *"For a few thousand dollars of cash and a bounded workweek at saturation, this practice produces a sustainable solo-operator income in year 1."*
 
 ---
+
+<!-- _class: lead -->
+
+# Closing
+
+---
+
+## The one-sentence summary
+
+> **Lumivara Forge** sells small-business websites that you edit from your phone and that quietly improve themselves every month — for a flat subscription fee, on a real codebase you own outright.
+
+Built on the **autopilot** that already runs on the showcase client's site (operator-brand domain pending registration). Packaged as a four-tier ladder. Run by one operator, with a hire ladder that kicks in as the Stage 1 cap approaches.
+
+Year-1 destination: **a bounded retainer book, a sustainable solo-operator income, the day job replaced.**
+
+---
+
+## What every section collapses to
+
+| Section | The answer in one line |
+|---|---|
+| 1 — Benefits | The site stops decaying; flat fee replaces $200/edit invoices. |
+| 2 — Differentiators | Phone-as-CMS over a real codebase, multi-vendor AI fallback, two-repo operator/client split. |
+| 3 — Customer voice | Autonomy + predictability + ownership + custom looks. |
+| 4 — Competitor claims | Squarespace owns "edit yourself"; we own "edit yourself + own the code". |
+| 5 — End goal | A bounded Stage 1 retainer book; agency or SaaS optional later. |
+| 6 — Steps | Brand → critique-closure → pipeline repo → showcase → storefront → cliffs. |
+| 7 — Project plan | Side-hustle → day-job-supplementing → day-job-replacing across the year. |
+| 8 — Challenges | Outages mitigated; burnout is the single biggest existential risk. |
+| 9 — Resources | A few thousand dollars cash + a bounded workweek at saturation through year 1. |
+
+---
+
+## Reader's checklist before sharing this deck on
+
+If you're forwarding this deck to a third party, walk these checks first:
+
+- [ ] You have the operator's permission to share with the named recipient.
+- [ ] The recipient is one of the four reader profiles on slide 3 (advisor, partner, sophisticated investor, serious prospect).
+- [ ] You have not added or pasted operator-internal numbers (specific MRR / take-home figures, cliff client counts, internal phase IDs).
+- [ ] If a more audience-specific deck (investor / partner / employee / client / advisor) would serve the recipient better, you've offered it instead.
+
+This deck is **shareable**, not **public**. The audience-fit rule still applies.
+
+---
+
+<!-- _class: lead -->
+
+# Thank you.
+
+<br/>
+
+*Master deck — shareable summary.*
+
+<span class="small">Compiled 2026-04-30. A shareable companion to the operator-scope master deck, which remains the canonical synthesis. Audience-specific stakeholder decks (investor / partner / employee / client / advisor) sit in the same folder and are the right artefact when a single voice is needed.</span>
+

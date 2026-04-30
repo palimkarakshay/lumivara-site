@@ -231,6 +231,65 @@ The negative list is not scope shrinkage — it is a list of *what every competi
 
 ---
 
+## Why this sells — the itch that never scratches
+
+Operator-internal source of truth: [`docs/mothership/sales-verticals/00b-why-this-sells.md`](../mothership/sales-verticals/00b-why-this-sells.md). The advisor / investor / prospective-client lenses below all read from that file.
+
+A prospect arrives carrying the residue of every previous attempt to solve "I need a website that doesn't decay." Each previous attempt levied a hidden tax they have stopped naming because they assumed it was unavoidable.
+
+| # | Hidden tax | The alternative that levies it |
+|---|---|---|
+| 1 | **"I feel stupid"** at a WYSIWYG editor at 11pm | DIY builders (Squarespace / Wix / Webflow / Framer / Durable) |
+| 2 | **$200 to change a phone number** | Boutique agency on per-edit billing |
+| 3 | **Two-week wait for a typo** | Solo freelancer + Slack-DM model |
+| 4 | **"If I leave I lose the site"** | Webflow / Squarespace / agency-hosted |
+| 5 | **Pay-to-keep-an-old-thing-old** | WP Buffs / GoDaddy maintenance on decaying WordPress |
+| 6 | **Vendor lied → regulator punished me** | "We do everything!" agencies (SEO guarantees, AI receptionists, ghost-written content, review-gating, lead-volume promises) |
+| 7 | **Two cognitive loads** (CMS *and* developer) | Headless CMS + freelance dev |
+
+The product is, structurally, the inversion of all seven simultaneously. **One product, seven inversions.** Phone-as-CMS inverts 1+2+3. Real-codebase ownership inverts 4+5. The negative list inverts 6. The single-vendor model (no separate CMS) inverts 7.
+
+> Pitch line (operator-scope): *Every alternative the prospect tried lied to them about something that ended up being their liability. The thing that does work is a vendor whose entire business model is structurally incapable of having to lie.*
+
+---
+
+## Why this sells — the advisor / investor lens
+
+The negative list is **a cash-flow-positive filter**, not a scope cut. A standard agency retainer carries a hidden subsidy: the licensee pays for things the agency cannot legally deliver (ranking guarantees, ghost-written authority, lead-volume promises, review-gating) inside a flat monthly fee, on the working assumption the regulator / platform / FTC won't notice. Three things compound that liability:
+
+1. **Discovery skews to the licensee.** Regulator advertising rules, platform TOS, and *Moffatt v. Air Canada* (2024 BCCRT 149) all attach the failure to the licensee, not the vendor.
+2. **Selection skews against the agency.** The licensees sophisticated enough to read the regulator notice are the ones who churn.
+3. **Pricing skews under disclosure.** Once a prospect has heard the negative-list reasoning, every competitor's bundle reads as a liability transfer.
+
+| Axis | Standard agency book | Lumivara Forge book under the negative list |
+|---|---|---|
+| Churn | Concentrated at the moment a regulator letter arrives | Distributed and predictable; no regulator surprises |
+| NPS / referral intensity | Dampened by silent dread of "they cut a corner" | Amplified by *"this vendor finally told me what was actually going on with my last vendor"* |
+| Price elasticity | Compresses each renewal | Stays inelastic — boundaries the prospect can't unbundle |
+
+And every drawback in `docs/research/06-drawbacks-and-honest-risks.md` is bounded *because* a corresponding refusal on the negative list is enforced — D1 (no public AI chatbot), D3 (no engagements that scale past the cap), D5 (we can afford CI for accessibility because we don't run the SEO retainer that would compete for that budget), D7 (the negative list is itself the qualifier), D8 (the moat is the operator's structural refusal to take the liability transfer).
+
+> Pitch line: *Show us another retainer-services business in this price band where every refusal maps to a regulator citation, a platform-TOS clause, an FTC rule, or an operator-economics constraint — and where the same negative list produces a lower-churn, higher-NPS, more inelastic 30-client book than a standard agency's 200-client book. Name the comparable, or the over-engineering critique resolves: the apparatus is the only known way to enforce the negative list at solo-operator scale.*
+
+---
+
+## Why opt for Lumivara — the prospective-client lens
+
+Four checks the prospect can run *during the first 30-minute call* — without a contract, without a deposit, without a leap of faith:
+
+| Check | What confirms us |
+|---|---|
+| **Edit-my-own-site check** | A 30-second loop from voice memo → preview link → tap-to-publish, on a real Next.js codebase, on a domain that would be in their name. |
+| **What-happens-if-you-go-away check** | Domain (in their registrar), code (in their GitHub), hosting (on their card, in their name) — they keep the running site; they lose only the autopilot. |
+| **What-won't-you-sell-me check** | We give the regulator citation and the platform-TOS citation per refusal (`docs/mothership/sales-verticals/00a-negative-list-rationale.md`). They feel relief, because they have already been pitched at least one of those by a vendor whose name they no longer use. |
+| **Cost-when-I'm-wrong check** | 30 days' notice, no exit penalty, the licensee keeps everything they paid for. Setup fee is for the build, which they own; retainer covers the autopilot, which is licensed per engagement. |
+
+A prospect who passes all four on Call 1 is a buyer. A prospect who pushes back on any one is, almost always, a prospect who has internalised one of the seven hidden taxes as "just how it is."
+
+> Pitch line (client-scope): *They told me what they would not sell me, and they explained why each refusal protected me legally. Then they told me what they would do instead, and the price for the lot was below my current vendor's monthly retainer. I'd rather buy from a vendor who can't be made to lie to me than one who can.*
+
+---
+
 ## Section recap — Differentiators
 
 - **Phone-as-CMS** is the headline feature. Nobody in our price band offers it.

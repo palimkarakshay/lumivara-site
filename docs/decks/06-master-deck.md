@@ -364,3 +364,159 @@ Watch list reassessed every 2 months: **Framer** (closest substitution risk if t
 > Pitch line: *"Squarespace's edit loop, an agency's craft, and a freelancer's ownership — for one flat fee."*
 
 ---
+
+<!-- _class: lead -->
+
+# 5 · End goal as a business
+
+*What is Lumivara Forge, fully grown?*
+
+---
+
+## The 12-month decision rule
+
+> If a feature, doc, or tool helps the operator serve **paid retainer clients** better — build it.
+> If it helps serve **prospects, hypothetical SaaS users, or other agencies** better — defer it.
+
+Source: `docs/mothership/01-business-plan.md §9`.
+
+This rule is the antidote to over-engineering. Everything in this deck collapses to it.
+
+---
+
+## What "fully grown" looks like — Stage 1
+
+- **~25–30 active retainer clients.** Mix: ~70% T2, ~20% T1, ~10% T3. (`docs/storefront/02-pricing-tiers.md`.)
+- **MRR ≈ CAD $6,000 – $9,200** before setup-fee lumps. (`docs/storefront/03-cost-analysis.md` Part D.)
+- **Year-1 gross ~CAD $177k**, take-home ~$118k–$128k after Ontario sole-prop tax.
+- **Operator hours: ≤175 / month** of total work at saturation, of which ≤60 is client-facing.
+- **Day job replaced** between months 9 and 12.
+- **Zero published incidents** that would have cost a regulated client a compliance finding.
+
+This is the explicit target the cost analysis is built around. It's not "first step toward a unicorn." It's the destination of Stage 1.
+
+Source: `docs/storefront/03-cost-analysis.md` Parts B–D + `docs/mothership/18-capacity-and-unit-economics.md`.
+
+---
+
+## Beyond Stage 1 — optional stages, not committed
+
+| Stage | Horizon | What it looks like | Decision posture |
+|---|---|---|---|
+| **Stage 1 — Services + retainer** | now → 12 mo | Operator-run. ~30 clients max. The plan in this deck. | **Committed.** |
+| **Stage 2 — Managed-services agency** | 12–24 mo | Hire 1–2 operators. Scale to ~80 clients. Margins compress slightly. | Optional. Decide at client #30. |
+| **Stage 3 — Productise the operator side** | 24+ mo | Self-serve onboarding, customer-managed billing. Becomes a SaaS. | Optional. Different business; different risks. Defer. |
+
+Stage 3 is a different business with different risks (real product-market fit, real on-call, real fundraise). **Don't pre-build for it.** Stay in Stage 1 until genuinely outgrown.
+
+Source: `docs/storefront/05-template-hardening-notes.md` "Long-term: should this become a SaaS?"
+
+---
+
+## What this business is *NOT* trying to become
+
+- **Not a venture-scale SaaS.** No fundraising path. No "10× growth" hockey-stick.
+- **Not an agency.** Hiring is deferred to Stage 2, not built into year-1 ops.
+- **Not a hosting company.** Hosting is the client's, on their card.
+- **Not a labour arbitrage shop.** No offshore team, no per-hour billing.
+- **Not a product company yet.** No standalone software product is sold; the product is the **service experience**.
+
+The strategy is *deliberate smallness with high margin per client*, not scale at any cost.
+
+---
+
+## Why deliberate smallness is the strategy
+
+Three forcing functions make 30 clients the right ceiling, not the consolation prize:
+
+1. **Margin holds because payroll doesn't.** AI-enabled solo operators commonly report 65–75% gross margins (`[S] §B-Solopreneur-Margin`); traditional agencies compress to 40–50% under headcount load. We hold >95% pre-comp because there is no payroll to client #35 (`docs/storefront/03-cost-analysis.md` Part E).
+2. **Quality holds because attention does.** Every client gets the same operator's eyes on every PR. Above 30, attention has to be split or delegated — which downgrades the product.
+3. **Burnout is the ceiling, not the market.** The operator's reach (~30 clients ≈ 0.0023% of Canadian SMBs) is decisively not bound by demand (`[V] §B-Canada-SMB`). The cap is a personal-sustainability gate, not a market gate.
+
+---
+
+## Section recap — End goal
+
+- **Stage 1 destination: 30 retainer clients, ~$120k take-home, ≤175 op-hrs/mo.**
+- **Stage 2 destination:** ~80 clients, 1–2 hires, ~24-month horizon — optional.
+- **Stage 3 destination:** SaaS productisation — deferred until 30+ clients prove the model.
+- **The decision rule: paid retainers > everything else.**
+- Smallness is a **strategy**, not a constraint.
+
+> Pitch line: *"A 30-client retainer practice that prints predictable margin and gives the operator their evenings back."*
+
+---
+
+<!-- _class: lead -->
+
+# 6 · Steps to achieve the end goal
+
+*Top-of-funnel through retained client #30, in plain order.*
+
+---
+
+## Steps in plain order
+
+1. **Lock the brand and own the slugs.** `Lumivara Forge` is locked (`01-business-plan.md §1`); buy domain, GitHub org, Resend domain, Twilio sub-account. *(Done / in progress.)*
+2. **Close the architecture critiques.** Pattern C lock, security topology, capacity reconciliation, ops sequencing. *(P4.6 in `docs/mothership/00-INDEX.md`; underway.)*
+3. **Bootstrap the mothership repo.** `palimkarakshay/lumivara-forge-pipeline`, with workflow templates, scripts, n8n exports. (`docs/mothership/05-mothership-repo-buildout-plan.md`, P5.)
+4. **Spin out Client #1 into clean Pattern C repos.** Use it as the showcase. (`docs/migrations/00-automation-readiness-plan.md` + the lumivara-people-advisory spinout runbook, P5.6 / P6.)
+5. **Publish the storefront.** Fiverr Gig 1, Upwork profile, Toptal/Arc/Lemon screening, LinkedIn case-study post. (`docs/storefront/01-gig-profile.md` Part 10.)
+6. **Sell Client #2 + #3.** Real arms-length retainers. Trigger MSA + payment automation + privacy work. (`docs/mothership/08-future-work.md §1–§3`.)
+7. **Cross client #5.** Trigger 1Password vault + break-glass envelope. (`docs/mothership/08-future-work.md §4`.)
+8. **Cross client #16.** Upgrade Claude Pro → Max 5x → Max 20x at the cliffs. (`docs/mothership/18-capacity-and-unit-economics.md §6`.)
+9. **Cross client #25.** Hire a part-time VA for client comms triage. (`docs/storefront/03-cost-analysis.md` Part E.)
+10. **Cross client #30.** Decide: hold (Stage 1), expand (Stage 2 hire), or productise (Stage 3 SaaS).
+
+---
+
+## Steps grouped by theme
+
+| Theme | Steps |
+|---|---|
+| **Identity + IP** | Brand lock; mothership repo; vault; MSA + SOW. |
+| **Product hardening** | Critique closure (Pattern C, security, capacity, ops); admin portal Phases 1–5; multi-AI fallback proven on a live client. |
+| **Go-to-market** | Storefronts (Fiverr, Upwork, Toptal); LinkedIn; first 5 reviews; price step-ups. |
+| **Operations** | Per-engagement provisioning matrix; evidence log per client; monthly + quarterly cadences (`docs/mothership/03b-security-operations-checklist.md`). |
+| **Finance + legal** | Stripe Subscriptions; auto-pause schedule; PIPEDA + provincial overlays; insurance once over $50k revenue. |
+| **Scaling decisions** | Plan upgrades at clients 6 / 16 / 26; VA at 25; second engineer at 35. |
+
+---
+
+## The two non-negotiable invariants
+
+1. **The two-repo separation (Pattern C) holds on every client.** No workflows on the site repo. No operator-side IP commingled into the client's tree. (`docs/mothership/02b-pattern-c-architecture.md`, `pattern-c-enforcement-checklist.md`.)
+2. **The session-budget charter (80% / 95% gates) holds on every Claude run.** No client floods the queue. No run exits incomplete on `main`. (`AGENTS.md` "Session charter".)
+
+Everything else can flex. These two cannot.
+
+---
+
+## What "step complete" looks like, audit-style
+
+For each numbered step above, the operator's audit question is: *"If a future me looked at the repo today, could they verify this step shipped?"*
+
+| Step | Verifiable artefact |
+|---|---|
+| 1 — Brand lock | `docs/mothership/15-terminology-and-brand.md` updated; domain WHOIS recorded. |
+| 2 — Critiques closed | P4.6 runs A–D referenced in `docs/mothership/00-INDEX.md` marked ✅. |
+| 3 — Pipeline bootstrapped | Pipeline repo exists; cron + Actions green on a no-op issue. |
+| 4 — Client #1 spun out | Two repos visible in the Pattern C audit; brand-leak audit clean. |
+| 5 — Storefront live | Fiverr URL + Upwork URL + LinkedIn pinned post recorded. |
+| 6 — Client #2/#3 signed | Signed MSAs filed; Stripe subscription active. |
+| 7–10 — Cliff triggers | The capacity table in `18 §6` records the date each cliff hit. |
+
+If a step doesn't have a verifiable artefact, it isn't done.
+
+---
+
+## Section recap — Steps
+
+- **Identity** (brand, repos, vault) → **Product** (close critiques, harden) → **Sales** (storefronts, first 5 clients) → **Scale** (cliffs at 6 / 16 / 26 / 30).
+- The order matters: identity before product, product before sales, sales before scaling decisions.
+- Pattern C and the budget charter are the **invariants** through every step.
+- Every step has an artefact a future-self can verify.
+
+> Pitch line: *"Lock the brand, harden the product, then sell — in that order."*
+
+---

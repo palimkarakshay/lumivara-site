@@ -1,41 +1,44 @@
-name: LLM monitor (daily digest + KNOWN_ISSUES refresh)
+name: LLM monitor — sweep (every 2h, full content pipeline)
 
-# Pipeline-lane workflow. Reads HN / RSS / Reddit / GitHub for new
-# bugs, features, and best-practices about the LLMs and SDKs this
-# operator pipeline depends on, then writes:
+# Pipeline-lane workflow. The "sweep" tier of the tiered cadence
+# introduced 2026-04-30: every 2h runs the full content pipeline
+# (HN / RSS / Reddit / GitHub / statuspages), refreshes the digest
+# + operator/client newsletters, rewrites the KNOWN_ISSUES.md and
+# RECOMMENDATIONS.md auto-sections, and files auto-discovered
+# issues for severity-≥4 bugs with a clear action_hint.
 #
-#   - docs/mothership/llm-monitor/digests/YYYY-MM-DD.md
-#   - docs/mothership/llm-monitor/KNOWN_ISSUES.md (auto-section)
-#   - GitHub issues labelled `auto-discovered` + `infra-allowed` for
-#     severity-≥4 bugs with a clear action_hint
-#
-# The triage / plan / execute prompts ingest KNOWN_ISSUES.md so
-# every bot run starts from the last 14 days of field reports
-# instead of frozen training data — that's the "self-awareness" loop.
+# The companion fast tier — `.github/workflows/llm-monitor-watch.yml`
+# — runs every 15 min on statuspages only and handles outage
+# detection between sweeps.
 #
 # Cross-references:
 #   - scripts/llm-monitor/README.md       — architecture, source list
-#   - scripts/llm-monitor/run.py          — entrypoint
+#   - scripts/llm-monitor/run.py          — entrypoint (--mode=sweep)
 #   - scripts/llm-monitor/sources.json    — feeds, subreddits, repos
 #   - docs/mothership/llm-monitor/runbook.md — operator runbook
-#   - .github/workflows/backlog-digest.yml — sibling daily-style cron
-#     this mirrors in style
+#   - .github/workflows/llm-monitor-watch.yml — fast tier (15 min)
 #
-# Why daily at 06:13 UTC (not every-2h like backlog-digest):
-#   - The signal sources move on the order of days, not hours. A
-#     more-than-daily cadence churns the digest without surfacing
-#     new info.
-#   - 06:00 UTC = 23:00 PT = 02:00 ET — an operator opening the
-#     phone in the morning gets a fresh digest from the current day.
-#   - :13 offset is clear of every other watcher slot (:00 cluster,
-#     :15/:45 plan, :17 codex-recheck, :23/:53 bot-usage, :37 backlog,
-#     :47 execute-complex, :05/:15/:25/:35/:45/:55 forge-triage).
+# Why every 2h at :13 UTC:
+#   - The user requested "super aggressive cadence" (2026-04-30).
+#     2h is the smallest interval where the content sources (HN, RSS,
+#     Reddit, GitHub) reliably move new records into the dedupe stream
+#     without pure noise repetition. Below 2h the dedupe rate
+#     approaches 100% and the analyzer call is wasted.
+#   - For sub-2h outage detection see llm-monitor-watch.yml.
+#   - :13 offset is clear of every existing watcher slot. Existing
+#     every-2h slots are :17 (codex-recheck) and :37 (backlog-digest);
+#     :13 is offset 4 min before :17, 24 min before :37 — both safely
+#     non-colliding.
 
 on:
   schedule:
-    - cron: "13 6 * * *"
+    - cron: "13 */2 * * *"
   workflow_dispatch:
     inputs:
+      mode:
+        description: "sweep | watch (sweep = full pipeline; watch = fast outage-only)"
+        required: false
+        default: "sweep"
       dry_run:
         description: "Skip Anthropic API + gh issue create (uses heuristic stub)"
         required: false
@@ -45,9 +48,9 @@ on:
         required: false
         default: "false"
       collectors:
-        description: "Comma-separated subset (default: hackernews,rss,reddit,github)"
+        description: "Comma-separated override (empty = derived from mode)"
         required: false
-        default: "hackernews,rss,reddit,github"
+        default: ""
 
 permissions:
   contents: write   # commit digest + KNOWN_ISSUES
@@ -89,15 +92,16 @@ jobs:
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
           REPO: ${{ github.repository }}
+          MODE: ${{ github.event.inputs.mode || 'sweep' }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           NO_ISSUES: ${{ github.event.inputs.no_issues || 'false' }}
-          COLLECTORS: ${{ github.event.inputs.collectors || 'hackernews,rss,reddit,github' }}
+          COLLECTORS: ${{ github.event.inputs.collectors || '' }}
         run: |
           set -euo pipefail
-          ARGS=()
+          ARGS=(--mode "$MODE")
           if [ "$DRY_RUN" = "true" ]; then ARGS+=(--dry-run); fi
           if [ "$NO_ISSUES" = "true" ]; then ARGS+=(--no-issues); fi
-          ARGS+=(--collectors "$COLLECTORS")
+          if [ -n "$COLLECTORS" ]; then ARGS+=(--collectors "$COLLECTORS"); fi
           python3 scripts/llm-monitor/run.py "${ARGS[@]}"
 
       - name: Commit digest + KNOWN_ISSUES updates

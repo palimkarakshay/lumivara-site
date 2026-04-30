@@ -51,7 +51,7 @@
       "vercel",
       "github actions"
     ],
-    "lookback_hours": 36,
+    "lookback_hours": 6,
     "min_points": 5
   },
   "rss": {
@@ -66,7 +66,7 @@
       {"name": "Next.js Blog", "url": "https://nextjs.org/feed.xml"},
       {"name": "GitHub Changelog", "url": "https://github.blog/changelog/feed/"}
     ],
-    "lookback_hours": 48
+    "lookback_hours": 6
   },
   "reddit": {
     "subreddits": [
@@ -76,7 +76,7 @@
       "OpenAI",
       "singularity"
     ],
-    "lookback_hours": 36,
+    "lookback_hours": 6,
     "min_score": 10,
     "min_comments": 5
   },
@@ -90,7 +90,7 @@
       "vercel/next.js",
       "vercel/vercel"
     ],
-    "lookback_hours": 48,
+    "lookback_hours": 6,
     "include_releases": true,
     "include_issues": true,
     "issue_min_reactions": 3

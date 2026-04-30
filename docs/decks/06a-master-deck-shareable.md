@@ -581,3 +581,81 @@ Numbers presented as ranges and qualitative bands rather than point forecasts �
 > Pitch line: *"Twelve months from today: a bounded retainer book, the day job gone, and a runway buffer in place."*
 
 ---
+
+<!-- _class: lead -->
+
+# 8 · Possible challenges
+
+*The risks that can knock the plan off course — named, mitigated, residual.*
+
+---
+
+## Top-tier risks (already mitigated in the system)
+
+| Risk | Likelihood | Impact | Mitigation already built |
+|---|---|---|---|
+| Anthropic outage / throttle | Med | High | Multi-vendor fallback ladder — the primary model fails over to two alternates on triage and execute. |
+| One client floods the queue | Low | Med | Per-client rate limit + tier cadence. |
+| Operator burnout | Med | High | Bounded client cap until first hire; budget charter; weekly cadence; planned breaks before peak windows. |
+| Secret leak (token in client repo) | Low | Critical | Org-level secrets, vendor-specific tokens, ignore-lists, audit checklist. |
+| Bot ships breaking change to prod | Low | High | Auto-merge gate is opt-in per label; design / critical paths excluded; preview-build required. |
+| Client refuses to pay | Med | Med | Stripe auto-charge; pause autopilot at +14 days; full lockout at +30 days. |
+| Client demands the autopilot when leaving | Low | Med | Contract: "site = client; system = operator-licensed". |
+| ADA legal liability | High | High | Accessibility checks gated in CI; E&O / cyber liability insurance once revenue threshold is crossed. |
+
+---
+
+## Strategic risks (less mitigated, watch carefully)
+
+- **Demand-side:** the market may exist but our reach doesn't. Fix is more posting and outreach, not lower prices.
+- **Competitive substitution:** Framer, Vercel v0, or a first-party model-vendor site agent could close the phone-as-CMS gap. Watch list maintained; reassess every two months.
+- **Regulatory:** Quebec Law 25 is materially stricter than PIPEDA; needs a French-language privacy page if we sell in QC. Defer until first QC client.
+- **Model deprecation:** a Claude / Gemini model retirement breaks pinned IDs. Mitigation: review pinned IDs every two months in the routing doc.
+- **Single bad client.** "One bad client costs more than ten good ones earn." Be ruthless with the say-no list.
+
+---
+
+## Capacity cliffs (when the system has to evolve)
+
+| Cliff | Trigger | Action |
+|---|---|---|
+| **Cliff 1** | Early-tier saturation | Step up to the next AI subscription tier. |
+| **Cliff 2** | CI minutes saturate on the free allotment | Move CI to a paid runner. |
+| **Cliff 3** | Automation hub free tier saturated | Upgrade to the paid hosted plan. |
+| **Cliff 4** | Mid-book saturation | Step up to the highest AI subscription tier. |
+| **Cliff 5** | Approaching the Stage 1 cap | Add a second seat (unlocks a second-engineer hire). |
+
+If a cliff hits *during* an onboarding, finish the onboarding first, upgrade after. Never upgrade pre-emptively.
+
+---
+
+## Failure modes specific to the autopilot
+
+1. **The bot makes a "confident wrong" change.** Mitigation: every change waits for client tap; auto-merge limited to trivial labels; design / critical paths human-only.
+2. **The plan-then-execute gate adds latency clients don't want.** Mitigation: top-tier cadence runs hourly; lowest tier explicitly opts out of automation entirely.
+3. **The phone-edit shortcut breaks on iOS / Android update.** Mitigation: web-based admin portal is the canonical surface; SMS + email are fallback channels.
+4. **HMAC rotation goes wrong.** Mitigation: documented two-phase rotation with a recovery drill in the security-operations checklist.
+5. **Cron drift between site and pipeline repos.** Mitigation: cron lives only on the pipeline repo's `main`; enforced by a pre-merge audit script.
+
+---
+
+## The single biggest existential risk
+
+> **Operator burnout** — not the market, not the technology, not a competitor.
+
+The cap (a small bounded book), the charter (session-budget gates), the cadence (tier dial), the negative list (no e-commerce, no white-label, no equity-only), and the planned hire ladder all exist for one purpose: keep the operator in the chair, healthy, with their evenings back, for the entire ramp.
+
+If any *other* risk lands, the system absorbs it. If burnout lands, the system stops. Treat it accordingly.
+
+---
+
+## Section recap — Challenges
+
+- **Operationally** mitigated: outages, queue starvation, secret leaks, payment defaults, ADA — all have prepared playbooks.
+- **Strategically** unsettled: demand reach, competitive moves, model deprecation, regulatory expansion.
+- **Capacity cliffs** are scheduled, not surprises.
+- **Burnout is the single biggest existential risk.** The cap, charter, and cadence exist to prevent it.
+
+> Pitch line: *"We've named the risks, mitigated the operational ones, watch-listed the strategic ones, and put the operator's wellbeing at the top of the list."*
+
+---

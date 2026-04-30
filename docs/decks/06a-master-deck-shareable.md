@@ -28,9 +28,9 @@ What we sell, who we sell it to, who we sell against, where the business is goin
 
 <br/>
 
-*Compiled 2026-04-30. A shareable companion to the operator-scope master deck; the same nine product-positioning questions, with internal-only specifics generalised for external readers.*
+*Compiled 2026-04-30 (refreshed end-of-day to reflect the same day's pipeline-lane work — an extended multi-vendor fallback ladder, a bot self-awareness loop that ingests provider quirks into the prompts at runtime, an operator recording pipeline, four-tier doc-task self-automation, two more vertical templates promoted to Full, and a Canadian-privacy-law breach-notification research seed). A shareable companion to the operator-scope master deck; the same nine product-positioning questions, with internal-only specifics generalised for external readers.*
 
-<span class="small">Shareable with serious external readers (advisors, prospective partners, investors, sophisticated prospects). Not a substitute for the audience-specific stakeholder decks (investor / partner / employee / client / advisor) — those remain the right artefact when a single voice is needed.</span>
+<span class="small">Shareable with serious external readers (advisors, prospective partners, investors, sophisticated prospects). Not a substitute for the audience-specific stakeholder decks (investor / partner / employee / client / advisor) — those remain the right artefact when a single voice is needed. The brand name shown in this deck is a placeholder under active reconsideration; the architecture and the economics described do not depend on it.</span>
 
 ---
 
@@ -163,13 +163,14 @@ The market is full of Next.js developers. It is **not** full of operators who ca
 
 ---
 
-## Five things only we ship today
+## Six things only we ship today
 
 1. **Phone-as-CMS** over a real codebase. A shortcut on the client's phone routes a plain-English instruction into a code change with a live preview. Nothing to log into.
-2. **Multi-vendor AI fallback ladder.** Triage, plan, execute, and review each have a primary model and a fallback so a single-vendor outage never blocks the queue.
+2. **Multi-vendor AI fallback ladder.** Every stage (triage, plan, execute, review) has a primary model plus several fallbacks. The deepest stage runs five legs across three independent providers and two free public model gateways before deferring — so a single-vendor outage never blocks the queue, and the cost line doesn't move when failover fires.
 3. **Plan-then-execute pipeline.** Every routine change gets a structured AI plan written as a comment *before* code is touched. The client reads the plan first.
-4. **Tier-based cadence.** A sold dial that controls how aggressively the autopilot runs (manual through hourly). The bot's "energy" is part of the price, not an internal toggle.
+4. **Tier-based cadence with a 24/7 watch loop.** A sold dial that controls how aggressively the autopilot runs (manual through hourly), plus an operator-side watch tier that sweeps every 15 minutes. The bot's "energy" is part of the price; the watch loop is the operator-side equivalent of a night shift.
 5. **Two-repo isolation.** The client's site lives in a clean, transferable repository in their own account. The autopilot, prompts, and operator IP live in a separate repository they never see — so if they ever leave, the site is genuinely "vanilla".
+6. **Bot self-awareness.** A monitoring loop watches provider status pages and developer-community signals, then auto-rewrites a "known issues" file and a "recommendations" file that the runtime prompts read at execution time. When an upstream-provider quirk lands, the fleet steers around it without an operator typing.
 
 ---
 
@@ -178,10 +179,11 @@ The market is full of Next.js developers. It is **not** full of operators who ca
 | Feature | What protects it |
 |---|---|
 | Phone-as-CMS | Requires identity, automation, signed webhooks, GitHub integration, and preview deploys wired together end-to-end. Multi-phase build effort. |
-| Multi-vendor fallback | Requires three live API contracts, a deterministic router, and prompt-pack parity across providers. Most freelancers hold one key. |
+| Multi-vendor fallback | Requires several live API contracts, a deterministic router, prompt-pack parity across providers, and per-stage probes that detect "the model returned 200 but the body is unfinished." Most freelancers hold one key. |
 | Plan-then-execute | An AI-authored plan comment lands on every routine issue before code does. Few competitors run this gate at all. |
-| Tier cadence | Tier reads through the whole pipeline — schedule, model selection, auto-merge gates all branch on it. Not a feature flag; a whole product surface. |
+| Tier cadence + watch loop | Tier reads through the whole pipeline — schedule, model selection, auto-merge gates all branch on it. The 24/7 watch loop keeps the queue moving overnight. Not a feature flag; a whole product surface. |
 | Two-repo isolation | A per-engagement install split between operator-side automation and client-side site. Operator IP stays operator-side; the client repo is genuinely portable if they ever leave. |
+| Bot self-awareness | The monitoring loop ingests provider status, RSS, and developer-community signals → auto-rewrites the runtime context the prompts read. The whole closed loop is operator-hosted; copying any one piece doesn't reproduce the compounding effect. |
 
 The site is a commodity. The **system around the site** is the moat.
 
@@ -202,9 +204,10 @@ The boundaries *are* the strategy. They keep the operator under the hour cap at 
 ## Section recap — Differentiators
 
 - **Phone-as-CMS** is the headline feature. Nobody in our price band offers it.
-- **Multi-vendor fallback** turns a single-vendor risk into a sold feature ("we don't pause when one provider hiccups").
+- **Multi-vendor fallback** turns a single-vendor risk into a sold feature ("we don't pause when one provider hiccups"). The deepest stage now runs five legs across three providers and two free public model gateways.
 - **Two-repo isolation** lets us license the system per engagement while the *site* is genuinely the client's.
-- **Tier cadence** turns "how aggressive is the bot" into a sold dial, not an internal toggle.
+- **Tier cadence + watch loop** turns "how aggressive is the bot" into a sold dial, plus an operator-side 24/7 sweep.
+- **Bot self-awareness** closes the loop on upstream-provider quirks: the prompts learn from yesterday's bugs without an operator typing.
 - **The negative list** (what we don't sell) is itself a differentiator — boundaries clients can read and trust.
 
 > Pitch line: *"Other people sell you a website. We sell you a website that updates itself."*
@@ -514,14 +517,16 @@ If a step doesn't have a verifiable artefact, it isn't done.
 | **Engagement playbooks** | Operator rebuild prompt, client handover pack | ✅ Done |
 | **Future-work stubs** | Legal, vault, contracts, payments, market research | ✅ Done |
 | **External critique** | Drawbacks doc, terminology lock, deck pack | ✅ Done |
-| **Critique closure** | Cron, security gaps, maths, ops sweep | ⏳ **In progress** |
-| **Pipeline-repo bootstrap** | Stand up the operator-side pipeline repository end-to-end | ⏳ Next |
+| **Critique closure** | Cron, security gaps, maths, ops sweep | ⏳ **In progress** — close-merged sub-pass landed end-of-day 2026-04-30. |
+| **Pipeline-repo bootstrap** | Stand up the operator-side pipeline repository end-to-end | ⏳ Next — gated on the in-flight brand-name decision. |
 | **Two-repo spinout** | Split the combined repo into Site + Pipeline pair | ⏳ After bootstrap |
 | **Showcase client migration** | Re-scaffold the showcase client into a clean per-client pair | ⏳ After spinout |
 | **Hardening tasks** | Walk template-hardening notes into pipeline issues | ⏳ After migration |
-| **Legal & vault** | PIPEDA, contracts, secrets vault, market study | ⏳ Months 2–6 |
+| **Legal & vault** | PIPEDA (federal-privacy-law), contracts, secrets vault, market study | ⏳ Months 2–6 — federal-privacy-law breach-notification research seed landed 2026-04-30. |
 
 Each ⏳ row has an opening issue when work begins, a tracking checklist while it's underway, and a verification artefact when it lands.
+
+**Bot-fleet maturity (operator side, end-of-day 2026-04-30):** three vertical content prompt packs are now Full (one earlier; two promoted today); a doc-task seeder runs four-tier self-automation aligned with OWASP LLM08 (the supply-chain-of-instructions risk); an operator recording pipeline ships under a CI smoke test plus drift-guard unit tests; and the monitoring loop runs a watch tier every 15 min plus a sweep tier every 2 h, so the bot fleet improves itself between client engagements.
 
 ---
 
@@ -594,7 +599,7 @@ Numbers presented as ranges and qualitative bands rather than point forecasts �
 
 | Risk | Likelihood | Impact | Mitigation already built |
 |---|---|---|---|
-| Anthropic outage / throttle | Med | High | Multi-vendor fallback ladder — the primary model fails over to two alternates on triage and execute. |
+| Anthropic outage / throttle | Med | High | Multi-vendor fallback ladder — the primary model fails over through several alternates across three independent providers and two free public model gateways before deferring. |
 | One client floods the queue | Low | Med | Per-client rate limit + tier cadence. |
 | Operator burnout | Med | High | Bounded client cap until first hire; budget charter; weekly cadence; planned breaks before peak windows. |
 | Secret leak (token in client repo) | Low | Critical | Org-level secrets, vendor-specific tokens, ignore-lists, audit checklist. |
@@ -745,7 +750,7 @@ The hire ladder is deliberately *late*. The autopilot exists so the operator can
 
 ## Tooling — the operator stack, at a category level
 
-- **Primary AI subscription** (with two API-based fallbacks).
+- **Primary AI subscription** (with multiple API-based fallbacks across two more providers and two free public model gateways).
 - **Workflow automation hub** for capture and dispatch.
 - **GitHub** as source of truth (Issues, Actions, Project boards).
 - **Vercel** for hosting + preview builds + deploy hooks.

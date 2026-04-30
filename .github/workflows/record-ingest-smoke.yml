@@ -1,0 +1,91 @@
+name: Record-ingest smoke test
+
+# Stability harness for the operator recording pipeline at
+# scripts/record-ingest/. Runs on every PR (and direct push to main) that
+# touches the pipeline. Modelled on forge-smoke-test.yml: pure
+# shape / behaviour assertions, no AI provider calls, no real recordings.
+#
+# What it verifies:
+#   * scripts compile cleanly (bash -n, python -m py_compile)
+#   * end-to-end ingest under DRY_RUN over four synthetic inputs (audio,
+#     image, text, unknown mime), routed into an isolated temp recordings
+#     root via the RECORDINGS_ROOT env contract — never touches a real
+#     archive
+#   * manifest schema, text-content inlining (Codex P2), DRY_RUN env
+#     propagation (Codex P1), and conservative-gate behaviour
+#   * drift-guard unit tests (4 fixtures pinning the un-anchored / non-
+#     verbatim drop logic and the re-derived self_automation_trigger)
+#
+# Why this exists:
+#   The recording archive itself is operator-private and gitignored, so CI
+#   never sees real data. Without a synthetic-fixture smoke, a refactor
+#   that breaks the validator goes silent until the operator drops a real
+#   recording and gets stub output. Cheap insurance.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/record-ingest/**'
+      - 'recordings/**/README.md'
+      - '.github/workflows/record-ingest-smoke.yml'
+  pull_request:
+    paths:
+      - 'scripts/record-ingest/**'
+      - 'recordings/**/README.md'
+      - '.github/workflows/record-ingest-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: record-ingest-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Lint — bash -n on shell scripts
+        run: |
+          set -euo pipefail
+          for f in scripts/record-ingest/*.sh; do
+            bash -n "$f"
+            echo "  ✓ $f"
+          done
+
+      - name: Lint — py_compile on python scripts
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/record-ingest/analyze.py
+          python -m py_compile scripts/record-ingest/seed-inbox-issue.py
+          python -m py_compile scripts/record-ingest/test-validator.py
+          echo "  ✓ python compile clean"
+
+      - name: Drift-guard unit tests
+        run: python3 scripts/record-ingest/test-validator.py
+
+      - name: End-to-end DRY_RUN ingest smoke
+        run: scripts/record-ingest/test-smoke.sh
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Record-ingest smoke test"
+            echo ""
+            echo "- bash -n: pipeline shell scripts parse"
+            echo "- py_compile: analyzer + seed + validator-tests compile"
+            echo "- Drift-guard: 4 fixtures (all-clean / mixed / all-bad / unknown-section)"
+            echo "- End-to-end: 4 synthetic inputs (audio / image / text / unknown) under DRY_RUN, isolated temp root"
+            echo "- 10 assertions checked (inbox drain, archive routing, transcripts, analyses, manifest schema, text inlining, DRY_RUN propagation, conservative gate, validator)"
+          } >> "$GITHUB_STEP_SUMMARY"

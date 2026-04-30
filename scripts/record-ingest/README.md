@@ -14,6 +14,8 @@ Architecture, free toolchain, drift mitigations, and consent stance live in [`do
 | `transcribe.sh` | Whisper wrapper. Tries `whisper.cpp` → `faster-whisper` → `openai-whisper`. Output is markdown with `[hh:mm:ss]` timestamps. Honours `DRY_RUN=1`. |
 | `analyze.py` | Single Claude call (Opus by default per AGENTS.md model-default table). Returns strict JSON with section, summary, people, companies, topics, verbatim quotes, action items, and `self_automation_trigger`. Includes a drift-guard that drops un-anchored items + non-verbatim quotes before writing to disk. |
 | `seed-inbox-issue.py` | Conservative gate. Opens a `status/needs-triage` issue ONLY when the analysis flagged operator-owned urgent items AND the section is not intel-only (`competitors` / `research`). |
+| `test-smoke.sh` | End-to-end DRY_RUN smoke harness. Stages four synthetic inputs (audio / image / text / unknown mime) into a temp `RECORDINGS_ROOT` (so it never touches the operator's real archive), runs `ingest.sh`, then asserts inbox drain, archive routing, transcript + analysis + manifest shape, text-content inlining, DRY_RUN propagation, and the conservative-gate behaviour. Also calls `test-validator.py`. Run locally with `scripts/record-ingest/test-smoke.sh`. |
+| `test-validator.py` | Drift-guard unit tests over `analyze._validate()`. Four fixtures (all-clean / mixed / all-bad / unknown-section) pin the contract: un-anchored items dropped, non-verbatim quotes dropped, `self_automation_trigger` re-derived from survivors so a hallucinated trigger cannot survive. |
 
 ## Usage
 
@@ -29,7 +31,12 @@ DRY_RUN=1 scripts/record-ingest/ingest.sh recordings/inbox/sample.m4a
 
 # Auto-seed Inbox issues when warranted
 SEED_ISSUES=1 scripts/record-ingest/ingest.sh
+
+# Smoke test the whole pipeline (CI runs this on every relevant PR)
+scripts/record-ingest/test-smoke.sh
 ```
+
+CI lives in [`.github/workflows/record-ingest-smoke.yml`](../../.github/workflows/record-ingest-smoke.yml) and triggers on PRs that touch `scripts/record-ingest/**`, `recordings/**/README.md`, or the workflow itself. It runs the same `test-smoke.sh` + `test-validator.py` you'd run locally — same assertions, isolated temp recordings root, no AI provider calls.
 
 ## Drift discipline
 

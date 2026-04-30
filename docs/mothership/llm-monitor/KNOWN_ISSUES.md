@@ -40,20 +40,6 @@ in a permanent doc, not this list.)_
 
 ## Auto-discovered (last 14 days)
 
-### claude-opus-4-7
-
-- **[sev 4 · bug]** HERMES.md in commit messages causes requests to route to extra usage billing ([source](https://news.ycombinator.com/item?id=47960917))
-
-### general
-
-- **[sev 4 · bug]** Show HN: Spec27 – Spec-driven validation for AI agents ([source](https://www.spec27.ai/launch))
-
-### github-actions
-
-- **[sev 4 · bug]** GitHub – DOS 1.0: Transcription of Tim Paterson's DOS Printouts ([source](https://news.ycombinator.com/item?id=47960268))
-
-### vercel
-
-- **[sev 4 · bug]** Noctua releases official 3D CAD models for its cooling fans ([source](https://news.ycombinator.com/item?id=47960146))
+_No high-signal items in the rolling window._
 
 <!-- AUTO-END -->

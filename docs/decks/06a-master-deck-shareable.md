@@ -346,3 +346,78 @@ Watch list reassessed every two months: **Framer** (closest substitution risk if
 > Pitch line: *"Squarespace's edit loop, an agency's craft, and a freelancer's ownership — for one flat fee."*
 
 ---
+
+<!-- _class: lead -->
+
+# 5 · End goal as a business
+
+*What is Lumivara Forge, fully grown?*
+
+---
+
+## The 12-month decision rule
+
+> If a feature, doc, or tool helps the operator serve **paid retainer clients** better — build it.
+> If it helps serve **prospects, hypothetical SaaS users, or other agencies** better — defer it.
+
+This rule is the antidote to over-engineering. Everything else in this deck collapses to it.
+
+---
+
+## What "fully grown" looks like — Stage 1
+
+- **A small, deliberately bounded retainer book** of around two-to-three dozen active clients, weighted toward the mid-tier.
+- **Predictable monthly recurring revenue** sized to support a sustainable solo-operator income on top of one-off setup fees.
+- **An operator workload that fits inside a workweek** — capped well below the burnout threshold, with most hours spent on client-facing work rather than firefighting.
+- **The operator's day job replaced** within the first year, with a runway buffer in place before that switch.
+- **Zero published incidents** that would have cost a regulated client a compliance finding.
+
+This is the explicit destination Stage 1 is built around. It's not "first step toward a unicorn." It's the destination of Stage 1.
+
+---
+
+## Beyond Stage 1 — optional stages, not committed
+
+| Stage | Horizon | What it looks like | Decision posture |
+|---|---|---|---|
+| **Stage 1 — Services + retainer** | now → 12 mo | Operator-run. Bounded client cap. The plan in this deck. | **Committed.** |
+| **Stage 2 — Managed-services agency** | 12–24 mo | Hire 1–2 operators. Modestly larger book. Margins compress slightly. | Optional. Decide at the Stage 1 cap. |
+| **Stage 3 — Productise the operator side** | 24+ mo | Self-serve onboarding, customer-managed billing. Becomes a SaaS. | Optional. Different business; different risks. Defer. |
+
+Stage 3 is a different business with different risks (real product-market fit, real on-call, real fundraise). **Don't pre-build for it.** Stay in Stage 1 until genuinely outgrown.
+
+---
+
+## What this business is *NOT* trying to become
+
+- **Not a venture-scale SaaS.** No fundraising path. No "10× growth" hockey-stick.
+- **Not an agency.** Hiring is deferred to Stage 2, not built into year-1 ops.
+- **Not a hosting company.** Hosting is the client's, on their card.
+- **Not a labour arbitrage shop.** No offshore team, no per-hour billing.
+- **Not a product company yet.** No standalone software product is sold; the product is the **service experience**.
+
+The strategy is *deliberate smallness with high margin per client*, not scale at any cost.
+
+---
+
+## Why deliberate smallness is the strategy
+
+Three forcing functions make a small bounded book the right ceiling, not the consolation prize:
+
+1. **Margin holds because payroll doesn't.** AI-enabled solo operators commonly report 65–75% gross margins; traditional agencies compress to 40–50% under headcount load. We hold higher than that pre-comp because there is no payroll until well past the Stage 1 cap.
+2. **Quality holds because attention does.** Every client gets the same operator's eyes on every PR. Above the cap, attention has to be split or delegated — which downgrades the product.
+3. **Burnout is the ceiling, not the market.** The operator's reach against the addressable Canadian SMB market is decisively *not* bound by demand. The cap is a personal-sustainability gate, not a market gate.
+
+---
+
+## Section recap — End goal
+
+- **Stage 1 destination:** a bounded retainer book, sustainable solo income, sub-cap operator hours.
+- **Stage 2 destination:** modest hiring; ~2× the Stage 1 client count; 24-month horizon — optional.
+- **Stage 3 destination:** SaaS productisation — deferred until Stage 1 is genuinely outgrown.
+- **The decision rule: paid retainers > everything else.**
+- Smallness is a **strategy**, not a constraint.
+
+> Pitch line: *"A small retainer practice that prints predictable margin and gives the operator their evenings back."*
+
+---

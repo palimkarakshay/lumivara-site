@@ -34,11 +34,16 @@ ROOT="$(git rev-parse --show-toplevel)"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 SECTIONS=(client-meetings advisors investors competitors musings research)
 
-INBOX="$ROOT/recordings/inbox"
-ARCHIVE="$ROOT/recordings/archive"
-TRANSCRIPTS="$ROOT/recordings/transcripts"
-ANALYSIS="$ROOT/recordings/analysis"
-MANIFEST="$ROOT/recordings/manifest.jsonl"
+# Archive root override — defaults to <repo>/recordings. Tests set this to a
+# temp dir so they don't collide with the operator's real archive. The
+# orchestrator always lays out inbox/archive/transcripts/analysis under it.
+RECORDINGS_ROOT="${RECORDINGS_ROOT:-$ROOT/recordings}"
+
+INBOX="$RECORDINGS_ROOT/inbox"
+ARCHIVE="$RECORDINGS_ROOT/archive"
+TRANSCRIPTS="$RECORDINGS_ROOT/transcripts"
+ANALYSIS="$RECORDINGS_ROOT/analysis"
+MANIFEST="$RECORDINGS_ROOT/manifest.jsonl"
 
 mkdir -p "$INBOX" "$ARCHIVE" "$TRANSCRIPTS" "$ANALYSIS"
 for s in "${SECTIONS[@]}"; do mkdir -p "$ARCHIVE/$s"; done

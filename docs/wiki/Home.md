@@ -80,7 +80,7 @@ Read [[_partials/lane-key]] first.
 | **Live site (Client #1):** | [lumivara-site.vercel.app](https://lumivara-site.vercel.app) (Vercel deploy of this repo's `main`); DNS cutover to `lumivara.ca` is item 12 of [`docs/migrations/00-automation-readiness-plan.md`](../migrations/00-automation-readiness-plan.md). |
 | **Tech (Site lane):** | Next.js 16 (App Router) + Tailwind v4 + TypeScript strict + MDX + shadcn/ui on Base UI React. |
 | **Hosting (Site lane):** | Vercel (auto-deploys from `main`; previews per PR). |
-| **Bot (Pipeline lane):** | Claude Opus 4.7 via GitHub Actions — triage every 15 min, execute every 1 h, plan-issues every 1 h (see [`AGENTS.md`](../../AGENTS.md) for the session charter). |
+| **Bot (Pipeline lane):** | Claude Opus 4.7 via GitHub Actions — triage every 15 min, execute every 1 h, plan-issues every 1 h, plus the operator-side `llm-monitor-watch` every 15 min and `llm-monitor` sweep every 2 h (added 2026-04-30, see [`docs/MONITORING.md`](../MONITORING.md) and [`docs/mothership/llm-monitor/runbook.md`](../mothership/llm-monitor/runbook.md)). Multi-vendor fallback ladder: five legs deep on `codex-review` (Claude → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter); see [`AGENTS.md`](../../AGENTS.md) for the session charter. |
 | **Operator:** | Akshay Palimkar (`@palimkarakshay`) — designs the Pipeline; reviews + merges PRs via GitHub Mobile. |
 | **Client #1:** | Lumivara People Advisory — Beas Banerjee's HR & people-strategy consulting practice in Toronto. |
 | **Pipeline repo (post-spinout):** | `palimkarakshay/lumivara-forge-pipeline` (operator-private). |

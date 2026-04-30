@@ -129,7 +129,7 @@ runs when a provider goes down. The fallback ladders are:
 | Triage | Claude Opus | Gemini 2.5 Flash → OpenAI gpt-5.5 |
 | Plan | Claude Opus | Gemini 2.5 Pro → OpenAI gpt-5.5 |
 | Execute (code edits) | Claude Opus | Codex CLI → Gemini CLI (via `execute-fallback.yml`, requires `plan/detailed`) |
-| Code review (PR) | OpenAI gpt-5.5 | Gemini 2.5 Pro → defer (`review-deferred` label, retried every 4h by `codex-review-recheck.yml`) |
+| Code review (PR) | OpenAI gpt-5.5 (`OPENAI_API_KEY` → `OPENAI_API_KEY_BACKUP`) | Gemini 2.5 Pro → Gemini 2.5 Flash → GitHub Models (`meta/Llama-3.3-70B-Instruct` → `openai/gpt-4.1-mini`) → OpenRouter (`deepseek/deepseek-r1:free` → `qwen/qwen3-coder:free`) → defer (`review-deferred` label, retried every 4h by `codex-review-recheck.yml`). Five legs on the deepest stage; extended 2026-04-30 (#240, #244). Source: [`scripts/codex-review-fallback.py`](../scripts/codex-review-fallback.py). |
 
 If every option in a chain is unavailable, the work is queued for the
 bot to come back to it later:
@@ -140,3 +140,55 @@ bot to come back to it later:
 - Code review: applies `review-deferred`; `codex-review-recheck.yml`
   retries every 4h and the deferred PR cannot auto-merge until the
   label clears.
+
+## `llm-monitor` — bot self-awareness pipeline (added 2026-04-30)
+
+The bot fleet now watches itself. [`llm-monitor`](mothership/llm-monitor/runbook.md)
+runs an aggressive tiered cadence:
+
+| Tier | Workflow | Cadence | What it does |
+|---|---|---|---|
+| Watch | [`llm-monitor-watch.yml`](../.github/workflows/llm-monitor-watch.yml) | every 15 min | Polls Anthropic / Gemini / OpenAI status pages, four LLM-bot RSS feeds, and a Stack Overflow collector; writes new incident records under `mothership/llm-monitor/`; auto-rewrites the auto-section of [`KNOWN_ISSUES.md`](mothership/llm-monitor/KNOWN_ISSUES.md). |
+| Sweep | [`llm-monitor.yml`](../.github/workflows/llm-monitor.yml) | every 2 h | Re-analyses the last-14-day window; auto-rewrites both [`KNOWN_ISSUES.md`](mothership/llm-monitor/KNOWN_ISSUES.md) and [`RECOMMENDATIONS.md`](mothership/llm-monitor/RECOMMENDATIONS.md); ships a daily digest under `mothership/llm-monitor/digests/` and operator-technical / client-facing newsletters under `mothership/llm-monitor/newsletters/`. |
+
+The runtime prompts (triage / plan / execute) ingest those two files at
+execution time, so when an upstream-provider quirk lands, the fleet
+steers around it without an operator typing.
+
+If `llm-monitor` itself encounters a defect during a production run, it
+opens a `type/llm-monitor` issue with the captured stack and the
+ingested context — three such defects were caught and fixed within the
+first day after launch (#236, #238, #240).
+
+**Operator review cadence.** Read the daily digest at
+`mothership/llm-monitor/digests/<date>.md`; accept/reject the auto-
+suggested edits to `KNOWN_ISSUES.md` (the watch tier writes them with
+a `<!-- llm-monitor:auto-write-begin -->` marker so they're easy to
+diff). The newsletters under `mothership/llm-monitor/newsletters/` are
+the human-readable summary; the `client-facing` variant is what feeds
+the per-client engagement evidence log.
+
+## `record-ingest` — operator recording pipeline (added 2026-04-30)
+
+The operator's own decisions, corrections, and new policy now feed back
+into the prompt context via [`scripts/record-ingest/`](../scripts/record-ingest/):
+free, conservative, drift-guarded. Source: `ingest.sh` /
+`transcribe.sh` / `analyze.sh` / `seed-inbox-issue.py`. Validation:
+[`scripts/record-ingest/test-validator.py`](../scripts/record-ingest/test-validator.py)
+and [`record-ingest-smoke.yml`](../.github/workflows/record-ingest-smoke.yml).
+
+The pipeline never ships if drift-guard tests fail — recordings sit in
+the gitignored `recordings/` archive until the validator green-lights
+them. Spec: [`mothership/23-operator-recording-pipeline.md`](mothership/23-operator-recording-pipeline.md).
+
+## Doc-task seeder — four-tier self-automation (added 2026-04-30)
+
+Closes the OWASP LLM08 supply-chain-of-instructions risk. The seeder at
+[`scripts/doc-task-seeder.py`](../scripts/doc-task-seeder.py)
+reads doc tasks (open issues with `type/doc-task`), classifies them
+into a four-tier ladder of evidence freshness, and gates which
+workflows can pick them up. Workflow:
+[`doc-task-seeder.yml`](../.github/workflows/doc-task-seeder.yml).
+Runbook: [`docs/ops/doc-task-seeder.md`](ops/doc-task-seeder.md).
+Test: [`scripts/test-doc-task-seeder.py`](../scripts/test-doc-task-seeder.py)
+and [`seeder-smoke-test.yml`](../.github/workflows/seeder-smoke-test.yml).

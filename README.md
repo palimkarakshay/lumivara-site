@@ -180,10 +180,13 @@ From your phone: sign in to `/admin` (Auth.js v5 magic link / Google / Entra) an
 ### Lifecycle
 
 1. New issue lands with `status/needs-triage`.
-2. **Triage bot** reads it, applies `priority/`, `complexity/`, `area/`, `model/` labels, and marks it `auto-routine` (bot-safe) or `human-only`. Runs every hour.
-3. **Execute bot** picks the top-ranked `auto-routine` issue, implements on a branch `auto/issue-<n>`, opens a PR. Never merges. Runs every 4 hours.
+2. **Triage bot** reads it, applies `priority/`, `complexity/`, `area/`, `model/` labels, and marks it `auto-routine` (bot-safe) or `human-only`. Runs every 15 min (24/7 utilisation cadence, bumped 2026-04-30 — see [`AGENTS.md`](./AGENTS.md)).
+3. **Execute bot** picks the top-ranked `auto-routine` issue, implements on a branch `auto/issue-<n>`, opens a PR. Never merges. Runs every 1 h.
 4. Vercel posts a preview URL on the PR within ~60s.
-5. You review on **GitHub Mobile** — merge if happy. Merge triggers a production deploy.
+5. **Codex review bot** opens a second-opinion review on every PR using a five-leg multi-vendor fallback ladder (OpenAI gpt-5.5 → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter — see [`docs/AI_ROUTING.md`](./docs/AI_ROUTING.md)). Auto-merge is gated on a clean review.
+6. You review on **GitHub Mobile** — merge if happy. Merge triggers a production deploy.
+
+Alongside the issue → PR loop, the operator-side `llm-monitor` watches itself: an `every 15 min` watch tier polls Anthropic / Gemini / OpenAI status, four LLM-bot RSS feeds, and a Stack Overflow collector; an `every 2 h` sweep tier auto-rewrites [`docs/mothership/llm-monitor/KNOWN_ISSUES.md`](./docs/mothership/llm-monitor/KNOWN_ISSUES.md) and [`docs/mothership/llm-monitor/RECOMMENDATIONS.md`](./docs/mothership/llm-monitor/RECOMMENDATIONS.md). The triage / plan / execute prompts ingest those files at runtime, so yesterday's upstream-provider quirks arrive in tomorrow's prompts. Operator runbook: [`docs/mothership/llm-monitor/runbook.md`](./docs/mothership/llm-monitor/runbook.md).
 
 ### Reverting a change
 
@@ -199,13 +202,24 @@ git push
 
 | Workflow | File | Trigger | What it does |
 |---|---|---|---|
-| Triage | `triage.yml` | Hourly cron + issue opened | Classifies new issues with priority/complexity/area/model labels; marks `auto-routine` or `human-only` |
-| Execute | `execute.yml` | Every 4h cron + manual | Picks top `auto-routine` issue, implements on branch, opens PR |
+| Triage | `triage.yml` | Every 15 min cron + issue opened | Classifies new issues with priority/complexity/area/model labels; marks `auto-routine` or `human-only` |
+| Plan issues | `plan-issues.yml` | Every 1 h cron | Writes a structured implementation plan as a PR comment before code is touched |
+| Execute | `execute.yml` | Every 1 h cron + manual | Picks top `auto-routine` issue, implements on branch, opens PR |
+| Execute (fallback) | `execute-fallback.yml` | Dispatched on Claude failure | Codex CLI → Gemini CLI ladder; refuses to run on issues without a `plan/detailed` comment |
 | Execute (complex) | `execute-complex.yml` | Manual dispatch | Same as execute but for `manual-only` / complex issues; accepts optional model override |
 | Execute (single) | `execute-single.yml` | Manual dispatch | Implements a specific issue by number; useful for re-runs or targeted fixes |
-| Auto-merge | `auto-merge.yml` | PR opened/labeled | Enables GitHub's auto-merge for trivial/easy non-design PRs once Vercel check passes |
+| Auto-merge | `auto-merge.yml` | PR opened/labeled | Enables GitHub's auto-merge for trivial/easy non-design PRs once Vercel check + codex-review pass |
+| Codex review | `codex-review.yml` | PR opened/synced | Five-leg multi-vendor fallback ladder (gpt-5.5 → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter) — gates auto-merge on findings |
+| Codex review re-check | `codex-review-recheck.yml` | Every 4h cron | Retries `review-deferred` PRs once a fallback leg comes back up |
 | Project sync | `project-sync.yml` | Issue/PR events | Moves issues between Project v2 Kanban columns (Inbox → Triaged → In Progress → Review → Done) |
 | AI smoke test | `ai-smoke-test.yml` | Weekly (Mon 12:00 UTC) + manual | Verifies each AI backend responds end-to-end; posts results to issue #39 |
+| Bot usage monitor | `bot-usage-monitor.yml` | Hourly cron | Posts a rolling-5h + weekly-7d snapshot of pressure signals to a pinned `type/observability` issue |
+| LLM monitor (watch) | `llm-monitor-watch.yml` | Every 15 min cron | Polls Anthropic / Gemini / OpenAI status pages, four LLM-bot RSS feeds, and a Stack Overflow collector; updates the auto-section of [`KNOWN_ISSUES.md`](./docs/mothership/llm-monitor/KNOWN_ISSUES.md) (added 2026-04-30) |
+| LLM monitor (sweep) | `llm-monitor.yml` | Every 2 h cron | Re-analyses the last-14-day window; auto-rewrites [`KNOWN_ISSUES.md`](./docs/mothership/llm-monitor/KNOWN_ISSUES.md) and [`RECOMMENDATIONS.md`](./docs/mothership/llm-monitor/RECOMMENDATIONS.md); ships daily digests + newsletters (added 2026-04-30) |
+| Doc-task seeder | `doc-task-seeder.yml` | Scheduled | Four-tier self-automation per OWASP LLM08; runbook at [`docs/ops/doc-task-seeder.md`](./docs/ops/doc-task-seeder.md) (added 2026-04-30) |
+| Record-ingest smoke | `record-ingest-smoke.yml` | CI gate | Validates the operator-recording pipeline before recordings can seed Inbox issues (added 2026-04-30) |
+| Backlog digest | `backlog-digest.yml` | Rolling cron | Surfaces issue-count + label-distribution drift in a pinned digest |
+| Dual-Lane watcher | `dual-lane-watcher.yml` | Daily cron | Runs `scripts/dual-lane-audit.sh` (five-check sweep); files an issue on drift |
 
 > **Hard rule:** Never edit `.github/workflows/` files via a bot-executed PR unless the issue carries the `infra-allowed` label.
 

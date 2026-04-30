@@ -31,7 +31,7 @@ Create a GitHub Issue describing what you want. Use the **Site change request** 
 The issue gets label `status/needs-triage`.
 
 ### 2. Triage (every 15 min)
-The triage bot (Claude Opus via GitHub Actions, with Gemini Flash + gpt-5.5 as fallbacks) reads new issues and applies:
+The triage bot (Claude Opus via GitHub Actions, with Gemini Flash + gpt-5.5 as fallbacks; the deepest review stage now runs a five-leg ladder — see [`docs/AI_ROUTING.md`](../AI_ROUTING.md)) reads new issues and applies:
 - `priority/P0`–`P3` — urgency
 - `complexity/XS`–`XL` — estimated effort
 - `area/copy`, `area/design`, etc. — affected area
@@ -90,6 +90,23 @@ The bot shares the operator's Claude **Max 20x** 5-hour rolling quota. The curre
 - The execute bot handles up to 3 issues per cron run, sequentially, on Opus
 - At ~80% of its turn budget, the bot finishes the current issue and stops
 - At ~95%, the bot hard-exits and labels the issue `status/needs-continuation`
+
+## Operator-side watch tier (added 2026-04-30)
+
+In parallel to the triage / execute / plan loop above, the operator-
+side `llm-monitor` runs a 24/7 watch tier that keeps the prompts
+themselves fresh:
+
+| Workflow | Cadence | Purpose |
+|---|---|---|
+| [`llm-monitor-watch.yml`](../../.github/workflows/llm-monitor-watch.yml) | every 15 min | Polls Anthropic / Gemini / OpenAI status pages, four LLM-bot RSS feeds, and a Stack Overflow collector; auto-rewrites the auto-section of [`KNOWN_ISSUES.md`](../mothership/llm-monitor/KNOWN_ISSUES.md). |
+| [`llm-monitor.yml`](../../.github/workflows/llm-monitor.yml) | every 2 h | Re-analyses the last-14-day window; auto-rewrites both [`KNOWN_ISSUES.md`](../mothership/llm-monitor/KNOWN_ISSUES.md) and [`RECOMMENDATIONS.md`](../mothership/llm-monitor/RECOMMENDATIONS.md); ships a daily digest under `mothership/llm-monitor/digests/` and operator-technical / client-facing newsletters under `mothership/llm-monitor/newsletters/`. |
+| [`record-ingest-smoke.yml`](../../.github/workflows/record-ingest-smoke.yml) | smoke gate | Validates the operator-recording pipeline ([`scripts/record-ingest/`](../../scripts/record-ingest/)) — drift-guard + smoke test must pass before recordings can seed Inbox issues. |
+| [`doc-task-seeder.yml`](../../.github/workflows/doc-task-seeder.yml) | scheduled | Four-tier self-automation per OWASP LLM08; runbook at [`docs/ops/doc-task-seeder.md`](../ops/doc-task-seeder.md). |
+
+The triage / plan / execute prompts ingest `KNOWN_ISSUES.md` +
+`RECOMMENDATIONS.md` at runtime. Yesterday's upstream-provider quirks
+arrive in tomorrow's prompts without an operator typing.
 
 ## Bypassing the bot
 

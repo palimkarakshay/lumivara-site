@@ -31,7 +31,7 @@ For the locked architecture itself, read [`mothership/02b-dual-lane-architecture
 | [`AI_ROUTING.md`](./AI_ROUTING.md) | 🛠 | Multi-AI router policy and fallback chains (Claude / Codex / Gemini). |
 | [`BACKLOG.md`](./BACKLOG.md) | ⚪ | Label taxonomy, lifecycle, and triage rules for GitHub Issues / Project v2. |
 | [`GEMINI_TASKS.md`](./GEMINI_TASKS.md) | 🛠 | Gemini deep-research task queue and brand-voice prompts (Client #1 voice today; per-client at scale). |
-| [`MONITORING.md`](./MONITORING.md) | 🛠 | Smoke test, alerting, and run-cost tracking. |
+| [`MONITORING.md`](./MONITORING.md) | 🛠 | Smoke test, alerting, run-cost tracking, plus the `llm-monitor` bot self-awareness pipeline (added 2026-04-30) and the `record-ingest` operator recording pipeline (added 2026-04-30). |
 | [`N8N_SETUP.md`](./N8N_SETUP.md) | 🛠 | n8n on Railway — webhook + AI structuring workflows. |
 | [`OPERATOR_SETUP.md`](./OPERATOR_SETUP.md) | 🛠 | Step-by-step "from cold laptop to running pipeline" setup. |
 | [`TEMPLATE_REBUILD_PROMPT.md`](./TEMPLATE_REBUILD_PROMPT.md) | 🛠 | Original (v1) site-rebuild prompt; superseded operationally by `mothership/06-operator-rebuild-prompt-v3.md` but retained as the source of the template-hardening backlog (see `storefront/05-template-hardening-notes.md`). |
@@ -74,4 +74,4 @@ For the locked architecture itself, read [`mothership/02b-dual-lane-architecture
 - **Forbidden strings** in operator-scope docs per [`mothership/15-terminology-and-brand.md §6`](./mothership/15-terminology-and-brand.md): `Lumivara People Advisory`, `Lumivara People Solutions`, `people advisory`, `lumivara.ca`, `Beas Banerjee` — except inside `15 §7` (the Client #1 example appendix) or a labelled migration-history doc.
 - **Cross-linking**: prefer relative links (`./mothership/02b-dual-lane-architecture.md`) over absolute URLs so the docs travel cleanly when the repo splits.
 
-*Last updated: 2026-04-29.*
+*Last updated: 2026-04-30 — refreshed to point at today's pipeline-lane additions: `llm-monitor` (operator runbook + KNOWN_ISSUES + RECOMMENDATIONS + daily digests under `mothership/llm-monitor/`), the `record-ingest` operator recording pipeline (`scripts/record-ingest/` + `recordings/` archive), the doc-task seeder (`docs/ops/doc-task-seeder.md`), the extended five-leg `codex-review` fallback ladder (`docs/AI_ROUTING.md`), and the `15c` brand + domain ADR.*

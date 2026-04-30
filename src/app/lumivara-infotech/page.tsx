@@ -11,9 +11,9 @@ import { FAQSection } from "@/components/sections/FAQSection";
 import { Reveal } from "@/components/primitives/Reveal";
 import { cn } from "@/lib/utils";
 
-// PATTERN C NOTE (2026-04-29): this route ships the operator's pitch on the
-// Client #1 site, which is a Pattern C violation per docs/mothership/02b
-// §6 / pattern-c-enforcement-checklist.md C-MUST-1. Tracked for relocation
+// DUAL-LANE NOTE (2026-04-29): this route ships the operator's pitch on the
+// Client #1 site, which is a Dual-Lane Repo violation per docs/mothership/02b
+// §6 / dual-lane-enforcement-checklist.md C-MUST-1. Tracked for relocation
 // to the operator's own site at lumivara-forge.com (pending registration
 // per 15 §5). File / route / export slug stay "lumivara-infotech" until
 // the relocation lands — renaming the slug now without redirects would

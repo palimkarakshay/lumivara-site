@@ -122,6 +122,58 @@ Full why-switch pack with persona-specific selections in `docs/research/05-reaso
 
 ---
 
+## The seven things every previous vendor charged you for
+
+You have probably tried at least three of these. We invert all seven simultaneously.
+
+| # | What you have been quietly paying for | The vendor that levies it |
+|---|---|---|
+| 1 | The "I feel stupid" tax — fighting a WYSIWYG editor at 11pm | DIY builders (Squarespace / Wix / Webflow / Framer / Durable) |
+| 2 | $200 to change a phone number | Boutique agency on per-edit billing |
+| 3 | A two-week wait for a typo | Solo freelancer + Slack-DM model |
+| 4 | "If I leave I lose the site" | Webflow / Squarespace / agency-hosted accounts |
+| 5 | Paying to keep an old thing old | WordPress maintenance shops |
+| 6 | A vendor's promise that ended up as your regulator's letter | "We do everything!" agencies — SEO guarantees, AI receptionists, ghost-written content, review-gating, lead-volume promises |
+| 7 | Two cognitive loads — a CMS *and* a developer to call | Headless CMS (Sanity / Contentful) + a freelance dev |
+
+Phone-as-CMS inverts 1, 2, and 3. Real-codebase ownership inverts 4 and 5. Our refusal to make promises that get *you* in trouble (see next slide) inverts 6. The single-vendor model inverts 7.
+
+> *The hidden ask underneath "I want to update my own site" is "I want to stop paying tax #6 most of all — and I have stopped saying it because I assumed every vendor was the same."*
+
+---
+
+## What we won't sell you — and why each refusal protects you
+
+Every refusal below is a vendor pitch you have probably heard at least once. Each is, for *your* practice specifically, a regulator-citation, a platform-TOS clause, or an FTC rule that lands on **you**, not on the vendor who pitched it. We refuse to put you in that position.
+
+| Promise we won't make | Why we won't make it (short) | What we will do instead |
+|---|---|---|
+| **"Guaranteed first-page Google ranking"** | Your professional regulator (CPSO / RCDSO / LSO §4.2 / CPA Ontario Rule 402 / COO / College of Physiotherapists) prohibits ranking guarantees as unsupported outcome claims. Google's *Search Essentials* state plainly that no SEO firm can guarantee a ranking. AI Overviews / ChatGPT / Perplexity are now answering a meaningful share of informational queries before any click. | Core Web Vitals ≥ 90 mobile, JSON-LD schema for the entities Google + AI Overviews quote, WCAG 2.1 AA accessibility, 301-redirect map at migration, content freshness from your dictation. Bundled into the monthly improvement run; no separate "SEO retainer" line. |
+| **"AI receptionist on your homepage"** | A bot that doesn't know your scope-of-practice generates clinical / legal / financial advice **you** are liable for — *Moffatt v. Air Canada* (2024 BCCRT 149) is the precedent. Privilege exposure (legal); covered-entity scope (healthcare); unauthorised-practice exposure (accounting / optometry). | The AI lives behind us, in the editorial pipeline that prepares your changes. Your patients / clients / customers see a normal site with real Book Now / Contact buttons. The AI never speaks to them. |
+| **"Set-and-forget content marketing — we'll write your blog under your name"** | Google E-E-A-T (Helpful Content Update, now in core ranking) demotes ghost-written content. Your regulator treats unsupported professional claims as advertising failures. **You** carry the malpractice exposure for any vendor-fabricated text. | You dictate (15-second voice memo or a paragraph in the inbox). The pipeline structures, formats, schema-tags, and publishes. You are the genuine author; we are the typist. 3–5 dictated content shipments per month. |
+| **"X qualified leads per month, guaranteed"** | We don't control demand. Vendors who guarantee lead volumes either define "qualified" so loosely that any form-fill counts, or hit the number by buying ads on your dime. By the time you notice, you have paid 6 months of retainer. | We control structural conversion. We tell you what your conversion was last month, where the drop-off is, and what experiment to run next. Demand-generation is a separate vendor relationship; we refer. |
+| **"Reputation management — we'll filter unhappy customers"** | Review-gating violates Google *Review Policies* (explicit prohibition), FTC *Endorsement Guides* (2024 final rule, monetary penalties), Canadian *Competition Act* §52 / §74.01, Yelp *Don't Ask for Reviews*, and your professional advertising rules. The penalty lands on **you**. | Honest review collection — neutral post-visit invite, no filtering. Typical lift: 3–6× monthly review volume in the first quarter, without the legal / platform-policy risk. |
+| **"All-in-one — your website, scheduling, EMR, CRM"** | Replacing your EMR / case-mgmt / PMS would make us a HIPAA / PHIPA / PIPEDA / SOX / FINTRAC covered entity. We deliberately stay outside that scope. Walled-garden bundles are also the textbook vendor-lock-in pattern. | We integrate. Deep-link buttons into your existing scheduler. Webhook from contact form to your CRM. You keep your tool relationship; we keep ours. |
+
+Source-of-truth detail (operator-internal): `docs/mothership/sales-verticals/00a-negative-list-rationale.md`. The pattern is the same across the negative list: **regulator + platform + FTC + economic-incentive reasoning, paired with a structural alternative we charge for inside the flat fee.**
+
+---
+
+## Four checks you can run during this 30-minute call
+
+Run these on Call 1 — without a contract, without a deposit, without a leap of faith. They are how you know we are the real thing.
+
+| Check | What to ask | What confirms us |
+|---|---|---|
+| **The "edit my own site" check** | *"Show me a real example of someone editing their own site from a phone."* | A 30-second loop from voice memo → preview link → tap-to-publish, on a real Next.js codebase, on a domain that would be in your name. |
+| **The "what happens if you go away" check** | *"If you disappear tomorrow, what do I keep?"* | Your domain (in your registrar). Your code (in your GitHub). Your hosting (on your card, in your name, on Vercel). The running site stays running. The autopilot stops. Nothing else changes. |
+| **The "what won't you sell me" check** | *"Why won't you do SEO / AI chatbots / ghost-written content / lead guarantees?"* | A regulator citation and a platform-TOS clause per refusal. If we cannot give those, you should not be buying. |
+| **The "cost when I'm wrong" check** | *"What if I sign and then change my mind in month 2?"* | 30 days' notice, no exit penalty, you keep everything you paid for. The setup fee is for the build (yours forever); the retainer covers the autopilot (licensed per engagement). |
+
+If we pass all four on this call, the rest is paperwork. If we fail any one of them, you should not be buying — and we will tell you so.
+
+---
+
 ## ROI math — the legal / consulting persona
 
 If you're a **boutique law firm or solo consultant**:

@@ -289,9 +289,10 @@ jobs:
           print("\n".join(parts))
           PY
 
-          # Run the OpenAI → Gemini → defer ladder. The script always exits
-          # 0 and prints `ENGINE=<openai|gemini|deferred>` to stdout, which
-          # we capture into a step output for downstream labelling.
+          # Run the five-leg ladder. The script always exits 0 and prints:
+          #   ENGINE=<openai|gemini|github|openrouter|deferred>
+          #   MODEL_USED=<concrete model id, omitted when deferred>
+          # We capture both into step outputs for the comment header.
           PROMPT_FILE=/tmp/prompt.txt \
           REVIEW_OUT=/tmp/review.md \
           OPENAI_MODEL="$MODEL" \
@@ -299,21 +300,27 @@ jobs:
             | tee /tmp/engine.txt
           ENGINE=$(grep -oE 'ENGINE=[a-z]+' /tmp/engine.txt | tail -n1 | cut -d= -f2)
           ENGINE="${ENGINE:-deferred}"
+          MODEL_USED=$(grep -oE 'MODEL_USED=[^[:space:]]+' /tmp/engine.txt | tail -n1 | cut -d= -f2-)
           echo "engine=$ENGINE" >> "$GITHUB_OUTPUT"
 
-          # Engine label tracks the script's ladder. Gemini leg defaults
-          # The script tags the review body with the actual engine
-          # used. We mirror that in the GitHub comment header so the
-          # operator can see at a glance which leg of the ladder
-          # produced this review.
-          GEMINI_LABEL="${GEMINI_MODEL:-gemini-2.5-flash}"
+          # Header reflects the EXACT model the script actually used —
+          # previously the Gemini header read whichever model GEMINI_MODEL
+          # defaulted to (Flash) even when the script ran Pro, and the
+          # GitHub Models / OpenRouter headers omitted the model entirely.
+          # (Codex P2 round 3 on PR #244, 2026-04-30.)
           case "$ENGINE" in
-            openai)     ENGINE_LABEL="Codex $MODEL" ;;
-            gemini)     ENGINE_LABEL="$GEMINI_LABEL (OpenAI unavailable)" ;;
-            github)     ENGINE_LABEL="GitHub Models (OpenAI + Gemini unavailable)" ;;
-            openrouter) ENGINE_LABEL="OpenRouter (all upstream legs unavailable)" ;;
-            deferred)   ENGINE_LABEL="DEFERRED — every review leg unavailable" ;;
-            *)          ENGINE_LABEL="$ENGINE" ;;
+            openai)
+              ENGINE_LABEL="Codex ${MODEL_USED:-$MODEL}" ;;
+            gemini)
+              ENGINE_LABEL="${MODEL_USED:-gemini} (OpenAI unavailable)" ;;
+            github)
+              ENGINE_LABEL="GitHub Models / ${MODEL_USED:-Llama-3.3} (OpenAI + Gemini unavailable)" ;;
+            openrouter)
+              ENGINE_LABEL="OpenRouter / ${MODEL_USED:-deepseek-r1} (all upstream legs unavailable)" ;;
+            deferred)
+              ENGINE_LABEL="DEFERRED — every review leg unavailable" ;;
+            *)
+              ENGINE_LABEL="$ENGINE" ;;
           esac
           {
             echo "## Code review ($ENGINE_LABEL)"

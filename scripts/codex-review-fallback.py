@@ -73,8 +73,9 @@ Inputs (env):
 
 Outputs:
     Writes the review markdown to /tmp/review.md (or $REVIEW_OUT).
-    Prints a single line to stdout:
+    Prints two lines to stdout (one for the deferred path):
         ENGINE=<openai|gemini|github|openrouter|deferred>
+        MODEL_USED=<concrete model id, omitted when ENGINE=deferred>
     Exits 0 always (the workflow handles the "deferred" case via labelling).
 
 Hallucination guard: the prompt itself instructs the model to never invent
@@ -365,7 +366,12 @@ def main() -> int:
     if review:
         with open(out_path, "w") as f:
             f.write(review)
+        # Emit MODEL_USED so the workflow's GitHub comment header
+        # surfaces the exact model — the body has it too but the
+        # outer header was stale (gemini-2.5-flash) when the script
+        # actually ran gemini-2.5-pro. (Codex P2 round 3 on PR #244.)
         print("ENGINE=openai")
+        print(f"MODEL_USED={os.environ.get('OPENAI_MODEL', 'gpt-5.5')}")
         return 0
     openai_status = status
 
@@ -384,6 +390,7 @@ def main() -> int:
                 + review
             )
         print("ENGINE=gemini")
+        print(f"MODEL_USED={gemini_model_used}")
         return 0
     gemini_status = status
 
@@ -404,6 +411,7 @@ def main() -> int:
                 "\n\n" + review
             )
         print("ENGINE=github")
+        print(f"MODEL_USED={gh_model_used}")
         return 0
     gh_status = status
 
@@ -420,6 +428,7 @@ def main() -> int:
                 f"GitHub Models: {gh_status})._\n\n" + review
             )
         print("ENGINE=openrouter")
+        print(f"MODEL_USED={or_model_used}")
         return 0
     or_status = status
 

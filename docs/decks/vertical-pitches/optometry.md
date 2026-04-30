@@ -164,15 +164,44 @@ You've been here before. Here's what we do differently:
 
 ---
 
-## What this is *not*
+## Why we won't sell you SEO (and why it's not the fight you think it is)
 
-Transparency, not bait-and-switch. We don't:
+Independent ODs hear *"guaranteed top-3 local-pack against Costco / LensCrafters / Specsavers"* every quarter. We won't make that promise.
 
-- **Replace your PMS.** Eyefinity / OfficeMate / RevolutionEHR / Topcon stay yours. We integrate.
-- **Build a Warby Parker clone.** Different business model, different unit economics. We focus on what independent ODs win on: frame curation + clinical service + virtual try-on for a curated range, not 50,000-frame online inventory at $99/pair.
-- **Run your Google Ads / Meta Ads.** Out of scope. We refer to a partner agency.
-- **Sell "guaranteed top-3 local-pack ranking against Costco."** Costco has a national-brand SEO advantage that we won't fight. What we *can* do is structurally beat them on local long-tail searches where intent is specific and corporate retail has weaker copy.
-- **Promise clinical outcomes (20/20, contact-lens comfort, dry-eye relief).** COO / state-board territory. The content lint flags outcome claims before publish.
+- **Your College prohibits it.** College of Optometrists of Ontario *Advertising* standards (and parallel state-board rules) prohibit comparative claims and unsupported outcome claims. A ranking guarantee is the textbook unsupported claim; the vendor pitches it, *your* College pulls *your* file.
+- **Google itself rejects it.** *Search Essentials* state plainly that no SEO firm can guarantee a ranking. Vendors who do are buying paid placements and calling them SEO.
+- **You are not actually trying to outrank Costco on the head term.** Costco has a national-brand SEO advantage on *"eye exam"* + *"glasses"* head terms that no independent budget can fight. Where independent ODs *win* is on long-tail intent — *"paediatric eye exam [neighbourhood],"* *"orthokeratology [city],"* *"low-vision specialist near me,"* *"scleral lens fitting [region],"* *"OHIP-covered diabetic eye exam."* Corporate retail copy is weak there because their ranking math is built around volume head terms.
+- **The SERP itself is changing.** AI Overviews now answer a meaningful share of vision-care queries before a click. AI-search visibility on long-tail clinical intent is the new lever, and it rewards structured pages, not keyword stuffing.
+
+**What we *do* instead, every month, in your $249:**
+
+- Core Web Vitals ≥ 90 mobile; `Lighthouse` + `axe-core` gate every preview build
+- JSON-LD structured data — `Optometrist`, `MedicalClinic`, `MedicalProcedure` (per clinical service), `Service` (per CL / frame / specialty service), `LocalBusiness`
+- WCAG 2.1 AA accessibility (Google demotes inaccessible pages; AODA / ADA exposure independently)
+- 301-redirect map + sitemap submission + 30-day post-launch ranking-monitor
+- Local-pack + map-pack hygiene across Google Business Profile, Apple Maps, Bing, Yelp, Healthgrades
+- FTC Contact Lens Rule prescription-release disclosure on every CL fitting / reorder page (lint-enforced)
+
+No "SEO retainer" on your invoice. The structural work is the work.
+
+---
+
+## What this is *not* — other things optometry-website vendors sell that we deliberately don't
+
+Transparency, not bait-and-switch. We won't:
+
+- **Replace your PMS.** Eyefinity / OfficeMate / RevolutionEHR / Compulink / Topcon Maestro2 stay yours. We integrate.
+- **Build a Warby Parker clone.** Different business model, different unit economics. We focus on what independent ODs actually win on — frame curation + clinical service + virtual try-on for a curated range — not 50,000-frame online inventory at $99/pair.
+- **Run your Google Ads / Meta Ads.** Different skill, different vendor incentives, conflicts with a clean retainer. We refer, non-revenue-share.
+- **Ship a public-facing AI chatbot.** A bot that suggests a CL brand, a prescription change, or a dry-eye protocol is practising optometry without a licence — *your* COO file, not the vendor's. AI is operator-side; the public site has real Book Now buttons.
+- **Ghost-write your clinical content.** Google E-E-A-T demotes content without a verifiable OD author; COO penalises unsupported clinical claims. We structure and ship from your dictation; we don't fabricate clinical authority.
+- **Promise clinical outcomes — 20/20, dry-eye relief, CL comfort, myopia reversal.** COO / state-board territory; the content lint flags outcome claims before publish.
+- **Guarantee patient volumes.** "X new exam bookings/month, guaranteed" is a marketing trope; vendors who hit the number are typically buying paid ads on your dime.
+- **Run reputation management / review-gating.** Selectively soliciting positive reviews violates Google *Review Policies*, FTC *Endorsement Guides* (2024 final rule), Canadian *Competition Act* §52/§74.01, and COO advertising standards. We run *honest* collection — a neutral post-visit invite, no filtering — typically a 3–6× lift in monthly review volume in the first quarter.
+- **Sell a "vision quiz" / symptom-checker as core scope.** Scope-of-practice exposure; available as a quoted add-on at Tier 3 only with explicit clinical-review language.
+- **Replace your CL fulfillment / e-commerce stack.** ABB Optical / Bausch / Alcon Direct stay your vendor relationship.
+
+**The pattern.** If a competitor pitches you something we won't, ask them for the College or FTC citation. The vendors who can't are the ones whose past clients are now in front of advertising-complaint hearings or FTC Contact Lens Rule penalties.
 
 ---
 

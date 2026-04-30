@@ -84,8 +84,10 @@ lanes:
     - docs/n8n-workflows/
     - docs/_deprecated/
     - docs/wiki/
+    - docs/AI_CLAUDE_DESIGN_PLAYBOOK.md
     - docs/AI_CONSISTENCY.md
     - docs/AI_ROUTING.md
+    - docs/claude-design/
     - docs/GEMINI_TASKS.md
     - docs/MONITORING.md
     - docs/N8N_SETUP.md

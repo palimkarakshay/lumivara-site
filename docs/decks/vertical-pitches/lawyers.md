@@ -158,15 +158,40 @@ You've been here before. Here's what we do differently:
 
 ---
 
-## What this is *not*
+## Why we won't sell you SEO (and why that's good news, given the regulator)
 
-Transparency, not bait-and-switch. We don't:
+"Guaranteed first-page Google ranking for [your city] [practice area] lawyer" is the single most-aggressively-pitched promise in the law-firm-website vertical. We won't make it. In your vertical, refusing it is not just hygiene — it's malpractice prevention.
 
-- **Replace your case-management.** Clio / MyCase / PracticePanther / Smokeball / Filevine stay yours. We integrate.
-- **Sell "law-firm SEO."** Past law-firm-SEO vendors typically tried to bolt SEO services onto a broken foundation. We *fix the foundation* — Core Web Vitals, structured data, redirects, accessible markup. SEO services on top of our work get a much higher conversion-of-effort.
-- **Promise a Google ranking position.** Both LSO §4.2 / state-bar 7.1 and Google's quality guidelines reject ranking guarantees in this vertical.
-- **Run your Google Ads / Meta Ads on practice areas.** Out of scope. We refer to a partner agency.
-- **Provide a client portal at the entry tier.** Available at Tier 3 with explicit case-management vendor wiring.
+- **LSO and the state bars prohibit it explicitly.** LSO Rules of Professional Conduct §4.2 and ABA Model Rule 7.1 (with state variants) prohibit marketing that is *false, misleading, confusing, or that includes guarantees of results*. A ranking guarantee is a guarantee-of-result-by-proxy: the vendor pitches it, the lawyer is cited. Several state bars (NY, CA, TX, FL) have issued specific advisory opinions naming SEO-ranking guarantees as the failure mode.
+- **Google itself rejects it.** *Search Essentials* state plainly that no SEO firm can guarantee a ranking. Vendors who claim it are buying paid-search placements they call SEO, or using black-hat tactics that earn manual penalties.
+- **The SERP itself is changing.** AI Overviews now answer a meaningful share of legal-information queries — *"do I need a lawyer for an uncontested divorce?"*, *"is my non-compete enforceable?"* — before a click. AI Mode and Perplexity are routing intent away from the SERP entirely.
+
+**What we *do* instead, every month, in your $249:**
+
+- Core Web Vitals ≥ 90 mobile; `Lighthouse` + `axe-core` gate every preview build
+- JSON-LD structured data — `Attorney`, `LegalService`, `LocalBusiness`, practice-area `Service`, `OpeningHoursSpecification`
+- WCAG 2.1 AA accessibility (Google demotes inaccessible pages; ADA Title III lawsuits independently exposed)
+- 301-redirect map + sitemap submission + 30-day post-launch ranking-monitor
+- Practice-area content freshness — case-law update notes, new-statute summaries — from your dictation in the monthly run
+
+No "SEO retainer" line on your invoice. We charge for the structural work; we refuse to charge for the magic words your College has already named as a violation.
+
+---
+
+## What this is *not* — other things law-firm-website vendors sell that we deliberately don't
+
+Transparency, not bait-and-switch. We won't:
+
+- **Replace your case-management.** Clio / MyCase / PracticePanther / Smokeball / Filevine / CosmoLex stay yours. We integrate.
+- **Run your Google Ads / Meta Ads on practice areas.** Different skill, different vendor incentives, separate practice-area-specific compliance review (LSA / state-bar). We refer to a partner agency, non-revenue-share.
+- **Ship a public-facing AI chatbot.** A chatbot that gives a prospect even one sentence of jurisdiction-specific advice creates an attorney-client relationship by conduct in many states. Privilege exposure follows. The bot is operator-side only; the public site has real Book Consultation buttons.
+- **Ghost-write your legal content.** Google E-E-A-T demotes content without a verifiable attorney author; LSO and state-bar rules penalise unsupported claims about outcomes, success rates, or comparative quality. We structure and ship from your dictation; we don't fabricate professional authority.
+- **Guarantee lead volumes.** "X qualified leads/month" is a marketing trope; the lawyers we know who took those deals all paid 6–12 months of retainer before they realised the leads were noise. We don't control demand; we control structural conversion.
+- **Run reputation management / review-gating.** Selectively soliciting positive reviews violates LSO Rules §4.2 (misleading advertising), Google *Review Policies*, FTC *Endorsement Guides* (2024 final rule), and Canadian *Competition Act* §52/§74.01. We run *honest* collection — a single neutral post-consultation invite, with the §4.2 testimonial-flagging lint applied (testimonials about specific case outcomes flagged before publish).
+- **Provide a client portal at the entry tier.** Available at Tier 3 with explicit case-management vendor wiring (Clio for Clients / MyCase Client Portal / etc.). The portal carries privilege; we route to your existing tooling rather than become that vendor.
+- **Take referral-fee splits or rev-share on matters.** Operator economics; cleaner alignment.
+
+**The pattern.** If a competitor pitches you something we won't, ask for the rule citation. In your vertical especially, the gap between what gets pitched and what's actually compliant is wider than in any other professional-services vertical we sell into.
 
 ---
 

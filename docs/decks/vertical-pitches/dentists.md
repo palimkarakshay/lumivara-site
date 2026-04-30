@@ -157,14 +157,40 @@ You've been here before. Here's what we do differently:
 
 ---
 
-## What this is *not*
+## Why we won't sell you SEO
 
-Transparency, not bait-and-switch. We don't:
+"Guaranteed first-page Google ranking for [your city] dentist" is the most-pitched promise in the dental-website vertical. We won't make it — and you should be wary of any vendor who does.
 
-- **Replace your PMS.** Dentrix / Eaglesoft / Open Dental / ClearDent stay yours. We integrate.
-- **Run your Google Ads / Meta Ads.** Out of scope. We refer to a partner agency.
-- **Sell you "guaranteed first-page ranking."** Both your dental-board advertising rules and Google's quality guidelines reject ranking guarantees. What we *do* is structurally fix the things that suppress ranking — Core Web Vitals, schema, mobile usability, accessibility failures.
-- **Ship a public-facing AI chatbot.** Patients see a normal website with real Book Now buttons. The AI is operator-side; it helps us ship your changes faster.
+- **Your dental board prohibits it.** RCDSO *Standard of Practice — Advertising* §6 (and parallel state-board / ADA Code of Professional Conduct rules) reject superlatives, comparative, and unverifiable claims. A ranking guarantee is the textbook unsupported claim; the vendor pitches it, your College pulls *your* file.
+- **Google itself rejects it.** Google *Search Essentials* are explicit: no SEO firm can guarantee a ranking. Vendors who do are typically buying paid placements they call SEO, or using tactics that get the site penalised six months in.
+- **The SERP itself is changing.** AI Overviews now answer a meaningful share of dental queries — *"is a crown covered by insurance?"*, *"how much is Invisalign in Toronto?"* — before a click. Pure "rank #1" thinking is already obsolete.
+
+**What we *do* instead, every month, in your $249:**
+
+- Core Web Vitals ≥ 90 mobile; `Lighthouse` + `axe-core` gate every preview build
+- JSON-LD structured data — `Dentist`, `DentalService` (per procedure), `MedicalProcedure`, `Review`, `OpeningHoursSpecification`
+- WCAG 2.1 AA accessibility (Google demotes inaccessible pages; AODA / ADA exposure independently)
+- 301-redirect map + sitemap submission + 30-day post-launch ranking-monitor
+- Procedure-page content freshness from dictation in the monthly improvement run
+
+No "SEO retainer" line on your invoice. The structural work is the work; we refuse to charge for magic words.
+
+---
+
+## What this is *not* — other things dental-website vendors sell that we deliberately don't
+
+Transparency, not bait-and-switch. We won't:
+
+- **Replace your PMS.** Dentrix / Eaglesoft / Open Dental / ClearDent / tab32 stay yours. We integrate.
+- **Run your Google Ads / Meta Ads.** Different skill, different vendor incentives, conflicts with a clean retainer. We refer to a partner agency, non-revenue-share.
+- **Ship a public-facing AI chatbot.** A bot that doesn't know your scope-of-practice will give patients procedure advice you'll be cited for — *Moffatt v. Air Canada* (2024) made clear the licensee owns the bot's output. AI stays operator-side; patients see real Book Now buttons.
+- **Ghost-write your dental content.** Google E-E-A-T demotes content without a verifiable dentist author; RCDSO penalises unsupported claims about outcomes ("painless," "guaranteed white," "lifetime crown"). We structure and ship from your dictation; we don't fabricate clinical authority.
+- **Guarantee new-patient volumes.** "X new patients/month, guaranteed" is a marketing trope; vendors who hit the number typically do so by buying paid ads on your dime. We don't control patient demand; we control structural conversion.
+- **Run reputation management / review-gating.** Filtering bad reviews before they reach Google violates Google *Review Policies*, FTC *Endorsement Guides* (2024 final rule), Canadian *Competition Act* §52/§74.01, and RCDSO advertising standards. We run *honest* collection — a neutral post-visit invite, no filtering. Typical lift: 3–6× monthly review volume in the first quarter.
+- **Sell financing-platform integrations as core scope.** Available at Tier 3 with explicit vendor wiring; we won't put a financing CTA on the homepage by default — RCDSO and CDSBC both treat over-prominent fee-display as a marketing failure.
+- **Replace your insurance-eligibility checker / Telus eClaims integration.** Compliance-bound; different vendor lane.
+
+**The pattern.** If a competitor pitches you something we won't, ask them to put the regulator citation behind it in writing. The vendors who can't are the ones we want you to avoid.
 
 ---
 

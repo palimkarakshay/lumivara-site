@@ -159,15 +159,41 @@ You've been here before. Here's what we do differently:
 
 ---
 
-## What this is *not*
+## Why we won't sell you SEO
 
-Transparency, not bait-and-switch. We don't:
+"Guaranteed local-pack #1 for [your city] physio / chiro / massage" is the most-pitched promise to clinics like yours. We won't make it — and you should be wary of any vendor who does.
 
-- **Replace your booking platform.** Jane App / ClinicSense / WebPT / SimplePractice stay yours. We integrate.
-- **Run your Google Ads / Meta Ads.** Out of scope. We refer to a partner agency.
-- **Sell "guaranteed local-pack #1 ranking."** Both your college's advertising rules and Google's quality guidelines reject ranking guarantees. What we *do* is structurally fix the things that suppress ranking — Core Web Vitals, schema markup, mobile usability, accessibility failures, review volume.
-- **Ship a public-facing AI chatbot.** Your patients see a normal website with a real Book Now button.
-- **Promise patient-recovery outcomes.** Your college's advertising rules — and our content lint — both prohibit outcome claims.
+- **Your college prohibits it.** College of Physiotherapists of Ontario *Advertising and Marketing* (and the parallel chiro / RMT / kinesiology college rules across provinces; state-board parallels in the US) prohibit outcome claims, comparative claims, and superlatives. A ranking guarantee is an unsupported comparative claim by proxy; the vendor pitches it, *your* college pulls *your* file.
+- **Google itself rejects it.** *Search Essentials* are explicit: no SEO firm can guarantee a ranking. Vendors who do are typically buying paid-search placements they call SEO, or using tactics that earn manual penalties.
+- **The SERP itself is changing.** AI Overviews now answer a meaningful share of musculoskeletal queries — *"do I need physio for a sprained ankle?"*, *"is chiro covered by extended health?"* — before a click.
+
+**What we *do* instead, every month, in your $249:**
+
+- Core Web Vitals ≥ 90 mobile; `Lighthouse` + `axe-core` gate every preview build
+- JSON-LD structured data — `Physiotherapist` / `Chiropractor` / `MassageTherapy`, `MedicalProcedure`, `LocalBusiness`, per-provider `Person`, `OpeningHoursSpecification`
+- WCAG 2.1 AA accessibility (Google demotes inaccessible pages; AODA / ADA exposure independently)
+- 301-redirect map + sitemap submission + 30-day post-launch ranking-monitor
+- Local-pack hygiene: NAP consistency across Google Business Profile, Apple Maps, Bing Places, RateMDs, Healthgrades
+
+No "SEO retainer" line on your invoice. The structural work is the work.
+
+---
+
+## What this is *not* — other things wellness-clinic-website vendors sell that we deliberately don't
+
+Transparency, not bait-and-switch. We won't:
+
+- **Replace your booking / EHR platform.** Jane App / ClinicSense / WebPT / SimplePractice / Practice Better / Cliniko stay yours. We integrate.
+- **Run your Google Ads / Meta Ads.** Different skill, different vendor incentives, conflicts with a clean retainer. We refer, non-revenue-share.
+- **Ship a public-facing AI chatbot.** A bot that suggests a treatment plan to a patient is practising without a licence; your College carries that liability, not the vendor. AI is operator-side; the public site has real Book Now buttons.
+- **Ghost-write your clinical content.** Google E-E-A-T demotes content without a verifiable PT / DC / RMT author; your College penalises unsupported recovery / efficacy claims. We structure and ship from your dictation; we don't fabricate clinical authority.
+- **Promise patient-recovery outcomes.** *"Pain-free in 4 sessions"*, *"100% recovery rate"*, *"the only clinic that…"* — your college's advertising rules and our content lint both prohibit these. The lint flags before publish.
+- **Guarantee patient volumes.** "X new patients/month, guaranteed" is a marketing trope; the clinics we know who took those deals all paid 6+ months of retainer before realising the leads were noise.
+- **Run reputation management / review-gating.** Filtering bad reviews before they reach Google violates Google *Review Policies*, FTC *Endorsement Guides* (2024 final rule), Canadian *Competition Act* §52/§74.01, and your College's advertising rules. We run *honest* collection — a neutral post-visit invite, no filtering. Typical lift: 3–6× monthly review volume in the first quarter.
+- **Replace your insurance-eligibility / direct-billing integration.** Telus eClaims / Provider Connect / Pacific Blue Cross direct-billing stay your vendor relationship.
+- **Sell a "treatment-finder quiz" or symptom-checker as core scope.** Both create scope-of-practice exposure your College has named directly. Available as a quoted add-on at Tier 3 only, with explicit clinical-review language.
+
+**The pattern.** If a competitor pitches you something we won't, ask them for the College citation. The vendors who can't are the ones whose past clients are now sitting in front of advertising-complaint hearings.
 
 ---
 

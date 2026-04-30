@@ -50,6 +50,8 @@ The persona pack tells you *who* to sell to. The reasons-to-switch pack tells yo
 
 **Legend:** ✅ Full = persona, pain map, ROI math, objection handlers, sources all complete. 🔲 Stub = file exists with section headings only. ⏳ Planned = not yet stubbed.
 
+**Cross-vertical reference (operator-only).** [`00a-negative-list-rationale.md`](./00a-negative-list-rationale.md) — the source-of-truth reasoning behind every "Why we won't sell you SEO" + "What this is *not*" slide in the per-vertical pitch decks (`../../decks/vertical-pitches/`) and the master decks (`../../decks/06-master-deck.md`, `06a-master-deck-shareable.md`). Read this before any objection-handling reply that touches rankings, AI chatbots, lead-gen guarantees, content marketing, review-gating, paid ads, social media, EMR replacement, white-labelling, or equity-only deals. Every entry carries the regulator citation, the platform-TOS citation, and the structural alternative we charge for instead.
+
 **Adjacent vertical content templates** (different folder, different purpose) tracked in [`../templates/00-templates-index.md`](../templates/00-templates-index.md): restaurant, plumbing, realtor, recruiter content prompts.
 
 ---

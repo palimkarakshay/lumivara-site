@@ -153,14 +153,40 @@ You've been here before. Here's what we do differently:
 
 ---
 
-## What this is *not*
+## Why we won't sell you SEO
 
-Transparency, not bait-and-switch. We don't:
+The single most-pitched line in the medical-website vertical is *"guaranteed first-page Google ranking."* We won't make that promise — and you should be wary of anyone who does.
 
-- **Replace your EMR.** OSCAR / Accuro / Epic / Athena stay yours. We integrate.
-- **Run your Google Ads / Meta Ads.** Out of scope. We refer to a partner agency.
-- **Provide secure-messaging patient portals at the entry tier.** Available at Tier 3 with explicit BAA-eligible vendor wiring.
-- **Promise a Google ranking position.** Both your medical-board advertising rules and Google's own quality guidelines reject ranking guarantees. What we *do* is structurally fix the things that suppress ranking — Core Web Vitals, schema markup, mobile usability, accessibility failures.
+- **Your medical board prohibits it.** CPSO *Advertising* §2 (and parallel state-medical-board rules) treat ranking guarantees as unsupported comparative or outcome claims. The vendor pitches it; you get cited.
+- **Google itself rejects it.** Google *Search Essentials* are explicit: no SEO firm can guarantee a ranking. Vendors who do are typically buying paid placements they call SEO, ranking for vanity terms with no patient intent, or using black-hat tactics that get the site penalised six months in.
+- **The SERP itself is changing.** AI Overviews / AI Mode now answer a meaningful share of patient health queries before a click. ChatGPT and Perplexity route patient intent away from the SERP entirely. Pure "rank #1" thinking is already obsolete.
+
+**What we *do* instead, every month, in your $249:**
+
+- Core Web Vitals ≥ 90 mobile (Google's confirmed ranking signal), `Lighthouse` and `axe-core` gate every preview build
+- JSON-LD structured data — `Physician`, `MedicalClinic`, `MedicalProcedure`, `OpeningHoursSpecification` — what AI Overviews quote
+- WCAG 2.1 AA accessibility (Google now demotes inaccessible pages)
+- 301-redirect map at migration; sitemap submission; 30-day post-launch ranking-monitor
+- Content freshness from physician dictation in the monthly improvement run
+
+There is no "SEO retainer" line on your invoice. We charge for the structural work; we refuse to charge for magic words.
+
+---
+
+## What this is *not* — other things medical-website vendors sell that we deliberately don't
+
+Transparency, not bait-and-switch. We won't:
+
+- **Replace your EMR.** OSCAR / Accuro / Epic / Athena / TELUS PSS stay yours. We integrate, we don't ingest.
+- **Run your Google Ads / Meta Ads.** Different skill, different vendor incentives, conflicts with a clean retainer. We refer to a partner agency on a non-revenue-share basis.
+- **Ship a public-facing AI chatbot.** A bot that doesn't know your scope-of-practice will generate clinical advice you'll be cited for — *Moffatt v. Air Canada* (2024) made clear the licensee, not the vendor, owns that liability. AI is operator-side; your patients see real Book Now buttons.
+- **Ghost-write your medical content.** Google E-E-A-T penalises content without a verifiable physician author; CPSO penalises unsupported clinical claims. We structure and ship from your dictation; we don't fabricate clinical authority.
+- **Guarantee patient volumes.** "X new patients/month, guaranteed" is a marketing trope. We don't control patient demand; we control structural conversion. We'll tell you what your conversion was last month — that's what we're accountable for.
+- **Run reputation management / review-gating.** Filtering bad reviews violates Google's *Review Policies*, the FTC *Endorsement Guides* (2024 final rule), and the Canadian *Competition Act* §52/§74.01. We automate *honest* review collection — a single neutral post-visit invite, no filtering. Typical lift: 3–6× monthly review volume in the first quarter, without the legal risk.
+- **Sell secure-messaging patient portals at the entry tier.** Tier 3 only, with explicit BAA-eligible vendor wiring. We deliberately don't become a covered entity by default.
+- **Replace your phone, fax, or e-fax system.** Compliance-bound; different vendor lane.
+
+**The pattern.** If a competitor pitches you something we don't, ask them to put the regulator citation in writing. The ones who can't are the ones we want you to avoid.
 
 ---
 

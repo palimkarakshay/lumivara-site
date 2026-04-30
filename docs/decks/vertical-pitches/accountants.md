@@ -161,15 +161,42 @@ You've been here before. Here's what we do differently:
 
 ---
 
-## What this is *not*
+## Why we won't sell you SEO
 
-Transparency, not bait-and-switch. We don't:
+"Guaranteed first-page Google ranking for [your city] CPA / accountant / bookkeeper" is one of the top three pitches a small firm hears every quarter. We won't make it.
 
-- **Read your client books.** The AI sees public marketing content, never your accounting platform.
-- **Replace your practice-mgmt platform.** Karbon / TaxDome / Canopy / Aero Workflow stay yours. We integrate.
-- **Sell "tax-firm SEO."** We do site hygiene that supports SEO; SEO services are an adjacent vendor's lane.
-- **Run your Google Ads / Meta Ads.** Out of scope. We refer to a partner agency.
-- **Promise audit-resolution outcomes.** Treasury Circular 230 + CPA Ontario Rule 402 territory. We don't make claims that violate your code.
+- **CPA Ontario and Treasury prohibit it.** CPA Ontario Rule 402 and IRS *Treasury Circular 230* §10.30 both prohibit advertising containing false, fraudulent, or misleading statements. Provincial CPA bodies (BC, AB, QC, etc.) have parallel rules. A ranking guarantee is the textbook unsupported claim; the vendor pitches it, the firm gets cited.
+- **Google itself rejects it.** *Search Essentials* are explicit: no SEO firm can guarantee a ranking. Vendors who claim it are typically buying paid placements they call SEO or ranking for vanity terms with no buyer intent.
+- **The SERP itself is changing.** AI Overviews now answer a meaningful share of tax-information queries — *"can I deduct home-office in 2025?"*, *"T2200 vs T2200S"* — before a click. ChatGPT and Perplexity route intent away from the SERP entirely.
+
+**What we *do* instead, every month, in your $249:**
+
+- Core Web Vitals ≥ 90 mobile; `Lighthouse` + `axe-core` gate every preview build
+- JSON-LD structured data — `AccountingService`, `Service` (per service line), `LocalBusiness`, `Person` (each partner), `OpeningHoursSpecification`
+- WCAG 2.1 AA accessibility (Google demotes inaccessible pages; AODA exposure independently)
+- 301-redirect map at migration; sitemap submission; 30-day post-launch ranking-monitor
+- Tax-cycle content freshness — CRA / IRS rule changes, deadline reminders — from partner dictation in the monthly run
+
+No "SEO retainer" line on your invoice. We charge for the structural work; we refuse to charge for the magic words your College already names as a violation.
+
+---
+
+## What this is *not* — other things accounting-firm-website vendors sell that we deliberately don't
+
+Transparency, not bait-and-switch. We won't:
+
+- **Read your client books.** The AI sees public marketing content (services, hours, partner bios), never your accounting platform credentials, working papers, or client tax data.
+- **Replace your practice-management platform.** Karbon / TaxDome / Canopy / Aero Workflow / Senta stay yours. We integrate.
+- **Run your Google Ads / Meta Ads.** Different skill, different vendor incentives, conflicts with a clean retainer. We refer to a partner agency, non-revenue-share.
+- **Ship a public-facing AI chatbot.** A chatbot answering tax questions to a public audience is unauthorised practice exposure (Circular 230 §10.50; provincial CPA rules) and creates a discoverable record of advice given without engagement-letter scope. AI is operator-side; your prospects see real "Book a Consultation" buttons.
+- **Ghost-write your tax content.** Google E-E-A-T demotes content without a verifiable CPA author; CPA Ontario Rule 402 and Circular 230 §10.30 penalise unsupported claims about audit-resolution outcomes, refund sizes, or comparative quality. We structure and ship from partner dictation; we don't fabricate professional authority.
+- **Promise audit-resolution outcomes or refund-size guarantees.** Both Circular 230 and CPA Ontario Rule 402 territory; we lint for the language so it can't accidentally surface in your copy.
+- **Guarantee lead volumes.** "X new clients per quarter" is a marketing trope; vendors who hit the number typically buy paid ads on your dime and count form-fills as "qualified."
+- **Run reputation management / review-gating.** Selectively soliciting positive reviews violates CPA Ontario Rule 402, Google *Review Policies*, FTC *Endorsement Guides* (2024), and Canadian *Competition Act* §52/§74.01. We run *honest* collection — a neutral post-engagement invite, no filtering.
+- **Replace your secure-document-portal vendor.** SuiteFiles / TaxDome / Karbon Mail / SmartVault / FileInvite stay yours. We don't ingest privileged client documents.
+- **Take a percentage of refunds collected, contingent fees, or tax-savings-as-fees deals.** Operator economics; cleaner alignment.
+
+**The pattern.** If a competitor pitches you something we won't, ask them for the rule citation. The vendors who can't are the ones who'll eventually put your CPA designation in front of a discipline committee.
 
 ---
 

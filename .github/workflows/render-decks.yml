@@ -1,0 +1,283 @@
+name: Render Marp decks
+
+# Auto-renders Marp-tagged .md sources under docs/** into paired .html files,
+# matching the manual regen pattern from b2c2b73.
+#
+# Pipeline contract (see docs/AI_CLAUDE_DESIGN_PLAYBOOK.md):
+#   - The MD source under docs/** is the canonical artefact (operator edits this).
+#   - The .html sibling is a built artefact (this workflow regenerates it).
+#   - Eligibility = the file's first line is `---` AND `marp: true` appears in
+#     its YAML frontmatter. Any other .md (READMEs, indexes, sales playbooks,
+#     this workflow's own playbook with `marp:` only inside a code fence) is
+#     skipped automatically by scripts/render-decks.sh.
+#   - Bounded write surface: only `<dir>/<name>.html` next to a Marp `<dir>/<name>.md`.
+#     The render script's surface-fence aborts the run if anything else changes.
+#
+# Triggers:
+#   - push to main touching docs/**.md → mode=incremental (rerender only changed Marp MDs)
+#   - workflow_dispatch with mode=incremental | retroactive | force
+#   - workflow_dispatch with open_pr=true → open a PR instead of pushing to main
+#
+# Loop guard:
+#   - GitHub Actions does not re-trigger workflows for pushes made with
+#     GITHUB_TOKEN; the bot's own commits silently no-op the next push trigger.
+#   - Belt-and-braces: every commit message ends with `[skip ci]`, and the
+#     workflow exits early if the trigger commit's author is github-actions[bot].
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**.md'
+  workflow_dispatch:
+    inputs:
+      target:
+        # Pick a single deck to (re)render, or __all__ to defer to `mode` below.
+        # When a specific deck is selected, `mode` is ignored.
+        # NOTE: this dropdown is a snapshot of the deck inventory at workflow-edit
+        # time. If a new Marp-tagged .md lands and isn't here yet, either:
+        #   (a) push the MD — the push trigger will auto-render it, OR
+        #   (b) extend the options list below in a follow-up PR, OR
+        #   (c) use target=__all__ + mode=retroactive to catch any HTML missing
+        #       a paired source render.
+        description: "Specific deck to render (or __all__ to use `mode`)"
+        required: false
+        default: "__all__"
+        type: choice
+        options:
+          - __all__
+          - docs/decks/01-investor-deck.md
+          - docs/decks/02-partner-deck.md
+          - docs/decks/03-employee-deck.md
+          - docs/decks/04-prospective-client-deck.md
+          - docs/decks/05-advisor-deck.md
+          - docs/decks/06-master-deck.md
+          - docs/decks/06a-master-deck-shareable.md
+          - docs/storefront/04-slide-deck.md
+          - docs/storefront/06-positioning-slide-deck.md
+          - docs/storefront/06-product-strategy-deck.md
+      mode:
+        # Used only when target=__all__. Ignored when target names a specific deck.
+        description: "Render mode (when target=__all__)"
+        required: false
+        default: "incremental"
+        type: choice
+        options:
+          - incremental
+          - retroactive
+          - force
+      open_pr:
+        description: "Open a PR instead of pushing direct to main"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: render-decks
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Loop guard — skip if push came from the bot
+        id: loop_guard
+        env:
+          ACTOR: ${{ github.actor }}
+        run: |
+          if [ "$ACTOR" = "github-actions[bot]" ]; then
+            echo "Trigger actor is github-actions[bot]; skipping to prevent recursion." >&2
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.loop_guard.outputs.skip == 'false'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        if: steps.loop_guard.outputs.skip == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Resolve target + mode
+        # Decision tree:
+        #   - push event → always (mode=incremental, target=__all__)
+        #   - workflow_dispatch + target=__all__ → use the operator's `mode`
+        #   - workflow_dispatch + target=<path>  → ignore `mode`, render that one
+        if: steps.loop_guard.outputs.skip == 'false'
+        id: plan
+        env:
+          DISPATCH_TARGET: ${{ inputs.target }}
+          DISPATCH_MODE:   ${{ inputs.mode }}
+          EVENT_NAME:      ${{ github.event_name }}
+        run: |
+          set -uo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            TARGET="${DISPATCH_TARGET:-__all__}"
+            MODE="${DISPATCH_MODE:-incremental}"
+          else
+            TARGET="__all__"
+            MODE="incremental"
+          fi
+          if [ "$TARGET" = "__all__" ]; then
+            EFFECTIVE="$MODE"
+            TAG="$MODE"
+          else
+            EFFECTIVE="single (--deck $TARGET)"
+            # Clean display tag for commit / PR title: e.g. "single:01-investor-deck"
+            TAG="single:$(basename "$TARGET" .md)"
+          fi
+          echo "target=$TARGET"       >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE"           >> "$GITHUB_OUTPUT"
+          echo "effective=$EFFECTIVE" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG"             >> "$GITHUB_OUTPUT"
+          echo "Plan: target='$TARGET' mode='$MODE' effective='$EFFECTIVE' tag='$TAG'"
+
+      - name: Render decks
+        if: steps.loop_guard.outputs.skip == 'false'
+        id: render
+        env:
+          TARGET: ${{ steps.plan.outputs.target }}
+          MODE:   ${{ steps.plan.outputs.mode }}
+        run: |
+          set -uo pipefail
+          if [ "$TARGET" = "__all__" ]; then
+            bash scripts/render-decks.sh "$MODE"
+          else
+            bash scripts/render-decks.sh --deck "$TARGET"
+          fi
+          rc=$?
+          # Capture the dirty list for the commit / PR step. Empty file = nothing
+          # to commit (no-op render).
+          git status --porcelain | awk '{print $2}' > /tmp/render-changed.txt
+          CHANGED_COUNT=$(wc -l < /tmp/render-changed.txt | tr -d ' ')
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "changed_count=$CHANGED_COUNT" >> "$GITHUB_OUTPUT"
+          exit "$rc"
+
+      - name: Brand-string gate on rendered output
+        # Scoped narrowly to the rendered HTML — checks only the §3 forbidden
+        # Client #1 strings from docs/mothership/15-terminology-and-brand.md §6.
+        # We deliberately do NOT run the whole `dual-lane-audit.sh` here because
+        # it exits non-zero on pre-existing repo-wide issues (e.g. §2 site-repo
+        # operator-pitch), which would falsely block legitimate deck renders.
+        # The full audit is the daily watcher's job (.github/workflows/dual-lane-watcher.yml).
+        if: steps.loop_guard.outputs.skip == 'false' && steps.render.outputs.changed_count != '0'
+        run: |
+          set -uo pipefail
+          # Forbidden strings per docs/mothership/15-terminology-and-brand.md §6.
+          PATTERN='Lumivara People Advisory|Lumivara People Solutions|people advisory|lumivara\.ca|Beas Banerjee'
+          HITS=""
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            if grep -HnE "$PATTERN" "$f" 2>/dev/null; then
+              HITS="${HITS}${f}\n"
+            fi
+          done < /tmp/render-changed.txt
+          if [ -n "$HITS" ]; then
+            echo "::error::Forbidden Client #1 string found in rendered deck HTML." >&2
+            echo "Source MD must be cleaned (per docs/mothership/15-terminology-and-brand.md §6) before regenerating." >&2
+            exit 1
+          fi
+          echo "Brand-string gate: ✓ no forbidden Client #1 strings in rendered output."
+
+      - name: Commit + push to main (default)
+        if: |
+          steps.loop_guard.outputs.skip == 'false'
+          && steps.render.outputs.changed_count != '0'
+          && (github.event_name == 'push' || inputs.open_pr != true)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Stage only the files the render script declared as expected output.
+          # The render-surface fence in scripts/render-decks.sh §4 already
+          # verified nothing else moved, so this is belt-and-braces.
+          xargs -a /tmp/render-changed.txt -r git add --
+
+          COUNT=${{ steps.render.outputs.changed_count }}
+          TAG=${{ steps.plan.outputs.tag }}
+          git commit -m "docs(decks): auto-render ${COUNT} deck artefact(s) [${TAG}] [skip ci]" \
+            -m "Generated by .github/workflows/render-decks.yml (run ${{ github.run_id }}). Source-of-truth contract: docs/AI_CLAUDE_DESIGN_PLAYBOOK.md §2." \
+            -m "Files:" \
+            -m "$(cat /tmp/render-changed.txt | sed 's/^/  - /')"
+          git push origin main
+
+      - name: Open PR (when dispatched with open_pr=true)
+        if: |
+          steps.loop_guard.outputs.skip == 'false'
+          && steps.render.outputs.changed_count != '0'
+          && github.event_name == 'workflow_dispatch'
+          && inputs.open_pr == true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          BRANCH="auto/render-decks-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          xargs -a /tmp/render-changed.txt -r git add --
+
+          COUNT=${{ steps.render.outputs.changed_count }}
+          TAG=${{ steps.plan.outputs.tag }}
+          EFFECTIVE="${{ steps.plan.outputs.effective }}"
+          git commit -m "docs(decks): auto-render ${COUNT} deck artefact(s) [${TAG}]" \
+            -m "Generated by .github/workflows/render-decks.yml (run ${{ github.run_id }})."
+          git push origin "$BRANCH"
+
+          {
+            echo "Auto-rendered by [render-decks.yml](.github/workflows/render-decks.yml) — see [docs/AI_CLAUDE_DESIGN_PLAYBOOK.md](docs/AI_CLAUDE_DESIGN_PLAYBOOK.md) for the source-of-truth contract."
+            echo
+            echo "**Plan:** \`${EFFECTIVE}\`"
+            echo "**Run:** ${{ github.run_id }}"
+            echo
+            echo "**Regenerated artefacts:**"
+            sed 's/^/- /' /tmp/render-changed.txt
+            echo
+            echo "This PR was opened because the workflow was dispatched with \`open_pr=true\`. The default behaviour is direct-commit to main with \`[skip ci]\`. Use this mode when you want a review surface for a brand/style change that touches every deck."
+          } > /tmp/pr-body.md
+
+          gh pr create \
+            --title "docs(decks): auto-render ${COUNT} deck artefact(s) [${TAG}]" \
+            --body-file /tmp/pr-body.md \
+            --label "auto-routine" \
+            --label "area/decks" \
+            || gh pr create \
+                 --title "docs(decks): auto-render ${COUNT} deck artefact(s) [${TAG}]" \
+                 --body-file /tmp/pr-body.md
+
+      - name: Summary
+        if: always() && steps.loop_guard.outputs.skip == 'false'
+        env:
+          CHANGED:   ${{ steps.render.outputs.changed_count }}
+          EFFECTIVE: ${{ steps.plan.outputs.effective }}
+          TARGET:    ${{ steps.plan.outputs.target }}
+        run: |
+          {
+            echo "## render-decks summary"
+            echo
+            echo "- **Plan:** \`$EFFECTIVE\`"
+            echo "- **Target:** \`$TARGET\`"
+            echo "- **Trigger:** \`${{ github.event_name }}\`"
+            echo "- **Changed files:** $CHANGED"
+            if [ "${CHANGED:-0}" != "0" ] && [ -f /tmp/render-changed.txt ]; then
+              echo
+              echo "**Regenerated:**"
+              sed 's/^/- /' /tmp/render-changed.txt
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

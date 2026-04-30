@@ -1,21 +1,25 @@
-name: Backlog digest (weekly Monday brief)
+name: Backlog digest (rolling)
 
-# Weekly Monday-morning brief for the operator. Counterpart to
+# Rolling backlog brief for the operator. Counterpart to
 # bot-usage-monitor.yml:
 #   * bot-usage-monitor.yml = "is the bot healthy / am I hitting quota?"
 #     (provider-centric dashboard, every 30 min).
 #   * backlog-digest.yml    = "what shipped, what's stuck, what's queued?"
-#     (issue/PR-motion narrative, weekly Mon 08:00 UTC).
+#     (issue/PR-motion narrative, every 2h round the clock).
 #
-# Why a weekly cadence? The operator's reading device on Monday morning
-# is the Steam Deck or an Android phone — the digest needs to be a
-# scannable single-issue brief, not a fire-hose. One pinned issue,
-# rewritten in place each Monday, kept out of the triage queue via
-# `do-not-triage`.
+# Why every 2h? Aggressive deploy-push phase + 24/7 utilisation directive
+# (`docs/ops/automation-future-work.md §2`). The operator runs on Linux
+# Steam Deck + web + Android — no desktop, so a freshly-overwritten
+# pinned issue is the only "always-current" surface available. Each run
+# is ~30s of `gh api` calls; running every 2h costs ~12 issue edits/day
+# (no notifications — body rewrite, not comment) and surfaces motion
+# within a window that matches the bot's actual shipping rhythm
+# (a typical execute → review → merge cycle is 30-90 min, so 2h is the
+# smallest interval where shipped state reliably moves between runs).
 #
 # Why this surface fills the "Cowork-shaped hole": Claude Cowork is
 # macOS-only; this operator runs on Linux + web + Android. The
-# autonomous "Monday digest" pattern Cowork would have served is
+# autonomous "always-fresh digest" pattern Cowork would have served is
 # instead delivered by a deterministic gh-CLI Python script + a
 # rolling pinned issue — readable from any of the operator's surfaces
 # without a desktop dependency.
@@ -28,10 +32,12 @@ name: Backlog digest (weekly Monday brief)
 
 on:
   schedule:
-    # Monday 08:00 UTC = 03:00 EST / 04:00 EDT — lands in the operator's
-    # inbox before the work day starts. Well clear of Mon 12:00 UTC
-    # (`ai-smoke-test.yml`) and Mon 12:30 UTC (`forge-smoke-test.yml`).
-    - cron: "0 8 * * 1"
+    # Every 2 hours at offset :37. Pairs with `codex-review-recheck.yml`'s
+    # `17 */2 * * *` (also every 2h, 20-min separated) but never
+    # collides on the minute. Clear of every other watcher offset
+    # (:00 hour-cluster, :15/:45 plan, :17 codex-recheck, :23/:53 bot-usage,
+    # :30 deploy-drift, :47 reserved for future execute-complex cron).
+    - cron: "37 */2 * * *"
   workflow_dispatch:
     inputs:
       lookback_days:
@@ -85,7 +91,7 @@ jobs:
         run: |
           set -euo pipefail
           REPO=palimkarakshay/lumivara-site
-          TITLE="Backlog digest (weekly Monday brief)"
+          TITLE="Backlog digest (rolling)"
 
           # Ensure labels exist (no-op if already created by bot-usage-monitor).
           gh label create "type/observability" --repo "$REPO" \

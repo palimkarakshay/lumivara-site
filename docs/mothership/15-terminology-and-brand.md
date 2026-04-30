@@ -166,6 +166,8 @@ Lumivara Forge Studio       — the mobile-first operator dashboard
 
 ## §4 — Renames to apply (locked: Lumivara Forge)
 
+> **Reconsideration in progress (2026-04-30).** The brand name `Lumivara Forge` and slug `lumivara-forge` are being revisited per [`15c-brand-and-domain-decision.md §3`](./15c-brand-and-domain-decision.md). Operator wants a cleaner, leaner, non-hyphenated alternative — see [`15 §2`](./15-terminology-and-brand.md) for the pre-vetted shortlist. Until the reconsideration resolves, the table below stands (PR #200's drift sweep used these values), but **Run S1 (`16 §5`) is paused** and every domain / org / hostname row inherits a "blocked on D2" status from `15c §3`.
+
 Operator confirmed Lumivara Forge on 2026-04-28. The mechanical mapping:
 
 ```
@@ -200,28 +202,54 @@ Single global find-replace pass against `docs/mothership/`, `docs/storefront/`, 
 
 ## §5 — Summary action list
 
+> **Status update 2026-04-30.** Domain strategy decision (D1) committed, brand-name decision (D2) re-opened — see [`15c-brand-and-domain-decision.md`](./15c-brand-and-domain-decision.md). The list below is updated to reflect what's still locked, what's blocked on D2, and what's confirmed unchanged.
+
 Decisions locked on 2026-04-28:
 
 ```
-[x] Brand: Lumivara Forge
 [x] Internal rename: full §1 table (mothership → platform,
     agent → pipeline+run+bot, etc.)
-[x] Sub-product naming: Forge Sites, Forge Voice, Forge Brand,
-    Forge Pulse, Forge Atlas, Forge Studio
+[x] Sub-product naming SHAPE: <Brand> Sites, <Brand> Voice,
+    <Brand> Brand, <Brand> Pulse, <Brand> Atlas, <Brand> Studio
+    (only the <Brand> word is under D2 reconsideration)
 ```
 
-Operator-side actions still pending:
+Decision committed on 2026-04-30 (per `15c §2`):
 
 ```
-[ ] Buy lumivara-forge.com and lumivara-forge.ca.
+[x] Domain strategy: separate registered operator domain.
+    NOT co-hosted on lumivara.ca (which follows Client #1 to
+    her repo at Phase 4 spinout).
+```
+
+Re-opened on 2026-04-30 (per `15c §3`):
+
+```
+[~] Brand: Lumivara Forge — under reconsideration; operator
+    wants cleaner, leaner, non-hyphenated. Pre-vetted shortlist
+    in §2 above (Cadence, Continuum, Loom, Helm, Lighthouse,
+    Compass, Plumbline). See 15c §3 for criteria + blocked items.
+```
+
+Operator-side actions blocked on D2 (cannot proceed until brand name locks):
+
+```
+[ ] Buy <brand>.com and <brand>.ca.
 [ ] CIPO + USPTO trademark availability check (Class 42 + Class 35).
+[ ] Create GitHub org <brand-slug> (slug is permanent without paid migration).
 [ ] Run S1 (16 §5) to do the global mechanical rename.
-[ ] After S1: insert this doc's glossary into 00-INDEX.md.
-[ ] Update GitHub org slug to lumivara-forge (one-time, irreversible
-    without paid migration — do it after the trademark check clears).
+[ ] Resend sender domain mail.<brand>.com.
+[ ] n8n hostname n8n.<brand>.com.
+[ ] Update src/lib/site-config.ts builder URL to the new apex.
 ```
 
-The renames touch ~150 references across the repo. Doable in one Claude session (60–90 turns, Sonnet). Prompt body lives in `16 §5`.
+Operator-side actions independent of D2 (can proceed):
+
+```
+[ ] After S1 lands: insert this doc's glossary into 00-INDEX.md.
+```
+
+The renames touch ~150 references across the repo. Doable in one Claude session (60–90 turns, Sonnet). Prompt body lives in `16 §5`. PR #200 already ran one drift sweep (`Lumivara Infotech` → `Lumivara Forge`); a second mechanically-identical sweep will be needed once D2 resolves.
 
 ---
 

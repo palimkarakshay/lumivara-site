@@ -126,6 +126,7 @@ RAW_CLIENT_HITS="$(
        ':!docs/00-INDEX.md' \
        ':!docs/mothership/15-terminology-and-brand.md' \
        ':!docs/mothership/15b-naming-conventions.md' \
+       ':!docs/mothership/15c-brand-and-domain-decision.md' \
        ':!docs/mothership/00-INDEX.md' \
        ':!docs/mothership/01-business-plan.md' \
        ':!docs/mothership/05-mothership-repo-buildout-plan.md' \

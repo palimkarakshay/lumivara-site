@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# pattern-c-audit.sh — Pattern C drift detector for the single-repo (pre-spinout) state.
+# dual-lane-audit.sh — Dual-Lane Repo drift detector for the single-repo (pre-spinout) state.
 #
 # Why this exists:
-#   docs/mothership/02b-pattern-c-architecture.md (canonical Pattern C, locked
-#   2026-04-28) and pattern-c-enforcement-checklist.md define a two-repo trust
-#   model. Before the P5.6 spinout we live in a single repo where Site (Client
-#   #1) and Pipeline (operator: Lumivara Forge) artefacts coexist. Drift
-#   accumulates unless we keep watching: stale brand strings, operator pitch
-#   leaking into client routes, forbidden client identifiers in operator-scope
-#   docs, committed secrets, etc.
+#   docs/mothership/02b-dual-lane-architecture.md (canonical Dual-Lane Repo,
+#   locked 2026-04-28) and dual-lane-enforcement-checklist.md define a two-repo
+#   trust model. Before the P5.6 spinout we live in a single repo where Site
+#   (Client #1) and Pipeline (operator: Lumivara Forge) artefacts coexist.
+#   Drift accumulates unless we keep watching: stale brand strings, operator
+#   pitch leaking into client routes, forbidden client identifiers in
+#   operator-scope docs, committed secrets, etc.
 #
 # What this script checks (each is a discrete grep; non-zero exit per failure):
 #   §1  Stale brand: "Lumivara Infotech" anywhere outside this script.
@@ -27,11 +27,11 @@
 # so the operator can jump to it. Returns non-zero overall if any check fails.
 #
 # Run:
-#   scripts/pattern-c-audit.sh                   # all checks, summary
-#   scripts/pattern-c-audit.sh --fix-brand-drift # auto-rewrite Infotech→Forge
+#   scripts/dual-lane-audit.sh                   # all checks, summary
+#   scripts/dual-lane-audit.sh --fix-brand-drift # auto-rewrite Infotech→Forge
 #                                                  in safe scopes (docs prose)
 #
-# This script is the persistent mechanism behind PR #200's "Pattern C sweep"
+# This script is the persistent mechanism behind PR #200's "Dual-Lane Repo sweep"
 # request. Follow-up: wire into ai-smoke-test.yml (or its own workflow) so
 # violations are flagged on schedule, not just at audit time.
 
@@ -63,8 +63,8 @@ print_fail() { printf '  ✗ %s\n' "$1"; FAIL=1; }
 print_section "§1 — Stale brand: 'Lumivara Infotech' should be 'Lumivara Forge'"
 mapfile -t INFOTECH_HITS < <(
   git grep -nIE 'Lumivara[ -]Infotech' \
-    -- ':!scripts/pattern-c-audit.sh' \
-       ':!.github/workflows/pattern-c-watcher.yml' \
+    -- ':!scripts/dual-lane-audit.sh' \
+       ':!.github/workflows/dual-lane-watcher.yml' \
        ':!CHANGELOG.md' \
        ':!docs/storefront/04-slide-deck.pdf' \
        ':!docs/storefront/04-slide-deck.html' \
@@ -82,7 +82,7 @@ else
       -- '*.md' '*.ts' '*.tsx' \
          ':!docs/storefront/04-slide-deck.pdf' \
          ':!docs/storefront/04-slide-deck.html' \
-         ':!scripts/pattern-c-audit.sh' \
+         ':!scripts/dual-lane-audit.sh' \
          ':!CHANGELOG.md' \
       | while read -r f; do
           # Replace display strings only; keep URL slugs and filenames intact.
@@ -93,7 +93,7 @@ else
 fi
 
 # ----- §2 — Operator pitch on the site repo -----
-print_section "§2 — Operator pitch routes on the site repo (Pattern C contamination)"
+print_section "§2 — Operator pitch routes on the site repo (Dual-Lane Repo contamination)"
 if [ -d src/app/lumivara-infotech ] || [ -e src/content/lumivara-infotech.ts ]; then
   print_fail "operator pitch present on the site repo:"
   [ -d src/app/lumivara-infotech ]   && printf '      src/app/lumivara-infotech/ (page route)\n'
@@ -160,7 +160,7 @@ while IFS= read -r line; do
   fi
   # Per-line skip marker for prose that discusses the §6 policy itself.
   if [ -f "$file" ] && sed -n "${ln}p" "$file" 2>/dev/null \
-      | grep -qE 'pattern-c-audit:allow'; then
+      | grep -qE 'dual-lane-audit:allow'; then
     continue
   fi
   CLIENT_HITS+=("$line")
@@ -170,12 +170,12 @@ if [ "${#CLIENT_HITS[@]}" -eq 0 ]; then
 else
   # Advisory-only per 15 §6 ("reviewer-enforced until a CI lint lands"):
   # each remaining hit needs deliberate rephrasing or a per-line
-  # `<!-- pattern-c-audit:allow -->` marker. Does not fail the audit.
+  # `<!-- dual-lane-audit:allow -->` marker. Does not fail the audit.
   printf '  ! %s occurrence(s) found outside the 15 §6 allow-list — advisory:\n' \
     "${#CLIENT_HITS[@]}"
   printf '      %s\n' "${CLIENT_HITS[@]}"
   printf '    > Each line either documents the brand-family overlap (legitimate)\n'
-  printf '      or is a drift bug. Rephrase, mark with `pattern-c-audit:allow`,\n'
+  printf '      or is a drift bug. Rephrase, mark with `dual-lane-audit:allow`,\n'
   printf '      or wrap the surrounding context in a `> _Client example_` callout.\n'
 fi
 
@@ -222,25 +222,25 @@ else
 fi
 
 # ----- §6 — Manifest coverage: every tracked file lane-classified -----
-print_section "§6 — Manifest coverage (every tracked file classified by .pattern-c.yml)"
+print_section "§6 — Manifest coverage (every tracked file classified by .dual-lane.yml)"
 DRY_RUN="${ROOT}/scripts/forge-spinout-dry-run.sh"
 if [ ! -x "$DRY_RUN" ]; then
   print_fail "scripts/forge-spinout-dry-run.sh missing or not executable."
 else
   mapfile -t UNCOVERED < <(bash "$DRY_RUN" --uncovered 2>/dev/null | grep -v '^$')
   if [ "${#UNCOVERED[@]}" -eq 0 ]; then
-    print_pass "all tracked files have a lane assignment in .pattern-c.yml."
+    print_pass "all tracked files have a lane assignment in .dual-lane.yml."
   else
-    print_fail "${#UNCOVERED[@]} tracked file(s) lack a lane assignment in .pattern-c.yml:"
+    print_fail "${#UNCOVERED[@]} tracked file(s) lack a lane assignment in .dual-lane.yml:"
     printf '      %s\n' "${UNCOVERED[@]}"
-    printf '    > Add each to .pattern-c.yml `lanes:` (or `drop:`) so the spinout\n'
-    printf '      knows which side of the Pattern C split they go on.\n'
+    printf '    > Add each to .dual-lane.yml `lanes:` (or `drop:`) so the spinout\n'
+    printf '      knows which side of the Dual-Lane Repo split they go on.\n'
   fi
 fi
 
 printf '\n'
 if [ "$FAIL" -ne 0 ]; then
-  printf 'pattern-c-audit: ✗ violations found above. Fix or carve an exception in this script.\n'
+  printf 'dual-lane-audit: ✗ violations found above. Fix or carve an exception in this script.\n'
   exit 1
 fi
-printf 'pattern-c-audit: ✓ all checks green.\n'
+printf 'dual-lane-audit: ✓ all checks green.\n'

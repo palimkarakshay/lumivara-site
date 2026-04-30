@@ -938,7 +938,7 @@ Year-1 destination: **30 active clients, ~$120k take-home, day job replaced.**
 | Section | The answer in one line |
 |---|---|
 | 1 — Benefits | The site stops decaying; flat fee replaces $200/edit invoices. |
-| 2 — Differentiators | Phone-as-CMS over a real codebase, five-leg multi-vendor fallback, Dual-Lane Repo operator/client split, bot self-awareness (`llm-monitor`). |
+| 2 — Differentiators | Phone-as-CMS over a real codebase, five-leg multi-vendor fallback, Dual-Lane Repo operator/client split, bot self-awareness (`llm-monitor`). The negative list — what we won't sell — is itself a differentiator and the closer ([`sales-verticals/00b-why-this-sells.md`](../mothership/sales-verticals/00b-why-this-sells.md)). |
 | 3 — Customer voice | Autonomy + predictability + ownership + custom looks. |
 | 4 — Competitor claims | Squarespace owns "edit yourself"; we own "edit yourself + own the code". |
 | 5 — End goal | 30 retainer clients in Stage 1; agency or SaaS optional later. |

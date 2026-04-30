@@ -2,9 +2,12 @@ name: Execute backlog item
 
 on:
   schedule:
-    # Every hour — quality-first phase. Max 20x quota gives ample headroom,
-    # and most runs still find nothing to do, so the cron is cheap.
-    - cron: '0 * * * *'
+    # Every 30 min — aggressive deploy-push phase. Halves the issue-to-PR
+    # latency. The `claude-runtime` concurrency group keeps this
+    # single-flight against execute-{single,multi,complex}; the cadence
+    # bump cannot fan out simultaneous Claude sessions in the general
+    # lane. Roll back to hourly post-cost-optimisation phase.
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 permissions:

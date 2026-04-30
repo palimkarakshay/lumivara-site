@@ -21,10 +21,11 @@ on:
         required: false
         default: ""
   schedule:
-    # Every hour, offset 30 min from execute.yml so plans land just before
-    # the next execute pass. Quality-first phase keeps the executor from
-    # stalling on planless issues.
-    - cron: '30 * * * *'
+    # Every 30 min, offsets :15 / :45 — interleaves with execute.yml's
+    # */30 cadence so a freshly-triaged issue picks up its plan within
+    # ~15 min and is executable on the next half-hour mark. Aggressive
+    # deploy-push phase; roll back to hourly post-cost-optimisation.
+    - cron: '15,45 * * * *'
 
 permissions:
   contents: read

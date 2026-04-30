@@ -145,6 +145,84 @@ def _post_anthropic(prompt: str, records: list[dict], api_key: str, model: str) 
     return json.loads(text)
 
 
+def _post_gemini(prompt: str, records: list[dict], api_key: str) -> dict:
+    """Fallback when ANTHROPIC_API_KEY is absent. Mirrors the
+    Gemini-call pattern used by scripts/plan-issue.py."""
+    full_prompt = prompt + "\n\n## Records\n\n" + json.dumps(records, ensure_ascii=False)
+    url = (
+        "https://generativelanguage.googleapis.com/v1beta/models/"
+        f"gemini-2.5-pro:generateContent?key={api_key}"
+    )
+    req = urllib.request.Request(
+        url,
+        data=json.dumps({
+            "contents": [{"parts": [{"text": full_prompt}]}],
+            "generationConfig": {"temperature": 0.2, "responseMimeType": "application/json"},
+        }).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        resp = json.loads(r.read())
+    text = resp["candidates"][0]["content"]["parts"][0]["text"].strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1].rsplit("```", 1)[0]
+    return json.loads(text)
+
+
+def _post_openai(prompt: str, records: list[dict], api_key: str) -> dict:
+    """Last-resort fallback when both Anthropic and Gemini are unavailable.
+    Mirrors the OpenAI-call pattern used by scripts/plan-issue.py."""
+    full_prompt = prompt + "\n\n## Records\n\n" + json.dumps(records, ensure_ascii=False)
+    req = urllib.request.Request(
+        "https://api.openai.com/v1/chat/completions",
+        data=json.dumps({
+            "model": "gpt-5.5",
+            "messages": [{"role": "user", "content": full_prompt}],
+            "temperature": 0.2,
+            "response_format": {"type": "json_object"},
+        }).encode(),
+        headers={"Authorization": f"Bearer {api_key}",
+                 "Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        resp = json.loads(r.read())
+    text = resp["choices"][0]["message"]["content"].strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1].rsplit("```", 1)[0]
+    return json.loads(text)
+
+
+def _classify_one_batch(prompt: str, records: list[dict]) -> dict:
+    """Try Anthropic → Gemini → OpenAI in order. Each is best-effort.
+    Returns the first successful result; raises RuntimeError if all
+    three are unavailable so the caller can stub-fall-back."""
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
+
+    errors: list[str] = []
+    if anthropic_key:
+        try:
+            return _post_anthropic(prompt, records, anthropic_key, DEFAULT_MODEL)
+        except (urllib.error.HTTPError, urllib.error.URLError, KeyError, ValueError) as e:
+            errors.append(f"anthropic: {e}")
+    if gemini_key:
+        try:
+            return _post_gemini(prompt, records, gemini_key)
+        except (urllib.error.HTTPError, urllib.error.URLError, KeyError, ValueError) as e:
+            errors.append(f"gemini: {e}")
+    if openai_key:
+        try:
+            return _post_openai(prompt, records, openai_key)
+        except (urllib.error.HTTPError, urllib.error.URLError, KeyError, ValueError) as e:
+            errors.append(f"openai: {e}")
+    if not (anthropic_key or gemini_key or openai_key):
+        errors.append("no API keys set (ANTHROPIC_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY all empty)")
+    raise RuntimeError(f"all LLM providers failed: {'; '.join(errors)}")
+
+
 def _stub_classify(records: list[dict]) -> dict:
     """Offline classifier used by --dry-run. Heuristic only."""
     out = []
@@ -196,14 +274,18 @@ def _stub_classify(records: list[dict]) -> dict:
 def classify(records: list[dict], dry_run: bool = False) -> dict:
     if not records:
         return {"records": []}
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
-    if dry_run or not api_key:
+
+    has_any_key = any(os.environ.get(k, "").strip() for k in
+                      ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "OPENAI_API_KEY"))
+    if dry_run or not has_any_key:
         if not dry_run:
-            print("[analyzer] ANTHROPIC_API_KEY missing — using stub classifier",
-                  file=sys.stderr)
+            print("[analyzer] no LLM API keys available "
+                  "(ANTHROPIC_API_KEY / GEMINI_API_KEY / OPENAI_API_KEY all empty) "
+                  "— using stub classifier", file=sys.stderr)
         return summarize(_stub_classify(records), records)
 
     classified: list[dict] = []
+    stub_used_for_batches = 0
     for i in range(0, len(records), RECORDS_PER_BATCH):
         batch = records[i:i + RECORDS_PER_BATCH]
         # Trim raw payloads — analyzer doesn't need them and they
@@ -217,13 +299,17 @@ def classify(records: list[dict], dry_run: bool = False) -> dict:
             "url": r["url"],
         } for r in batch]
         try:
-            result = _post_anthropic(CLASSIFY_PROMPT, slim, api_key, DEFAULT_MODEL)
+            result = _classify_one_batch(CLASSIFY_PROMPT, slim)
             classified.extend(result.get("records", []))
-        except (urllib.error.HTTPError, urllib.error.URLError, KeyError, ValueError) as e:
+        except (RuntimeError, KeyError, ValueError) as e:
             print(f"[analyzer] batch {i}-{i+len(batch)} failed: {e}", file=sys.stderr)
             # Fall back to stub for this batch so the run completes.
             classified.extend(_stub_classify(batch)["records"])
+            stub_used_for_batches += 1
 
+    if stub_used_for_batches:
+        print(f"[analyzer] {stub_used_for_batches} batch(es) fell back to stub",
+              file=sys.stderr)
     return summarize({"records": classified}, records)
 
 

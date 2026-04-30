@@ -43,7 +43,7 @@ KIND_LABEL = {
 }
 
 IMPACT_LABEL = {
-    "site": "Site (Lumivara People Advisory marketing site)",
+    "site": "Site (Client #1 marketing site)",
     "pipeline": "Pipeline (Lumivara Forge bot framework)",
     "mothership": "Mothership (operator strategy / docs)",
     "storefront": "Storefront (client-facing storefront)",

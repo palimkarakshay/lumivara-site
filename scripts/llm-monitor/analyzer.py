@@ -53,7 +53,7 @@ in your output JSON. Do NOT add fields, do NOT skip records.
 
 The pipeline this serves is a Pattern C two-repo trust model:
 
-  - SITE = Lumivara People Advisory marketing site (Next.js)
+  - SITE = Client #1 marketing site (Next.js)
   - PIPELINE = Lumivara Forge operator framework (this repo's
     .github/workflows + scripts; the bot fleet itself)
   - MOTHERSHIP = operator's strategic docs / business plan (docs/mothership/)

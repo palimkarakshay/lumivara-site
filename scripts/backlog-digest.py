@@ -245,8 +245,17 @@ def render(now: datetime,
         ],
     )
 
+    # Dedup across categories: a single PR can be both `>= STUCK_PR_DAYS`
+    # old AND `review-deferred`; counting bucket-sums would inflate the
+    # headline number. Use the union of unique issue/PR numbers instead.
+    stuck_unique = (
+        {p["number"] for p in stuck_old_prs}
+        | {p["number"] for p in review_deferred}
+        | {i["number"] for i in needs_continuation}
+        | {i["number"] for i in needs_clarification}
+    )
     parts += section(
-        f"Stuck — needs operator attention ({len(stuck_old_prs) + len(review_deferred) + len(needs_continuation) + len(needs_clarification)})",
+        f"Stuck — needs operator attention ({len(stuck_unique)})",
         [
             *([f"**PRs open ≥ {STUCK_PR_DAYS}d ({len(stuck_old_prs)})**"] if stuck_old_prs else []),
             *[f"  {format_pr_line(p)} ({days_open(p, now):.0f}d)"

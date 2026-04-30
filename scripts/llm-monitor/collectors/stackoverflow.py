@@ -10,8 +10,17 @@ Uses the StackExchange API v2.3:
 No auth required for read access. Anonymous quota is 300 req/day per
 IP, which jumps to 10,000 req/day with a free `key` parameter
 (register at https://stackapps.com/apps/oauth/register — script-type
-OAuth). At every-2h sweep cadence we hit ~7 tags × 12 sweeps = 84
-req/day, well under the anonymous cap, so the key is not needed for v1.
+OAuth).
+
+Pagination budget (codex P2 round 3 on PR #241):
+  * Unauthenticated path: capped at 1 page per tag — 6 tags × 12
+    sweeps = 72 req/day, well under the 300/day anonymous cap. The
+    most-recent 50 questions per tag are plenty at every-2h cadence.
+  * Authenticated path (STACKEXCHANGE_API_KEY set): up to MAX_PAGES
+    pages per tag — 6 tags × 5 pages × 12 sweeps = 360 req/day, well
+    under the 10k authed cap.
+  * Backoff: API-requested backoff is honoured between page requests
+    (capped at 30s so the watch tier's 8-min timeout still applies).
 
 Why Stack Overflow matters for this pipeline:
   * Questions tagged `claude-code` / `anthropic` / `openai-api` are
@@ -45,12 +54,13 @@ from _common import (
 
 API = "https://api.stackexchange.com/2.3/questions"
 PAGE_SIZE = 50
-# Hard cap on pages per tag — defends against a runaway tag (e.g.
-# next.js over a multi-day window if lookback gets cranked up) blowing
-# up the analyzer prompt budget. At PAGE_SIZE=50 this caps at 250
-# records per tag per sweep, which is plenty headroom over the
-# anonymous quota maths in the module docstring.
-MAX_PAGES = 5
+# Hard cap on pages per tag, only applied when STACKEXCHANGE_API_KEY
+# is set (codex P2 round 3 on PR #241). Without a key, the daily
+# anonymous quota (300 req/day) does not afford multi-page fetching:
+# 6 tags × 5 pages × 12 sweeps = 360 req/day blows the budget. With a
+# key the quota jumps to 10k/day and 360 req/day is comfortable.
+MAX_PAGES_AUTHED = 5
+MAX_PAGES_ANON = 1
 
 
 def fetch_tag(tag: str, since_ts: int, key: str) -> list[dict]:
@@ -62,12 +72,15 @@ def fetch_tag(tag: str, since_ts: int, key: str) -> list[dict]:
     # filtered by creation we'd permanently miss any answer that
     # lands later than the next sweep.
     #
-    # Pagination (also codex-review P2 on PR #241): a single 50-item
-    # page silently drops everything beyond 50 for a busy tag. Loop
-    # on `page` until `has_more=false` or MAX_PAGES, honouring API
-    # backoff between requests.
+    # Pagination: loop on `page` until `has_more=false` or the
+    # authenticated/anonymous page cap, honouring API backoff between
+    # requests. The cap depends on whether a key is set — the
+    # anonymous cap (1 page) keeps daily request count under the
+    # 300/day quota; the authed cap (5 pages) only applies when a
+    # STACKEXCHANGE_API_KEY pushes the quota to 10k/day.
+    max_pages = MAX_PAGES_AUTHED if key else MAX_PAGES_ANON
     items: list[dict] = []
-    for page in range(1, MAX_PAGES + 1):
+    for page in range(1, max_pages + 1):
         params = {
             "order": "desc",
             "sort": "activity",
@@ -101,11 +114,15 @@ def fetch_tag(tag: str, since_ts: int, key: str) -> list[dict]:
         if not resp.get("has_more"):
             break
     else:
-        # Loop exhausted MAX_PAGES without has_more=False — note in stderr
-        # so the operator can spot a tag that consistently caps out.
-        warn(f"stackoverflow: tag {tag!r} hit MAX_PAGES={MAX_PAGES} cap "
-             f"({len(items)} items pulled); consider tightening lookback or "
-             f"raising the cap if this trips often.")
+        # Loop exhausted the page cap without has_more=False — note in
+        # stderr so the operator can spot a tag that consistently caps
+        # out. Anonymous mode tripping this often is a strong signal
+        # to add STACKEXCHANGE_API_KEY.
+        mode = "authed" if key else "anonymous"
+        warn(f"stackoverflow: tag {tag!r} hit page cap ({mode}, "
+             f"{max_pages} page(s), {len(items)} items pulled); consider "
+             f"adding STACKEXCHANGE_API_KEY to raise the cap to "
+             f"{MAX_PAGES_AUTHED} pages.")
 
     return items
 

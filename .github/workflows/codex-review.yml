@@ -300,7 +300,11 @@ jobs:
             | tee /tmp/engine.txt
           ENGINE=$(grep -oE 'ENGINE=[a-z]+' /tmp/engine.txt | tail -n1 | cut -d= -f2)
           ENGINE="${ENGINE:-deferred}"
-          MODEL_USED=$(grep -oE 'MODEL_USED=[^[:space:]]+' /tmp/engine.txt | tail -n1 | cut -d= -f2-)
+          # `|| true` because the defer path intentionally omits the
+          # MODEL_USED line; without this, `set -euo pipefail` would
+          # take the step down on grep's exit-1 (regression that
+          # killed run #25173760637 on commit 8542c0f).
+          MODEL_USED=$(grep -oE 'MODEL_USED=[^[:space:]]+' /tmp/engine.txt | tail -n1 | cut -d= -f2- || true)
           echo "engine=$ENGINE" >> "$GITHUB_OUTPUT"
 
           # Header reflects the EXACT model the script actually used —

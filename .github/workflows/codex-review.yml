@@ -39,6 +39,11 @@ permissions:
   contents: read
   issues: write
   pull-requests: write
+  # Needed by the GitHub Models leg in scripts/codex-review-fallback.py.
+  # GITHUB_TOKEN cannot call https://models.github.ai/inference without
+  # this scope — without it the leg returns auth-error and falls through
+  # to OpenRouter / defer.
+  models: read
 
 concurrency:
   group: codex-review-runtime

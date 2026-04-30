@@ -198,3 +198,53 @@ Almost every section in the master deck ends with a slide titled *Pitch line:* f
 The tic itself is the tell. A real operator producing pitch lines is doing so under fire — on the phone, in a Zoom, scribbled on a napkin between meetings. Pitch lines that survive that pressure end up in decks because they were already battle-tested. Pitch lines authored *for* a deck, in advance of any sales conversation, are the operator role-playing the act of selling. Some will work. Most will be the kind of sentence that sounds great in a Marp slide and lands on a real prospect's ear as **content marketing**.
 
 ---
+
+## 5. What's salvageable
+
+The critique above is brutal because it is a critique. The pack is not worthless. It contains real artefacts that survive into a real business, in roughly this order of value.
+
+### 5.1 Tier-A — keep and use this week
+
+- **The six per-vertical client pitch decks** (`docs/decks/vertical-pitches/{doctors,dentists,lawyers,accountants,physiotherapy,optometry}.md`). These are the closest thing in the pack to a sales asset. They are persona-specific, citation-paired, contain ROI math against the prospect's own line items, and end with a clear next step. The dentist deck in particular reads like material the operator could attach to a cold email tomorrow morning. The legal vertical deck has the law-firm-SEO problem from §2.1 above and needs that one number replaced before sending.
+- **The pricing tier table** (T0/T1/T2/T3 with setup + monthly columns). Whether the prices are right or not is empirical — find out by quoting them. The structure itself is fine.
+- **The "four checks the prospect can run during a 30-minute call"** slide in the prospective-client deck. This is genuinely good. It is the single slide most likely to close a discovery call. Move it to the front.
+- **The phone-edit demo loop, if it actually works**. The promise *"voice memo → preview → tap publish, in 30 seconds, on a real Next.js codebase you own"* is the only mechanic in the deck pack that competitors do not already ship. If a 30-second screen recording of this loop exists, it is the most valuable single asset in the repo. If it does not exist, build it on Monday — before any further deck refresh.
+
+### 5.2 Tier-B — keep, but stop sharing externally
+
+- **The investor deck.** Useful as an internal document for the operator's own thinking. Not useful as a deck to send anyone, because the unit economics are pre-revenue arithmetic and a sophisticated investor will mark down the operator for sharing it. Sequester until client #5.
+- **The advisor deck.** Mostly useful as a checklist of contested claims for the operator's own self-review. The advisor in question has already provided the only piece of feedback that mattered ("won't sell"), and the response has been written but not acted on. Until acted on, do not re-share.
+- **The master deck and shareable companion.** Operator-internal synthesis. Useful for the operator's own clarity. Not useful externally — every audience the deck is "shareable" with is better served by the matching stakeholder deck.
+
+### 5.3 Tier-C — discard or freeze
+
+- **The partner deck.** No partner exists. Revisit when a specific human is in conversation about partnership. Authoring it now is an act of speculation.
+- **The employee deck.** No employee will be hired until client #25–#35. Eight to twelve months from now, the practice will look different enough that the deck will need a complete rewrite. Freeze it.
+- **The five-stakeholder-deck strategy as a whole.** Future writing time should produce **one** asset (the prospective-client deck and/or its vertical specialisations), iterated against real prospect feedback, until it converts. Decks for non-prospects are not Stage-1 work.
+
+### 5.4 The five fixes that would make the existing prospect-facing decks materially better
+
+In rough order of effect:
+
+1. **Replace the law-firm SEO benchmark.** Source a number that represents the actual ICP (solo lawyer / 2–10-person boutique). LSO's annual lawyer-services member surveys, IBISWorld's "legal services in Canada" reports, Clio's *Legal Trends Report* (free, annual, real data) all carry segment-cut numbers. Use those. Drop First Page Sage entirely if its sample is structurally non-representative.
+2. **Remove the DesignJoy comparator from the pricing-comparison table.** Replace with a real comparator the buyer has actually considered (a local agency's Squarespace-bundle retainer, a Smile.io / DSO-marketer dental-vertical bundle).
+3. **Collapse the negative list to one slide, three bullets.** "We don't sell SEO guarantees, we don't sell chatbots, we don't sell ghost-written content. Here's why each refusal protects you." Six rows with regulator citations is a law-review article, not a sales asset.
+4. **Delete every "we don't quote the 22.4× / 22.3% framing" sentence.** Including the meta-references in the pre-publication gate.
+5. **Add a single-page case study from Client #1 (the operator's own site).** Even one. Before / after Lighthouse score, before / after page-load time, an actual content shipment from a phone-edit. This is the only verifiable evidence the deck pack has access to. Use it. Currently the entire pack appeals to evidence indirectly via `lumivara-forge.com` but does not show the artefact.
+
+---
+
+## 6. The one thing the operator should do this week
+
+Stop writing.
+
+Pick **one** vertical (the existing material is strongest in dentists and accountants). Build a flat spreadsheet — `prospects.csv`, in the repo or out of it, doesn't matter. Columns: `name`, `practice_name`, `email`, `phone`, `current_site_url`, `lighthouse_score_today`, `axe_violations_today`, `contacted_y_n`, `replied_y_n`, `meeting_booked_y_n`, `notes`. Populate 50 rows by Wednesday. Send 10 cold emails per day Thursday and Friday using the matching vertical pitch deck as an attachment. Track replies in the spreadsheet.
+
+By the following Friday, the operator will know more about whether this is a business than the entire deck pack has revealed. If 5 of 50 reply and 1 of 50 books a call, this is a real business and the next 50 names go out Monday. If 0 of 50 reply, the deck pack is wrong about a load-bearing assumption (target persona, value proposition, channel, or the message itself), and the *correct* response to that signal is to fix the offer — **not to write another deck.**
+
+The most important file in the repo right now is the one that does not yet exist: that prospect spreadsheet. Build it first. Everything else is decoration.
+
+> **The single sentence the operator should pin to the wall:**
+> *"Until client #2 has paid an invoice in Canadian dollars, every additional artefact in this repo is a liability, not an asset."*
+
+---

@@ -27,9 +27,9 @@ For a senior advisor / mentor we are asking to push hard on the unfinished parts
 
 <br/>
 
-*Confidential. Single-recipient deck.*
+*Confidential. Single-recipient deck. Refreshed 2026-04-30.*
 
-<span class="small">This deck is structured around what's contested, not what's settled. The settled parts live in `docs/decks/01-investor-deck.md` and `docs/storefront/06-positioning-slide-deck.md`.</span>
+<span class="small">This deck is structured around what's contested, not what's settled. The settled parts live in `docs/decks/01-investor-deck.md` and `docs/storefront/06-positioning-slide-deck.md`. **Brand-name reconsideration (D2) is now formally open** per [`docs/mothership/15c-brand-and-domain-decision.md`](../mothership/15c-brand-and-domain-decision.md) — your read on the brand question (Open Strategic Question 1, below) is now actually load-bearing, not hypothetical.</span>
 
 ---
 
@@ -121,7 +121,7 @@ If you find a hole in any of the above, please push — but the load-bearing que
 
 These don't have answers in the deck pack yet. Your read on each would directly shape the next 90 days.
 
-1. **Should we lock the brand to "Lumivara Forge" or pivot to "Lumivara Cadence"?** Both are operator-acceptable. The cadence-mirrors-mechanic property of "Cadence" is unique; "Forge" is more direct. (`docs/mothership/01 §1`.)
+1. **Brand-name reconsideration (D2 in ADR `15c`, formally open as of 2026-04-30).** The locked `Lumivara Forge` from `15 §4` is back on the table; operator wants cleaner, leaner, non-hyphenated. Pre-vetted shortlist (already in `15 §2`): **Cadence** (mechanic-mirrors-naming), **Continuum** ("doesn't decay between updates"), **Loom** (distinct, premium, single-word slug), **Helm** / **Lighthouse** (both have collision caveats — Helm is a Kubernetes package manager; Lighthouse is a Google perf-audit tool), **Compass** (advisory frame), or **Plumbline** (drops the Lumivara umbrella entirely). Phase 0 of the migration plan, the GitHub org slug, the trademark search, and a second mechanical drift sweep are all blocked on this.
 2. **Do we open Stage 2 (small-team) at client #25 or wait until #35?** The hire-ladder in `docs/storefront/03-cost-analysis.md` Part E says VA at 25, engineer at 35. A faster engineer hire compresses operator hours but also compresses partner-share economics.
 3. **Do we publish a public lumivara-forge.com case-study site this quarter, or stay quiet until Client #2 closes?** A public site accelerates inbound; a quiet posture protects Dual-Lane Repo IP positioning.
 

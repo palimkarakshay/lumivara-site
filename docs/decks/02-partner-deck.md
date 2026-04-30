@@ -27,9 +27,9 @@ For someone joining hands-on in operations and maintenance — sharing the work,
 
 <br/>
 
-*Confidential. Single-recipient deck.*
+*Confidential. Single-recipient deck. Refreshed 2026-04-30.*
 
-<span class="small">Numbers cite verified rows in `docs/research/03-source-bibliography.md`. Internal numbers (capacity / cost / cliffs) cite `docs/storefront/03-cost-analysis.md` and `docs/mothership/18-capacity-and-unit-economics.md`.</span>
+<span class="small">Numbers cite verified rows in `docs/research/03-source-bibliography.md`. Internal numbers (capacity / cost / cliffs) cite `docs/storefront/03-cost-analysis.md` and `docs/mothership/18-capacity-and-unit-economics.md`. **Brand-name reconsideration (D2) is open** per [`docs/mothership/15c-brand-and-domain-decision.md`](../mothership/15c-brand-and-domain-decision.md); this deck continues to use `Lumivara Forge` as a placeholder.</span>
 
 ---
 
@@ -92,7 +92,7 @@ Two-person operations are *not* "one of us does sales, the other does delivery."
 - **Both** do PR review and tap-to-publish gates — keeps quality calibrated.
 - **Both** can on-call the operator dashboard for any client.
 - **Lead operator** (existing) owns intake, pricing, contract, and the freelance pipeline.
-- **Partner** owns the monthly improvement runs, the per-client evidence logs, and the AI-routing reliability work (`docs/AI_ROUTING.md`, `docs/mothership/18 §6` cliffs).
+- **Partner** owns the monthly improvement runs, the per-client evidence logs, the AI-routing reliability work (`docs/AI_ROUTING.md`, `docs/mothership/18 §6` cliffs), and the `llm-monitor` review pass (read the digest, triage `KNOWN_ISSUES.md` updates).
 - **Quarterly handover.** Every 90 days we swap one client between us so neither gets too narrow.
 
 Result: one of us can take a real two-week break without the queue starving. That alone changes the burnout math.
@@ -162,7 +162,7 @@ A blunt list. Things that sometimes worry partners about new ventures, that aren
 
 - **Product-market fit on the existing client.** lumivara-forge.com runs the full pipeline daily.
 - **Pricing has a defensible floor and ceiling.** `docs/storefront/02-pricing-tiers.md` four-tier ladder, validated against verified competitor pricing in `docs/research/03 §B`.
-- **Provider risk is mitigated.** Multi-AI fallback ladder in `docs/AI_ROUTING.md`. We don't pause when Anthropic hiccups.
+- **Provider risk is mitigated.** Five-leg multi-vendor fallback ladder in `docs/AI_ROUTING.md` (Claude → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter on the deepest stage). We don't pause when one provider hiccups, and `llm-monitor` (operator-side) auto-rewrites `KNOWN_ISSUES.md` so the prompts learn from yesterday's quirks.
 - **Operator IP is protected.** Dual-Lane Repo (`docs/mothership/02b-dual-lane-architecture.md`) is locked. The client's repo is genuinely vanilla; the pipeline never crosses over.
 - **The legal sequence is documented.** `docs/mothership/08-future-work.md` schedules MSA, PIPEDA, vault, insurance — none of it is "TBD."
 

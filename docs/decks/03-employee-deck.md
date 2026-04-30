@@ -27,9 +27,9 @@ For a first hire considering joining a small, AI-leveraged, profitable services 
 
 <br/>
 
-*Confidential. Single-recipient deck.*
+*Confidential. Single-recipient deck. Refreshed 2026-04-30.*
 
-<span class="small">Honest about the work, the culture, and the boundaries. Numbers cite verified rows in `docs/research/03-source-bibliography.md`.</span>
+<span class="small">Honest about the work, the culture, and the boundaries. Numbers cite verified rows in `docs/research/03-source-bibliography.md`. **Brand-name reconsideration (D2) is open** per [`docs/mothership/15c-brand-and-domain-decision.md`](../mothership/15c-brand-and-domain-decision.md); this deck continues to use `Lumivara Forge` as a placeholder.</span>
 
 ---
 
@@ -74,9 +74,9 @@ The work has measurable consequence. That's not always true in services.
 
 - **PR review.** The bot ships preview PRs into client repos via Dual-Lane Repo (`docs/mothership/02b-dual-lane-architecture.md`). You review the preview, leave inline comments, merge greens, kick reds back to the issue.
 - **Monthly improvement runs (T2 / T3).** Per-client 60 – 90 minute audit: Lighthouse trend, accessibility regressions, content-freshness, link-rot, image weight. You ship 3 – 5 issues per client.
-- **AI-routing reliability.** When Claude / Gemini / OpenAI return weird outputs, you tighten prompts in `docs/AI_ROUTING.md` and the relevant `scripts/*-prompt.md`. Multi-vendor fallback is real.
+- **AI-routing reliability.** When Claude / Gemini / OpenAI / GitHub Models / OpenRouter return weird outputs, you tighten prompts in `docs/AI_ROUTING.md` and the relevant `scripts/*-prompt.md`. Five-leg multi-vendor fallback is real; the `codex-review` ladder is the deepest. You also do the daily review pass on the `llm-monitor` digest at [`docs/mothership/llm-monitor/`](../mothership/llm-monitor/) and accept / reject auto-suggested edits to `KNOWN_ISSUES.md`.
 - **Dual-Lane Repo audits.** Quarterly, walk `docs/mothership/dual-lane-enforcement-checklist.md` against every active client repo. Verify operator IP hasn't leaked.
-- **Vertical content prompt packs.** Right now restaurant is the only fully-fleshed pack; plumber, realtor, recruiter are stubs (`docs/mothership/templates/`). Each one you complete is a sellable acceleration on a new client onboarding.
+- **Vertical content prompt packs.** As of 2026-04-30 the restaurant, plumber, and recruiter packs are Full; realtor remains a stub (`docs/mothership/templates/`). Each one you complete is a sellable acceleration on a new client onboarding.
 
 You'd not be writing site CSS from scratch. The bot does that. You're the reviewer, the prompt-engineer, and the monthly-audit hand.
 

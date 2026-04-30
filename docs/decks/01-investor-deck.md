@@ -22,7 +22,7 @@ style: |
 <!-- _class: lead -->
 
 # Lumivara Forge
-### Investor briefing — 2026-04-29
+### Investor briefing — refreshed 2026-04-30
 
 A 30-client AI-leveraged services practice with ~95% pre-comp gross margin, deliberately small, optimised for take-home.
 
@@ -30,7 +30,7 @@ A 30-client AI-leveraged services practice with ~95% pre-comp gross margin, deli
 
 *Confidential. NDA-gated. For investor / family-office circulation only.*
 
-<span class="small">Every number on every slide cites a verified row in `docs/research/03-source-bibliography.md`. Conservative band wherever a range exists.</span>
+<span class="small">Every number on every slide cites a verified row in `docs/research/03-source-bibliography.md`. Conservative band wherever a range exists. **Brand-name reconsideration (D2) is open** per [`docs/mothership/15c-brand-and-domain-decision.md`](../mothership/15c-brand-and-domain-decision.md); this deck continues to use `Lumivara Forge` as a placeholder until D2 lands.</span>
 
 ---
 
@@ -135,13 +135,14 @@ Industry comparison: AI-enabled solo operators commonly report **65 – 75%** gr
 
 ## Competitive moat
 
-Five operational features only Lumivara Forge ships in this combination today (full detail: `docs/storefront/06-positioning-slide-deck.md` §2):
+Six operational features only Lumivara Forge ships in this combination today (full detail: `docs/storefront/06-positioning-slide-deck.md` §2):
 
 1. **Phone-as-CMS** over a real codebase — no major SMB builder offers this loop.
-2. **Multi-AI fallback ladder** (Claude → Gemini → OpenAI) — single-vendor outage doesn't pause the queue (`docs/AI_ROUTING.md`).
+2. **Multi-vendor fallback ladder, five legs deep** — Claude Opus → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter on the deepest stage; every stage has a primary plus at least two fallbacks. Single-vendor outage never blocks the queue, and four of the five legs are free-tier-accessible (`docs/AI_ROUTING.md`; `scripts/codex-review-fallback.py`).
 3. **Plan-then-Execute pipeline** — every routine issue gets a structured AI plan as a PR comment *before* code is written; client reads the plan first.
-4. **Tier-based cadence** — T0 manual, T1 daily, T2 every 2h, T3 hourly. The bot's "energy" is a sold feature.
-5. **two-repo isolation (Dual-Lane Repo)** — clean `<slug>-site` for the client, separate `<slug>-pipeline` repo for the operator. Operator IP and AI prompts never touch the client's tree (`docs/mothership/02b-dual-lane-architecture.md`).
+4. **Tier-based cadence with 24/7 watch tier** — T0 manual, T1 daily, T2 every 2h, T3 hourly *plus* `triage` and `llm-monitor-watch` every 15 min on the operator side. The bot's "energy" is a sold feature; the watch tier keeps the queue moving overnight.
+5. **Two-repo isolation (Dual-Lane Repo)** — clean `<slug>-site` for the client, separate `<slug>-pipeline` repo for the operator. Operator IP and AI prompts never touch the client's tree (`docs/mothership/02b-dual-lane-architecture.md`).
+6. **Bot self-awareness pipeline** — `llm-monitor` watches provider status, four LLM-bot RSS feeds, and a Stack Overflow collector, then auto-rewrites `KNOWN_ISSUES.md` and `RECOMMENDATIONS.md`. The triage / plan / execute prompts ingest those files at runtime, so when an upstream-provider quirk lands, the fleet steers around it without a human in the loop (`docs/mothership/llm-monitor/runbook.md`).
 
 The site is a commodity. The system *around* the site is the moat.
 
@@ -169,7 +170,7 @@ Full pack: `docs/research/06-drawbacks-and-honest-risks.md`. The five that matte
 | AI hallucination (`§D1`) | High | Plan-then-Execute + tap-to-publish + Lighthouse / axe CI gates | Subtle bugs that pass all gates — addressed by per-client evidence log |
 | Operator burnout (`§D3`) | Critical | 30-client cap, session-budget charter, weekly cadence, planned 2-week break | Personality-bound; cap reduces probability |
 | ADA legal liability (`§D5`) | High | axe-core in CI; E&O / cyber liability insurance above $50k revenue | Automated tools catch ~30 – 50% of WCAG; manual review for the rest |
-| Provider outage (`§D4`) | High | Multi-AI fallback ladder | Joint Anthropic + Google + OpenAI outage (rare) |
+| Provider outage (`§D4`) | High | Five-leg multi-vendor fallback ladder (Anthropic + Google + OpenAI + GitHub Models + OpenRouter) | Simultaneous outage across three primary providers *and* two free public model gateways (extremely rare) |
 | Competitive substitution (`§D8`) | Medium-High over 24 mo | Watch list reassessed every 2 months; deliberate-smallness strategy | Real but slow |
 
 The single biggest existential risk is operator burnout, not the market or the technology.

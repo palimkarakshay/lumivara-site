@@ -7,31 +7,44 @@ PR auto-merges. When OpenAI is unavailable (no key, 429 quota, transient
 HTTP failure) we still want *some* second-opinion review rather than
 silently shipping unreviewed code, so this helper walks a small ladder:
 
-    1. OpenAI gpt-5.5 / OPENAI_API_KEY        — preferred
-    1b. OpenAI gpt-5.5 / OPENAI_API_KEY_BACKUP — second key (independent
-        quota window; the operator runs two accounts)
-    2. Gemini 2.5 Flash (Google AI Studio free tier, 500 RPD)
-    3. defer (label PR `review-deferred`)     — last resort
+    1.  OpenAI gpt-5.5 / OPENAI_API_KEY         — free tier (preferred)
+    1b. OpenAI gpt-5.5 / OPENAI_API_KEY_BACKUP  — paid account, used when
+        the free primary 429s; falling back keeps the maker-checker
+        boundary on OpenAI
+    2.  Gemini 2.5 Pro                          — try first within the
+        Gemini leg: stronger model, ~50 RPD free tier covers our PR
+        cadence with headroom
+    2b. Gemini 2.5 Flash                        — same key, higher
+        quota (500 RPD); used when Pro 429s
+    3.  defer (label PR `review-deferred`)      — last resort
 
 Why these two providers and not three? The triage / plan / execute ladders
 already use Claude, so using Claude here too would defeat the point of an
-"independent second opinion". OpenAI and Gemini are the only non-Claude
-options in the project; if both are down the run defers cleanly.
+"independent second opinion" (maker-checker). OpenAI and Gemini are the
+only non-Claude options in the project; if both are down the run defers
+cleanly.
 
 Inputs (env):
     PROMPT_FILE             path to a file containing the full review prompt
-    OPENAI_API_KEY          optional; tried first when set
+    OPENAI_API_KEY          optional; tried first when set. On this repo
+                            this is the free-tier ChatGPT account (low
+                            quota), so 429s are common.
     OPENAI_API_KEY_BACKUP   optional; tried after OPENAI_API_KEY on
-                            429/error so a quota-exhausted primary key
-                            doesn't silently skip the OpenAI leg
-    GEMINI_API_KEY          optional; Gemini attempted only when set
+                            429/error. On this repo this is the paid
+                            account — kept as the backup so the bill
+                            only grows when the free tier is exhausted.
+    GEMINI_API_KEY          optional; Gemini attempted only when set.
+                            Same key drives both Pro and Flash models.
     OPENAI_MODEL            default: gpt-5.5
-    GEMINI_MODEL            default: gemini-2.5-flash (matches the
-                            `Code review on PR diff` row in
-                            docs/AI_ROUTING.md — free-tier 500 RPD
-                            keeps the fallback unconstrained; the
-                            previous `gemini-2.5-pro` default 429'd
-                            in lockstep with OpenAI)
+    GEMINI_PRO_MODEL        default: gemini-2.5-pro (tried first within
+                            the Gemini leg — better reasoning, smaller
+                            free quota)
+    GEMINI_FLASH_MODEL      default: gemini-2.5-flash (tried after Pro
+                            429s within the Gemini leg — bigger free
+                            quota, kept as the unconstrained fallback)
+    GEMINI_MODEL            DEPRECATED: still honoured for back-compat,
+                            but if set it is treated as the Pro slot.
+                            New code should use the two split variables.
 
 Outputs:
     Writes the review markdown to /tmp/review.md (or $REVIEW_OUT).
@@ -131,12 +144,9 @@ def try_openai(prompt: str) -> tuple[str | None, str]:
     return None, last_status
 
 
-def try_gemini(prompt: str) -> tuple[str | None, str]:
-    """Return (review_markdown, status). status ∈ {ok, no_key, quota, error}."""
-    key = (os.environ.get("GEMINI_API_KEY") or "").strip()
-    if not key:
-        return None, "no_key"
-    model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+def _try_gemini_with_model(prompt: str, key: str, model: str
+                           ) -> tuple[str | None, str]:
+    """Single-model attempt. status ∈ {ok, quota, error}."""
     url = GEMINI_URL.format(model=model, key=key)
     try:
         resp = _post_json(
@@ -160,14 +170,49 @@ def try_gemini(prompt: str) -> tuple[str | None, str]:
     except urllib.error.HTTPError as e:
         body = e.read().decode()[:500]
         if e.code == 429:
-            print(f"::warning::Gemini 429 — daily quota exhausted. {body}",
+            print(f"::warning::Gemini ({model}) 429 — quota exhausted. {body}",
                   file=sys.stderr)
             return None, "quota"
-        print(f"::warning::Gemini HTTP {e.code}: {body}", file=sys.stderr)
+        print(f"::warning::Gemini ({model}) HTTP {e.code}: {body}",
+              file=sys.stderr)
         return None, "error"
     except Exception as exc:
-        print(f"::warning::Gemini call failed: {exc}", file=sys.stderr)
+        print(f"::warning::Gemini ({model}) call failed: {exc}", file=sys.stderr)
         return None, "error"
+
+
+def try_gemini(prompt: str) -> tuple[str | None, str, str]:
+    """Walk Gemini Pro then Flash on the same key.
+
+    Returns (review_markdown, status, model_used). status follows the
+    same convention as try_openai: 'ok' on success, 'no_key' when no
+    GEMINI_API_KEY is set, 'quota' / 'error' from the *last* model
+    tried so the deferred-review comment surfaces the real reason.
+    """
+    key = (os.environ.get("GEMINI_API_KEY") or "").strip()
+    if not key:
+        return None, "no_key", ""
+
+    # GEMINI_MODEL is a back-compat alias for the Pro slot — if the
+    # operator has the old single-model env override set, route it
+    # to the first attempt.
+    legacy = (os.environ.get("GEMINI_MODEL") or "").strip()
+    pro_model = legacy or os.environ.get("GEMINI_PRO_MODEL", "gemini-2.5-pro")
+    flash_model = os.environ.get("GEMINI_FLASH_MODEL", "gemini-2.5-flash")
+
+    last_status = "no_key"
+    for model in (pro_model, flash_model):
+        if not model:
+            continue
+        review, status = _try_gemini_with_model(prompt, key, model)
+        if review:
+            return review, status, model
+        last_status = status
+        # If the only model we have is set on both slots (operator
+        # override), don't double-fire the same model.
+        if pro_model == flash_model:
+            break
+    return None, last_status, flash_model or pro_model
 
 
 def main() -> int:
@@ -189,10 +234,9 @@ def main() -> int:
         return 0
     openai_status = status
 
-    # 2. Gemini fallback
-    gemini_model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+    # 2. Gemini fallback (Pro then Flash on the same key)
     openai_model = os.environ.get("OPENAI_MODEL", "gpt-5.5")
-    review, status = try_gemini(prompt)
+    review, status, gemini_model_used = try_gemini(prompt)
     if review:
         with open(out_path, "w") as f:
             # Tag the review so downstream parsers know it came from Gemini.
@@ -200,7 +244,7 @@ def main() -> int:
             # come from the prompt's required structure, not the engine, so
             # the auto-fixer keeps working unchanged.
             f.write(
-                f"_Engine: {gemini_model} fallback "
+                f"_Engine: {gemini_model_used} fallback "
                 "(OpenAI unavailable: " + openai_status + ")._\n\n"
                 + review
             )
@@ -208,14 +252,21 @@ def main() -> int:
         return 0
     gemini_status = status
 
-    # 3. Defer — both providers unavailable.
+    # 3. Defer — both providers unavailable. Report the model that
+    # caused the last Gemini status (the second of Pro/Flash, unless
+    # only one was attempted) so the deferred-review comment is honest
+    # about which model actually 429'd.
+    gemini_label = gemini_model_used or os.environ.get(
+        "GEMINI_FLASH_MODEL", "gemini-2.5-flash"
+    )
     with open(out_path, "w") as f:
         f.write(
             "## Code review unavailable\n\n"
-            f"Both OpenAI ({openai_model}) and {gemini_model} were "
-            "unavailable for this review pass.\n\n"
+            f"Both OpenAI ({openai_model}) and Gemini ({gemini_label}) "
+            "were unavailable for this review pass.\n\n"
             f"- OpenAI status: `{openai_status}`\n"
-            f"- Gemini status: `{gemini_status}`\n\n"
+            f"- Gemini status: `{gemini_status}` (last model tried: "
+            f"`{gemini_label}`)\n\n"
             "This PR has been labelled `review-deferred`. A scheduled "
             "re-review run (`codex-review-recheck.yml`) will retry once "
             "either provider's quota window resets.\n\n"

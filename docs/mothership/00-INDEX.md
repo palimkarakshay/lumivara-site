@@ -188,6 +188,7 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 - **Client example appendix: `15-terminology-and-brand.md §7`** — the single canonical home for legitimate Client #1 references in operator-scoped docs.
 - **Client #1 spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)**
 - **Vertical content prompt pack: `templates/00-templates-index.md`**
+- **LLM monitor — bot self-awareness pipeline:** `llm-monitor/runbook.md` (operator runbook), `llm-monitor/KNOWN_ISSUES.md` (last 14 days of field bugs ingested by triage / plan / execute prompts), `llm-monitor/RECOMMENDATIONS.md` (running list of bot-fleet enhancement suggestions). Daily artifacts under `llm-monitor/digests/` and `llm-monitor/newsletters/` (operator-technical + client-facing).
 - Future legal / vault work: `08-future-work.md`
 
 ---

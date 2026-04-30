@@ -2,6 +2,15 @@ You are the **Forge execute agent** for the Lumivara backlog. Your job is to imp
 ONE specific Forge / mothership / Pattern C issue that has been pre-selected for you by
 `forge-execute.yml`.
 
+## Operating context — known LLM issues + system recommendations
+
+Before you start, skim these two auto-maintained files:
+
+- [`docs/mothership/llm-monitor/KNOWN_ISSUES.md`](../docs/mothership/llm-monitor/KNOWN_ISSUES.md) — last 14 days of confirmed regressions in models / SDKs / GitHub Actions / Next.js / Vercel. If your work touches any of those subjects, prefer the action_hint over the natural-default approach.
+- [`docs/mothership/llm-monitor/RECOMMENDATIONS.md`](../docs/mothership/llm-monitor/RECOMMENDATIONS.md) — pending bot-fleet enhancements. Forge issues are exactly the lane these recommendations target. Cross-reference any matching slug in your PR description so the operator can close the loop on the recommendation when the PR merges.
+
+Both files are auto-rewritten daily by `.github/workflows/llm-monitor.yml`. The hand-curated section above the AUTO-START marker carries long-lived gotchas; the machine section between AUTO-START / AUTO-END is the rolling-window field report.
+
 This prompt is the docs-and-runbooks counterpart to `scripts/execute-prompt.md`. The
 general execute path is locked out of `docs/mothership/`, `docs/wiki/`, `AGENTS.md`,
 `docs/storefront/05-template-hardening-notes.md`, and `scripts/lib/routing.py` (because

@@ -21,7 +21,7 @@ Single source of truth for which AI does what in this repo. Updated as free/chea
 | **Content generation (articles, copy drafts)** | Gemini 2.5 Pro | Claude Opus | Free tier, good writing, large context for style consistency. |
 | **Image / video / music** | Gemini (native multimodal) | — | Claude doesn't generate media. |
 | **Deep research (multi-source synthesis)** | Gemini 2.5 Pro (with Google Search grounding) | OpenAI gpt-5.5 with web | Google Search integration is the differentiator; free tier. |
-| **Code review on PR diff** | OpenAI gpt-5.5 (Codex / ChatGPT Plus) | Gemini 2.5 Flash | Strongest second opinion on the ChatGPT Plus tier the operator already pays for. |
+| **Code review on PR diff** | OpenAI gpt-5.5 (Codex / ChatGPT Plus) | Five-leg ladder, in order: (1) `OPENAI_API_KEY` (free) → (1b) `OPENAI_API_KEY_BACKUP` (paid) → (2) Gemini 2.5 Pro → (2b) Gemini 2.5 Flash → (3) GitHub Models / `meta/Llama-3.3-70B-Instruct` → (3b) GitHub Models / `openai/gpt-4.1-mini` → (4) OpenRouter / `deepseek/deepseek-r1:free` → (4b) OpenRouter / `qwen/qwen3-coder:free` → defer | Strongest second opinion when OpenAI is reachable; otherwise the ladder keeps a non-Claude reviewer on the line so the maker-checker boundary holds. `GEMINI_MODEL` is deprecated in favour of `GEMINI_PRO_MODEL` / `GEMINI_FLASH_MODEL`. See `scripts/codex-review-fallback.py` for the script and `.github/workflows/codex-review.yml` for the wiring. |
 | **Cline-style agentic refactor** | (substituted → Claude Opus) | — | Cline ships only as a VS Code extension; no headless CLI. |
 
 ## Architecture

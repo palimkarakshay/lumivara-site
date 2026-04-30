@@ -39,6 +39,11 @@ permissions:
   contents: read
   issues: write
   pull-requests: write
+  # Needed by the GitHub Models leg in scripts/codex-review-fallback.py.
+  # GITHUB_TOKEN cannot call https://models.github.ai/inference without
+  # this scope — without it the leg returns auth-error and falls through
+  # to OpenRouter / defer.
+  models: read
 
 concurrency:
   group: codex-review-runtime
@@ -102,61 +107,101 @@ jobs:
             exit 1
           fi
 
-      # The review pass walks a small provider ladder:
-      #   OPENAI_API_KEY → OPENAI_API_KEY_BACKUP → Gemini 2.5 Flash → defer
-      # so a 429 on either OpenAI account or a Codex outage no longer
-      # silently skips the consistency check. We only short-circuit when
-      # ALL THREE of `OPENAI_API_KEY`, `OPENAI_API_KEY_BACKUP` and
-      # `GEMINI_API_KEY` are missing — at that point there's no second
-      # opinion available at all and the workflow defers via a label.
+      # The review pass walks a five-leg provider ladder:
+      #   OPENAI_API_KEY → OPENAI_API_KEY_BACKUP → Gemini Pro → Gemini
+      #   Flash → GitHub Models (Llama-3.3-70b → gpt-4.1-mini) →
+      #   OpenRouter (DeepSeek R1 → Qwen3 Coder) → defer
+      # so a 429 / outage on any single leg no longer silently skips
+      # the consistency check. We only short-circuit (defer immediately)
+      # when EVERY OpenAI / Gemini / OpenRouter key is missing — GitHub
+      # Models uses the auto-provisioned GITHUB_TOKEN and is therefore
+      # always available, but it shares a rate-limit pool with all
+      # GitHub Actions traffic so we don't hard-rely on it as the sole
+      # review path.
       - name: Verify review-engine availability
         id: verify
         env:
-          # Pass BOTH OpenAI keys through. codex-review-fallback.py walks
-          # primary → backup so a 429 on the paid account drops to the
-          # free account (independent quota window) before Gemini.
+          # Pass all keys through. codex-review-fallback.py walks the
+          # ladder; on this repo OPENAI_API_KEY is the free-tier ChatGPT
+          # account and OPENAI_API_KEY_BACKUP is the paid account, so a
+          # 429 on the free key falls through to paid (and the bill only
+          # grows on overflow).
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY_BACKUP: ${{ secrets.OPENAI_API_KEY_BACKUP }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GH_TOKEN: ${{ github.token }}
           MODE: ${{ steps.target.outputs.mode }}
           ISSUE: ${{ steps.target.outputs.issue }}
           PR: ${{ steps.target.outputs.pr }}
         run: |
-          if [ -z "$OPENAI_API_KEY" ] && [ -z "$OPENAI_API_KEY_BACKUP" ] \
-             && [ -z "$GEMINI_API_KEY" ]; then
-            echo "::warning::OPENAI_API_KEY, OPENAI_API_KEY_BACKUP and GEMINI_API_KEY all missing — review skipped."
-            if [ "$MODE" = "issue" ] && [ -n "$ISSUE" ]; then
+          # GitHub Models uses GITHUB_TOKEN which is always present in
+          # GitHub Actions, so for PR mode there is no longer a "no
+          # review possible" case — the script will at minimum attempt
+          # the GitHub Models leg, and a deferred review is recovered
+          # by the codex-review-recheck.yml cron.
+          #
+          # Issue mode is different. An issue dispatched here via
+          # `model/codex` from execute.yml will be moved to
+          # `status/awaiting-review` once a review comment is posted,
+          # and execute.yml excludes that status from future picks. So
+          # if every leg defers (e.g. all operator keys missing AND
+          # GitHub Models org-disabled / scope denied / outage), the
+          # issue stalls indefinitely — there is no recheck cron for
+          # deferred ISSUES. Restore the original safety net for that
+          # case: when no operator key is configured, immediately
+          # remove `model/codex` so the next execute run picks the
+          # issue up on the Claude path. (Codex P1 finding on PR #244,
+          # 2026-04-30.)
+          if [ "$MODE" = "issue" ] \
+             && [ -z "$OPENAI_API_KEY" ] && [ -z "$OPENAI_API_KEY_BACKUP" ] \
+             && [ -z "$GEMINI_API_KEY" ] && [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::warning::Issue-mode review with no operator keys — rerouting back to Claude (avoids status/awaiting-review stall if GitHub Models also fails)."
+            if [ -n "$ISSUE" ]; then
               gh issue comment "$ISSUE" \
                 --repo palimkarakshay/lumivara-site \
-                --body "Code review requested but neither OPENAI nor GEMINI keys are configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
+                --body "Codex review requested but no OpenAI / Gemini / OpenRouter key is configured. Removing \`model/codex\` AND \`type/code-review\` so the next execute run picks this up via Claude — keeps the issue out of the \`status/awaiting-review\` dead-letter state in case GitHub Models is also unreachable."
+              # Both labels must come off: scripts/lib/routing.py treats
+              # `type/code-review` as a CODEX_TYPE_HINTS safety net that
+              # routes to codex-review.yml even when `model/codex` is
+              # absent (seed-codex-review-backlog.py applies both, and
+              # the recheck path uses the same pair). Removing only
+              # `model/codex` would loop the issue back through this
+              # workflow on the next execute run instead of handing it
+              # to Claude. (Codex P1 finding round 2 on PR #244,
+              # 2026-04-30.)
               gh issue edit "$ISSUE" \
                 --repo palimkarakshay/lumivara-site \
-                --remove-label "model/codex" || true
-            elif [ "$MODE" = "pr" ] && [ -n "$PR" ]; then
-              gh label create "review-deferred" --repo palimkarakshay/lumivara-site \
-                --color "fbca04" --description "Codex/Gemini review unavailable; will be re-tried by codex-review-recheck.yml" 2>/dev/null || true
-              gh pr edit "$PR" --repo palimkarakshay/lumivara-site \
-                --add-label "review-deferred" || true
-              gh pr comment "$PR" \
-                --repo palimkarakshay/lumivara-site \
-                --body "_Auto-review deferred: no OPENAI or GEMINI key configured. \`codex-review-recheck.yml\` will retry once a key is available._" || true
+                --remove-label "model/codex" \
+                --remove-label "type/code-review" || true
             fi
             echo "ok=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          # Codex CLI is only required for the OpenAI path; absent that key
-          # we still continue with Gemini, so a missing CLI is non-fatal.
+          # PR-mode all-keys-missing case: just log; the recheck cron
+          # plus the `review-deferred` label trail will recover any
+          # deferred PR review.
+          if [ -z "$OPENAI_API_KEY" ] && [ -z "$OPENAI_API_KEY_BACKUP" ] \
+             && [ -z "$GEMINI_API_KEY" ] && [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::warning::No operator-provided review keys set (OPENAI / GEMINI / OPENROUTER all missing). Falling through to GitHub Models leg only."
+          fi
+          # Codex CLI is only required for the OpenAI leg; absent that key
+          # we still continue with the rest of the ladder, so a missing
+          # CLI is non-fatal.
           codex --version || true
           echo "ok=true" >> "$GITHUB_OUTPUT"
 
-      - name: Run code review pass (OpenAI → backup → Gemini → defer)
+      - name: Run code review pass (OpenAI → backup → Gemini Pro → Flash → GitHub Models → OpenRouter → defer)
         if: steps.verify.outputs.ok == 'true'
         id: review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY_BACKUP: ${{ secrets.OPENAI_API_KEY_BACKUP }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # GITHUB_TOKEN is read by the script for both gh CLI calls
+          # and the GitHub Models leg of the fallback ladder.
+          GITHUB_TOKEN: ${{ github.token }}
           GH_TOKEN: ${{ github.token }}
           MODE: ${{ steps.target.outputs.mode }}
           ISSUE: ${{ steps.target.outputs.issue }}
@@ -244,9 +289,10 @@ jobs:
           print("\n".join(parts))
           PY
 
-          # Run the OpenAI → Gemini → defer ladder. The script always exits
-          # 0 and prints `ENGINE=<openai|gemini|deferred>` to stdout, which
-          # we capture into a step output for downstream labelling.
+          # Run the five-leg ladder. The script always exits 0 and prints:
+          #   ENGINE=<openai|gemini|github|openrouter|deferred>
+          #   MODEL_USED=<concrete model id, omitted when deferred>
+          # We capture both into step outputs for the comment header.
           PROMPT_FILE=/tmp/prompt.txt \
           REVIEW_OUT=/tmp/review.md \
           OPENAI_MODEL="$MODEL" \
@@ -254,17 +300,31 @@ jobs:
             | tee /tmp/engine.txt
           ENGINE=$(grep -oE 'ENGINE=[a-z]+' /tmp/engine.txt | tail -n1 | cut -d= -f2)
           ENGINE="${ENGINE:-deferred}"
+          # `|| true` because the defer path intentionally omits the
+          # MODEL_USED line; without this, `set -euo pipefail` would
+          # take the step down on grep's exit-1 (regression that
+          # killed run #25173760637 on commit 8542c0f).
+          MODEL_USED=$(grep -oE 'MODEL_USED=[^[:space:]]+' /tmp/engine.txt | tail -n1 | cut -d= -f2- || true)
           echo "engine=$ENGINE" >> "$GITHUB_OUTPUT"
 
-          # Engine label tracks the script's ladder. Gemini leg defaults
-          # to gemini-2.5-flash (per AI_ROUTING.md §Policy "Code review
-          # on PR diff"); GEMINI_MODEL env can override.
-          GEMINI_LABEL="${GEMINI_MODEL:-gemini-2.5-flash}"
+          # Header reflects the EXACT model the script actually used —
+          # previously the Gemini header read whichever model GEMINI_MODEL
+          # defaulted to (Flash) even when the script ran Pro, and the
+          # GitHub Models / OpenRouter headers omitted the model entirely.
+          # (Codex P2 round 3 on PR #244, 2026-04-30.)
           case "$ENGINE" in
-            openai)  ENGINE_LABEL="Codex $MODEL" ;;
-            gemini)  ENGINE_LABEL="$GEMINI_LABEL (OpenAI unavailable)" ;;
-            deferred) ENGINE_LABEL="DEFERRED — both OpenAI and Gemini unavailable" ;;
-            *) ENGINE_LABEL="$ENGINE" ;;
+            openai)
+              ENGINE_LABEL="Codex ${MODEL_USED:-$MODEL}" ;;
+            gemini)
+              ENGINE_LABEL="${MODEL_USED:-gemini} (OpenAI unavailable)" ;;
+            github)
+              ENGINE_LABEL="GitHub Models / ${MODEL_USED:-Llama-3.3} (OpenAI + Gemini unavailable)" ;;
+            openrouter)
+              ENGINE_LABEL="OpenRouter / ${MODEL_USED:-deepseek-r1} (all upstream legs unavailable)" ;;
+            deferred)
+              ENGINE_LABEL="DEFERRED — every review leg unavailable" ;;
+            *)
+              ENGINE_LABEL="$ENGINE" ;;
           esac
           {
             echo "## Code review ($ENGINE_LABEL)"

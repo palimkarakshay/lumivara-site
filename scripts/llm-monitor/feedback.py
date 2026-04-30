@@ -218,15 +218,27 @@ def _list_open_auto_issues() -> set[str]:
 
 
 def open_issues_for_high_signal(records: list[dict], originals: dict, dry_run: bool = False) -> list[str]:
-    """File one GitHub issue per dedupe_group for severity ≥ 4 bugs with
-    an action_hint. Skips groups already represented by an open issue.
-    Returns the list of slugs filed."""
+    """File one GitHub issue per dedupe_group for high-signal records.
+
+    Two routing rules — outages always file, regular bugs need an action:
+      * kind=bug AND severity>=5  → ALWAYS file (the URL is the action;
+        outage notifications must reach the operator even when the
+        analyzer / stub couldn't synthesise an action_hint).
+      * kind=bug AND severity>=4 AND action_hint set → file as before
+        (a confirmed regression with a known workaround).
+
+    Skips groups already represented by an open issue with the same slug
+    so re-running the workflow is idempotent."""
     existing = _list_open_auto_issues() if not dry_run else set()
     filed: list[str] = []
     for r in _dedupe_groups(records, originals):
         if r.get("kind") != "bug":
             continue
-        if not r.get("action_hint"):
+        sev = int(r.get("severity") or 0)
+        has_action = bool((r.get("action_hint") or "").strip())
+        is_outage = sev >= 5
+        is_actionable_bug = sev >= 4 and has_action
+        if not (is_outage or is_actionable_bug):
             continue
         slug = _slug(r.get("dedupe_group") or r.get("id"))
         if slug in existing or slug in filed:
@@ -248,7 +260,10 @@ def open_issues_for_high_signal(records: list[dict], originals: dict, dry_run: b
             "",
             f"### Suggested action",
             "",
-            r.get("action_hint", "(none)"),
+            r.get("action_hint") or
+            "_(No action_hint synthesised by the analyzer. For sev=5 "
+            "outages this is filed regardless — open the source URL "
+            "above to read the provider's incident timeline.)_",
             "",
             f"### Why this fired",
             "",

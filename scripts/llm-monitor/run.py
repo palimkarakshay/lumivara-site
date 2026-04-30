@@ -36,7 +36,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 COLLECTORS_DIR = ROOT / "collectors"
-COLLECTOR_NAMES = ["hackernews", "rss", "reddit", "github"]
+
+# Two cadence tiers, configured from the workflow via --mode:
+#   sweep (every ~2h): full content sweep — used by llm-monitor.yml
+#   watch (every ~15min): outage / fresh-issue detection only —
+#                         used by llm-monitor-watch.yml
+COLLECTORS_BY_MODE = {
+    "sweep": ["hackernews", "rss", "reddit", "github", "statuspages"],
+    "watch": ["statuspages"],
+}
+COLLECTOR_NAMES = COLLECTORS_BY_MODE["sweep"]  # back-compat default
 
 sys.path.insert(0, str(ROOT))
 import store        # noqa: E402
@@ -79,16 +88,24 @@ def run_collector(name: str) -> list[str]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--mode", default="sweep", choices=["sweep", "watch"],
+                    help="sweep = full content pipeline (every ~2h); "
+                         "watch = fast outage detection only (every ~15min, "
+                         "skips digest + newsletter rewrite)")
     ap.add_argument("--dry-run", action="store_true",
                     help="Skip Anthropic + gh writes (KNOWN_ISSUES still rewritten locally)")
     ap.add_argument("--no-issues", action="store_true",
                     help="Don't file GitHub issues even on real runs")
-    ap.add_argument("--collectors", default=",".join(COLLECTOR_NAMES),
-                    help="Comma-separated subset of collectors to run")
+    ap.add_argument("--collectors",
+                    help="Comma-separated subset of collectors to run "
+                         "(default: derived from --mode)")
     args = ap.parse_args()
 
-    selected = [c.strip() for c in args.collectors.split(",") if c.strip()]
-    print(f"[run] starting llm-monitor — collectors={selected} dry_run={args.dry_run}",
+    default_collectors = COLLECTORS_BY_MODE.get(args.mode, COLLECTOR_NAMES)
+    selected_str = args.collectors or ",".join(default_collectors)
+    selected = [c.strip() for c in selected_str.split(",") if c.strip()]
+    print(f"[run] starting llm-monitor — mode={args.mode} "
+          f"collectors={selected} dry_run={args.dry_run}",
           file=sys.stderr)
 
     # --- 1. Collect ---
@@ -120,20 +137,28 @@ def main() -> int:
     analyzer_path.write_text(json.dumps(classified, ensure_ascii=False, indent=2))
     print(f"[run] analyzer wrote {analyzer_path}", file=sys.stderr)
 
-    # --- 4. Digest ---
-    digest_md = digest_mod.render(classified, today=today)
-    DIGEST_DIR.mkdir(parents=True, exist_ok=True)
-    digest_path = DIGEST_DIR / f"{today}.md"
-    digest_path.write_text(digest_md)
-    print(f"[run] digest written to {digest_path}", file=sys.stderr)
+    # --- 4. Digest + 5. Newsletters (sweep mode only) ---
+    # Watch mode skips both: those are heavy text outputs that don't
+    # change on a 15-min cadence, and rewriting them every 15 min
+    # would churn the git tree without surfacing new info. Watch mode
+    # still runs the feedback step below — that's the load-bearing
+    # outage path.
+    if args.mode == "sweep":
+        digest_md = digest_mod.render(classified, today=today)
+        DIGEST_DIR.mkdir(parents=True, exist_ok=True)
+        digest_path = DIGEST_DIR / f"{today}.md"
+        digest_path.write_text(digest_md)
+        print(f"[run] digest written to {digest_path}", file=sys.stderr)
 
-    # --- 5. Newsletters (operator + client) ---
-    NEWSLETTERS_DIR.mkdir(parents=True, exist_ok=True)
-    op_path = NEWSLETTERS_DIR / f"operator-{today}.md"
-    cl_path = NEWSLETTERS_DIR / f"client-{today}.md"
-    op_path.write_text(newsletters.render_operator(classified, today=today))
-    cl_path.write_text(newsletters.render_client(classified, today=today))
-    print(f"[run] newsletters written to {op_path}, {cl_path}", file=sys.stderr)
+        NEWSLETTERS_DIR.mkdir(parents=True, exist_ok=True)
+        op_path = NEWSLETTERS_DIR / f"operator-{today}.md"
+        cl_path = NEWSLETTERS_DIR / f"client-{today}.md"
+        op_path.write_text(newsletters.render_operator(classified, today=today))
+        cl_path.write_text(newsletters.render_client(classified, today=today))
+        print(f"[run] newsletters written to {op_path}, {cl_path}", file=sys.stderr)
+    else:
+        print("[run] watch mode: skipping digest + newsletter rewrite",
+              file=sys.stderr)
 
     # --- 6. Feedback (KNOWN_ISSUES + RECOMMENDATIONS + auto-issues) ---
     records = classified.get("records", [])

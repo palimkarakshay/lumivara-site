@@ -42,11 +42,11 @@ The persona pack tells you *who* to sell to. The reasons-to-switch pack tells yo
 | # | Vertical | Persona | Default tier | File | Status |
 |---|---|---|---|---|---|
 | 1 | Family medicine / GP clinic | P2 | T2 | [`doctors-sales-template.md`](./doctors-sales-template.md) | ✅ Full |
-| 2 | Dentistry (single + multi-op) | P2 | T2 / T3 | [`dentists-sales-template.md`](./dentists-sales-template.md) | ✅ Full |
-| 3 | Law (solo + small firm) | P1 | T2 | [`lawyers-sales-template.md`](./lawyers-sales-template.md) | ✅ Full |
-| 4 | Accounting / bookkeeping | P1 | T1 / T2 | [`accountants-sales-template.md`](./accountants-sales-template.md) | ✅ Full |
-| 5 | Physiotherapy / chiropractic / wellness | P2 | T2 | [`physiotherapy-sales-template.md`](./physiotherapy-sales-template.md) | ✅ Full |
-| 6 | Optometry | P2 | T2 | [`optometry-sales-template.md`](./optometry-sales-template.md) | ✅ Full |
+| 2 | Dentistry (single + multi-op) | P2 | T2 / T3 | [`dentists-sales-template.md`](./dentists-sales-template.md) | ⏳ Planned |
+| 3 | Law (solo + small firm) | P1 | T2 | [`lawyers-sales-template.md`](./lawyers-sales-template.md) | ⏳ Planned |
+| 4 | Accounting / bookkeeping | P1 | T1 / T2 | [`accountants-sales-template.md`](./accountants-sales-template.md) | ⏳ Planned |
+| 5 | Physiotherapy / chiropractic / wellness | P2 | T2 | [`physiotherapy-sales-template.md`](./physiotherapy-sales-template.md) | ⏳ Planned |
+| 6 | Optometry | P2 | T2 | [`optometry-sales-template.md`](./optometry-sales-template.md) | ⏳ Planned |
 
 **Legend:** ✅ Full = persona, pain map, ROI math, objection handlers, sources all complete. 🔲 Stub = file exists with section headings only. ⏳ Planned = not yet stubbed.
 
@@ -162,4 +162,4 @@ When promoting a `🔲 Stub` to `✅ Full`:
 
 ---
 
-*Last updated: 2026-04-30 — initial publication of six full vertical sales templates (doctors, dentists, lawyers, accountants, physiotherapy, optometry).*
+*Last updated: 2026-04-30 — index seeded; doctors row promoted Stub → Full first. Subsequent commits will promote dentists / lawyers / accountants / physiotherapy / optometry rows to Full as their templates land.*

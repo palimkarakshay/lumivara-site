@@ -21,6 +21,14 @@ Why Stack Overflow matters for this pipeline:
     feedback step's `action_hint` field is meant to capture.
   * Slow signal but high quality — the inverse of Reddit.
 
+Activity-based windowing (vs creation-based, codex-P2 on PR #241):
+  We filter `sort=activity` + `min=<unix>`, NOT `sort=creation` +
+  `fromdate`. A question's workaround often lands as an answer days
+  after the question was posted; creation-windowing would drop those
+  permanently. Combined with an `answer_count`-aware dedupe id
+  (`so:{qid}:a{n}`), a fresh answer re-flows the question through
+  the analyzer while routine comment churn does not.
+
 Run standalone:
     python3 scripts/llm-monitor/collectors/stackoverflow.py
 """
@@ -38,13 +46,20 @@ API = "https://api.stackexchange.com/2.3/questions"
 
 
 def fetch_tag(tag: str, since_ts: int, key: str) -> list[dict]:
+    # `sort=activity` + `min=<unix ts>` returns questions whose LAST
+    # activity (any answer / edit / new comment) falls inside the
+    # window, not just questions created in it. This matters because
+    # a question's workaround often arrives in an answer hours or days
+    # after it was first posted (codex-review P2 on PR #241): if we
+    # filtered by creation we'd permanently miss any answer that
+    # lands later than the next sweep.
     params = {
         "order": "desc",
-        "sort": "creation",
+        "sort": "activity",
         "tagged": tag,
         "site": "stackoverflow",
         "pagesize": "50",
-        "fromdate": str(since_ts),
+        "min": str(since_ts),
         # `withbody` returns the question body so the analyzer can
         # see actual repro steps instead of just titles.
         "filter": "withbody",
@@ -96,26 +111,43 @@ def main() -> int:
                 continue
 
             owner = q.get("owner") or {}
+            answer_count = int(q.get("answer_count") or 0)
+            # Use last_activity_date for the record timestamp because
+            # we're filtering by activity, not creation. This makes the
+            # digest's "ts" reflect when the question moved into our
+            # window (e.g. when an answer landed), which is the
+            # operationally meaningful moment for this pipeline.
             ts = datetime.fromtimestamp(
-                int(q.get("creation_date") or 0), tz=timezone.utc
+                int(q.get("last_activity_date")
+                    or q.get("creation_date") or 0),
+                tz=timezone.utc,
             ).isoformat()
             body_text = strip_html(q.get("body") or "")
 
+            # Dedupe id incorporates answer_count so a new answer
+            # produces a fresh id and the question re-flows through
+            # the analyzer — that's the codex-P2 fix path. Routine
+            # comment churn (which doesn't bump answer_count) does
+            # NOT re-emit, so we don't churn the digest on every
+            # sweep.
             emit({
                 "source": "stackoverflow",
                 "source_detail": tag,
-                "id": f"so:{qid}",
+                "id": f"so:{qid}:a{answer_count}",
                 "url": q.get("link", ""),
                 "title": truncate(q.get("title") or "", 300),
                 "body": truncate(body_text),
                 "author": owner.get("display_name", ""),
                 "ts": ts,
                 "score": score,
-                "comments": int(q.get("answer_count") or 0),
+                "comments": answer_count,
                 "raw": {
                     "tags": q.get("tags", []),
                     "is_answered": bool(q.get("is_answered")),
+                    "answer_count": answer_count,
                     "view_count": int(q.get("view_count") or 0),
+                    "creation_date": int(q.get("creation_date") or 0),
+                    "last_activity_date": int(q.get("last_activity_date") or 0),
                 },
             })
             emitted += 1

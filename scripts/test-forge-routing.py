@@ -172,7 +172,7 @@ ALLOW_RX = re.compile(r"^(docs/.+|AGENTS\.md|CLAUDE\.md|CHANGELOG\.md|README\.md
 
 PATH_CASES = [
     ("docs/mothership/02-architecture.md", True, "mothership doc"),
-    ("docs/mothership/02b-pattern-c-architecture.md", True, "new mothership doc"),
+    ("docs/mothership/02b-dual-lane-architecture.md", True, "new mothership doc"),
     ("docs/wiki/Home.md", True, "wiki doc"),
     ("docs/storefront/05-template-hardening-notes.md", True, "freelance hardening note"),
     ("AGENTS.md", True, "agent ideology root file"),

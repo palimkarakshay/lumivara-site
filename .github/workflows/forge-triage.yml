@@ -1,6 +1,6 @@
 name: Forge triage (high cadence)
 
-# High-cadence triage lane scoped to Lumivara Forge / Pattern C / mothership
+# High-cadence triage lane scoped to Lumivara Forge / Dual-Lane Repo / mothership
 # work. Runs every 10 minutes (vs. the general triage's 15) so freshly-opened
 # Forge issues are ready for forge-execute on its next 30-min tick.
 #
@@ -70,7 +70,7 @@ jobs:
         run: |
           gh label create area/forge \
             --repo palimkarakshay/lumivara-site \
-            --description "Lumivara Forge / Pattern C / mothership lane" \
+            --description "Lumivara Forge / Dual-Lane Repo / mothership lane" \
             --color "5319E7" \
             --force
           echo "Label area/forge upserted."

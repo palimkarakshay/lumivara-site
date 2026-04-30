@@ -1,6 +1,6 @@
 name: Forge execute (high cadence)
 
-# High-cadence implementation lane scoped to Lumivara Forge / Pattern C / mothership
+# High-cadence implementation lane scoped to Lumivara Forge / Dual-Lane Repo / mothership
 # work. Runs every 30 minutes (vs. the general execute's hourly) so doc-refactor
 # PRs land continuously while the operator works in other lanes.
 #
@@ -13,7 +13,7 @@ name: Forge execute (high cadence)
 on:
   schedule:
     # Every 15 min — aggressive deploy-push phase. Forge is the most
-    # active lane right now (doc refactors, Pattern C work, mothership
+    # active lane right now (doc refactors, Dual-Lane Repo work, mothership
     # docs). The forge-execute-runtime concurrency group keeps this
     # single-flight; faster cadence shortens the queue without
     # fanning out simultaneous Claude sessions within the lane.

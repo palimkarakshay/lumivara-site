@@ -15,9 +15,16 @@ name: Codex review (OpenAI gpt-5.5)
 #   3. Indirect dispatch by `execute.yml` when an issue carries
 #      `model/codex` (the router path).
 #
-# OPENAI_API_KEY is OPTIONAL on this repo — if missing or quota-exhausted,
-# the workflow exits cleanly with a warning. For dispatch-on-issue runs it
-# also re-labels the issue back to the Claude path so the work isn't lost.
+# Provider ladder (since 2026-04-30):
+#   OPENAI_API_KEY → OPENAI_API_KEY_BACKUP → Gemini 2.5 Flash
+#   → Anthropic claude-opus-4-7 → defer (label `review-deferred`)
+#
+# All four secrets are OPTIONAL — if all four are missing the workflow
+# exits cleanly with a warning. For dispatch-on-issue runs it also
+# re-labels the issue back to the Claude path so the work isn't lost.
+# See `scripts/codex-review-fallback.py` docstring for the rationale
+# behind including Claude in the ladder despite the original
+# reviewer-independence guarantee.
 
 on:
   pull_request:
@@ -103,12 +110,17 @@ jobs:
           fi
 
       # The review pass walks a small provider ladder:
-      #   OPENAI_API_KEY → OPENAI_API_KEY_BACKUP → Gemini 2.5 Flash → defer
-      # so a 429 on either OpenAI account or a Codex outage no longer
-      # silently skips the consistency check. We only short-circuit when
-      # ALL THREE of `OPENAI_API_KEY`, `OPENAI_API_KEY_BACKUP` and
-      # `GEMINI_API_KEY` are missing — at that point there's no second
-      # opinion available at all and the workflow defers via a label.
+      #   OPENAI_API_KEY → OPENAI_API_KEY_BACKUP → Gemini 2.5 Flash
+      #   → Anthropic claude-opus-4-7 (added 2026-04-30) → defer
+      # so a 429 on either OpenAI account, a Gemini quota burn, or a
+      # Codex outage no longer silently skips the consistency check.
+      # We only short-circuit when ALL FOUR keys are missing — at that
+      # point there's no second opinion available at all and the
+      # workflow defers via a label.
+      #
+      # Why Claude is now in the ladder: see
+      # `scripts/codex-review-fallback.py` module docstring §"On
+      # reviewer independence (policy revision 2026-04-30)".
       - name: Verify review-engine availability
         id: verify
         env:
@@ -118,29 +130,30 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY_BACKUP: ${{ secrets.OPENAI_API_KEY_BACKUP }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GH_TOKEN: ${{ github.token }}
           MODE: ${{ steps.target.outputs.mode }}
           ISSUE: ${{ steps.target.outputs.issue }}
           PR: ${{ steps.target.outputs.pr }}
         run: |
           if [ -z "$OPENAI_API_KEY" ] && [ -z "$OPENAI_API_KEY_BACKUP" ] \
-             && [ -z "$GEMINI_API_KEY" ]; then
-            echo "::warning::OPENAI_API_KEY, OPENAI_API_KEY_BACKUP and GEMINI_API_KEY all missing — review skipped."
+             && [ -z "$GEMINI_API_KEY" ] && [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::warning::OPENAI_API_KEY, OPENAI_API_KEY_BACKUP, GEMINI_API_KEY and ANTHROPIC_API_KEY all missing — review skipped."
             if [ "$MODE" = "issue" ] && [ -n "$ISSUE" ]; then
               gh issue comment "$ISSUE" \
                 --repo palimkarakshay/lumivara-site \
-                --body "Code review requested but neither OPENAI nor GEMINI keys are configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
+                --body "Code review requested but no OPENAI / GEMINI / ANTHROPIC keys are configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
               gh issue edit "$ISSUE" \
                 --repo palimkarakshay/lumivara-site \
                 --remove-label "model/codex" || true
             elif [ "$MODE" = "pr" ] && [ -n "$PR" ]; then
               gh label create "review-deferred" --repo palimkarakshay/lumivara-site \
-                --color "fbca04" --description "Codex/Gemini review unavailable; will be re-tried by codex-review-recheck.yml" 2>/dev/null || true
+                --color "fbca04" --description "Codex/Gemini/Anthropic review unavailable; will be re-tried by codex-review-recheck.yml" 2>/dev/null || true
               gh pr edit "$PR" --repo palimkarakshay/lumivara-site \
                 --add-label "review-deferred" || true
               gh pr comment "$PR" \
                 --repo palimkarakshay/lumivara-site \
-                --body "_Auto-review deferred: no OPENAI or GEMINI key configured. \`codex-review-recheck.yml\` will retry once a key is available._" || true
+                --body "_Auto-review deferred: no OPENAI / GEMINI / ANTHROPIC key configured. \`codex-review-recheck.yml\` will retry once a key is available._" || true
             fi
             echo "ok=false" >> "$GITHUB_OUTPUT"
             exit 0
@@ -150,13 +163,14 @@ jobs:
           codex --version || true
           echo "ok=true" >> "$GITHUB_OUTPUT"
 
-      - name: Run code review pass (OpenAI → backup → Gemini → defer)
+      - name: Run code review pass (OpenAI → backup → Gemini → Anthropic → defer)
         if: steps.verify.outputs.ok == 'true'
         id: review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY_BACKUP: ${{ secrets.OPENAI_API_KEY_BACKUP }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GH_TOKEN: ${{ github.token }}
           MODE: ${{ steps.target.outputs.mode }}
           ISSUE: ${{ steps.target.outputs.issue }}

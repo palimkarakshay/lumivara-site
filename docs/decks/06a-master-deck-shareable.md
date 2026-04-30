@@ -210,3 +210,77 @@ The boundaries *are* the strategy. They keep the operator under the hour cap at 
 > Pitch line: *"Other people sell you a website. We sell you a website that updates itself."*
 
 ---
+
+<!-- _class: lead -->
+
+# 3 · What customers say they want
+
+*The actual asks, in their own words.*
+
+---
+
+## The four asks we hear repeatedly
+
+From discovery calls, marketplace inquiries, and the freelance gig-profile work:
+
+1. **"I want to update my own site without calling someone."**
+   The Squarespace promise — but they want it on a real codebase they own.
+2. **"I don't want to pay $200 every time I fix a typo."**
+   Predictable monthly cost beats lumpy invoices, even if the monthly is bigger.
+3. **"I want it to look custom, not like every other Wix site."**
+   Custom palette, type, layout. Moodboard sign-off before any code.
+4. **"I want to own my site outright — no lock-in."**
+   Their domain, their hosting, their code. Cancellable any time.
+
+---
+
+## Direct quotes we plan answers around
+
+> *"Can't I just use Squarespace?"*
+> Yes — and a quarter of small businesses do. The difference is real ownership of the code + free unlimited edits + monthly improvements baked in.
+
+> *"Why pay monthly?"*
+> Because every other dev charges per-edit and disappears between projects. Compare against $200 × 24 months of edits.
+
+> *"What if you go out of business?"*
+> They keep the site. They keep the domain. They keep the hosting. They lose the autopilot. Already in the FAQ and the contract.
+
+> *"I'm worried about being locked in."*
+> They can't be. Code is theirs, domain is theirs, hosting is in their name.
+
+---
+
+## Who says yes (the ICP) and who says no
+
+| Says yes | Looks like | Tier |
+|---|---|---|
+| Solo consultant (HR, coach, therapist, accountant, lawyer) | "Relaunching my practice; the Squarespace site looks cheap." | T1 / T2 |
+| Boutique services firm (5–25 staff) | "Site was built in 2019; the intern can't update it." | T2 / T3 |
+| Indie SaaS founder | "Marketing site for my product; modern stack so I can hack on it later." | T2 + retainer |
+| Local trades / clinics / studios | "Want to look professional + an online booking link." | T1 + booking integration |
+
+**Says no** (anti-personas): agencies wanting half-price white-label, equity-only deals, e-commerce / Shopify, enterprise procurement, sub-$50/mo budgets.
+
+---
+
+## The hidden ask underneath
+
+What clients literally say is "I want to update my own site." What they *mean*, almost always, is:
+
+> *"I want to stop feeling stupid every time I open a CMS, and stop feeling guilty every time I delay a change because I don't want to email a developer about it."*
+
+The product wins the moment that feeling goes away. Phone-shortcut + plain-English instruction + tap-to-publish is the shape of the answer because it solves the *feeling*, not just the technical task.
+
+---
+
+## Section recap — Customer voice
+
+- Customers ask for **autonomy** ("I want to fix it myself") and **predictability** ("no surprise invoices").
+- They ask for **ownership** ("no lock-in") and **looks** ("not another Wix site").
+- The **objections** clump into four shapes (Squarespace, monthly cost, vendor risk, lock-in) — all four have prepared answers.
+- The ICP is solo consultants and boutique firms, not e-commerce or enterprise.
+- The hidden ask is emotional: stop feeling stupid, stop feeling guilty about delaying changes.
+
+> Pitch line: *"Customers don't ask for AI. They ask to stop waiting on a developer."*
+
+---

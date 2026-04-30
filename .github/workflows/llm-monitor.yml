@@ -87,7 +87,14 @@ jobs:
 
       - name: Run llm-monitor
         env:
+          # Analyzer ladder: Anthropic → Gemini → OpenAI. ANTHROPIC_API_KEY
+          # is preferred when present (matches AGENTS.md "quality first"
+          # phase), but the operator runs on Claude Max 20x OAuth not raw
+          # API, so the realistic path is GEMINI_API_KEY / OPENAI_API_KEY
+          # (already wired for plan-issue.py + codex-* workflows).
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}

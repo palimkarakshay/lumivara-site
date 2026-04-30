@@ -145,33 +145,171 @@ def _post_anthropic(prompt: str, records: list[dict], api_key: str, model: str) 
     return json.loads(text)
 
 
+def _post_gemini(prompt: str, records: list[dict], api_key: str) -> dict:
+    """Fallback when ANTHROPIC_API_KEY is absent. Mirrors the
+    Gemini-call pattern used by scripts/plan-issue.py."""
+    full_prompt = prompt + "\n\n## Records\n\n" + json.dumps(records, ensure_ascii=False)
+    url = (
+        "https://generativelanguage.googleapis.com/v1beta/models/"
+        f"gemini-2.5-pro:generateContent?key={api_key}"
+    )
+    req = urllib.request.Request(
+        url,
+        data=json.dumps({
+            "contents": [{"parts": [{"text": full_prompt}]}],
+            "generationConfig": {"temperature": 0.2, "responseMimeType": "application/json"},
+        }).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        resp = json.loads(r.read())
+    text = resp["candidates"][0]["content"]["parts"][0]["text"].strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1].rsplit("```", 1)[0]
+    return json.loads(text)
+
+
+def _post_openai(prompt: str, records: list[dict], api_key: str) -> dict:
+    """Last-resort fallback when both Anthropic and Gemini are unavailable.
+    Mirrors the OpenAI-call pattern used by scripts/plan-issue.py."""
+    full_prompt = prompt + "\n\n## Records\n\n" + json.dumps(records, ensure_ascii=False)
+    req = urllib.request.Request(
+        "https://api.openai.com/v1/chat/completions",
+        data=json.dumps({
+            "model": "gpt-5.5",
+            "messages": [{"role": "user", "content": full_prompt}],
+            "temperature": 0.2,
+            "response_format": {"type": "json_object"},
+        }).encode(),
+        headers={"Authorization": f"Bearer {api_key}",
+                 "Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        resp = json.loads(r.read())
+    text = resp["choices"][0]["message"]["content"].strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1].rsplit("```", 1)[0]
+    return json.loads(text)
+
+
+def _classify_one_batch(prompt: str, records: list[dict]) -> dict:
+    """Try Anthropic → Gemini → OpenAI in order. Each is best-effort.
+    Returns the first successful result; raises RuntimeError if all
+    three are unavailable so the caller can stub-fall-back."""
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
+
+    errors: list[str] = []
+    if anthropic_key:
+        try:
+            return _post_anthropic(prompt, records, anthropic_key, DEFAULT_MODEL)
+        except (urllib.error.HTTPError, urllib.error.URLError, KeyError, ValueError) as e:
+            errors.append(f"anthropic: {e}")
+    if gemini_key:
+        try:
+            return _post_gemini(prompt, records, gemini_key)
+        except (urllib.error.HTTPError, urllib.error.URLError, KeyError, ValueError) as e:
+            errors.append(f"gemini: {e}")
+    if openai_key:
+        try:
+            return _post_openai(prompt, records, openai_key)
+        except (urllib.error.HTTPError, urllib.error.URLError, KeyError, ValueError) as e:
+            errors.append(f"openai: {e}")
+    if not (anthropic_key or gemini_key or openai_key):
+        errors.append("no API keys set (ANTHROPIC_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY all empty)")
+    raise RuntimeError(f"all LLM providers failed: {'; '.join(errors)}")
+
+
 def _stub_classify(records: list[dict]) -> dict:
-    """Offline classifier used by --dry-run. Heuristic only."""
+    """Offline classifier used when every API provider is unavailable.
+
+    Tightened 2026-04-30 after the first production run misclassified
+    "Noctua releases 3D CAD models" as `vercel/bug/sev4` because the
+    BODY mentioned the word "fail" in a comment. The new rules:
+
+    1. Subject detection requires the WHOLE keyword (no `s.split("-")[0]`
+       stem matching) and is title-only — body comments don't decide
+       the topic.
+    2. A record is only `bug` if BOTH the title carries a bug keyword
+       AND the subject was identified (i.e. it's about something we
+       care about). General-subject records max out at sev=3.
+    3. Statuspages records use the kind_hint provided by the collector
+       (which already knows the indicator → kind/severity mapping).
+    """
     out = []
     for r in records:
         title = (r.get("title") or "").lower()
         body = (r.get("body") or "").lower()
-        text = title + " " + body
-        if any(w in text for w in ("bug", "broken", "regression", "outage", "error", "fail")):
-            kind, sev = "bug", 4
-        elif any(w in text for w in ("released", "release", "launch", "announc")):
-            kind, sev = "news", 3
-        elif any(w in text for w in ("vs ", "compared", "benchmark")):
-            kind, sev = "comparison", 2
-        elif any(w in text for w in ("how to", "tip", "best practice", "pattern")):
-            kind, sev = "best_practice", 3
-        else:
-            kind, sev = "noise", 1
+        raw = r.get("raw") or {}
+        source = r.get("source", "")
+
+        # Subject — title-only, exact-keyword match. Order is important:
+        # more-specific names first so "claude-code" beats "claude".
         subject = "general"
-        for s in ("claude-opus-4-7", "claude-sonnet-4-6", "claude-code",
-                  "anthropic-sdk", "mcp", "openai-gpt-5.5", "openai-codex",
-                  "gemini-2.5-pro", "gemini-2.5-flash", "nextjs", "vercel",
-                  "github-actions"):
-            stem = s.split("-")[0]
-            if stem in text or s in text:
-                subject = s
+        SUBJECT_KEYWORDS = [
+            ("claude-code",      ["claude code", "claude-code"]),
+            ("claude-opus-4-7",  ["claude opus", "claude-opus", "opus 4.7"]),
+            ("claude-sonnet-4-6",["claude sonnet", "claude-sonnet", "sonnet 4.6"]),
+            ("claude-haiku-4-5", ["claude haiku", "claude-haiku", "haiku 4.5"]),
+            ("anthropic-sdk",    ["anthropic sdk", "anthropic-sdk", "@anthropic-ai/sdk"]),
+            ("mcp",              ["mcp", "model context protocol"]),
+            ("openai-codex",     ["codex cli", "openai codex"]),
+            ("openai-gpt-5.5",   ["gpt-5", "gpt5", "openai gpt"]),
+            ("gemini-2.5-pro",   ["gemini 2.5 pro", "gemini-2.5-pro"]),
+            ("gemini-2.5-flash", ["gemini 2.5 flash", "gemini-2.5-flash"]),
+            ("nextjs",           ["next.js", "nextjs"]),
+            ("vercel",           ["vercel"]),
+            ("github-actions",   ["github actions", "github-actions"]),
+        ]
+        for subj, kws in SUBJECT_KEYWORDS:
+            if any(kw in title for kw in kws):
+                subject = subj
                 break
-        # Heuristic impact targets — coarse but better than nothing.
+
+        # Statuspages — collector already supplies the right kind via
+        # raw.kind_hint. Use the score as severity (collector populates
+        # that with our 0-5 mapping).
+        if source == "statuspages":
+            kind = raw.get("kind_hint") or "bug"
+            sev = int(r.get("score") or 3)
+            # Statuspage titles already encode the provider; preserve
+            # the subject for routing.
+            provider = (raw.get("provider") or "").lower()
+            if provider in ("anthropic", "openai", "google", "gemini"):
+                subject = subject if subject != "general" else "anthropic-sdk" if provider == "anthropic" else "general"
+            elif provider == "vercel":
+                subject = "vercel"
+            elif provider == "github":
+                subject = "github-actions"
+        else:
+            text_for_kind = title  # title-only for non-statuspage sources too
+            BUG_WORDS = ("bug", "broken", "regression", "outage",
+                         "crash", "fails to ", "doesn't work", "not working",
+                         "error 5", "503", "504", "529", "overloaded")
+            NEWS_WORDS = ("releases", "released", "launches", "launched",
+                          "announces", "announcing", "introducing")
+            COMPARISON_WORDS = (" vs ", " compared", "benchmark",
+                                "head-to-head")
+            BEST_PRACTICE_WORDS = ("how to", "best practice", "guide to",
+                                   "pattern for", "lessons from")
+
+            if any(w in text_for_kind for w in BUG_WORDS) and subject != "general":
+                kind, sev = "bug", 4
+            elif any(w in text_for_kind for w in BUG_WORDS):
+                kind, sev = "bug", 3  # general-subject bugs max at 3
+            elif any(w in text_for_kind for w in NEWS_WORDS):
+                kind, sev = "news", 3
+            elif any(w in text_for_kind for w in COMPARISON_WORDS):
+                kind, sev = "comparison", 2
+            elif any(w in text_for_kind for w in BEST_PRACTICE_WORDS):
+                kind, sev = "best_practice", 3
+            else:
+                kind, sev = "noise", 1
+
+        # Impact targets — derived from subject.
         impact: list[str] = []
         if subject in ("claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5",
                        "claude-code", "anthropic-sdk", "mcp", "openai-gpt-5.5",
@@ -180,6 +318,7 @@ def _stub_classify(records: list[dict]) -> dict:
             impact.append("pipeline")
         if subject in ("nextjs", "vercel"):
             impact.extend(["site", "storefront"])
+
         out.append({
             "id": r["id"], "kind": kind, "subject": subject,
             "impact_targets": impact,
@@ -196,14 +335,18 @@ def _stub_classify(records: list[dict]) -> dict:
 def classify(records: list[dict], dry_run: bool = False) -> dict:
     if not records:
         return {"records": []}
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
-    if dry_run or not api_key:
+
+    has_any_key = any(os.environ.get(k, "").strip() for k in
+                      ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "OPENAI_API_KEY"))
+    if dry_run or not has_any_key:
         if not dry_run:
-            print("[analyzer] ANTHROPIC_API_KEY missing — using stub classifier",
-                  file=sys.stderr)
+            print("[analyzer] no LLM API keys available "
+                  "(ANTHROPIC_API_KEY / GEMINI_API_KEY / OPENAI_API_KEY all empty) "
+                  "— using stub classifier", file=sys.stderr)
         return summarize(_stub_classify(records), records)
 
     classified: list[dict] = []
+    stub_used_for_batches = 0
     for i in range(0, len(records), RECORDS_PER_BATCH):
         batch = records[i:i + RECORDS_PER_BATCH]
         # Trim raw payloads — analyzer doesn't need them and they
@@ -217,13 +360,17 @@ def classify(records: list[dict], dry_run: bool = False) -> dict:
             "url": r["url"],
         } for r in batch]
         try:
-            result = _post_anthropic(CLASSIFY_PROMPT, slim, api_key, DEFAULT_MODEL)
+            result = _classify_one_batch(CLASSIFY_PROMPT, slim)
             classified.extend(result.get("records", []))
-        except (urllib.error.HTTPError, urllib.error.URLError, KeyError, ValueError) as e:
+        except (RuntimeError, KeyError, ValueError) as e:
             print(f"[analyzer] batch {i}-{i+len(batch)} failed: {e}", file=sys.stderr)
             # Fall back to stub for this batch so the run completes.
             classified.extend(_stub_classify(batch)["records"])
+            stub_used_for_batches += 1
 
+    if stub_used_for_batches:
+        print(f"[analyzer] {stub_used_for_batches} batch(es) fell back to stub",
+              file=sys.stderr)
     return summarize({"records": classified}, records)
 
 

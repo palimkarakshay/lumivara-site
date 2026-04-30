@@ -89,7 +89,12 @@ jobs:
 
       - name: Run llm-monitor (watch mode)
         env:
+          # Same Anthropic → Gemini → OpenAI ladder as the sweep
+          # workflow. The operator's realistic path is Gemini / OpenAI
+          # since Claude runs on Max 20x OAuth, not raw API.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}

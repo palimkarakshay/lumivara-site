@@ -76,6 +76,7 @@ This is small but it is diagnostic. Every deck in the pack carries a banner read
 
 ## 2. Where the math breaks
 
+
 The pack uses three layers of numerical authority — `[V]` verified, `[S]` secondary, `[C]` contested — and the casual reader sees that ledger and infers rigour. The careful reader notices that the load-bearing numbers, the ones the unit economics actually depend on, are mostly `[S]` or `[C]`.
 
 ### 2.1 The "law firms spend $120–$150k/yr on SEO" number is a category error
@@ -132,5 +133,68 @@ The "what it costs vs. the alternatives" slide lists Lumivara T2 at CAD $7,488 o
 DesignJoy is not a real comparison for the dental / legal / boutique-services ICP. DesignJoy is a design-subscription serving venture-backed startups and SaaS companies — a buyer who has never heard of the operator's ICP. Putting DesignJoy in the comparison table is **rhetorical, not informational** — it makes the operator's price look reasonable by anchoring against a price the buyer would never have considered. The same trick is more subtly run with the boutique-agency upper bound ($30,000+) — which represents the agency's *highest-billing client*, not the modal one.
 
 A buyer comparing real options is comparing Squarespace ($17–$139/mo) against you ($249/mo + $4,500 setup). The honest gap is *"are you 13× more valuable than Squarespace? Make the case in one sentence without using the word 'codebase.'"* The deck does not make that case. It hides behind DesignJoy and the boutique-agency tail.
+
+### 2.7 The thing the deck repeatedly tells you it isn't quoting
+
+The investor deck and the advisor deck both contain language to the effect of *"we explicitly do not quote the 22.4× EBITDA / 22.3% AI-premium figure from raw research #2 — that figure is at the very top of the public band and inappropriate for a private services practice."* The pre-publication gate in `00-INDEX.md` even reiterates: *"No deck quotes the '22.4× EBITDA / 22.3% AI-premium' framing without explicit context."*
+
+This is in four places. The number you are not quoting, you have now quoted four times. Every time you tell the reader *"we are not citing this generous number,"* the reader's brain stores the generous number with your brand attached to it. This is anchoring theatre with extra steps. The fix is to delete every reference to the framing entirely — including the meta-references to not-citing-it.
+
+---
+
+## 3. The platform-vs-product diagnosis
+
+Give credit where it is due: the operator-side platform is real engineering. A five-leg multi-vendor LLM fallback ladder. A Dual-Lane Repo split with GitHub-App per-engagement isolation. An `llm-monitor` that ingests provider status pages, four LLM-bot RSS feeds, and a Stack Overflow collector, then auto-rewrites `KNOWN_ISSUES.md` and feeds the rewrite back into runtime prompts. Plan-then-Execute as a structural gate. axe-core and Lighthouse as CI rejection rules. A four-tier cadence with watch-tier polling every 15 minutes. An n8n hub on Railway. Auth.js v5 + Octokit + HMAC + Vercel deploy hooks. Six full vertical sales playbooks (operator-only). Six client-facing vertical pitch decks. Seven stakeholder decks. A pre-publication gate. A doc-task seeder per OWASP LLM08. A `record-ingest` operator-recording pipeline. A PIPEDA breach-notification research seed.
+
+This is, technically, an impressive build. It is also the **textbook silhouette of an engineer who would rather build the system that will sell the product than sell the product**. Every additional fallback leg, every new vertical playbook, every renamed brand candidate, every "P4.6 critique-closure sub-pass" is a way to feel productive without doing the work that scares you. The relationship is inverse: the size and elegance of the platform is a measure of how much the operator does not want to make the next cold call.
+
+The proof is in the deck pack itself. `05-advisor-deck.md` records, verbatim, a senior advisor saying *"this is over-engineered crap and won't ever sell."* The operator's documented response was to:
+
+- Add Contested Claim 6 to the advisor deck (a 4-row counter-table).
+- Write a five-resolution rebuttal essay ("Resolution 1 / 2 / 3" plus a pitch sentence) inside the advisor deck.
+- Build six new operator-only vertical sales playbooks (~450–510 lines each, "dense, citation-traced") under `docs/mothership/sales-verticals/`.
+- Build six new client-facing vertical pitch decks under `docs/decks/vertical-pitches/`.
+- Refresh the master deck and the shareable companion master deck to point at the new pack.
+- Add a "How we're working to ensure it sells" slide to the advisor deck listing the writing-output above as the *response* to the criticism.
+
+That is — and this is the diagnosis in one sentence — **the operator responded to *"you're writing too much, sell something"* by writing more.** Not by booking a call. Not by sending an email. Not by launching the storefront. By writing a 4-row table about the nine-resolution rebuttal essay about the six new playbooks about the existing critique.
+
+The platform is not a moat. It is an avoidance behaviour wearing the costume of progress. Until proven otherwise — by paying client #2 — every artefact above is overhead.
+
+---
+
+## 4. The rhetorical patterns that should make the operator wince
+
+A few moves recur often enough that they deserve their own section.
+
+### 4.1 The deck pack quotes itself as a source
+
+A startling number of footnotes in the decks point to **other markdown files in the same repo, written by the same operator**. *"Source: `docs/storefront/03-cost-analysis.md` Part D."* *"See `docs/mothership/18-capacity-and-unit-economics.md §6`."* *"Operator-internal source: `docs/mothership/sales-verticals/00b-why-this-sells.md §2.2`."* The footnotes look like rigour. They are actually a closed loop: the deck cites the planning doc, the planning doc cites the architecture doc, the architecture doc cites the strategy doc, all written by the same hand, none externally validated.
+
+A real source bibliography contains primary sources outside the operator's control — court filings, regulator notices, industry-association reports, vendor pricing pages with archive.org URLs. The deck pack does have those, in `docs/research/03-source-bibliography.md` — and that's good. But the *unit-economics* claims, the *load-bearing* numbers, are anchored to the operator's own planning files. A reader who notices this mid-deck will not finish the deck.
+
+### 4.2 The "this is what we're not" slide
+
+`01-investor-deck.md` opens with a slide titled "What we are not" — *"This is **not**: a venture-scale SaaS asking for a $2M seed; an agency raising for headcount; a marketplace, a multi-tenant database, or an e-commerce platform. It **is** a productized service practice…"*
+
+The presence of this slide is itself the tell. Healthy small-business decks do not lead with *"here is what we are not."* The reader of an investor deck for a 30-client services practice was not, prior to this slide, contemplating a $2M seed venture pitch. The slide pre-empts a comparison nobody was making, which means the operator is the one making it. The operator wrote the deck imagining a venture-style reader, then added a defensive slide to ward off the reader-they-were-imagining. The honest move is to delete the slide and start with what you *are*.
+
+### 4.3 "We are not raising" while doing every other thing a raise involves
+
+The investor deck states clearly that no security is being offered. It then discusses comparable valuations (4×–10× revenue), enterprise-value bands (CAD $440k–$1.1M), TAM ($161B), risk register, and "what we are asking an investor for" (warm intros + pressure-testing + optionality on a future round). This is an investor deck. The disclaimer that it is not an investor deck is a fig leaf. If you are not raising, you do not need an investor deck. Either raise or do not. The middle ground — "we are not raising but here is the deck I would use if I were" — is performance.
+
+### 4.4 The sentence *"Naming things to refuse is itself a sold feature"*
+
+This is the operator's most rhetorically muscular move and the one most likely to backfire in front of a sophisticated buyer. The structure is:
+
+> *"Show us another retainer-services business in this price band where every refusal on the vendor's negative list maps to a regulator citation, a platform-TOS clause, an FTC rule, or an operator-economics constraint — and where the same negative list is the qualifier that produces a lower-churn, higher-NPS, more inelastic 30-client book than a standard agency's 200-client book."*
+
+It is well-written. It is also a **trap that closes on the operator**. A discerning advisor will read it and answer: *"You don't have a 30-client book. You have one client, and that client is you. The comparison clause is unfalsifiable because the antecedent doesn't exist."* The sentence asks an external party to interrogate a claim about a roster that has not been measured. The honest version has the magnitudes lower and the conditional explicit: *"If we close 30 clients, we expect lower churn and higher NPS than a 200-client agency book — here is why we believe that, here is the experiment that would falsify it."*
+
+### 4.5 The "Pitch line" tic
+
+Almost every section in the master deck ends with a slide titled *Pitch line:* followed by a single sentence in italics. Some are good. *"Your website stops decaying — and you never call a developer for a typo again."* That is a decent line. Many are not. *"For under $5k of cash and 175 hours a month at saturation, this practice produces ~$120k take-home in year 1."* That is not a pitch line. That is the punchline of a financial-projection slide reskinned as a pitch line because the deck has a pitch-line-shaped slot to fill.
+
+The tic itself is the tell. A real operator producing pitch lines is doing so under fire — on the phone, in a Zoom, scribbled on a napkin between meetings. Pitch lines that survive that pressure end up in decks because they were already battle-tested. Pitch lines authored *for* a deck, in advance of any sales conversation, are the operator role-playing the act of selling. Some will work. Most will be the kind of sentence that sounds great in a Marp slide and lands on a real prospect's ear as **content marketing**.
 
 ---

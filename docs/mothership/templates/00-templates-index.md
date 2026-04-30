@@ -40,7 +40,7 @@ The files here fill the gap between *"the site shell exists"* and *"the site rea
 | # | Vertical | Intake form | Content prompts | Status |
 |---|---|---|---|---|
 | 1 | Restaurant | `restaurant-intake-form.md` | `restaurant-prompts.md` | ✅ Full (12 prompts; 10 required + 2 bonus) |
-| 2 | Plumbing / trades | — | `plumber-prompts.md` | 🔲 Stub (headings only) |
+| 2 | Plumbing / trades | `plumber-intake-form.md` | `plumber-prompts.md` | ✅ Full (12 prompts; 10 required + 2 conditional) |
 | 3 | Real-estate (single agent) | — | `realtor-prompts.md` | 🔲 Stub (headings only) |
 | 4 | Recruitment / staffing | — | `recruiter-prompts.md` | 🔲 Stub (headings only) |
 | 5 | Law (solo practice) | — | — | ⏳ Planned |
@@ -104,4 +104,4 @@ When promoting a `🔲 Stub` to `✅ Full`:
 2. Replace each `[CONTENT PENDING]` body with a real prompt.
 3. Update the table (status column → ✅, intake form filename, prompt count).
 
-*Last updated: 2026-04-29.*
+*Last updated: 2026-04-30.*

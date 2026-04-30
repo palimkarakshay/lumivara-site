@@ -4,7 +4,12 @@
 
 > _Lane: 🛠 Pipeline — operator-only stakeholder decks; never copied to a client repo._
 >
-> **Brand domain banner.** Operator-brand domain `lumivara-forge.com` is **pending registration** (see [`docs/mothership/15-terminology-and-brand.md §5`](../mothership/15-terminology-and-brand.md)). Decks reference it as the locked operator domain; until registration completes the URL will not resolve. The interim demo URL lives under [`palimkarakshays-projects` on Vercel](https://vercel.com/palimkarakshays-projects).
+> **Brand & domain banner.** Two decisions, both dated 2026-04-30, recorded in [`docs/mothership/15c-brand-and-domain-decision.md`](../mothership/15c-brand-and-domain-decision.md):
+>
+> - **D1 (committed).** The operator umbrella domain is a **separate registered domain**, not a subdomain or path on `lumivara.ca` (which follows Client #1 at the Phase 4 spinout). The exact apex is blocked on D2.
+> - **D2 (open).** The brand `Lumivara Forge` (locked 2026-04-28 in [`15 §4`](../mothership/15-terminology-and-brand.md)) is **under reconsideration**. Operator wants a non-hyphenated, single-word slug from the [`15 §2`](../mothership/15-terminology-and-brand.md) shortlist (Cadence / Continuum / Loom / Helm · Lighthouse — both with collision caveats / Compass / Plumbline). Until D2 lands, every deck still uses `Lumivara Forge` and `lumivara-forge.com` as placeholders. A second mechanical drift sweep (mirror of PR #200) will rename across the pack once the new name is locked; nothing else in the deck pack changes.
+>
+> Pre-share check: if D2 has resolved by send time, run [`scripts/dual-lane-audit.sh`](../../scripts/dual-lane-audit.sh) before forwarding any deck to confirm the brand has been mechanically updated.
 
 Five stakeholder decks, one master deck (with a shareable companion), plus this index. Every deck cites `docs/research/03-source-bibliography.md` for its load-bearing claims and follows the verification posture set in `docs/research/00-INDEX.md`.
 
@@ -74,4 +79,4 @@ Before any deck in this folder is shared externally, walk these checks:
 
 ---
 
-*Last updated: 2026-04-30 — added `06a-master-deck-shareable.md`, the externally-presentable companion to the operator-scope master deck.*
+*Last updated: 2026-04-30 — refreshed every deck after today's pipeline-lane work landed (brand + domain ADR `15c`, extended five-leg `codex-review` fallback ladder, `llm-monitor` bot self-awareness pipeline, `record-ingest` operator recording pipeline, doc-task seeder per OWASP LLM08, plumber + recruiter vertical templates promoted Stub → Full, PIPEDA breach-notification research seed). Brand-name reconsideration (D2) is open; decks continue to use `Lumivara Forge` as a placeholder until D2 lands.*

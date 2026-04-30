@@ -1,12 +1,14 @@
-<!-- OPERATOR-ONLY. Canonical Pattern C reference. Pair with 02-architecture.md and 03-secure-architecture.md. -->
+<!-- OPERATOR-ONLY. Canonical Dual-Lane Repo reference. Pair with 02-architecture.md and 03-secure-architecture.md. -->
 
-# 02b — Pattern C Architecture (canonical, locked 2026-04-28)
+# 02b — Dual-Lane Repo Architecture (canonical, locked 2026-04-28)
 
 > **Status:** ✅ canonical. Locked by the operator on **2026-04-28** in `11 §1`.
 >
+> **Naming note (2026-04-30):** This model was previously called "Pattern C" (the third option weighed in `11 §1`). It was renamed to "Dual-Lane Repo" for clarity — the name now describes the structure (two lanes, audited boundary) instead of opaquely numbering it. Older cross-references that still say "Pattern C" mean exactly what is described here.
+>
 > **Supersedes:** every `operator/main` branch-overlay description in `02 §1/§3/§4/§6/§7`, `03 §2.1/§2.2`, `04 §1/§7`, `05 §P5.6`, `06 §3/§9`, and `09 §3`. Those docs have been rewritten to align with this one; the legacy text appears only in `11 §1` (the critique that recorded the decision) and `10 §2` (executive summary), where it is clearly marked as deprecated history.
 >
-> **Why a separate file:** Pattern C is the load-bearing architectural decision for the entire pipeline. Keeping it in one short file makes drift detectable — every other doc cross-links here for the canonical statement.
+> **Why a separate file:** the Dual-Lane Repo is the load-bearing architectural decision for the entire pipeline. Keeping it in one short file makes drift detectable — every other doc cross-links here for the canonical statement.
 
 ---
 
@@ -87,7 +89,7 @@ One GitHub App lives at the org level: `{{BRAND_SLUG}}-pipeline-bot`. Each engag
 | Pull requests | Read & write | Open `auto/*` branches; comment with execution summaries; mark ready-for-review. |
 | Contents | Read & write | Push branches; commit edits authored by the bot. |
 | Metadata | Read | Required by the API; default. |
-| Workflows | Read | Inspect site-repo workflow files (there shouldn't be any in Pattern C, but the read-only scope catches drift). |
+| Workflows | Read | Inspect site-repo workflow files (there shouldn't be any in the Dual-Lane Repo, but the read-only scope catches drift). |
 
 **Permissions (organisation-level, optional):**
 
@@ -100,7 +102,7 @@ The App's manifest, the YAML for `actions/create-github-app-token`, and the inst
 **Token lifecycle inside a workflow run:**
 
 ```yaml
-# workflows-template/triage.yml — Pattern C version
+# workflows-template/triage.yml — Dual-Lane version
 jobs:
   triage:
     runs-on: ubuntu-latest
@@ -180,7 +182,7 @@ The **auto-merge gate runs in the pipeline repo** (cron-driven, polling the site
 
 ---
 
-## 6. Trust zones — the Pattern C version
+## 6. Trust zones — the Dual-Lane Repo version
 
 Replaces the table in `02 §4`:
 
@@ -221,21 +223,21 @@ Updates `02 §7`. Every mode now has both a **site-repo** action and a **pipelin
 | `--mode handover` | Drop branch protections; remove bot collaborator (the App is the only bot, and it's not a collaborator); transfer to client. | Archive (read-only) or delete after 30-day grace; export Actions logs to operator's vault first. | Uninstall App from the site repo. |
 | `--mode archive` | Same as handover, but the client takes a tarball, not the live repo. | Same as handover. | Uninstall App. |
 | `--mode pause` | No change to branch protections; label every open issue `paused/non-payment`. | Set `vars.AUTOPILOT_DISABLED=true` on the pipeline repo; cron exits early. | Leave installed. |
-| `--mode rebuild-vanilla` | Push a fresh autopilot-free `main` (already autopilot-free in Pattern C — this becomes a no-op for the site repo). | Archive the pipeline repo. | Uninstall App. |
+| `--mode rebuild-vanilla` | Push a fresh autopilot-free `main` (already autopilot-free in the Dual-Lane Repo — this becomes a no-op for the site repo). | Archive the pipeline repo. | Uninstall App. |
 
-The rebuild-vanilla mode is now mostly trivial: in Pattern C, the site repo is *already* autopilot-free during the engagement, so there is nothing to strip.
+The rebuild-vanilla mode is now mostly trivial: in the Dual-Lane Repo, the site repo is *already* autopilot-free during the engagement, so there is nothing to strip.
 
 ---
 
-## 9. Why Pattern C wins (the one-paragraph rationale)
+## 9. Why the Dual-Lane Repo wins (the one-paragraph rationale)
 
 Three patterns were on the table in `11 §1`:
 
 - **A — flip the convention** (default branch = `operator/main`, content on `client/main`). Cron works; the workflows are still co-located with the site, so a client with Read access can see them. Marketing-grade separation, not architectural separation.
 - **B — single repo, single `main`, gated workflows.** Cron works; workflows are fully visible. The "client cannot see the autopilot" claim becomes a marketing line, not a property of the system.
-- **C — two repos.** Cron works; the workflows live in a repo the client has no Read access to. The "system = operator-licensed" contractual claim becomes architecturally enforceable.
+- **C — two repos (the Dual-Lane Repo).** Cron works; the workflows live in a repo the client has no Read access to. The "system = operator-licensed" contractual claim becomes architecturally enforceable.
 
-The operator picked C because the cost-firewall and IP-protection promises in the contract should be enforced by **permissions**, not by promises. The two-repo overhead is absorbed by `forge provision` (P5.4b); the App is a one-time install per engagement; and the cron-from-default-branch path is the boring, well-trodden GitHub Actions behaviour — no tricks, no silent breakage on the next platform change.
+The operator picked the Dual-Lane Repo because the cost-firewall and IP-protection promises in the contract should be enforced by **permissions**, not by promises. The two-repo overhead is absorbed by `forge provision` (P5.4b); the App is a one-time install per engagement; and the cron-from-default-branch path is the boring, well-trodden GitHub Actions behaviour — no tricks, no silent breakage on the next platform change.
 
 ---
 
@@ -246,6 +248,6 @@ The operator picked C because the cost-firewall and IP-protection promises in th
 - The pipeline-repo branch-protection JSON — that's `03 §2.5` (Run B).
 - The audit-trail sanitisation rules for cross-repo PR comments — that's `12 §6` and Run A's commit on `audit-trail sanitisation`.
 
-When in doubt, the canonical statement of *what* Pattern C is lives here. The *how* lives in the docs above.
+When in doubt, the canonical statement of *what* the Dual-Lane Repo is lives here. The *how* lives in the docs above.
 
 *Last updated: 2026-04-28.*

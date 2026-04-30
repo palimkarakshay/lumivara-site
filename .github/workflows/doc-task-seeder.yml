@@ -1,0 +1,154 @@
+name: Doc-task seeder
+
+# Periodically scans curated planning docs for `<!-- bot-task: ... -->`
+# markers and files trackable GitHub issues for any not already in the
+# open backlog. The seeder is the *capture* layer for doc-driven work —
+# the reactive pipeline (triage → plan → execute → review → merge)
+# does not file new issues on its own. See `docs/ops/doc-task-seeder.md`
+# for the full contract, the manifest, and the marker syntax.
+#
+# Trust tiers (defence in depth):
+#   1. Deterministic regex against a fixed manifest.
+#   2. Gemini 2.5 Pro steelman / pre-mortem.
+#   3. Codex / gpt-5.5 steelman / pre-mortem.
+#   4. Operator-attested approval gate — `seeder/approved` label +
+#      explicit `approved_source_ids:` line on the control issue.
+#
+# All four tiers fail closed. A single false / missing / abstain at
+# any tier drops the candidate. Standards: OWASP LLM Top 10 (LLM08
+# Excessive Agency) + NIST AI RMF Manage function.
+#
+# Cadence: aggressive deploy-push phase runs daily 02:00 UTC. Roll
+# back to weekly (`0 2 * * 0`) once the cost-optimisation phase opens.
+
+on:
+  schedule:
+    # Daily 02:00 UTC. Cap of 3 candidates per run + the operator-
+    # attested approval gate make flooding the inbox a non-issue, and
+    # faster doc-discovery is worth the daily Gemini/Codex
+    # verification cost during the deploy push.
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Actually file approved issues (default: dry-run only)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      max_new:
+        description: "Maximum issues to file in this run"
+        required: false
+        default: "3"
+        type: string
+      verify:
+        description: "Cross-LLM verification mode"
+        required: false
+        default: "consensus"
+        type: choice
+        options:
+          - "consensus"
+          - "gemini"
+          - "codex"
+          - "none"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: doc-task-seeder
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node (for Gemini CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Gemini CLI
+        run: npm install -g @google/gemini-cli
+
+      - name: Resolve apply mode
+        id: mode
+        run: |
+          # Cron always runs dry. Manual dispatch can opt into apply.
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.apply }}" == "true" ]]; then
+            echo "apply_flag=--apply" >> "$GITHUB_OUTPUT"
+            echo "mode=apply" >> "$GITHUB_OUTPUT"
+          else
+            echo "apply_flag=" >> "$GITHUB_OUTPUT"
+            echo "mode=dry-run" >> "$GITHUB_OUTPUT"
+          fi
+          echo "max_new=${{ github.event.inputs.max_new || '3' }}" >> "$GITHUB_OUTPUT"
+          echo "verify=${{ github.event.inputs.verify || 'consensus' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Run doc-task seeder
+        id: seed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          # Cross-LLM verifiers (OWASP LLM08 / NIST AI RMF Manage).
+          # Both keys are optional. Consensus mode fails closed if
+          # neither is present.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
+        run: |
+          set -euo pipefail
+          python3 scripts/doc-task-seeder.py \
+            ${{ steps.mode.outputs.apply_flag }} \
+            --max-new "${{ steps.mode.outputs.max_new }}" \
+            --verify "${{ steps.mode.outputs.verify }}" \
+            | tee seeder-output.txt
+          # Pull the JSON summary off the tail of the log (script
+          # prints it after the `---SUMMARY---` line).
+          awk '/^---SUMMARY---$/{p=1;next} p' seeder-output.txt > seeder-summary.json
+
+      - name: Step summary
+        if: always()
+        run: |
+          {
+            echo "## Doc-task seeder — ${{ steps.mode.outputs.mode }}"
+            echo
+            echo "- Repo: \`${{ github.repository }}\`"
+            echo "- Mode: \`${{ steps.mode.outputs.mode }}\`"
+            echo "- Cap: \`${{ steps.mode.outputs.max_new }}\`"
+            echo "- Verify: \`${{ steps.mode.outputs.verify }}\`"
+            echo
+            if [[ -s seeder-summary.json ]]; then
+              echo "### Summary JSON"
+              echo
+              echo '```json'
+              cat seeder-summary.json
+              echo '```'
+            fi
+            echo
+            echo "### Raw log"
+            echo
+            echo '```'
+            head -200 seeder-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload artefact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: doc-task-seeder-${{ github.run_id }}
+          path: |
+            seeder-output.txt
+            seeder-summary.json
+          retention-days: 14

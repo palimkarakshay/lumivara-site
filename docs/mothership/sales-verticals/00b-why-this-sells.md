@@ -64,6 +64,49 @@ The Lumivara Forge product is, structurally, the inversion of all seven simultan
 
 ---
 
-*This file is in progress; subsequent commits add the per-stakeholder lenses.*
+## 2 · Why this sells — the advisor / investor lens
 
-*Last updated: 2026-04-30 — added §1 hidden-tax map.*
+The advisor / investor critique of the negative list and the drawback pack reduces to one sentence: *"You have made it harder to sell. Why is that good?"* The answer is that the negative list is not a retreat from sales — it is the rarest of go-to-market structures, where **the disqualifier is also the close**.
+
+### 2.1 The negative list is a cash-flow-positive filter, not a scope cut
+
+A standard agency retainer carries a hidden subsidy: the licensee pays for the things the agency *cannot legally deliver* (ranking guarantees, ghost-written authority, lead-volume promises, review-gating) inside a flat monthly fee, on the working assumption that the regulator / platform / FTC won't notice. Three things compound that liability:
+
+1. **Discovery skews to the licensee.** Regulator advertising rules, platform TOS, and the *Moffatt v. Air Canada* (2024 BCCRT 149) precedent all attach the failure to the licensee, not the vendor. The vendor walks; the licensee gets cited.
+2. **Selection skews against the agency over time.** The licensees who are sophisticated enough to read the regulator notice are the ones who churn, leaving the agency with a worsening book.
+3. **Pricing skews under disclosure.** Once a prospect has heard the negative-list reasoning, every competitor's "we'll handle SEO + content + reviews" pitch reads as a liability transfer. Our flat-fee bundle, by contrast, reads as the only honest line item on the page.
+
+The investor question is not "does the negative list reduce TAM?" — it does, by design — but **"does the negative list make the closed buyers more valuable?"** It does, on three measurable axes:
+
+| Axis | Standard agency book | Lumivara Forge book under the negative list |
+|---|---|---|
+| **Churn** | Concentrated at the moment a regulator letter arrives. | Distributed and predictable; no regulator surprises. |
+| **NPS / referral intensity** | Dampened by the silent dread of "I think they cut a corner here." | Amplified by the sense that *"this vendor finally told me what was actually going on with my last vendor."* |
+| **Price elasticity** | Compresses each renewal because the buyer is shopping the bundle. | Stays inelastic because the bundle has visible, regulator-citable boundaries the prospect can't unbundle. |
+
+The negative list is the same shape of filter that, in finance, separates a wealth-management practice from a transactional broker. The transactional broker has a bigger book. The wealth-management practice keeps it.
+
+### 2.2 The drawbacks are bounded *because* the negative list is enforced
+
+Read the eight drawbacks (D1–D8 in `../../research/06-drawbacks-and-honest-risks.md`) against the negative list and they re-cluster:
+
+- **D1 — AI hallucination.** Bounded because the public site has no AI surface (negative-list §2 — no chatbot). The hallucination risk lives operator-side, behind the publish gate, never client-facing.
+- **D2 — Phone-as-CMS adoption drag.** Bounded because we don't sell a self-serve "edit your own site" SaaS (negative-list §9 — no white-label / SaaS productisation). If the licensee won't text, multi-channel ingest absorbs them; if they still won't, clean churn returns the slot.
+- **D3 — Operator burnout.** Bounded because the cap is real — and the cap is real *because* we refuse the engagements (e-commerce, EMR replacement, white-label, equity-only) that scale the operator's load past the cap.
+- **D5 — ADA legal liability.** Bounded because we run accessibility CI on every change — which we can afford to do *because* we charge for the structural work and refuse to charge for the magic-words SEO retainer that would compete for that budget.
+- **D7 — Bad client poisons the queue.** Bounded because the negative list itself is the qualifier — prospects who push back on it self-select out before a contract is signed.
+- **D8 — Competitive substitution.** Bounded because the moat is not the front-end loop (Framer / v0 may close that). The moat is *the operator's structural refusal to take on the liability transfer that funds every competitor's growth*. That refusal is durable across model generations.
+
+Every drawback the operator has named honestly is materially smaller because of a corresponding refusal on the negative list. The advisor critique that "the operator-side stack is over-engineered crap that won't sell" is correct *only if* you read the platform work in isolation from the negative list. Read together, the platform work is **the apparatus that lets a single operator hold the negative list at saturation** — and the negative list is the qualifier that turns the operator's small book into the highest-margin shape of a 30-engagement professional-services practice.
+
+### 2.3 The pitch sentence we want every advisor to interrogate
+
+> *"Show us another retainer-services business in this price band where every refusal on the vendor's negative list maps to a regulator citation, a platform-TOS clause, an FTC rule, or an operator-economics constraint — and where the same negative list is the qualifier that produces a lower-churn, higher-NPS, more inelastic book of 30 clients than a standard agency's 200-client book. We will reconsider the deck the day someone names that comparable."*
+
+If the advisor names a comparable, that is gold and we incorporate it. If the advisor cannot, the over-engineering critique resolves: the apparatus is the only known way to enforce the negative list at solo-operator scale.
+
+---
+
+*This file is in progress; subsequent commits add the client / partner / employee lenses.*
+
+*Last updated: 2026-04-30 — added §2 advisor / investor lens.*

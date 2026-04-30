@@ -1,0 +1,125 @@
+name: Backlog digest (weekly Monday brief)
+
+# Weekly Monday-morning brief for the operator. Counterpart to
+# bot-usage-monitor.yml:
+#   * bot-usage-monitor.yml = "is the bot healthy / am I hitting quota?"
+#     (provider-centric dashboard, every 30 min).
+#   * backlog-digest.yml    = "what shipped, what's stuck, what's queued?"
+#     (issue/PR-motion narrative, weekly Mon 08:00 UTC).
+#
+# Why a weekly cadence? The operator's reading device on Monday morning
+# is the Steam Deck or an Android phone — the digest needs to be a
+# scannable single-issue brief, not a fire-hose. One pinned issue,
+# rewritten in place each Monday, kept out of the triage queue via
+# `do-not-triage`.
+#
+# Why this surface fills the "Cowork-shaped hole": Claude Cowork is
+# macOS-only; this operator runs on Linux + web + Android. The
+# autonomous "Monday digest" pattern Cowork would have served is
+# instead delivered by a deterministic gh-CLI Python script + a
+# rolling pinned issue — readable from any of the operator's surfaces
+# without a desktop dependency.
+#
+# Cross-references:
+#   - scripts/backlog-digest.py          — the report generator (no LLM).
+#   - .github/workflows/bot-usage-monitor.yml — the upsert pattern this mirrors.
+#   - docs/ops/automation-map.md         — Watcher tier registry.
+#   - docs/ops/automation-future-work.md — partially addresses §3.1 narrative.
+
+on:
+  schedule:
+    # Monday 08:00 UTC = 03:00 EST / 04:00 EDT — lands in the operator's
+    # inbox before the work day starts. Well clear of Mon 12:00 UTC
+    # (`ai-smoke-test.yml`) and Mon 12:30 UTC (`forge-smoke-test.yml`).
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+    inputs:
+      lookback_days:
+        description: "Lookback window in days (default 7)"
+        required: false
+        default: "7"
+      stuck_pr_days:
+        description: "PR is 'stuck' if open longer than this (default 5)"
+        required: false
+        default: "5"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: backlog-digest-runtime
+  cancel-in-progress: true
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate digest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LOOKBACK_DAYS: ${{ inputs.lookback_days || '7' }}
+          STUCK_PR_DAYS: ${{ inputs.stuck_pr_days || '5' }}
+          REPORT_OUT: /tmp/digest.md
+        run: |
+          python3 scripts/backlog-digest.py | tee /tmp/stdout.md
+          # Mirror bot-usage-monitor: keep both files in case one write fails.
+          cp /tmp/stdout.md /tmp/digest.md
+
+      - name: Append to step summary
+        if: always()
+        run: |
+          cat /tmp/digest.md >> "$GITHUB_STEP_SUMMARY"
+
+      # Upsert a single pinned issue. Title is fixed so the same issue is
+      # found and updated each Monday; body rewrites in place. Carries
+      # `type/observability` + `do-not-triage` so the triage bot ignores
+      # it (it's a dashboard, not actionable work).
+      - name: Upsert pinned digest issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          REPO=palimkarakshay/lumivara-site
+          TITLE="Backlog digest (weekly Monday brief)"
+
+          # Ensure labels exist (no-op if already created by bot-usage-monitor).
+          gh label create "type/observability" --repo "$REPO" \
+            --color "1d76db" --description "Auto-updated dashboard issue" \
+            2>/dev/null || true
+          gh label create "do-not-triage" --repo "$REPO" \
+            --color "ededed" --description "Triage bot should ignore this issue" \
+            2>/dev/null || true
+
+          EXISTING=$(gh issue list --repo "$REPO" \
+            --state open \
+            --search "in:title \"$TITLE\"" \
+            --json number,title --limit 5 \
+            | python3 -c 'import json,sys; rows=json.load(sys.stdin); print(next((r["number"] for r in rows if r["title"]==sys.argv[1]), ""))' "$TITLE")
+
+          if [ -n "$EXISTING" ]; then
+            echo "Updating existing digest issue #$EXISTING"
+            gh issue edit "$EXISTING" --repo "$REPO" \
+              --body-file /tmp/digest.md \
+              --add-label "type/observability" \
+              --add-label "do-not-triage" || true
+          else
+            echo "Creating new digest issue"
+            gh issue create --repo "$REPO" \
+              --title "$TITLE" \
+              --body-file /tmp/digest.md \
+              --label "type/observability" \
+              --label "do-not-triage"
+          fi
+
+      - name: Upload digest artefact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backlog-digest-${{ github.run_id }}
+          path: /tmp/digest.md
+          if-no-files-found: ignore

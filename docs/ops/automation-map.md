@@ -16,7 +16,7 @@ One page that lists every workflow, its cron, its concurrency group, the scripts
 | **Execute (forge)** | Claude implements `area/forge` issues; opens PR | `forge-execute.yml` |
 | **Review** | Codex reviews every PR; classifier filters → Claude applies safe fixes; auto-merge gates on review verdict | `codex-review.yml`, `codex-pr-fix.yml`, `codex-review-recheck.yml`, `codex-review-backlog.yml`, `auto-merge.yml` |
 | **Capture** | Doc-driven backlog seeding via `<!-- bot-task -->` markers; operator-gated apply | `doc-task-seeder.yml` |
-| **Watcher** | Detect drift (Vercel ↔ main, Pattern C, bot usage) | `deploy-drift-watcher.yml`, `pattern-c-watcher.yml`, `bot-usage-monitor.yml` |
+| **Watcher** | Detect drift (Vercel ↔ main, Pattern C, bot usage) + weekly narrative brief | `deploy-drift-watcher.yml`, `pattern-c-watcher.yml`, `bot-usage-monitor.yml`, `backlog-digest.yml` |
 | **Smoke** | Weekly provider + lane health checks | `ai-smoke-test.yml`, `forge-smoke-test.yml` |
 | **Deploy / Sync** | Build the AI Ops dashboard; sync issues to Project board | `deploy-dashboard.yml`, `project-sync.yml` |
 | **Helper** | Manual operator dispatches | `setup-cli.yml`, `deep-research.yml` |
@@ -40,6 +40,7 @@ One page that lists every workflow, its cron, its concurrency group, the scripts
 | `deploy-drift-watcher.yml` | `*/30 * * * *` | `deploy-drift-watcher` | Vercel ↔ main drift. |
 | `pattern-c-watcher.yml` | `0 14 * * *` (daily 14:00 UTC) | `pattern-c-watcher` | Runs `scripts/pattern-c-audit.sh`. |
 | `bot-usage-monitor.yml` | `23,53 * * * *` | `bot-usage-monitor-runtime` | Cost telemetry. |
+| `backlog-digest.yml` | `0 8 * * 1` (Mon 08:00 UTC) | `backlog-digest-runtime` | Weekly narrative brief: shipped / stuck / queued. Upserts a single pinned issue (`type/observability` + `do-not-triage`). Counterpart to `bot-usage-monitor.yml`'s provider dashboard. |
 | `ai-smoke-test.yml` | Mon 12:00 UTC | _none_ | One-shot Monday smoke. |
 | `forge-smoke-test.yml` | Mon 12:30 UTC | _none_ | Forge-lane smoke (offset 30 min). |
 | `deploy-dashboard.yml` | push to `main` | `pages-deploy` | Builds dashboard SPA. |

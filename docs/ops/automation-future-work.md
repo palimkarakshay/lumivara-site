@@ -112,6 +112,8 @@ Already in flight. Surfaces backlog stuck in planning docs into the work queue.
 
 **Cost.** Free; one Python run/day.
 
+**Partial coverage today.** `backlog-digest.yml` (Mon 08:00 UTC) gives the operator a weekly narrative brief — what shipped, what's stuck, what's queued — readable from any device including Steam Deck/Android (the operator's actual surfaces). It does NOT replace the heartbeat watchdog: the digest *summarises* motion but cannot detect "cron silently stopped firing" the way §3.1 will.
+
 ---
 
 ### 3.2 Pipeline canary (synthetic end-to-end probe)

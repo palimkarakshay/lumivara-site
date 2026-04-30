@@ -16,6 +16,7 @@ Five workstreams the user explicitly listed as "for later." None are blockers fo
 3. **Provincial overlays:** Ontario (CASL for email), Quebec (Law 25 — *much* stricter; needs a French-language privacy page), BC (PIPA-BC).
 4. **Data retention schedule** — GitHub issues, n8n executions, Vercel logs. Default: 12 months, then archive.
 5. **Subprocessor list** — Anthropic, Google, OpenAI, Vercel, Resend, Twilio, GitHub, Railway. Publish as a `/subprocessors` page on `{{BRAND_SLUG}}.com`.
+   <!-- bot-task: title="Publish /subprocessors page listing all data-handling vendors (08-future-work §1.5)" labels="status/needs-triage,area/content,area/forge" body_anchor="#1-data-protection--privacy-legalcompliance" -->
 6. **Breach notification template** — `docs/operator/legal/INCIDENT_NOTIFY.md` — pre-drafted so panic-day doesn't compound.
 
 Trigger: before client #3.

@@ -1,0 +1,133 @@
+name: Doc-task seeder
+
+# Periodically scans curated planning docs for `<!-- bot-task: ... -->`
+# markers and files trackable GitHub issues for any not already in the
+# open backlog. The seeder is the *capture* layer for doc-driven work —
+# the reactive pipeline (triage → plan → execute → review → merge)
+# does not file new issues on its own. See `docs/ops/doc-task-seeder.md`
+# for the contract, the manifest, and the marker syntax.
+#
+# Quality-first phase posture: dry-run by default. The operator flips
+# `--apply` via `workflow_dispatch.inputs.apply=true` after validating
+# the candidate list at least once. The `MODE=llm` knob is reserved for
+# a future PR; today's implementation is fully deterministic.
+
+on:
+  schedule:
+    # Sunday 02:00 UTC. Docs change slowly; one weekly pass keeps the
+    # signal-to-noise ratio high. Cron offset chosen to avoid clashing
+    # with triage.yml (every 15 min) and the Sunday-morning operator
+    # review window in PT.
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Actually file issues (default: dry-run only)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      max_new:
+        description: "Maximum issues to file in this run"
+        required: false
+        default: "3"
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: doc-task-seeder
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Resolve apply mode
+        id: mode
+        run: |
+          # Cron always runs dry. Manual dispatch can opt into apply.
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.apply }}" == "true" ]]; then
+            echo "apply=--apply" >> "$GITHUB_OUTPUT"
+            echo "mode=apply" >> "$GITHUB_OUTPUT"
+          else
+            echo "apply=" >> "$GITHUB_OUTPUT"
+            echo "mode=dry-run" >> "$GITHUB_OUTPUT"
+          fi
+          echo "max_new=${{ github.event.inputs.max_new || '3' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node (for Gemini CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Gemini CLI
+        run: npm install -g @google/gemini-cli
+
+      - name: Run doc-task seeder
+        id: seed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          # Cross-LLM verification (OWASP LLM08 / NIST AI RMF Manage):
+          # both keys are optional. The seeder fails closed — if neither
+          # is present, the consensus mode drops every candidate.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
+        run: |
+          set -euo pipefail
+          python3 scripts/doc-task-seeder.py \
+            ${{ steps.mode.outputs.apply }} \
+            --max-new "${{ steps.mode.outputs.max_new }}" \
+            --verify consensus \
+            | tee seeder-output.txt
+          # Pull the JSON summary off the tail of the log for the step
+          # summary; the script prints it after a `---SUMMARY---` line.
+          awk '/^---SUMMARY---$/{p=1;next} p' seeder-output.txt > seeder-summary.json
+
+      - name: Step summary
+        if: always()
+        run: |
+          {
+            echo "## Doc-task seeder — ${{ steps.mode.outputs.mode }}"
+            echo
+            echo "- Repo: \`${{ github.repository }}\`"
+            echo "- Mode: \`${{ steps.mode.outputs.mode }}\`"
+            echo "- Cap: \`${{ steps.mode.outputs.max_new }}\`"
+            echo
+            if [[ -s seeder-summary.json ]]; then
+              echo "### Summary JSON"
+              echo
+              echo '```json'
+              cat seeder-summary.json
+              echo '```'
+            fi
+            echo
+            echo "### Raw log"
+            echo
+            echo '```'
+            head -200 seeder-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload artefact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: doc-task-seeder-${{ github.run_id }}
+          path: |
+            seeder-output.txt
+            seeder-summary.json
+          retention-days: 14

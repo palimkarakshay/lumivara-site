@@ -20,6 +20,13 @@ export function HomeHero() {
       />
       <div className="mx-auto w-full max-w-[1280px]">
         <div className="max-w-[880px]">
+          <Link
+            href={hero.forgeBadge.href}
+            aria-label={hero.forgeBadge.ariaLabel}
+            className="mb-6 inline-flex min-h-[44px] items-center rounded-full border border-border-subtle bg-canvas-elevated px-3 text-label text-ink-soft transition-colors hover:border-accent hover:text-ink sm:mb-5 sm:min-h-0 sm:px-2.5 sm:py-1"
+          >
+            {hero.forgeBadge.label}
+          </Link>
           <NumberedSection number="—" label={hero.monoLabel} />
           <h1 className="text-display-xl text-ink mt-6 mb-8">
             {hero.headline}

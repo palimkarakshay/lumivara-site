@@ -29,11 +29,11 @@ diffs it against this snapshot.
 - **Source of policies** (branch protection, Actions permissions,
   webhook posture): the canonical statement is in
   `docs/mothership/03-secure-architecture.md` and
-  `docs/mothership/pattern-c-enforcement-checklist.md`. This file is the
+  `docs/mothership/dual-lane-enforcement-checklist.md`. This file is the
   enumerated, auditable form of those policies for the *current
   single-tenant* repo `palimkarakshay/lumivara-site`.
-- **Per-client overrides**: once Pattern C
-  (`docs/mothership/02b-pattern-c-architecture.md`) spinouts begin, each
+- **Per-client overrides**: once Dual-Lane Repo
+  (`docs/mothership/02b-dual-lane-architecture.md`) spinouts begin, each
   client repo gets its own baseline at
   `docs/clients/<slug>/platform-baseline.md` (mothership-only, never
   mirrored). This file documents the current single-tenant repo only.
@@ -54,7 +54,7 @@ Cross-reference: [`variable-registry.md §1`](variable-registry.md#1-github-acti
 
 | Name | Owner | Rotation | Notes |
 |---|---|---|---|
-| `CLAUDE_CODE_OAUTH_TOKEN` | operator | When `claude setup-token` is re-run; no expiry | Only repo-scoped secret today; migrates to org-scope post-Pattern C. |
+| `CLAUDE_CODE_OAUTH_TOKEN` | operator | When `claude setup-token` is re-run; no expiry | Only repo-scoped secret today; migrates to org-scope post-Dual-Lane Repo. |
 | `GEMINI_API_KEY` | operator | 12 months | Deep-research + triage fallback. |
 | `OPENAI_API_KEY` | operator | 6 months | Codex review primary. |
 | `OPENAI_API_KEY_BACKUP` | operator | 6 months (offset 3 months from primary) | Codex review fallback. |
@@ -94,7 +94,7 @@ Cross-reference: [`variable-registry.md §2`](variable-registry.md#2-github-acti
 
 ### §1.4 Branch protection — `main`
 
-Cross-reference: `pattern-c-enforcement-checklist.md` C-MUST-4 and
+Cross-reference: `dual-lane-enforcement-checklist.md` C-MUST-4 and
 `docs/mothership/03-secure-architecture.md §2.2`.
 
 | Setting | Expected | Verify |
@@ -106,7 +106,7 @@ Cross-reference: `pattern-c-enforcement-checklist.md` C-MUST-4 and
 | Allow deletions | false | `… --jq '.allow_deletions.enabled'` |
 | Enforce admins | false (operator break-glass) | `… --jq '.enforce_admins.enabled'` |
 
-> Pattern C also calls for branch protection on `operator/main` once the
+> Dual-Lane Repo also calls for branch protection on `operator/main` once the
 > two-branch overlay is live. This single-tenant repo has no
 > `operator/main` yet — the rule is captured here as a **future** row
 > for when the spinout (issue #141) lands; the audit runbook §2 already

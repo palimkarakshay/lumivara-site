@@ -1,4 +1,4 @@
-<!-- OPERATOR-ONLY. One-shot migration. Pre-flight gates: pattern-c-enforcement-checklist.md §4. -->
+<!-- OPERATOR-ONLY. One-shot migration. Pre-flight gates: dual-lane-enforcement-checklist.md §4. -->
 
 # Spinout runbook — Lumivara People Advisory → Client #1 repo
 
@@ -14,7 +14,7 @@
 - `docs/mothership/03-secure-architecture.md §1, §2, §3` — the four "never" rules, branch protection, `.claudeignore`, secret topology.
 - `docs/mothership/05-mothership-repo-buildout-plan.md §P5.5, §P5.6, §P5.8` — sketch this distils into a runbook.
 - `docs/mothership/07-client-handover-pack.md §A` — Lumivara People Advisory dummy intake (the source of `intake.md`).
-- [`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md) — the gate this runbook is bound to (§4 pre-flight, §5 post-migration).
+- [`docs/mothership/dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md) — the gate this runbook is bound to (§4 pre-flight, §5 post-migration).
 - [`_artifact-allow-deny.md`](_artifact-allow-deny.md) — embedded as the source of Tables A, B, C in §3 below.
 
 ---
@@ -27,9 +27,9 @@ Confirm every row before touching anything. **Do not proceed if any row is unche
 |---|---|---|---|
 | 0.1 | Mothership repo `palimkarakshay/{{BRAND_SLUG}}-mothership` exists and has run through `05-mothership-repo-buildout-plan.md §P5.1–P5.4` (operator-side docs migrated, workflow templates lifted, dashboard migrated, provisioning CLI bootstrapped at least to `forge --help`). | `05 §P5.1–P5.4` | ☐ |
 | 0.2 | The variable registry doc `docs/ops/variable-registry.md` exists in the mothership and lists the `Owner = client` rows for §4 below. | Issue #142 | ☐ |
-| 0.3 | The Pattern C enforcement checklist `docs/mothership/pattern-c-enforcement-checklist.md` exists and the §4 pre-migration gate has been walked, with each row of that gate ticked or N/A. | #140 / Pattern C §4 | ☐ |
+| 0.3 | The Dual-Lane Repo enforcement checklist `docs/mothership/dual-lane-enforcement-checklist.md` exists and the §4 pre-migration gate has been walked, with each row of that gate ticked or N/A. | #140 / Dual-Lane Repo §4 | ☐ |
 | 0.4 | The CLI subcommand `forge provision` (P5.4b–d) is available, **or** the operator commits to narrating the equivalent steps manually (see §3, §4 below). The runbook supports both paths. | `05 §P5.4` | ☐ |
-| 0.5 | The bot account `{{BRAND_SLUG}}-bot` exists, has org membership in `palimkarakshay`, and has a working SSH key registered. | `09-github-account-topology.md` / Pattern C §3 C-MUST-NOT-6 | ☐ |
+| 0.5 | The bot account `{{BRAND_SLUG}}-bot` exists, has org membership in `palimkarakshay`, and has a working SSH key registered. | `09-github-account-topology.md` / Dual-Lane Repo §3 C-MUST-NOT-6 | ☐ |
 | 0.6 | The operator's vault holds: a fresh `N8N_HMAC_SECRET` for this client, a Twilio inbound-number SID/auth-token pair scoped to the per-client number, and the Vercel personal access token. | `03-secure-architecture.md §3` | ☐ |
 | 0.7 | The intake YAML for *Lumivara People Advisory* is captured at `docs/clients/lumivara-people-advisory/intake.md` (mothership repo) using §A of `07-client-handover-pack.md` as the template, with at least `client_slug`, `client_legal_name`, `domain`, `tier`, `client_primary_email`, `twilio_inbound_number`, `cal_link`, and the `notes` block filled. | `07 §A` | ☐ |
 | 0.8 | The brand pick from `01-business-plan.md §1` is locked. `{{BRAND}}` and `{{BRAND_SLUG}}` are substituted globally before this runbook is rendered. (Provisional today: `Lumivara Forge` / `lumivara-forge`.) | `01 §1` | ☐ |
@@ -93,7 +93,7 @@ npx ajv validate -s schema/cadence.schema.json -d docs/clients/lumivara-people-a
 ```bash
 gh repo create palimkarakshay/lumivara-people-advisory-site \
   --private \
-  --description "Lumivara People Advisory — marketing site (Pattern C client repo)."
+  --description "Lumivara People Advisory — marketing site (Dual-Lane Repo client repo)."
 ```
 
 Then:
@@ -288,13 +288,13 @@ End-to-end smoke. Maps to `05 §P5.8`'s checklist.
    Confirm: a new issue lands in `palimkarakshay/lumivara-people-advisory-site` within 30 s.
 2. **Bad HMAC.** Same payload, different signature. Confirm n8n returns 401 and no issue is created.
 3. **Triage cron pickup.** Wait up to 30 min (or fire `triage.yml` manually from the new repo's `operator/main`). Confirm the issue gets `status/planned`, a priority, a complexity, a model label, and a triage rationale comment.
-4. **Pattern C verifications.** Walk every C-MUST and C-MUST-NOT row of [`pattern-c-enforcement-checklist.md §5`](../mothership/pattern-c-enforcement-checklist.md). Each row's *Pass?* box must tick. The checklist is the canonical post-migration audit; this runbook does not duplicate the verify lines.
+4. **Dual-Lane Repo verifications.** Walk every C-MUST and C-MUST-NOT row of [`dual-lane-enforcement-checklist.md §5`](../mothership/dual-lane-enforcement-checklist.md). Each row's *Pass?* box must tick. The checklist is the canonical post-migration audit; this runbook does not duplicate the verify lines.
 
 **Dry-run check.** Steps 1–2 are themselves a dry-run; the test issues created can be closed immediately and the `engagement-log.md` notes the smoke timestamps.
 
 **Rollback.** Disable the per-client webhook URL in Twilio; revert the production-domain pointer (still pointing at the old Vercel project per §4 step 2).
 
-**Acceptance.** Steps 1–3 each pass; `pattern-c-enforcement-checklist.md §5` has every row ticked or marked N/A with a one-line rationale logged in `docs/operator/INCIDENT_LOG.md` (mothership) under `Pattern C audit YYYY-QN`.
+**Acceptance.** Steps 1–3 each pass; `dual-lane-enforcement-checklist.md §5` has every row ticked or marked N/A with a one-line rationale logged in `docs/operator/INCIDENT_LOG.md` (mothership) under `Dual-Lane Repo audit YYYY-QN`.
 
 ---
 
@@ -371,15 +371,15 @@ git -C /path/to/lumivara-people-advisory-site grep -niE 'forge|mothership|operat
 
 Must return zero matches. (Exception: a single `Forged by Lumivara` footer credit is *required* on Tier 0/1/2 sites per `07 §8` and is mandatory for this Tier 2 engagement; the substituted footer renders as "Forged by Lumivara — Sites built for advisors who lead with clarity." in `src/components/Footer.tsx` and is the only allowed match. Because the verb "Forged" contains the case-insensitive token `forge`, narrow the post-spinout grep above to `mothership|operator-only` and exempt the footer line — or run with `-w` to require whole-word matches on `forge`.)
 
-### A3 — Pattern C checks all pass
+### A3 — Dual-Lane Repo checks all pass
 
-Every MUST and MUST-NOT row in [`pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md) is verified per §5 of that file. Per `pattern-c-enforcement-checklist.md §5`'s instructions:
+Every MUST and MUST-NOT row in [`dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md) is verified per §5 of that file. Per `dual-lane-enforcement-checklist.md §5`'s instructions:
 
 - Walk every row in §5's table, run its verify command, tick the *Pass?* box.
-- Cross-tick `pattern-c-enforcement-checklist.md §4` rows that became visible only after the spinout (e.g. row 11 — bot account is now writing to `main`).
-- The PR template's `Pattern C: verified` checkbox (issue #140) is checked for every spinout-related PR.
+- Cross-tick `dual-lane-enforcement-checklist.md §4` rows that became visible only after the spinout (e.g. row 11 — bot account is now writing to `main`).
+- The PR template's `Dual-Lane Repo: verified` checkbox (issue #140) is checked for every spinout-related PR.
 - The `needs-vercel-mirror` label is removed from this issue (#141) only after the operator confirms no Vercel-side changes were needed (this runbook is doc-only, so it never set the label in the first place — but downstream PRs that *do* configure the per-client Vercel project must follow the mirror protocol from `AGENTS.md`).
-- Log the audit timestamp in `docs/operator/INCIDENT_LOG.md` under `Pattern C audit YYYY-QN — Lumivara People Advisory spinout`.
+- Log the audit timestamp in `docs/operator/INCIDENT_LOG.md` under `Dual-Lane Repo audit YYYY-QN — Lumivara People Advisory spinout`.
 
 ### Additional acceptance — the runbook's own ground truth
 
@@ -404,7 +404,7 @@ The acceptance commands above are *executable greps*, not opinions.
 ## See also
 
 - [`_artifact-allow-deny.md`](_artifact-allow-deny.md) — Tables A, B, C embedded in §3.
-- [`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md) — pre-migration gate (§4) and post-migration verifications (§5).
+- [`docs/mothership/dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md) — pre-migration gate (§4) and post-migration verifications (§5).
 - [`docs/mothership/05-mothership-repo-buildout-plan.md §P5.5–P5.6, §P5.8`](../mothership/05-mothership-repo-buildout-plan.md) — the sketch this runbook distils.
 - [`docs/mothership/07-client-handover-pack.md`](../mothership/07-client-handover-pack.md) — pre-handover gate cites this runbook (§ A — Lumivara People Advisory).
 - [`docs/N8N_SETUP.md`](../N8N_SETUP.md) — n8n on Railway, used by §5.

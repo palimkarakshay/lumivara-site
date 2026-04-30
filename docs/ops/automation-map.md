@@ -16,7 +16,7 @@ One page that lists every workflow, its cron, its concurrency group, the scripts
 | **Execute (forge)** | Claude implements `area/forge` issues; opens PR | `forge-execute.yml` |
 | **Review** | Codex reviews every PR; classifier filters → Claude applies safe fixes; auto-merge gates on review verdict | `codex-review.yml`, `codex-pr-fix.yml`, `codex-review-recheck.yml`, `codex-review-backlog.yml`, `auto-merge.yml` |
 | **Capture** | Doc-driven backlog seeding via `<!-- bot-task -->` markers; operator-gated apply | `doc-task-seeder.yml` |
-| **Watcher** | Detect drift (Vercel ↔ main, Pattern C, bot usage) + rolling narrative brief + planless-item backstop | `deploy-drift-watcher.yml`, `pattern-c-watcher.yml`, `bot-usage-monitor.yml`, `backlog-digest.yml`, `backlog-harvest.yml` |
+| **Watcher** | Detect drift (Vercel ↔ main, Dual-Lane Repo, bot usage) + rolling narrative brief + planless-item backstop | `deploy-drift-watcher.yml`, `dual-lane-watcher.yml`, `bot-usage-monitor.yml`, `backlog-digest.yml`, `backlog-harvest.yml` |
 | **Smoke** | Weekly provider + lane health checks | `ai-smoke-test.yml`, `forge-smoke-test.yml` |
 | **Deploy / Sync** | Build the AI Ops dashboard; sync issues to Project board | `deploy-dashboard.yml`, `project-sync.yml` |
 | **Helper** | Manual operator dispatches | `setup-cli.yml`, `deep-research.yml` |
@@ -39,7 +39,7 @@ One page that lists every workflow, its cron, its concurrency group, the scripts
 | `auto-merge.yml` | on PR | `auto-merge-${pr.number}` (per-PR) | Merges when review is clean. |
 | `doc-task-seeder.yml` | `0 2 * * *` (daily 02:00 UTC) | `doc-task-seeder` | Dry-run; `--apply` gated by operator label + source_id allow-list. |
 | `deploy-drift-watcher.yml` | `*/15 * * * *` | `deploy-drift-watcher` | Vercel ↔ main drift. Bumped from `*/30` per `automation-future-work.md §2.5`. |
-| `pattern-c-watcher.yml` | `0 2,14 * * *` (twice daily) | `pattern-c-watcher` | Runs `scripts/pattern-c-audit.sh`. Bumped from daily per `automation-future-work.md §2.4`. |
+| `dual-lane-watcher.yml` | `0 2,14 * * *` (twice daily) | `dual-lane-watcher` | Runs `scripts/dual-lane-audit.sh`. Bumped from daily per `automation-future-work.md §2.4`. |
 | `bot-usage-monitor.yml` | `23,53 * * * *` | `bot-usage-monitor-runtime` | Cost telemetry. |
 | `backlog-digest.yml` | `37 */2 * * *` (every 2h, offset :37) | `backlog-digest-runtime` | Rolling narrative brief: shipped / stuck / queued. Upserts a single pinned issue (`type/observability` + `do-not-triage`); body rewrite, no notifications. Counterpart to `bot-usage-monitor.yml`'s provider dashboard. Aggressive cadence per `automation-future-work.md §2` (24/7 utilisation). |
 | `backlog-harvest.yml` | `0 3 * * *` (daily 03:00 UTC) | `backlog-harvest-runtime` | Backstop for `plan-issues.yml`: harvests open `auto-routine` + `status/planned` items lacking `plan/detailed` (and >24h old) and dispatches the planner for up to 5 of them. Per `automation-future-work.md §2.6`. |

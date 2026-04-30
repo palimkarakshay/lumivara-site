@@ -1,6 +1,6 @@
 # Best Practices ⚪
 
-> **Lane:** ⚪ Both — except where stamped 🛠. See [[_partials/lane-key]] for the badge legend. These conventions apply on the platform repo *and* on every per-client `<client-slug>-site` and `<client-slug>-pipeline` repo (per [Pattern C](../mothership/02b-pattern-c-architecture.md)) unless a section is explicitly stamped operator-only.
+> **Lane:** ⚪ Both — except where stamped 🛠. See [[_partials/lane-key]] for the badge legend. These conventions apply on the platform repo *and* on every per-client `<client-slug>-site` and `<client-slug>-pipeline` repo (per [Dual-Lane Repo](../mothership/02b-dual-lane-architecture.md)) unless a section is explicitly stamped operator-only.
 
 ## Code quality
 
@@ -88,7 +88,7 @@ Typography: `text-display-xl` through `text-caption`, plus `text-label` for mono
 <!-- do-not-copy:v1 -->
 > **🛠 Do not copy to client repos.** This section describes operator-side machinery that
 > lives in the platform repo or in a per-client pipeline repo (`<brand-slug>/<client-slug>-pipeline`).
-> Under [Pattern C (locked 2026-04-28)](../mothership/02b-pattern-c-architecture.md), a client cloning
+> Under [Dual-Lane Repo (locked 2026-04-28)](../mothership/02b-dual-lane-architecture.md), a client cloning
 > their `<client-slug>-site` repo cannot reach the pipeline repo at all. If you are the operator
 > scaffolding a new client repo, **omit this section from the per-client wiki**.
 
@@ -101,4 +101,4 @@ These require human review and must not be changed by the bot or by contributors
 5. `src/app/api/contact/*`
 6. Deleting existing pages or components
 
-> **On a client `<slug>-site` repo, items 1 and 4 are not present** (they live in the matched `<slug>-pipeline` repo, which the client has no Read access to); items 2, 3, 5, 6 still apply. The lane split is enforced by the Pattern C two-repo trust model — see [`docs/mothership/02b-pattern-c-architecture.md`](../mothership/02b-pattern-c-architecture.md) and the MUST / MUST-NOT rows in [`pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md).
+> **On a client `<slug>-site` repo, items 1 and 4 are not present** (they live in the matched `<slug>-pipeline` repo, which the client has no Read access to); items 2, 3, 5, 6 still apply. The lane split is enforced by the Dual-Lane two-repo trust model (Dual-Lane Repo) — see [`docs/mothership/02b-dual-lane-architecture.md`](../mothership/02b-dual-lane-architecture.md) and the MUST / MUST-NOT rows in [`dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md).

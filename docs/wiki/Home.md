@@ -2,7 +2,7 @@
 
 > _Lane: ⚪ Both — this wiki home page is the dual-lane front door. Per-page badges (🛠 / 🌐 / ⚪) are defined in [[_partials/lane-key]]._
 
-This wiki documents the two co-housed entities of the [Pattern C two-repo trust model](../mothership/02b-pattern-c-architecture.md) until the P5.6 spinout splits them into their final repos:
+This wiki documents the two co-housed entities of the [Dual-Lane two-repo trust model (Dual-Lane Repo)](../mothership/02b-dual-lane-architecture.md) until the P5.6 spinout splits them into their final repos:
 
 - **🛠 Pipeline lane (Lumivara Forge operator framework)** — the autopilot (triage → plan → execute → review → auto-merge), n8n workflows, multi-AI router, dashboard SPA, engagement playbooks, runbooks. Lives in `palimkarakshay/lumivara-site` until P5.6, then in `palimkarakshay/lumivara-forge-pipeline` (operator-private, never shared with the client).
 - **🌐 Site lane (Client #1: Lumivara People Advisory marketing site)** — the clean Next.js site the client owns: copy, MDX articles, design tokens, the contact-form trust boundary, the `/admin` portal client surface. Lives in `palimkarakshay/lumivara-site` until P5.6, then in `palimkarakshay/lumivara-people-advisory-site` (transferred to the client at handover).
@@ -30,14 +30,14 @@ Read [[_partials/lane-key]] first.
 | Topic | Page | Notes |
 |---|---|---|
 | Backlog & bot pipeline | [[Bot-Workflow]] | Triage / execute / review loop; `auto/issue-*` branches; session-budget charter. |
-| Pipeline-side security | [[Security]] §A | Org secrets, GitHub App identity, n8n HMAC, dashboard URL secrecy, Pattern C zone isolation. |
+| Pipeline-side security | [[Security]] §A | Org secrets, GitHub App identity, n8n HMAC, dashboard URL secrecy, Dual-Lane Repo zone isolation. |
 | Operator-only setup | [[Development-Setup]] §🛠 | Claude OAuth, n8n local, dashboard build, per-engagement runbook. |
 | Mothership pack (master index) | [`docs/mothership/00-INDEX.md`](../mothership/00-INDEX.md) | Source of truth — operator-only. |
 | Per-engagement playbook | [`docs/mothership/06-operator-rebuild-prompt-v3.md`](../mothership/06-operator-rebuild-prompt-v3.md) | Per-client spin-up. |
 | Tier-based AI cadence | [`docs/mothership/04-tier-based-agent-cadence.md`](../mothership/04-tier-based-agent-cadence.md) | Per-tier model + cron rubric. |
-| Pattern C canonical | [`docs/mothership/02b-pattern-c-architecture.md`](../mothership/02b-pattern-c-architecture.md) | The locked architecture (2026-04-28). |
-| Pattern C enforcement | [`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md) | MUST / MUST-NOT rows for every spinout. |
-| Spinout manifest | [`/.pattern-c.yml`](../../.pattern-c.yml) | Machine-readable lane-per-path manifest; the spinout reads this. |
+| Dual-Lane Repo canonical | [`docs/mothership/02b-dual-lane-architecture.md`](../mothership/02b-dual-lane-architecture.md) | The locked architecture (2026-04-28). |
+| Dual-Lane Repo enforcement | [`docs/mothership/dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md) | MUST / MUST-NOT rows for every spinout. |
+| Spinout manifest | [`/.dual-lane.yml`](../../.dual-lane.yml) | Machine-readable lane-per-path manifest; the spinout reads this. |
 | Spinout dry-run | [`scripts/forge-spinout-dry-run.sh`](../../scripts/forge-spinout-dry-run.sh) | Validates the manifest covers every tracked file. |
 | Operator daily playbook | [`docs/ops/operator-playbook.md`](../ops/operator-playbook.md) | Front-door doc — open every working session. |
 
@@ -54,7 +54,7 @@ Read [[_partials/lane-key]] first.
 
 | Topic | Page | Notes |
 |---|---|---|
-| Lane key (badge definitions) | [[_partials/lane-key]] | Defines 🛠 / 🌐 / ⚪. Pattern C-aligned 2026-04-29. |
+| Lane key (badge definitions) | [[_partials/lane-key]] | Defines 🛠 / 🌐 / ⚪. Dual-Lane Repo-aligned 2026-04-29. |
 | Do-not-copy callout | [[_partials/do-not-copy]] | Reusable "🛠 do not copy this to a client repo" snippet. |
 
 ---
@@ -63,12 +63,12 @@ Read [[_partials/lane-key]] first.
 
 > 🛠 **Operator-only.** A client never runs this; it is the operator's per-engagement spin-up. The Client #1 spinout is the worked example for every later engagement.
 
-1. Open the spinout runbook at [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md). It is the canonical, copy-pasteable procedure (phased §0–§9, with allow/deny tables in [`docs/migrations/_artifact-allow-deny.md`](../migrations/_artifact-allow-deny.md)). It cites [`docs/mothership/pattern-c-enforcement-checklist.md §4/§5`](../mothership/pattern-c-enforcement-checklist.md) as gate and acceptance set.
-2. Run [`scripts/forge-spinout-dry-run.sh`](../../scripts/forge-spinout-dry-run.sh) on the source repo — it reads `/.pattern-c.yml` and prints the per-lane file plan. Validation gate: zero uncovered files.
+1. Open the spinout runbook at [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md). It is the canonical, copy-pasteable procedure (phased §0–§9, with allow/deny tables in [`docs/migrations/_artifact-allow-deny.md`](../migrations/_artifact-allow-deny.md)). It cites [`docs/mothership/dual-lane-enforcement-checklist.md §4/§5`](../mothership/dual-lane-enforcement-checklist.md) as gate and acceptance set.
+2. Run [`scripts/forge-spinout-dry-run.sh`](../../scripts/forge-spinout-dry-run.sh) on the source repo — it reads `/.dual-lane.yml` and prints the per-lane file plan. Validation gate: zero uncovered files.
 3. Confirm the brand lock (Lumivara Forge per [`docs/mothership/15 §4`](../mothership/15-terminology-and-brand.md)) and substitute `{{BRAND}}` / `{{BRAND_SLUG}}` globally before generating the two new repos.
 4. Use [`docs/mothership/06-operator-rebuild-prompt-v3.md`](../mothership/06-operator-rebuild-prompt-v3.md) as the engagement playbook — that doc owns the bootstrap order, the n8n wiring, and the handover gates.
 5. After the new site repo's `main` builds clean on Vercel, copy only the 🌐 and ⚪ pages from this wiki into the per-client wiki. The 🛠 pages stay in the operator-private pipeline repo by **permission**, not branch-listing politeness.
-6. Confirm the new pipeline repo's `main` carries the workflow files (the cron fires from there per [`docs/mothership/02b §4`](../mothership/02b-pattern-c-architecture.md)) and the GitHub App is installed on the site repo only.
+6. Confirm the new pipeline repo's `main` carries the workflow files (the cron fires from there per [`docs/mothership/02b §4`](../mothership/02b-dual-lane-architecture.md)) and the GitHub App is installed on the site repo only.
 7. Hand over the per-client `docs/client/` pack rendered from [`docs/mothership/07-client-handover-pack.md`](../mothership/07-client-handover-pack.md).
 
 ---
@@ -84,7 +84,7 @@ Read [[_partials/lane-key]] first.
 | **Operator:** | Akshay Palimkar (`@palimkarakshay`) — designs the Pipeline; reviews + merges PRs via GitHub Mobile. |
 | **Client #1:** | Lumivara People Advisory — Beas Banerjee's HR & people-strategy consulting practice in Toronto. |
 | **Pipeline repo (post-spinout):** | `palimkarakshay/lumivara-forge-pipeline` (operator-private). |
-| **Pattern C reference:** | [`docs/mothership/02b-pattern-c-architecture.md`](../mothership/02b-pattern-c-architecture.md) (canonical, two-repo trust model, locked 2026-04-28). |
-| **Spinout manifest:** | [`/.pattern-c.yml`](../../.pattern-c.yml) — single source of truth for lane-per-path. |
+| **Dual-Lane Repo reference:** | [`docs/mothership/02b-dual-lane-architecture.md`](../mothership/02b-dual-lane-architecture.md) (canonical, two-repo trust model, locked 2026-04-28). |
+| **Spinout manifest:** | [`/.dual-lane.yml`](../../.dual-lane.yml) — single source of truth for lane-per-path. |
 | **Cross-link:** | [`docs/00-INDEX.md`](../00-INDEX.md) — repo-wide doc lane map. |
 | **First-client spinout:** | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) — one-shot runbook for Client #1. |

@@ -4,7 +4,7 @@
 
 This folder holds **one-shot migration runbooks** — single, copy-pasteable documents the operator runs end-to-end to move the practice (or a given client engagement) from one architectural state to another. Each runbook is phased, has explicit dry-run / rollback procedures per phase, and ends with executable acceptance criteria. Runbooks are *not* code; they are operator-facing prose with embedded shell, `gh`, and `vercel` commands.
 
-> **Pattern C surface:** every runbook in this folder cites [`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md) as its pre-migration gate (§4 of the checklist) and post-migration acceptance set (§5). A runbook that does not cite both sections is incomplete.
+> **Dual-Lane Repo surface:** every runbook in this folder cites [`docs/mothership/dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md) as its pre-migration gate (§4 of the checklist) and post-migration acceptance set (§5). A runbook that does not cite both sections is incomplete.
 
 ## What goes here vs. elsewhere
 
@@ -34,11 +34,11 @@ When adding a new migration runbook:
 1. **Phased**: number phases `§0` (pre-flight) → `§1`…`§N` → `§<N+1>` rollback → `§<N+2>` acceptance.
 2. **Per phase**: every phase ends with three subsections — *Dry-run check*, *Rollback*, *Acceptance*. Acceptance is a `grep`, `gh api`, `curl`, or `vercel` command, never a sentiment.
 3. **Embed, do not duplicate**: Tables A/B/C live in `_artifact-allow-deny.md`. Embed by reference (link) and add only client-specific deltas inline.
-4. **Cross-link Pattern C**: `§0` cites `pattern-c-enforcement-checklist.md §4`; the final acceptance section cites §5.
+4. **Cross-link Dual-Lane Repo**: `§0` cites `dual-lane-enforcement-checklist.md §4`; the final acceptance section cites §5.
 5. **Scope hard-exclusions** of the executor (`AGENTS.md` + `scripts/execute-prompt.md` step 4): no edits to `.github/workflows/*`, `scripts/`, `.env*`, `package.json`, `src/app/api/contact/*`, and no deletions of existing pages or components. The runbook narrates these as **operator-manual** steps where they apply.
 
 ## Audience
 
-Operator only. The runbooks reference operator-side tooling (`forge` CLI, n8n, Twilio) and operator-internal vault paths. Nothing in this folder is ever copied to a client repo's `main` — see `pattern-c-enforcement-checklist.md §3` C-MUST-NOT-2.
+Operator only. The runbooks reference operator-side tooling (`forge` CLI, n8n, Twilio) and operator-internal vault paths. Nothing in this folder is ever copied to a client repo's `main` — see `dual-lane-enforcement-checklist.md §3` C-MUST-NOT-2.
 
 *Last updated: 2026-04-28.*

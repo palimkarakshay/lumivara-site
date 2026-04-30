@@ -82,8 +82,8 @@ The operator pays Max 20x regardless of usage; the goal is to keep the bots prod
 ### 2.3 Doc-task seeder daily (in flight on PR #226)
 Already in flight. Surfaces backlog stuck in planning docs into the work queue.
 
-### 2.4 Bump `pattern-c-watcher.yml` to twice-daily ✓ shipped
-**Why now.** Catches Pattern C drift twice as fast for the deploy push.
+### 2.4 Bump `dual-lane-watcher.yml` to twice-daily ✓ shipped
+**Why now.** Catches Dual-Lane Repo drift twice as fast for the deploy push.
 
 **Shipped.** `0 14 * * *` → `0 2,14 * * *`. Drift now surfaces within 12h instead of 24h.
 

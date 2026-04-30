@@ -24,7 +24,7 @@ Response SLA: acknowledgement within 48 h, status update within 7 days.
 > <!-- do-not-copy:v1 -->
 > **🛠 Do not copy to client repos.** This section describes operator-side machinery that
 > lives in the mothership repo or in a per-client pipeline repo (`<brand-slug>/<client-slug>-pipeline`).
-> Under [Pattern C (locked 2026-04-28)](../mothership/02b-pattern-c-architecture.md), a client cloning
+> Under [Dual-Lane Repo (locked 2026-04-28)](../mothership/02b-dual-lane-architecture.md), a client cloning
 > their `<client-slug>-site` repo cannot reach the pipeline repo at all — the client is not added
 > as a collaborator on it. If you are the operator scaffolding a new client repo, **omit this
 > section from the per-client wiki**.
@@ -47,7 +47,7 @@ Quarterly (and on every secret rotation, branch-protection change, or new client
 
 ### Vendor identity (GitHub App, replaces VENDOR_GITHUB_PAT)
 
-Pattern C identifies the autopilot through a **GitHub App** (`{{BRAND_SLUG}}-pipeline-bot`) installed at the org level, with one installation per engagement on the matched site repo. Workflows mint a short-lived (≤1 h TTL) installation token per run; nothing long-lived is stored. The legacy `VENDOR_GITHUB_PAT` is retired (see [`docs/mothership/02b-pattern-c-architecture.md §3`](../mothership/02b-pattern-c-architecture.md) and [`12-critique-security-secrets.md §4`](../mothership/12-critique-security-secrets.md)). Permissions on each installed site repo: `Issues:RW`, `Pull requests:RW`, `Contents:RW`, `Metadata:R`, `Workflows:R`. Org secrets that hold the App credentials: `APP_ID` + `APP_PRIVATE_KEY` (rotation: annual via App settings; the rotation matrix lives in [`docs/mothership/03b-security-operations-checklist.md §4`](../mothership/03b-security-operations-checklist.md)).
+Dual-Lane Repo identifies the autopilot through a **GitHub App** (`{{BRAND_SLUG}}-pipeline-bot`) installed at the org level, with one installation per engagement on the matched site repo. Workflows mint a short-lived (≤1 h TTL) installation token per run; nothing long-lived is stored. The legacy `VENDOR_GITHUB_PAT` is retired (see [`docs/mothership/02b-dual-lane-architecture.md §3`](../mothership/02b-dual-lane-architecture.md) and [`12-critique-security-secrets.md §4`](../mothership/12-critique-security-secrets.md)). Permissions on each installed site repo: `Issues:RW`, `Pull requests:RW`, `Contents:RW`, `Metadata:R`, `Workflows:R`. Org secrets that hold the App credentials: `APP_ID` + `APP_PRIVATE_KEY` (rotation: annual via App settings; the rotation matrix lives in [`docs/mothership/03b-security-operations-checklist.md §4`](../mothership/03b-security-operations-checklist.md)).
 
 ### n8n HMAC
 
@@ -57,14 +57,14 @@ Every webhook from a client's contact API or admin portal back into n8n is signe
 
 The operator dashboard (built from `dashboard/` in the mothership repo) is **not** publicly indexed. Its hostname is treated as a secret: the operator never posts the URL in a client-shared chat, an issue body, a commit message, or a PR description. If the URL leaks, treat it as an incident — rotate the auth path immediately.
 
-### Pattern C zone isolation (two-repo trust model)
+### Dual-Lane Repo zone isolation (two-repo trust model)
 
-The two-repo split (`<slug>-site` ↔ `<slug>-pipeline`) is a **structural** security boundary, not a convention. The client's site repo `main` deploys to Vercel; the pipeline repo never touches Vercel and never carries client production secrets. The client has no Read access to the pipeline repo at all — the boundary is enforced by **GitHub permissions**, not by branch-listing politeness. See [`docs/mothership/02b-pattern-c-architecture.md`](../mothership/02b-pattern-c-architecture.md) for the canonical model, [`03-secure-architecture.md §2`](../mothership/03-secure-architecture.md) for the cost-firewall implications, and the [`pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md) for the MUST / MUST-NOT control rows.
+The two-repo split (`<slug>-site` ↔ `<slug>-pipeline`) is a **structural** security boundary, not a convention. The client's site repo `main` deploys to Vercel; the pipeline repo never touches Vercel and never carries client production secrets. The client has no Read access to the pipeline repo at all — the boundary is enforced by **GitHub permissions**, not by branch-listing politeness. See [`docs/mothership/02b-dual-lane-architecture.md`](../mothership/02b-dual-lane-architecture.md) for the canonical model, [`03-secure-architecture.md §2`](../mothership/03-secure-architecture.md) for the cost-firewall implications, and the [`dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md) for the MUST / MUST-NOT control rows.
 
 ### GitHub-specific settings (operator side)
 
-- **Branch protection on site repo `main`**: PR review (1) required, Vercel preview status check required, force-push off, deletion off, push restricted to the GitHub App + operator. Per [`02b §7`](../mothership/02b-pattern-c-architecture.md).
-- **Branch protection on pipeline repo `main`**: PR review (1, operator-only) required, auto-merge disabled, force-push off, deletion off, push restricted to operator. Code Owners required for `.github/workflows/`. Per [`02b §7`](../mothership/02b-pattern-c-architecture.md).
+- **Branch protection on site repo `main`**: PR review (1) required, Vercel preview status check required, force-push off, deletion off, push restricted to the GitHub App + operator. Per [`02b §7`](../mothership/02b-dual-lane-architecture.md).
+- **Branch protection on pipeline repo `main`**: PR review (1, operator-only) required, auto-merge disabled, force-push off, deletion off, push restricted to operator. Code Owners required for `.github/workflows/`. Per [`02b §7`](../mothership/02b-dual-lane-architecture.md).
 - **Workflow permissions**: read-only by default; write access only where explicitly granted in the workflow's `permissions:` block.
 - **Org secrets** (scoped per pipeline repo via `Repository access: Selected`): `CLAUDE_CODE_OAUTH_TOKEN`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, `APP_ID`, `APP_PRIVATE_KEY`. The full inventory is in [`docs/ops/variable-registry.md`](../ops/variable-registry.md).
 
@@ -117,16 +117,16 @@ Treat any change to `src/app/api/contact/*` as a security-sensitive change: open
 
 The autopilot opens PRs against `auto/issue-*` branches and never pushes to `main`. From the client's vantage point this means:
 - A new PR on `<client-repo>` has been authored by the bot account; the operator is the reviewer.
-- The PR cannot touch workflows, env files, or `src/app/api/contact/*` — those paths are forbidden by the bot playbooks. Under Pattern C, workflow files don't exist on the site repo at all (they live in the pipeline repo per [`02b §1`](../mothership/02b-pattern-c-architecture.md)); env files and the contact API are excluded by [`scripts/execute-prompt.md`](../../scripts/execute-prompt.md) hard exclusions.
+- The PR cannot touch workflows, env files, or `src/app/api/contact/*` — those paths are forbidden by the bot playbooks. Under Dual-Lane Repo, workflow files don't exist on the site repo at all (they live in the pipeline repo per [`02b §1`](../mothership/02b-dual-lane-architecture.md)); env files and the contact API are excluded by [`scripts/execute-prompt.md`](../../scripts/execute-prompt.md) hard exclusions.
 - The client's `main` is therefore safe to deploy via Vercel without further hardening.
 
 - **Branch protection on `main`**: enforced via GitHub repository settings
 - **Workflow permissions**: read-only by default; write access only where explicitly granted
 - **Secrets**: `CLAUDE_CODE_OAUTH_TOKEN` is the only repository secret; it is scoped to the Pro subscription OAuth token and never logs to workflow output
 
-## Pattern C compliance (operator-side)
+## Dual-Lane Repo compliance (operator-side)
 
-The two-repo trust model that keeps operator IP and per-client costs invisible to clients is enforced by an explicit checklist in the mothership pack: [`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md). Walk that file before any spinout (its §4 pre-migration gate) and immediately after (its §5 post-migration verification). The checklist is the single MUST / MUST-NOT control surface; the canonical architecture statement lives in [`docs/mothership/02b-pattern-c-architecture.md`](../mothership/02b-pattern-c-architecture.md), with the secret topology in [`03-secure-architecture.md`](../mothership/03-secure-architecture.md). The recurring sweep job at [`scripts/pattern-c-audit.sh`](../../scripts/pattern-c-audit.sh) keeps drift from accumulating between audits, and [`/.pattern-c.yml`](../../.pattern-c.yml) is the machine-readable lane manifest the spinout reads.
+The two-repo trust model that keeps operator IP and per-client costs invisible to clients is enforced by an explicit checklist in the mothership pack: [`docs/mothership/dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md). Walk that file before any spinout (its §4 pre-migration gate) and immediately after (its §5 post-migration verification). The checklist is the single MUST / MUST-NOT control surface; the canonical architecture statement lives in [`docs/mothership/02b-dual-lane-architecture.md`](../mothership/02b-dual-lane-architecture.md), with the secret topology in [`03-secure-architecture.md`](../mothership/03-secure-architecture.md). The recurring sweep job at [`scripts/dual-lane-audit.sh`](../../scripts/dual-lane-audit.sh) keeps drift from accumulating between audits, and [`/.dual-lane.yml`](../../.dual-lane.yml) is the machine-readable lane manifest the spinout reads.
 
 See `.github/SECURITY.md` at the root of `<client-repo>` for the canonical disclosure policy.
 

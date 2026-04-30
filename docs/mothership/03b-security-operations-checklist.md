@@ -118,11 +118,11 @@ These strings and patterns must trigger review when seen in canonical docs (`02`
 
 | Pattern | Allowed only inside | Reason |
 |---|---|---|
-| `VENDOR_GITHUB_PAT` | The Deprecated callout in `03 §3`, the migration note in `09 §2`, `12` (historical critique), `11` (decision record), `16` (historical migration prompts), the §4 matrix above, `pattern-c-enforcement-checklist.md` (until updated), this file's anti-pattern list | The canonical vendor identity is the GitHub App (`03 §3.X`). A new PAT reference outside these contexts is a regression. |
+| `VENDOR_GITHUB_PAT` | The Deprecated callout in `03 §3`, the migration note in `09 §2`, `12` (historical critique), `11` (decision record), `16` (historical migration prompts), the §4 matrix above, `dual-lane-enforcement-checklist.md` (until updated), this file's anti-pattern list | The canonical vendor identity is the GitHub App (`03 §3.X`). A new PAT reference outside these contexts is a regression. |
 | `90 days; calendar reminder` (paired with PAT) | The Deprecated row in `03 §3` and historical critiques (`11`, `12`) | A 90-day silent-fail rotation is the exact anti-pattern the App migration closes. |
 | `same key for every client` (paired with `AUTH_RESEND_KEY`) | This file (§5 examples), `12 §2` (historical), `16` (historical migration prompts) | Per-client keys are the canonical pattern (`03 §3`); shared-key language re-introduces the cost-firewall + fan-out break flagged in `12 §2`. |
 | `shared key for every client` / `shared across clients` (any secret) | This file (§5 examples), `12` (historical) | Same reason — per-client is the rule unless the secret is explicitly an operator-only credential (e.g. `OPENAI_API_KEY`). |
-| `operator/main` as a target branch name | `02 §8` migration note, `02b §6` deprecated-pattern note, `11`, `12`, `16`, `17` (historical) | Pattern C is canonical; `operator/main` is a deprecated branch-overlay term. |
+| `operator/main` as a target branch name | `02 §8` migration note, `02b §6` deprecated-pattern note, `11`, `12`, `16`, `17` (historical) | Dual-Lane Repo is canonical; `operator/main` is a deprecated branch-overlay term. |
 
 ### Patterns that must trigger a manual review (not a hard block)
 

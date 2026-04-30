@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# forge-spinout-dry-run.sh — simulate the Pattern C spinout, print the per-lane
+# forge-spinout-dry-run.sh — simulate the Dual-Lane Repo spinout, print the per-lane
 # file plan, and FAIL if any tracked file is uncovered by the manifest.
 #
 # This is the script the operator runs at the start of Phase 4 (Client #1
@@ -8,7 +8,7 @@
 # able to run this and get a green dry-run.
 #
 # What it does:
-#   1. Loads .pattern-c.yml (the manifest).
+#   1. Loads .dual-lane.yml (the manifest).
 #   2. Walks `git ls-files`.
 #   3. For each tracked file, finds the most-specific lane assignment in the
 #      manifest (longest matching prefix wins).
@@ -37,7 +37,7 @@ set -uo pipefail
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$ROOT" || exit 2
 
-MANIFEST="${ROOT}/.pattern-c.yml"
+MANIFEST="${ROOT}/.dual-lane.yml"
 [ -f "$MANIFEST" ] || { echo "ERROR: $MANIFEST not found" >&2; exit 2; }
 
 VERBOSE=0
@@ -79,7 +79,7 @@ TABLE="$(
 "$PYTHON" - "$MANIFEST" <<'PYEOF' | tr -d '\r'
 import sys, re
 
-# Tiny YAML subset parser: enough to read .pattern-c.yml's lanes / contamination
+# Tiny YAML subset parser: enough to read .dual-lane.yml's lanes / contamination
 # blocks. Avoids requiring PyYAML on a fresh laptop.
 
 manifest = sys.argv[1]
@@ -219,7 +219,7 @@ else
     drop)       printf '%s\n' "${DROP_FILES[@]}" ;;
     uncovered)  printf '%s\n' "${UNCOVERED_FILES[@]}" ;;
     *)
-      printf 'Pattern C spinout dry-run\n'
+      printf 'Dual-Lane Repo spinout dry-run\n'
       printf '  Manifest: %s\n' "${MANIFEST#$ROOT/}"
       printf '  Tracked:  %s files\n' "$TOTAL"
       printf '\n'
@@ -241,7 +241,7 @@ else
         printf '  %s\n' "${UNCOVERED_FILES[@]}"
         printf '\nforge-spinout-dry-run: ✗ %s tracked file(s) lack a lane assignment.\n' \
           "${COUNT[uncovered]:-0}"
-        printf 'Add them to .pattern-c.yml `lanes:` (or `drop:`) and re-run.\n'
+        printf 'Add them to .dual-lane.yml `lanes:` (or `drop:`) and re-run.\n'
       else
         printf 'forge-spinout-dry-run: ✓ every tracked file is classified.\n'
       fi

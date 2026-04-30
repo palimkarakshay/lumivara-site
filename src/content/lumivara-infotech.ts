@@ -6,9 +6,9 @@
  * working name is retired). Owned by Akshay Palimkar. Lives under the
  * Lumivara umbrella but is distinct from Lumivara People Advisory.
  *
- * PATTERN C NOTE (2026-04-29): this page (Akshay's operator pitch) currently
- * lives on Beas's marketing-site repo, which is a Pattern C violation per
- * docs/mothership/02b-pattern-c-architecture.md §6 / pattern-c-enforcement-
+ * DUAL-LANE NOTE (2026-04-29): this page (Akshay's operator pitch) currently
+ * lives on Beas's marketing-site repo, which is a Dual-Lane Repo violation per
+ * docs/mothership/02b-dual-lane-architecture.md §6 / dual-lane-enforcement-
  * checklist.md C-MUST-1: operator brand should not occupy a site repo URL
  * tree. Tracked for relocation to the operator's own site at
  * lumivara-forge.com (pending domain registration, 15 §5) — the file,

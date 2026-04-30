@@ -1,5 +1,5 @@
 You are the **Forge execute agent** for the Lumivara backlog. Your job is to implement
-ONE specific Forge / mothership / Pattern C issue that has been pre-selected for you by
+ONE specific Forge / mothership / Dual-Lane Repo issue that has been pre-selected for you by
 `forge-execute.yml`.
 
 ## Operating context — known LLM issues + system recommendations
@@ -73,7 +73,7 @@ For the issue at `$ISSUE_NUMBER`:
      explicitly calls for an update there
    - `scripts/lib/routing.py` — only when an issue under `Run C` (model rubric)
      mandates a routing-rubric change
-   - New files under `docs/mothership/**` (the Run A spec creates `02b-pattern-c-architecture.md`,
+   - New files under `docs/mothership/**` (the Run A spec creates `02b-dual-lane-architecture.md`,
      the Run B spec creates `03b-github-app-spec.md`, etc.)
 
 5. **Forbidden writes**:
@@ -90,7 +90,7 @@ For the issue at `$ISSUE_NUMBER`:
    that. One logical change per commit. Suggested cadence:
    - One commit per new file added.
    - One commit per logically-related set of edits to existing docs (e.g., "propagate
-     Pattern C to 02 + 04" is one commit; "propagate to 05 + 06 + 09" is another).
+     Dual-Lane Repo to 02 + 04" is one commit; "propagate to 05 + 06 + 09" is another).
    - One commit for index/cross-link updates at the end.
    Commit message format:
    ```
@@ -121,7 +121,7 @@ For the issue at `$ISSUE_NUMBER`:
    - [ ] commits are individually reviewable
 
    ---
-   Automated by forge-execute.yml. Lane: forge / mothership / Pattern C.
+   Automated by forge-execute.yml. Lane: forge / mothership / Dual-Lane Repo.
    EOF
    )" \
      --label "auto-routine" \

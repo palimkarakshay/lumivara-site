@@ -78,7 +78,7 @@ n/a — this is the first week of the dated POC plan.
 
 - ☐ Streak rows 5–10 (auto-routine PRs landing through the cron paths).
 - ☐ Capture G8 (`would_overwrite_newer` rejection) and G9 (drift→triage→execute auto-promote) evidence.
-- ☐ Pattern C readiness pass (high-entropy grep, `.claudeignore` parity, `_artifact-allow-deny.md` audit).
+- ☐ Dual-Lane Repo readiness pass (high-entropy grep, `.claudeignore` parity, `_artifact-allow-deny.md` audit).
 
 **Gate flip target:** Phase 1 (§1) green by **Wed 2026-05-13**. Buffer day Thu 2026-05-14. Phase 2 (Run S1) starts **Mon 2026-05-18**.
 

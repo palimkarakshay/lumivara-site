@@ -11,7 +11,7 @@ This is the template the operator renders, per engagement, into the **client's r
 
 > **Rendering convention:** every `{{...}}` placeholder maps to a key in `docs/clients/<slug>/intake.md`. Use a single `pnpm dlx mustache intake.json 07-client-handover-pack.md > clients/<slug>/handover.md` to render.
 
-> **Pre-handover gate (Lumivara People Advisory).** Before rendering this pack for *Lumivara People Advisory*, the spinout runbook in [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) must have all phase acceptance boxes checked (§9 A1, A2, A3 — including `pattern-c-enforcement-checklist.md §5` post-migration verifications). For all *future* Tier 0/1/2 clients, fork that runbook into `docs/migrations/<client-slug>-spinout.md`, walk it end-to-end, and gate this rendering on its acceptance set. The §8 per-engagement validation checklist below is the *post-render* gate; the spinout runbook's §9 is the *pre-render* gate.
+> **Pre-handover gate (Lumivara People Advisory).** Before rendering this pack for *Lumivara People Advisory*, the spinout runbook in [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) must have all phase acceptance boxes checked (§9 A1, A2, A3 — including `dual-lane-enforcement-checklist.md §5` post-migration verifications). For all *future* Tier 0/1/2 clients, fork that runbook into `docs/migrations/<client-slug>-spinout.md`, walk it end-to-end, and gate this rendering on its acceptance set. The §8 per-engagement validation checklist below is the *post-render* gate; the spinout runbook's §9 is the *pre-render* gate.
 
 ---
 
@@ -387,7 +387,7 @@ Before sending the rendered handover pack, the operator confirms:
 - [ ] T3 sites do **not** include the footer credit; T0/1/2 do.
 - [ ] The handover guide does **not** mention GitHub, Vercel, n8n, Twilio, or any operator-side tool by name.
 - [ ] The walkthrough video URL is filled in.
-- [ ] The handover file is committed only to the client's site-repo `main` (never to the pipeline repo, never to mothership). Under Pattern C the site repo is the only repo the client ever sees — see `02b`.
+- [ ] The handover file is committed only to the client's site-repo `main` (never to the pipeline repo, never to mothership). Under Dual-Lane Repo the site repo is the only repo the client ever sees — see `02b`.
 
 The render → validate → commit → email cycle takes ~10 minutes per client when the intake YAML is complete. If any field is missing, the operator follows up with the client before rendering.
 

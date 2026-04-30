@@ -11,8 +11,8 @@
 > to satisfy it. The canonical sources of truth remain:
 >
 > - `docs/migrations/00-automation-readiness-plan.md` — the phase map.
-> - `docs/mothership/02b-pattern-c-architecture.md` — the end-state.
-> - `docs/mothership/pattern-c-enforcement-checklist.md` — the pre-flight
+> - `docs/mothership/02b-dual-lane-architecture.md` — the end-state.
+> - `docs/mothership/dual-lane-enforcement-checklist.md` — the pre-flight
 >   gate this POC must clear before §4 of that file can be ticked.
 > - `docs/deploy/production-integrity.md` — the integrity contract that
 >   the production-deployment fix (PR #151, branch
@@ -30,7 +30,7 @@
 1. This file (the dated plan).
 2. `docs/migrations/00-automation-readiness-plan.md §1` (where this slots in).
 3. `docs/deploy/production-integrity.md §3` (the integrity contract).
-4. `docs/mothership/pattern-c-enforcement-checklist.md §4` (the
+4. `docs/mothership/dual-lane-enforcement-checklist.md §4` (the
    pre-migration gate — every row must resolve green from this POC).
 5. `docs/storefront/01-gig-profile.md` Parts 2 & 4, `docs/storefront/02-pricing-tiers.md`,
    `docs/decks/04-prospective-client-deck.md`,
@@ -49,7 +49,7 @@ Three gates, three audiences, three independent flips:
 
 | Gate                                                  | Section | Audience that benefits         | Goes green when…                                                                                                                                                                                |
 |-------------------------------------------------------|---------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Migration-ready** (Phase 2 unblocked)               | §1      | The future Run S1 bot session  | 10/10 streak, production-integrity wired, Pattern C readiness rows all tick. The technical-trust gate.                                                                                          |
+| **Migration-ready** (Phase 2 unblocked)               | §1      | The future Run S1 bot session  | 10/10 streak, production-integrity wired, Dual-Lane Repo readiness rows all tick. The technical-trust gate.                                                                                          |
 | **Demo-ready** (first prospect demo unblocked)        | §6      | The first demo audience (§9)   | Phone-edit pipeline proven end-to-end, catalog consistency proven, dummy-vertical demo site live, optional public-demo legal/risk rows cleared. The product-trust gate.                         |
 | **Operator-ready** (operator hasn't missed a window)  | §7      | Future-operator (you, in July) | Trademark filed, slug-locking done, Phase 0 tasks sequenced inside their L dates. The "you didn't get blocked by your own delay" gate.                                                          |
 
@@ -97,14 +97,14 @@ has to prove every layer fires before migration starts.
 | 2.4 | A stale-SHA promote attempt is refused with `would_overwrite_newer` — captured as a screenshot or log line attached to the streak tracking issue.                                       | ☐     |
 | 2.5 | An `auto-routine` PR opened during the streak is **auto-promoted** by the drift→triage→execute loop without operator intervention. (One occurrence is enough; this is the loop end-to-end.) | ☐ |
 
-### §1.3 — Pattern C readiness gate
+### §1.3 — Dual-Lane Repo readiness gate
 
 Phase 2 begins the platform/site separation. Run S1 only renames; the
 Phase 3+ work splits the artefact tree. To avoid wasted churn, the POC
-phase also confirms that `pattern-c-enforcement-checklist.md §4` rows
+phase also confirms that `dual-lane-enforcement-checklist.md §4` rows
 **that can be checked against this repo today** are green.
 
-| #   | Condition (cross-references `pattern-c-enforcement-checklist §4`)                                                                                                                                                                              | Pass? |
+| #   | Condition (cross-references `dual-lane-enforcement-checklist §4`)                                                                                                                                                                              | Pass? |
 |-----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
 | 3.1 | Row 1: every operator-only path in C-MUST-1 either lives only in the platform repo (post-Phase 3) or is **explicitly catalogued** in `docs/migrations/_artifact-allow-deny.md` so the spinout can route it.                                    | ☐     |
 | 3.2 | Row 3: `git grep -E '[A-Za-z0-9+/=]{32,}' main` is clean (no high-entropy strings on `main`).                                                                                                                                                  | ☐     |
@@ -138,7 +138,7 @@ a manual UI click or vault edit.
 |-----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|----------------------------------------------------------------------------|
 | G1  | The "Phase 1 green streak — counter at 0/10" tracking issue does not yet exist (pinned, label `meta/automation-readiness`, body holds the live tally).                                             | Operator | 1.1, 1.4 | `00 §3.2`                                                                  |
 | G2  | The seven seed issues from `00 §3.3` are not yet filed; without them the streak cannot exercise every cron path.                                                                                   | Operator | 1.2      | `00 §3.3`                                                                  |
-| G3  | A small handful of pre-Pattern-C issues are still open without `priority/` × `complexity/` × `area/` triples (see the open-issue scan in §2.4 below); they need to be normalised or `status/post-migration`-closed before counting starts. | Operator+bot | 1.4 | `00 §3.2` |
+| G3  | A small handful of pre-Dual-Lane issues are still open without `priority/` × `complexity/` × `area/` triples (see the open-issue scan in §2.4 below); they need to be normalised or `status/post-migration`-closed before counting starts. | Operator+bot | 1.4 | `00 §3.2` |
 
 ### §2.2 — Production-integrity wiring
 
@@ -151,14 +151,14 @@ a manual UI click or vault edit.
 | G8  | Capture evidence of `would_overwrite_newer` rejection — fire the deploy hook against an old SHA via the per-issue `confirmDeploy` flow and screenshot/log the refusal. Attach to the streak tracking issue.                        | Bot      | 2.4      | `production-integrity.md §3` condition 2        |
 | G9  | Capture evidence of an end-to-end drift→triage→execute auto-promote during the streak. Drift watcher opens issue → triage classifies → execute promotes → drift returns to zero. One occurrence is enough.                          | Bot      | 2.5      | `production-integrity.md §5`                    |
 
-### §2.3 — Pattern C readiness
+### §2.3 — Dual-Lane Repo readiness
 
 | #    | Gap                                                                                                                                                                                                                                                | Owner    | Unblocks | Cite                                                  |
 |------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|-------------------------------------------------------|
-| G10  | `docs/migrations/_artifact-allow-deny.md` exists; confirm it is current vs. the actual `docs/`/`scripts/`/`n8n-workflows/`/`dashboard/` shape on `main` so the spinout's selective-copy table is unambiguous.                                      | Bot      | 3.1      | `pattern-c-enforcement-checklist §4` row 1            |
-| G11  | Run the high-entropy grep weekly and on every secret rotation (`git grep -E '[A-Za-z0-9+/=]{32,}' main`). Today this is implicit; the streak counter explicitly checks it after each merge.                                                        | Bot      | 3.2      | `pattern-c-enforcement-checklist §2` C-MUST-3         |
-| G12  | `.claudeignore` byte-for-byte parity with `03-secure-architecture.md §2.3`. Verify in CI as part of the streak (single grep is enough; promote to a script in Phase 3).                                                                            | Bot      | 3.3      | `pattern-c-enforcement-checklist §2` C-MUST-5         |
-| G13  | Invoice / handover-pack templates: confirm no third-party vendor names. This is **non-gating** today (no client invoices yet) but flagged so it isn't skipped during Client #1 spinout pre-flight.                                                  | Bot      | 3.4      | `pattern-c-enforcement-checklist §3` C-MUST-NOT-3     |
+| G10  | `docs/migrations/_artifact-allow-deny.md` exists; confirm it is current vs. the actual `docs/`/`scripts/`/`n8n-workflows/`/`dashboard/` shape on `main` so the spinout's selective-copy table is unambiguous.                                      | Bot      | 3.1      | `dual-lane-enforcement-checklist §4` row 1            |
+| G11  | Run the high-entropy grep weekly and on every secret rotation (`git grep -E '[A-Za-z0-9+/=]{32,}' main`). Today this is implicit; the streak counter explicitly checks it after each merge.                                                        | Bot      | 3.2      | `dual-lane-enforcement-checklist §2` C-MUST-3         |
+| G12  | `.claudeignore` byte-for-byte parity with `03-secure-architecture.md §2.3`. Verify in CI as part of the streak (single grep is enough; promote to a script in Phase 3).                                                                            | Bot      | 3.3      | `dual-lane-enforcement-checklist §2` C-MUST-5         |
+| G13  | Invoice / handover-pack templates: confirm no third-party vendor names. This is **non-gating** today (no client invoices yet) but flagged so it isn't skipped during Client #1 spinout pre-flight.                                                  | Bot      | 3.4      | `dual-lane-enforcement-checklist §3` C-MUST-NOT-3     |
 
 ### §2.4 — Existing-automation surface inventory
 
@@ -206,7 +206,7 @@ turn-budgets. The bot's per-run `--max-turns` self-pacing rules from
 | **D-8**    | Mon 05-11 AM | ▶ Bot        | Streak rows 9–10: two final `auto-routine` issues. After row 10 the bot comments **"READY FOR PHASE 2 — pending §1.2 + §1.3 evidence"** on the tracking issue.                                                                                                                                | 1.1 (rows 9–10)      |
 | **D-8 PM** | Mon 05-11    | ▶ Bot        | Capture **G8** evidence: fire `confirmDeploy` against an old preview SHA via `/admin/client/[slug]/request/[number]`, screenshot the `would_overwrite_newer` rejection, attach to the tracking issue.                                                                                          | G8 → 2.4             |
 | **D-9**    | Tue 05-12    | ▶ Bot        | Capture **G9** evidence: deliberately delay one promote until the drift-watcher opens a P1 issue, then let triage + execute auto-promote it. Drift returns to zero. Watcher closes its own issue. Attach the issue + audit-log links to the tracking issue.                                    | G9 → 2.3, 2.5        |
-| **D-10**   | Tue 05-12 PM | ▶ Bot        | **Pattern C readiness pass.** Run `git grep -E '[A-Za-z0-9+/=]{32,}' main`, byte-diff `.claudeignore` vs `03-secure-architecture.md §2.3`, audit `_artifact-allow-deny.md` against the live tree, run the invoice grep against any rendered handover-pack drafts. Tick §1.3 rows.            | G10–G13 → 3.1–3.4    |
+| **D-10**   | Tue 05-12 PM | ▶ Bot        | **Dual-Lane Repo readiness pass.** Run `git grep -E '[A-Za-z0-9+/=]{32,}' main`, byte-diff `.claudeignore` vs `03-secure-architecture.md §2.3`, audit `_artifact-allow-deny.md` against the live tree, run the invoice grep against any rendered handover-pack drafts. Tick §1.3 rows.            | G10–G13 → 3.1–3.4    |
 | **D-11**   | Wed 05-13 AM | ☐ Operator   | Operator review of the 10 streak PRs (§1.1 row 1.5). Sign off on each, in writing, in the tracking issue. If any one needs a "would have asked for changes" comment, the streak resets to 0/10 and the plan re-runs from D-4.                                                                  | 1.5                  |
 | **D-11 PM**| Wed 05-13    | ☐ Operator + bot | Confirm every row of §1 (1.1 through 3.4) is ticked. Bot drafts the §4 hard-exit-check command output as a comment on the tracking issue. Operator countersigns. Tracking issue moves to **MIGRATION READY** with a single `/lgtm` comment.                                              | gate exit            |
 | **D-12**   | Thu 05-14    | ☐ Operator   | Buffer day. Reserved for any §1 row that flipped during D-11. If the gate is green, this day is used to print the recovery envelope (`00 §2.2` row 11) and book the first quarterly recovery drill.                                                                                            | buffer               |
@@ -312,7 +312,7 @@ gh issue list --repo palimkarakshay/lumivara-site \
 Expected: at least `1` drift issue **opened and closed** by the watcher
 on D-12 (the rolling drift issue from `production-integrity.md §5`).
 
-### §4.7 — Pattern C readiness
+### §4.7 — Dual-Lane Repo readiness
 
 ```bash
 # C-MUST-3 — no high-entropy strings
@@ -583,7 +583,7 @@ advisory out earlier to "get it done" — is the wrong instinct.
    audit trail. The operator paid 2 wall-clock weeks for that audit
    trail; throwing it away to re-run on the new repo is the most
    expensive form of "let's get this done early."
-2. **Pattern C is about git history hygiene.** The two-repo split
+2. **Dual-Lane Repo is about git history hygiene.** The two-repo split
    (`<slug>-site` clean, `<slug>-pipeline` operator-only) is durable
    only if `<slug>-site/main` history starts clean. Spinning out
    before Run S1 means every operator-internal commit message and

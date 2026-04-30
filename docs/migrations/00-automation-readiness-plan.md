@@ -1,10 +1,10 @@
-<!-- OPERATOR-ONLY. Sequenced plan for proving the automation in this repo BEFORE migrating to Pattern C. -->
+<!-- OPERATOR-ONLY. Sequenced plan for proving the automation in this repo BEFORE migrating to Dual-Lane Repo. -->
 
 # Automation Readiness & Bot-Driven Migration Plan
 
 > **Goal.** Use this repo (`palimkarakshay/lumivara-site`) as the
 > **proof-of-concept** for the autopilot, then have the bot drive the
-> Pattern C migration into the new platform repo + per-client repos.
+> Dual-Lane Repo migration into the new platform repo + per-client repos.
 >
 > **Status:** Drafted 2026-04-29 (this PR). Pre-Run S1, pre-P5 bootstrap.
 > Operator-blocking rows are flagged ☐ **OPERATOR**; bot-runnable rows
@@ -22,7 +22,7 @@
 1. This file (sequencing).
 2. `docs/mothership/15b-naming-conventions.md` (terminology + folder
    shapes the steps below assume).
-3. `docs/mothership/02b-pattern-c-architecture.md` (the canonical
+3. `docs/mothership/02b-dual-lane-architecture.md` (the canonical
    end-state).
 4. `docs/mothership/05-mothership-repo-buildout-plan.md` (the phase
    detail this file calls into).
@@ -56,7 +56,7 @@ PHASE 3 — Bootstrap the platform repo               (bot + operator, ~1 week)
 
 PHASE 4 — Spin Client #1 out                         (bot + operator, ~3 days)
    └─ Run docs/migrations/lumivara-people-advisory-spinout.md, then
-      validate via pattern-c-enforcement-checklist §5.
+      validate via dual-lane-enforcement-checklist §5.
 
 PHASE 5 — Onboard Client #2 from a clean slate      (bot, ~1 day)
    └─ Run `forge provision` end-to-end against a smoke-test client.
@@ -185,7 +185,7 @@ Before the green streak begins, the operator (or the bot, via the
 prompt in §3.4) walks the open issue list and:
 
 1. Confirms every issue has `priority/`, `complexity/`, `area/` labels.
-2. Closes obsolete issues (anything blocked on Pattern C migration —
+2. Closes obsolete issues (anything blocked on Dual-Lane Repo migration —
    tag `status/post-migration` and close).
 3. Files a fresh tracking issue: **"Phase 1 green streak — counter at
    0/10"**, label `meta/automation-readiness`, pinned. Body holds the
@@ -271,7 +271,7 @@ renames from `15b §2`.
 | `mothership` (prose, case-insensitive) | `platform` | `docs/`, `AGENTS.md`, wiki — **except** `15 §1` glossary, `15b §1`, and migration-history docs (per `15 §6`) |
 | `mothership-bot` (slug) | `pipeline-bot` | secret names, doc references |
 | `client-template/` | `site-template/` | docs, future runtime |
-| `mothership-smoke` (status check) | `platform-smoke` | `pattern-c-enforcement-checklist`, `03-secure-architecture` |
+| `mothership-smoke` (status check) | `platform-smoke` | `dual-lane-enforcement-checklist`, `03-secure-architecture` |
 
 ### §4.2 — What S1 does NOT do
 
@@ -559,7 +559,7 @@ NOT yet move Client #1's site code anywhere. That's Phase 4.
   subcommand from `05 §P5.4`.
 - `npx forge provision --client-slug demo --tier 2 --domain demo.test --dry-run`
   prints the full plan with no real API calls.
-- `pattern-c-enforcement-checklist.md §4` pre-flight rows can all
+- `dual-lane-enforcement-checklist.md §4` pre-flight rows can all
   resolve "ready" against the platform repo's state.
 - The platform repo's own kanban shows P5.1 → P5.5 issues all in
   Done.
@@ -583,10 +583,10 @@ is the canonical, step-by-step procedure. This phase is essentially
 
 > **Drift fix needed before running.** That runbook still describes
 > the deprecated `operator/main` overlay branch (line 5). It must be
-> rewritten to the two-repo model from `02b-pattern-c-architecture.md`
+> rewritten to the two-repo model from `02b-dual-lane-architecture.md`
 > before this phase starts. File this as the first issue of Phase 4:
-> "fix(docs): align spinout runbook with 02b two-repo Pattern C".
-> Same applies to `pattern-c-enforcement-checklist.md §1` — see §10
+> "fix(docs): align spinout runbook with 02b two-repo Dual-Lane Repo".
+> Same applies to `dual-lane-enforcement-checklist.md §1` — see §10
 > of this file.
 
 ### §6.2 — Operator action set (manual, ~3 hours total)
@@ -596,7 +596,7 @@ detail; this list exists so the operator can budget the day.
 
 | # | Action | Where | Owner | Reversible? |
 |---|---|---|---|---|
-| 1 | Pre-flight: walk every row of pattern-c-enforcement-checklist §4 against this repo's state | Local terminal | Operator | n/a |
+| 1 | Pre-flight: walk every row of dual-lane-enforcement-checklist §4 against this repo's state | Local terminal | Operator | n/a |
 | 2 | Capture issue tracker + project-board snapshot | `gh issue list … > /tmp/lps-issues.json` | Operator | n/a (capture only) |
 | 3 | Create new repo `palimkarakshay/lumivara-people-advisory-site` (private) | github.com/new | Operator | Easy (delete repo) |
 | 4 | Create new repo `palimkarakshay/lumivara-people-advisory-pipeline` (private) | github.com/new | Operator | Easy (delete repo) |
@@ -604,12 +604,12 @@ detail; this list exists so the operator can budget the day.
 | 6 | Bot pushes workflows + scripts to `*-pipeline/main` | Same | Bot | Yes |
 | 7 | Install GitHub App on `*-site` only | App settings → Install on selected repo | Operator | Yes (uninstall) |
 | 8 | Capture installation_id into `docs/clients/lumivara-people-advisory/cadence.json` (in platform repo) | Bot prompt §6.4 | Bot | Yes |
-| 9 | Apply branch protection on `*-site/main` per `03 §2.2` and `pattern-c-enforcement-checklist §C-MUST-4` (post-fix) | Repo Settings → Branches | Operator | Yes |
+| 9 | Apply branch protection on `*-site/main` per `03 §2.2` and `dual-lane-enforcement-checklist §C-MUST-4` (post-fix) | Repo Settings → Branches | Operator | Yes |
 | 10 | Apply branch protection on `*-pipeline/main` per `02b §7` | Same | Operator | Yes |
 | 11 | Create new Vercel project linked to `*-site/main`; copy env vars (`RESEND_API_KEY`, `CONTACT_EMAIL`, `NEXT_PUBLIC_*`) from the old project | Vercel UI | Operator | Yes (delete project) |
 | 12 | DNS cutover: point `lumivara.ca` to the new Vercel project | DNS provider | Operator | **Hard** — propagation lag |
 | 13 | Add Beas as a Read collaborator on `*-site` only | Repo settings → Collaborators | Operator | Yes |
-| 14 | Run post-migration acceptance set (`pattern-c-enforcement-checklist §5`) | Local terminal | Operator + bot | n/a (audit) |
+| 14 | Run post-migration acceptance set (`dual-lane-enforcement-checklist §5`) | Local terminal | Operator + bot | n/a (audit) |
 | 15 | Archive (don't delete) `palimkarakshay/lumivara-site` once production is verified green for 24h | Repo Settings → Archive | Operator | Yes (unarchive) |
 
 The DNS cutover (row 12) is the only **hard-to-reverse** action. Plan
@@ -625,10 +625,10 @@ end-to-end against the post-S1, post-Phase-3 state.
 
 Pre-flight (HARD STOP if any fails):
   1. The spinout runbook itself has been updated to the two-repo
-     Pattern C model (no operator/main overlay) — verify by:
+     Dual-Lane Repo model (no operator/main overlay) — verify by:
        grep -n "operator/main" docs/migrations/lumivara-people-advisory-spinout.md
      must return zero matches outside an explicit "deprecated" callout.
-  2. pattern-c-enforcement-checklist.md §1 + §C-MUST-2 + §C-MUST-4 +
+  2. dual-lane-enforcement-checklist.md §1 + §C-MUST-2 + §C-MUST-4 +
      §C-MUST-8 reference the pipeline repo, not the overlay branch.
   3. Phase 3 P5.4b–d is done (forge provision exists and dry-run
      prints the plan).
@@ -647,7 +647,7 @@ Then run:
     payload.
   - §6 (smoke tests) — bot runs them and reports.
   - §7 (operator sign-off + DNS cutover) — operator-manual.
-  - §8 (post-migration verification = pattern-c §5) — bot runs every
+  - §8 (post-migration verification = dual-lane §5) — bot runs every
     verify command and posts results to the spinout issue.
   - §9 (acceptance) — bot opens the "spinout complete" issue with
     the captured evidence trail.
@@ -674,7 +674,7 @@ curl -sI https://lumivara.ca | head -1
 # expect: HTTP/2 200
 ```
 
-All three rows green, plus every row of `pattern-c-enforcement-checklist §5`
+All three rows green, plus every row of `dual-lane-enforcement-checklist §5`
 ticked.
 
 ---
@@ -786,7 +786,7 @@ risk issues."
 Phase 6 does not "complete." Its health is measured by the
 **recurring** checks:
 
-- Quarterly Pattern C audit (`pattern-c-enforcement-checklist §6`).
+- Quarterly Dual-Lane Repo audit (`dual-lane-enforcement-checklist §6`).
 - Quarterly secrets rotation (`03b-security-operations-checklist`).
 - Quarterly recovery drill (`09 §1.5`).
 - Monthly cost review (`20-launch-and-operating-cost-model §6`).
@@ -844,7 +844,7 @@ Beyond seeding this plan, this PR ships two related drift fixes:
 1. **`docs/mothership/15b-naming-conventions.md`** — already landed in
    an earlier commit on this branch. Codifies §1 of `15-terminology-
    and-brand.md` so Run S1 has a target tree to write against.
-2. **`docs/mothership/pattern-c-enforcement-checklist.md`** — same
+2. **`docs/mothership/dual-lane-enforcement-checklist.md`** — same
    branch, separate commit. Updates §1 and the §C-MUST-2 / -4 / -8
    rows to reference the pipeline repo instead of the deprecated
    `operator/main` overlay branch. Without this fix, Phase 4's
@@ -854,7 +854,7 @@ Other drift (the spinout runbook still describing the overlay branch,
 `wiki/Home.md` lines 19/24/69 likewise) is **not** fixed in this PR
 because it's a substantial rewrite better done by the bot under Phase 4
 sub-issue 1 ("fix(docs): align spinout runbook with 02b two-repo
-Pattern C"). Keeping that change out of this PR keeps the diff
+Dual-Lane Repo"). Keeping that change out of this PR keeps the diff
 reviewable.
 
 *Last updated: 2026-04-29.*

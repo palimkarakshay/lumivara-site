@@ -5,7 +5,7 @@
   *above* the per-client runtime topology in `03-secure-architecture.md §3`
   — that table covers per-client runtime secrets; this ADR covers operator-
   side IP and business secrets that never enter Vercel/n8n.
-  Pattern C rule: this file never ships in a client repo (`00-INDEX.md`
+  Dual-Lane Repo rule: this file never ships in a client repo (`00-INDEX.md`
   rule 2; `03 §1` rule 2).
 ================================================================================
 -->
@@ -126,7 +126,7 @@ Rotation events log to `docs/operator/SECURITY_OPS_LOG.md` (operator-only file; 
 
 ### §6.2 Per-engagement
 
-Triggered when a new client is added to `src/lib/admin/clients.ts` (the canonical roster surface; see [`pattern-c-enforcement-checklist.md`](pattern-c-enforcement-checklist.md) for what "added" means structurally):
+Triggered when a new client is added to `src/lib/admin/clients.ts` (the canonical roster surface; see [`dual-lane-enforcement-checklist.md`](dual-lane-enforcement-checklist.md) for what "added" means structurally):
 
 1. Create the `Per-client/<slug>` vault (operator membership only).
 2. Migrate any in-flight client correspondence that is not in [`19-engagement-evidence-log-template.md`](19-engagement-evidence-log-template.md) (typically: phone numbers, emergency contacts, any client-provided assets emailed before the repo existed).

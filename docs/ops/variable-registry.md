@@ -28,7 +28,7 @@ Each row in §1–§5 has these columns:
 | **Rotation** | Cadence or trigger. `n/a` is reserved for non-secret configuration. |
 | **Where referenced** | Repo paths (e.g. `.github/workflows/triage.yml`, `src/lib/github.ts`) or `operator dashboard UI only` for keys held only in n8n / dashboard config. |
 
-**Per-client overrides.** Once Pattern C (`docs/mothership/02b-pattern-c-architecture.md`)
+**Per-client overrides.** Once Dual-Lane Repo (`docs/mothership/02b-dual-lane-architecture.md`)
 spinouts begin, per-client variations live in
 `docs/clients/<slug>/variable-registry.md` (mothership-only, never
 mirrored into the client repo). This file documents the *current
@@ -48,7 +48,7 @@ Source: `git grep -hoE 'secrets\.[A-Z_][A-Z0-9_]*' .github/workflows/`.
 
 | Name | Scope | Owner | Rotation | Where referenced |
 |---|---|---|---|---|
-| `CLAUDE_CODE_OAUTH_TOKEN` | `github-secret-repo` (today) → `github-secret-org` (post-Pattern C) | operator | When `claude setup-token` is re-run; no expiry | `.github/workflows/triage.yml`, `execute*.yml`, `plan-issues.yml`, `deep-research.yml`, `auto-merge.yml`, `ai-smoke-test.yml`, `setup-cli.yml` |
+| `CLAUDE_CODE_OAUTH_TOKEN` | `github-secret-repo` (today) → `github-secret-org` (post-Dual-Lane Repo) | operator | When `claude setup-token` is re-run; no expiry | `.github/workflows/triage.yml`, `execute*.yml`, `plan-issues.yml`, `deep-research.yml`, `auto-merge.yml`, `ai-smoke-test.yml`, `setup-cli.yml` |
 | `GEMINI_API_KEY` | `github-secret-repo` → `github-secret-org` | operator | 12 months | `.github/workflows/deep-research.yml`, `triage.yml` (fallback path) |
 | `OPENAI_API_KEY` | `github-secret-repo` → `github-secret-org` | operator | 6 months | `.github/workflows/codex-review.yml` (and the codex fallback in `triage.yml`) |
 | `OPENAI_API_KEY_BACKUP` | `github-secret-repo` → `github-secret-org` | operator | 6 months (offset 3 months from primary) | Codex review fallback when `OPENAI_API_KEY` rate-limits |
@@ -57,7 +57,7 @@ Source: `git grep -hoE 'secrets\.[A-Z_][A-Z0-9_]*' .github/workflows/`.
 | `VERCEL_TEAM_ID` | `github-secret-repo` | operator | n/a (configuration) | Deploy workflows; mirrored as a Vercel env (§3) |
 | `GITHUB_TOKEN` | built-in (auto-issued by GitHub Actions per run) | shared | n/a (GitHub-issued, ephemeral) | Every workflow that calls `gh` / Octokit |
 
-> **Vendor PAT (`VENDOR_GITHUB_PAT`)** — *not currently a workflow secret on this repo*; held only in n8n credentials (§4). Listed here as a forward-looking name so post-Pattern C migration finds the row already drafted.
+> **Vendor PAT (`VENDOR_GITHUB_PAT`)** — *not currently a workflow secret on this repo*; held only in n8n credentials (§4). Listed here as a forward-looking name so post-Dual-Lane Repo migration finds the row already drafted.
 
 > Secrets `GEMINI_API_KEY` and `OPENAI_API_KEY*` may also appear with workflow-local aliases (e.g. an `env: ANTHROPIC_API_KEY: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}` line). The alias is internal to the workflow; the canonical name is the one in the table.
 

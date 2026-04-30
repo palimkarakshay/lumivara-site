@@ -15,7 +15,7 @@ D1 is committed; D2 is open. Everything downstream of the brand name (domain pur
 
 ## §1 — Context
 
-The operator owns `lumivara.ca`. It is currently the production domain of **Client #1** (Beas Banerjee's HR consulting practice, branded "Lumivara People Advisory"). Per Pattern C ([`02b-pattern-c-architecture.md §1, §8`](./02b-pattern-c-architecture.md)) and the spinout runbook ([`../migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)), `lumivara.ca` follows Client #1 to her own repo at the P5.6 spinout (Phase 4 of [`../migrations/00-automation-readiness-plan.md §6 row 12`](../migrations/00-automation-readiness-plan.md)).
+The operator owns `lumivara.ca`. It is currently the production domain of **Client #1** (Beas Banerjee's HR consulting practice, branded "Lumivara People Advisory"). Per Dual-Lane Repo ([`02b-dual-lane-architecture.md §1, §8`](./02b-dual-lane-architecture.md)) and the spinout runbook ([`../migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)), `lumivara.ca` follows Client #1 to her own repo at the P5.6 spinout (Phase 4 of [`../migrations/00-automation-readiness-plan.md §6 row 12`](../migrations/00-automation-readiness-plan.md)).
 
 Two questions surfaced 2026-04-30:
 
@@ -34,13 +34,13 @@ Two questions surfaced 2026-04-30:
 
 | Lens | Why co-hosting fails |
 |---|---|
-| **Pattern C ownership** | `lumivara.ca` follows Client #1 at Phase 4 spinout. After handover, Beas owns the DNS zone. Squatting `forge.lumivara.ca` long-term means operator infrastructure depends on a client's registrar account — exactly the dependency Pattern C is designed to eliminate. |
+| **Dual-Lane Repo ownership** | `lumivara.ca` follows Client #1 at Phase 4 spinout. After handover, Beas owns the DNS zone. Squatting `forge.lumivara.ca` long-term means operator infrastructure depends on a client's registrar account — exactly the dependency Dual-Lane Repo is designed to eliminate. |
 | **SEO topical authority** | HR-consulting backlinks (advisor directories, HR forums) and B2B-automation backlinks signal contradictory topical authority on the same apex. `Organization` schema becomes ambiguous. Branded search for "Lumivara" returns a confused SERP. |
 | **Brand / trust optics** | A small-business prospect lands on `forge.lumivara.ca`, walks the URL up one hop, finds an HR consultancy. Reduces conversion. Beas's brand also loses crispness. |
 | **Sub-product composition** | `15 §3` plans Forge Voice / Brand / Pulse / Atlas / Studio at `pulse.lumivara-forge.com`. Under co-hosting that becomes `pulse.forge.lumivara.ca` — three labels, structurally signaling "tenant of a tenant." |
 | **Cost** | Domain registration (~$30/yr) is trivial vs. the structural risk. No real saving. |
 | **Brand-separation policy** | `15 §6` forbids Client #1 identifiers in operator-scope docs. Co-hosting at the DNS level is the most public possible violation of the spirit of that rule. |
-| **Operations** | Sharing a domain forces either (a) Next.js rewrites/proxies (coupling), (b) one Vercel project hosting two sites (violates Pattern C two-repo separation), or (c) DNS-level subdomain split (only viable but inherits all the problems above). |
+| **Operations** | Sharing a domain forces either (a) Next.js rewrites/proxies (coupling), (b) one Vercel project hosting two sites (violates Dual-Lane two-repo separation), or (c) DNS-level subdomain split (only viable but inherits all the problems above). |
 
 ### Alternative considered: rebrand Beas
 
@@ -54,7 +54,7 @@ This option is preserved as a fallback if D2's brand reconsideration concludes "
 ### What this confirms (no change)
 
 - `lumivara.ca` stays Client #1's, transfers to Beas's new repo at Phase 4 (`00-automation-readiness-plan.md §6 row 12` unchanged).
-- Pattern C two-repo separation unchanged.
+- Dual-Lane two-repo separation unchanged.
 - Sub-product naming convention (`Lumivara X Sites / Voice / Brand / Pulse / Atlas / Studio`) unchanged in shape — only the `X` is under reconsideration.
 - Brand-separation policy (`15 §6`) unchanged.
 
@@ -102,7 +102,7 @@ If the operator wants to coin a new word outside the shortlist, that is a separa
 
 ### What the brand drift sweep already shipped (PR #200) — and how it's affected
 
-PR #200 mechanically rewrote `lumivara.com` → `lumivara-forge.com` and `Lumivara Infotech` → `Lumivara Forge` across the docs. If D2 picks a name other than "Lumivara Forge," a second drift sweep is needed (mechanically identical to the first; existing tooling at [`scripts/pattern-c-audit.sh`](../../scripts/pattern-c-audit.sh) covers detection). This is cheap and is not a reason to defer D2.
+PR #200 mechanically rewrote `lumivara.com` → `lumivara-forge.com` and `Lumivara Infotech` → `Lumivara Forge` across the docs. If D2 picks a name other than "Lumivara Forge," a second drift sweep is needed (mechanically identical to the first; existing tooling at [`scripts/dual-lane-audit.sh`](../../scripts/dual-lane-audit.sh) covers detection). This is cheap and is not a reason to defer D2.
 
 ---
 
@@ -116,14 +116,14 @@ PR #200 mechanically rewrote `lumivara.com` → `lumivara-forge.com` and `Lumiva
 
 ### Bot-side (after D2 lands)
 
-- [ ] **A1** — Run a second brand-drift sweep (mirror PR #200): `Lumivara Forge` → new brand, `lumivara-forge` → new slug, `lumivara-forge.com` → new domain. Use `scripts/pattern-c-audit.sh` to detect; one find-replace PR.
+- [ ] **A1** — Run a second brand-drift sweep (mirror PR #200): `Lumivara Forge` → new brand, `lumivara-forge` → new slug, `lumivara-forge.com` → new domain. Use `scripts/dual-lane-audit.sh` to detect; one find-replace PR.
 - [ ] **A2** — Update `src/lib/site-config.ts` builder URL + footer credit (`§4` of `15-terminology-and-brand.md`).
 - [ ] **A3** — Resume Phase 0 of `00-automation-readiness-plan.md` from row 1.
 
 ### What stays unchanged regardless of D2
 
 - Phase 4 DNS cutover scope (`lumivara.ca` → Beas's new Vercel project) — `00-automation-readiness-plan.md §6 row 12` confirmed.
-- Pattern C architecture — `02b-pattern-c-architecture.md` unchanged.
+- Dual-Lane Repo architecture — `02b-dual-lane-architecture.md` unchanged.
 - `15 §6` forbidden-strings policy against Client #1 identifiers — unchanged; the brand-name change does not affect the separation rule.
 - `15 §3` sub-product naming **shape** (`Lumivara X Sites / Voice / Brand / Pulse / Atlas / Studio`) — only the `X` changes.
 
@@ -134,7 +134,7 @@ PR #200 mechanically rewrote `lumivara.com` → `lumivara-forge.com` and `Lumiva
 - [`15-terminology-and-brand.md §2`](./15-terminology-and-brand.md) — pre-vetted shortlist + selection criteria.
 - [`15-terminology-and-brand.md §4`](./15-terminology-and-brand.md) — locked rename table (carries a reconsideration banner pointing here, post-2026-04-30).
 - [`15-terminology-and-brand.md §5`](./15-terminology-and-brand.md) — pending-action list (rows now reframed as blocked on D2, post-2026-04-30).
-- [`02b-pattern-c-architecture.md §1, §8`](./02b-pattern-c-architecture.md) — unchanged; D1 derives from §1's two-repo trust model.
+- [`02b-dual-lane-architecture.md §1, §8`](./02b-dual-lane-architecture.md) — unchanged; D1 derives from §1's two-repo trust model.
 - [`../migrations/00-automation-readiness-plan.md §2.1, §2.2`](../migrations/00-automation-readiness-plan.md) — Phase 0 rows 0.1, 0.6, 1, 2 carry forward-pointers to this ADR.
 
 *Created: 2026-04-30.*

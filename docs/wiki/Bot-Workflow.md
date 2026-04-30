@@ -3,12 +3,12 @@
 > <!-- do-not-copy:v1 -->
 > **🛠 Do not copy to client repos.** This page describes operator-side machinery that
 > lives in the platform repo or in a per-client pipeline repo (`<brand-slug>/<client-slug>-pipeline`).
-> Under [Pattern C (locked 2026-04-28)](../mothership/02b-pattern-c-architecture.md), a client cloning
+> Under [Dual-Lane Repo (locked 2026-04-28)](../mothership/02b-dual-lane-architecture.md), a client cloning
 > their `<client-slug>-site` repo cannot reach the pipeline repo at all — they are not added as
 > a collaborator. If you are the operator scaffolding a new client repo, **omit this page from
 > the per-client wiki**.
 
-> **Pipeline lane.** Workflow YAML lives in the **pipeline repo** (`<slug>-pipeline`), and cron schedules fire from its `main` (the canonical GitHub Actions default-branch path — no overlay tricks). The site repo's `.github/workflows/` directory is empty by design. See [`docs/mothership/02b-pattern-c-architecture.md`](../mothership/02b-pattern-c-architecture.md) for the canonical two-repo model.
+> **Pipeline lane.** Workflow YAML lives in the **pipeline repo** (`<slug>-pipeline`), and cron schedules fire from its `main` (the canonical GitHub Actions default-branch path — no overlay tricks). The site repo's `.github/workflows/` directory is empty by design. See [`docs/mothership/02b-dual-lane-architecture.md`](../mothership/02b-dual-lane-architecture.md) for the canonical two-repo model.
 
 The day-to-day operation of the autopilot is automated. Here's how the pipeline works.
 

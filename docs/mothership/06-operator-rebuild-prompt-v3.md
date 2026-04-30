@@ -19,7 +19,7 @@ v2 had two prompts. v3 has four — splitting "operator pipeline overlay" into t
 | **Prompt B2** — n8n + Vercel + Twilio integration | Operator's machine (mothership) | 30–60 min | n8n workflows imported & activated, Vercel envs set, Twilio number wired |
 | **Prompt C** — Smoke test sweep | Site + pipeline repos (anywhere with `gh`) | 15–30 min | All six smoke tests in `docs/operator/SMOKE_TESTS.md` green |
 
-> **Pattern C is canonical.** The site repo and pipeline repo are separate; workflows live in the pipeline repo only. See `02b-pattern-c-architecture.md` for the canonical architecture and §11 below for the one-paragraph "why two repos."
+> **Dual-Lane Repo is canonical.** The site repo and pipeline repo are separate; workflows live in the pipeline repo only. See `02b-dual-lane-architecture.md` for the canonical architecture and §11 below for the one-paragraph "why two repos."
 
 ---
 
@@ -206,7 +206,7 @@ DOD:
 Append entries for: B1-01 .. B1-11 (every row in `18 §3`). Pay particular attention to:
 
 - B1-06 (App-token mint pattern) — confirms every site-touching workflow mints a short-lived installation token.
-- B1-10 (no `.github/workflows/` on site repo) — proves Pattern C separation; if this row's validation returns 200, treat as a P0 leak and run the rollback below.
+- B1-10 (no `.github/workflows/` on site repo) — proves Dual-Lane Repo separation; if this row's validation returns 200, treat as a P0 leak and run the rollback below.
 
 ### Rollback path
 
@@ -462,8 +462,8 @@ Done in 30 minutes if everything is documented; an unpleasant afternoon if it is
 
 ---
 
-## 11. Why two repos (Pattern C in one paragraph)
+## 11. Why two repos (Dual-Lane Repo in one paragraph)
 
-The site repo is what the client clones, owns at handover, and shows the world. The pipeline repo is where the cron fires from, where the bot's workflows live, and where the operator's prompts and scripts sit. They are separate GitHub repositories — the client has Read access only on the site repo and never sees the pipeline repo. The GitHub App bridges the two: per workflow run, the pipeline mints a short-lived installation token scoped to the matched site repo, uses it to push branches and open PRs, and discards it. The "client cannot see the autopilot" claim is now an architectural fact, not a marketing line. Full canonical reference: `02b-pattern-c-architecture.md`.
+The site repo is what the client clones, owns at handover, and shows the world. The pipeline repo is where the cron fires from, where the bot's workflows live, and where the operator's prompts and scripts sit. They are separate GitHub repositories — the client has Read access only on the site repo and never sees the pipeline repo. The GitHub App bridges the two: per workflow run, the pipeline mints a short-lived installation token scoped to the matched site repo, uses it to push branches and open PRs, and discards it. The "client cannot see the autopilot" claim is now an architectural fact, not a marketing line. Full canonical reference: `02b-dual-lane-architecture.md`.
 
 *Last updated: 2026-04-28.*

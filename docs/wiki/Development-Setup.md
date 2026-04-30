@@ -59,14 +59,14 @@ docs/            # Project documentation
 CONTRIBUTING.md
 ```
 
-> A clean per-client `<slug>-site` repo has nothing under `scripts/` or `.github/workflows/` on `main` — under [Pattern C](../mothership/02b-pattern-c-architecture.md) that machinery lives in the matched `<slug>-pipeline` repo (operator-private; client has no Read access). The site repo is autopilot-free for the entire engagement, not just at handover.
+> A clean per-client `<slug>-site` repo has nothing under `scripts/` or `.github/workflows/` on `main` — under [Dual-Lane Repo](../mothership/02b-dual-lane-architecture.md) that machinery lives in the matched `<slug>-pipeline` repo (operator-private; client has no Read access). The site repo is autopilot-free for the entire engagement, not just at handover.
 
 ## 🛠 Operator-only setup
 
 <!-- do-not-copy:v1 -->
 > **🛠 Do not copy to client repos.** This section describes operator-side machinery that
 > lives in the platform repo or in a per-client pipeline repo (`<brand-slug>/<client-slug>-pipeline`).
-> Under [Pattern C (locked 2026-04-28)](../mothership/02b-pattern-c-architecture.md), a client cloning
+> Under [Dual-Lane Repo (locked 2026-04-28)](../mothership/02b-dual-lane-architecture.md), a client cloning
 > their `<client-slug>-site` repo cannot reach the pipeline repo at all. If you are the operator
 > scaffolding a new client repo, **omit this section from the per-client wiki**.
 
@@ -79,7 +79,7 @@ npm install -g @anthropic-ai/claude-code
 claude login    # OAuth flow against the operator's Max 20x subscription
 ```
 
-The OAuth token is stored as an **org-level GitHub Actions secret** (`CLAUDE_CODE_OAUTH_TOKEN`) on the operator's GitHub org with `Repository access: Selected` enumerating each `<slug>-pipeline` repo. The site repos never receive this secret directly — the workflows that consume it run in the matched pipeline repo (per [`docs/mothership/02b-pattern-c-architecture.md §3`](../mothership/02b-pattern-c-architecture.md)).
+The OAuth token is stored as an **org-level GitHub Actions secret** (`CLAUDE_CODE_OAUTH_TOKEN`) on the operator's GitHub org with `Repository access: Selected` enumerating each `<slug>-pipeline` repo. The site repos never receive this secret directly — the workflows that consume it run in the matched pipeline repo (per [`docs/mothership/02b-dual-lane-architecture.md §3`](../mothership/02b-dual-lane-architecture.md)).
 
 ### n8n locally
 

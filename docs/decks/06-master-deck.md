@@ -96,7 +96,7 @@ Source: `docs/storefront/01-gig-profile.md` Part 2.
 | 1 | **No decay.** | The site stays current because making it current is a 30-second job, not a $200 invoice. | 75% of consumers abandon outdated sites (`[V] §B-Outdated-75`). |
 | 2 | **No developer phone calls.** | Edits go in by phone, email, or SMS. The laptop stays closed. | 50% of SMB owners cite "lack of skill" as primary digital-adoption barrier (`[S] §B-SMB-Mobile`). |
 | 3 | **Predictable monthly cost.** | One flat fee covers AI, monitoring, edits, improvements. Zero surprise invoices. | Boutique agency edits run $75–$150/hr (`[S] §B-Boutique-Agency`). |
-| 4 | **Full ownership.** | Code, domain, hosting account — all in the client's name on day one. | Pattern C two-repo isolation (`docs/mothership/02b-pattern-c-architecture.md`). |
+| 4 | **Full ownership.** | Code, domain, hosting account — all in the client's name on day one. | two-repo isolation (Dual-Lane Repo) (`docs/mothership/02b-dual-lane-architecture.md`). |
 | 5 | **Quality on autopilot.** | 90+ Lighthouse on every page. Accessibility regressions caught before they ship. | 95.9% of WebAIM-Million pages fail WCAG with 56.8 errors/page avg (`[V] §B-WebAIM`); 3,117 ADA web lawsuits in 2025, +27% YoY (`[V] §B-ADA-Lawsuits`). |
 | 6 | **Nothing publishes without consent.** | Every change waits for a tap on the client's phone. | HITL gate mitigates the ~33% AI-coding-agent failure rate seen on SWE-bench (`[S] §B-SWE-bench`). |
 
@@ -179,7 +179,7 @@ Source: `docs/storefront/01-gig-profile.md` Closing note.
 2. **Multi-AI fallback ladder.** Claude Opus → Gemini → OpenAI Codex. Triage, plan, execute, review — each stage has a fallback so a single-vendor outage never blocks the queue. (`docs/AI_ROUTING.md`.)
 3. **Plan-then-Execute pipeline.** Every routine issue gets a structured AI plan as a PR comment *before* code is written. The client reads the plan first.
 4. **Tier-based cadence.** T0 manual, T1 daily, T2 every 2h, T3 hourly. The bot's "energy" is a sold dial. (`docs/mothership/04-tier-based-agent-cadence.md`.)
-5. **Pattern C two-repo isolation.** Client gets a clean `<slug>-site` repo (private → transferable). The pipeline, prompts, and operator IP live in a separate `<slug>-pipeline` repo the client never sees. (`docs/mothership/02b-pattern-c-architecture.md`.)
+5. **two-repo isolation (Dual-Lane Repo).** Client gets a clean `<slug>-site` repo (private → transferable). The pipeline, prompts, and operator IP live in a separate `<slug>-pipeline` repo the client never sees. (`docs/mothership/02b-dual-lane-architecture.md`.)
 
 ---
 
@@ -191,7 +191,7 @@ Source: `docs/storefront/01-gig-profile.md` Closing note.
 | Multi-AI fallback | Requires three live API contracts, a deterministic router, and prompt-pack parity across providers. Most freelancers hold one key. |
 | Plan-then-Execute | Every routine issue gets an AI-authored plan comment before code lands. Few competitors run this gate at all. |
 | Tier cadence | The pipeline reads tier from a per-client variable; cron schedule, model selection, and auto-merge gates all branch on it. Not a feature flag — a whole product surface. |
-| Pattern C isolation | A GitHub App + two-repo split + per-engagement install ID. Operator IP stays operator-side; the client repo is genuinely "vanilla" if they ever leave. |
+| Dual-Lane Repo isolation | A GitHub App + two-repo split + per-engagement install ID. Operator IP stays operator-side; the client repo is genuinely "vanilla" if they ever leave. |
 
 The site is a commodity. The **system around the site** is the moat.
 
@@ -213,7 +213,7 @@ The boundaries *are* the strategy. They keep the operator under 175 hours a mont
 
 - **Phone-as-CMS** is the headline feature. Nobody in our price band offers it.
 - **Multi-AI fallback** turns a single-vendor risk into a sold feature ("we don't pause when one provider hiccups").
-- **Pattern C** lets us license the system per engagement while the *site* is genuinely the client's.
+- **Dual-Lane Repo** lets us license the system per engagement while the *site* is genuinely the client's.
 - **Tier cadence** turns "how aggressive is the bot" into a sold dial, not an internal toggle.
 - **The negative list** (what we don't sell) is itself a differentiator — boundaries clients can read and trust.
 
@@ -347,7 +347,7 @@ These are gaps in the market that, if a well-funded competitor closed, would com
 - **Phone-as-CMS over a real codebase.** Not promoted by any major builder. Closest: Framer's mobile editor, but it's still inside Framer's stack.
 - **Multi-AI fallback as a sold feature.** Most AI-site tools commit to one model; outage → queue stops.
 - **Plan-then-Execute with a human approval tap.** Some Cursor / Devin-style products do "AI proposes a PR" but no flat-rate SMB packaging.
-- **Two-repo Pattern C operator/client split.** Genuinely uncommon — most operators commingle automation and site code, which makes hand-over messy.
+- **Two-repo Dual-Lane Repo operator/client split.** Genuinely uncommon — most operators commingle automation and site code, which makes hand-over messy.
 
 Watch list reassessed every 2 months: **Framer** (closest substitution risk if they add code-export + n8n), **Vercel v0** (if they package retainer), and any **Anthropic-built "ship a marketing site" agent**.
 
@@ -458,9 +458,9 @@ Three forcing functions make 30 clients the right ceiling, not the consolation p
 ## Steps in plain order
 
 1. **Lock the brand and own the slugs.** `Lumivara Forge` is locked (`01-business-plan.md §1`); buy domain, GitHub org, Resend domain, Twilio sub-account. *(Done / in progress.)*
-2. **Close the architecture critiques.** Pattern C lock, security topology, capacity reconciliation, ops sequencing. *(P4.6 in `docs/mothership/00-INDEX.md`; underway.)*
+2. **Close the architecture critiques.** Dual-Lane Repo lock, security topology, capacity reconciliation, ops sequencing. *(P4.6 in `docs/mothership/00-INDEX.md`; underway.)*
 3. **Bootstrap the mothership repo.** `palimkarakshay/lumivara-forge-pipeline`, with workflow templates, scripts, n8n exports. (`docs/mothership/05-mothership-repo-buildout-plan.md`, P5.)
-4. **Spin out Client #1 into clean Pattern C repos.** Use it as the showcase. (`docs/migrations/00-automation-readiness-plan.md` + the lumivara-people-advisory spinout runbook, P5.6 / P6.)
+4. **Spin out Client #1 into clean Dual-Lane Repo repos.** Use it as the showcase. (`docs/migrations/00-automation-readiness-plan.md` + the lumivara-people-advisory spinout runbook, P5.6 / P6.)
 5. **Publish the storefront.** Fiverr Gig 1, Upwork profile, Toptal/Arc/Lemon screening, LinkedIn case-study post. (`docs/storefront/01-gig-profile.md` Part 10.)
 6. **Sell Client #2 + #3.** Real arms-length retainers. Trigger MSA + payment automation + privacy work. (`docs/mothership/08-future-work.md §1–§3`.)
 7. **Cross client #5.** Trigger 1Password vault + break-glass envelope. (`docs/mothership/08-future-work.md §4`.)
@@ -475,7 +475,7 @@ Three forcing functions make 30 clients the right ceiling, not the consolation p
 | Theme | Steps |
 |---|---|
 | **Identity + IP** | Brand lock; mothership repo; vault; MSA + SOW. |
-| **Product hardening** | Critique closure (Pattern C, security, capacity, ops); admin portal Phases 1–5; multi-AI fallback proven on a live client. |
+| **Product hardening** | Critique closure (Dual-Lane Repo, security, capacity, ops); admin portal Phases 1–5; multi-AI fallback proven on a live client. |
 | **Go-to-market** | Storefronts (Fiverr, Upwork, Toptal); LinkedIn; first 5 reviews; price step-ups. |
 | **Operations** | Per-engagement provisioning matrix; evidence log per client; monthly + quarterly cadences (`docs/mothership/03b-security-operations-checklist.md`). |
 | **Finance + legal** | Stripe Subscriptions; auto-pause schedule; PIPEDA + provincial overlays; insurance once over $50k revenue. |
@@ -485,7 +485,7 @@ Three forcing functions make 30 clients the right ceiling, not the consolation p
 
 ## The two non-negotiable invariants
 
-1. **The two-repo separation (Pattern C) holds on every client.** No workflows on the site repo. No operator-side IP commingled into the client's tree. (`docs/mothership/02b-pattern-c-architecture.md`, `pattern-c-enforcement-checklist.md`.)
+1. **The two-repo separation (Dual-Lane Repo) holds on every client.** No workflows on the site repo. No operator-side IP commingled into the client's tree. (`docs/mothership/02b-dual-lane-architecture.md`, `dual-lane-enforcement-checklist.md`.)
 2. **The session-budget charter (80% / 95% gates) holds on every Claude run.** No client floods the queue. No run exits incomplete on `main`. (`AGENTS.md` "Session charter".)
 
 Everything else can flex. These two cannot.
@@ -501,7 +501,7 @@ For each numbered step above, the operator's audit question is: *"If a future me
 | 1 — Brand lock | `docs/mothership/15-terminology-and-brand.md` updated; domain WHOIS recorded. |
 | 2 — Critiques closed | P4.6 runs A–D referenced in `docs/mothership/00-INDEX.md` marked ✅. |
 | 3 — Pipeline bootstrapped | Pipeline repo exists; cron + Actions green on a no-op issue. |
-| 4 — Client #1 spun out | Two repos visible in the Pattern C audit; brand-leak audit clean. |
+| 4 — Client #1 spun out | Two repos visible in the Dual-Lane Repo audit; brand-leak audit clean. |
 | 5 — Storefront live | Fiverr URL + Upwork URL + LinkedIn pinned post recorded. |
 | 6 — Client #2/#3 signed | Signed MSAs filed; Stripe subscription active. |
 | 7–10 — Cliff triggers | The capacity table in `18 §6` records the date each cliff hit. |
@@ -514,7 +514,7 @@ If a step doesn't have a verifiable artefact, it isn't done.
 
 - **Identity** (brand, repos, vault) → **Product** (close critiques, harden) → **Sales** (storefronts, first 5 clients) → **Scale** (cliffs at 6 / 16 / 26 / 30).
 - The order matters: identity before product, product before sales, sales before scaling decisions.
-- Pattern C and the budget charter are the **invariants** through every step.
+- Dual-Lane Repo and the budget charter are the **invariants** through every step.
 - Every step has an artefact a future-self can verify.
 
 > Pitch line: *"Lock the brand, harden the product, then sell — in that order."*
@@ -541,8 +541,8 @@ If a step doesn't have a verifiable artefact, it isn't done.
 | **P4.5 — External critique** | Docs `10`–`15` + `16` prompt-pack | ✅ Done |
 | **P4.6 — Critique closure** | Runs A–D: cron flaw, security gaps, maths, ops sweep | ⏳ **In progress** |
 | **P5 — Pipeline repo bootstrap** | Build empty `palimkarakshay/lumivara-forge-pipeline` end-to-end | ⏳ After P4.6 |
-| **P5.6 — Pattern C spinout** | Split this combined repo into Site + Pipeline pair | ⏳ After P5 |
-| **P6 — Migrate Client #1** | Re-scaffold Client #1 site into a clean per-client Pattern C pair | ⏳ After P5.6 |
+| **P5.6 — Dual-Lane Repo spinout** | Split this combined repo into Site + Pipeline pair | ⏳ After P5 |
+| **P6 — Migrate Client #1** | Re-scaffold Client #1 site into a clean per-client Dual-Lane Repo pair | ⏳ After P5.6 |
 | **P7 — Hardening tasks** | Walk `05-template-hardening-notes.md` items into pipeline issues | ⏳ After P6 |
 | **P8 — Legal & vault** | PIPEDA, contracts, secrets vault, market study | ⏳ Months 2–6 |
 
@@ -611,7 +611,7 @@ Source: `docs/storefront/03-cost-analysis.md` Part D + `docs/mothership/18-capac
 ## Section recap — Project plan
 
 - **Phases P0–P4.5 are done.** P4.6 critique-closure is the immediate work.
-- **P5 → P5.6 → P6 → P7** is the pipeline-repo bootstrap, the Pattern C spinout, the Client #1 migration, then hardening — months 1–3.
+- **P5 → P5.6 → P6 → P7** is the pipeline-repo bootstrap, the Dual-Lane Repo spinout, the Client #1 migration, then hardening — months 1–3.
 - **P8** legal + vault is staged across months 2–6, gated on client count.
 - **Revenue ramp:** $5k/mo (months 1–3) → $15–21k/mo (months 4–9) → $22k/mo (month 12).
 - **Day job replaced** between months 9 and 12.
@@ -675,7 +675,7 @@ If a cliff hits *during* an onboarding, finish the onboarding first, upgrade aft
 2. **The plan-then-execute gate adds latency clients don't want.** Mitigation: Tier 3 cadence runs hourly; Tier 0 explicitly opts out of automation entirely.
 3. **The phone-edit shortcut breaks on iOS / Android update.** Mitigation: web-based admin portal is the canonical surface; SMS + email are fallback channels.
 4. **HMAC rotation goes wrong.** Mitigation: two-phase HMAC rotation in `docs/mothership/03-secure-architecture §3.Y`; recovery drill in `03b-security-operations-checklist`.
-5. **Cron drift between site and pipeline repos.** Mitigation: Pattern C puts cron only on the pipeline repo's `main` (canonical GitHub Actions path); enforced by `pattern-c-enforcement-checklist.md`.
+5. **Cron drift between site and pipeline repos.** Mitigation: Dual-Lane Repo puts cron only on the pipeline repo's `main` (canonical GitHub Actions path); enforced by `dual-lane-enforcement-checklist.md`.
 
 ---
 
@@ -804,7 +804,7 @@ Source: `docs/storefront/03-cost-analysis.md` Part E.
 - **1Password + YubiKey** — secrets vault.
 - **GitHub Pages SPA** — operator dashboard (mobile-first).
 
-Most of this is already wired up on Client #1's site; the work is to **separate** it cleanly into pipeline + per-client repos under Pattern C.
+Most of this is already wired up on Client #1's site; the work is to **separate** it cleanly into pipeline + per-client repos under Dual-Lane Repo.
 
 ---
 
@@ -854,7 +854,7 @@ Year-1 destination: **30 active clients, ~$120k take-home, day job replaced.**
 | Section | The answer in one line |
 |---|---|
 | 1 — Benefits | The site stops decaying; flat fee replaces $200/edit invoices. |
-| 2 — Differentiators | Phone-as-CMS over a real codebase, multi-AI fallback, Pattern C operator/client split. |
+| 2 — Differentiators | Phone-as-CMS over a real codebase, multi-AI fallback, Dual-Lane Repo operator/client split. |
 | 3 — Customer voice | Autonomy + predictability + ownership + custom looks. |
 | 4 — Competitor claims | Squarespace owns "edit yourself"; we own "edit yourself + own the code". |
 | 5 — End goal | 30 retainer clients in Stage 1; agency or SaaS optional later. |
@@ -886,7 +886,7 @@ Before sharing this deck — even with a single named recipient — walk these c
 *Master deck — operator-scope, confidential.*
 
 Source files reconciled in this deck:
-`docs/mothership/00-INDEX.md` · `01-business-plan.md` · `02b-pattern-c-architecture.md` · `04-tier-based-agent-cadence.md` · `08-future-work.md` · `15-terminology-and-brand.md` · `18-capacity-and-unit-economics.md`
+`docs/mothership/00-INDEX.md` · `01-business-plan.md` · `02b-dual-lane-architecture.md` · `04-tier-based-agent-cadence.md` · `08-future-work.md` · `15-terminology-and-brand.md` · `18-capacity-and-unit-economics.md`
 `docs/storefront/00-quick-start.md` · `01-gig-profile.md` · `02-pricing-tiers.md` · `03-cost-analysis.md` · `04-slide-deck.md` · `05-template-hardening-notes.md` · `06-positioning-slide-deck.md`
 `docs/decks/00-INDEX.md` · `01-investor-deck.md` · `02-partner-deck.md` · `03-employee-deck.md` · `04-prospective-client-deck.md` · `05-advisor-deck.md`
 `docs/research/00-INDEX.md` · `03-source-bibliography.md` · `04-client-personas.md` · `06-drawbacks-and-honest-risks.md`

@@ -5,9 +5,9 @@
 Operator-run procedure for walking the live GitHub + Vercel
 configuration and reconciling it against
 [`platform-baseline.md`](platform-baseline.md),
-[`variable-registry.md`](variable-registry.md), and the Pattern C
+[`variable-registry.md`](variable-registry.md), and the Dual-Lane Repo
 enforcement controls in
-[`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md).
+[`docs/mothership/dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md).
 The audit produces one filed issue per mismatch, plus an updated
 `_Last verified_` stamp on each ops doc walked.
 
@@ -115,7 +115,7 @@ gh api repos/palimkarakshay/lumivara-site/branches/operator/main/protection \
 Today this branch does not exist on the single-tenant repo. Skip the
 diff; record the export as `branch-not-yet-created`. After the Client
 #1 spinout (issue #141), this row becomes a P0 mismatch if the
-protection block does not match the canonical Pattern C C-MUST-4
+protection block does not match the canonical Dual-Lane Repo C-MUST-4
 shape.
 
 ### §2.6 Rulesets
@@ -385,7 +385,7 @@ in-place during the audit:
 | Default | Quarterly — first business day of the quarter. |
 | Secret rotation (any row in `variable-registry.md` rotating) | Audit on the same day; do **not** wait for the next quarterly. |
 | Branch-protection change on any client repo | Audit on the same day. |
-| New client repo onboarded | Run §5 of `pattern-c-enforcement-checklist.md` *before* declaring the spinout done; that audit pass is the first audit for the new repo. |
+| New client repo onboarded | Run §5 of `dual-lane-enforcement-checklist.md` *before* declaring the spinout done; that audit pass is the first audit for the new repo. |
 | Change to this runbook, `platform-baseline.md`, or `variable-registry.md` | Re-walk the changed sections only; bump only the changed `_Last verified_` stamp. |
 
 ---
@@ -432,6 +432,6 @@ follow-up by hand with a label that opens the auto-routine path.
 
 - [`platform-baseline.md`](platform-baseline.md) — the **expected** side this runbook diffs against.
 - [`variable-registry.md`](variable-registry.md) — the cross-surface inventory of every named key.
-- [`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md) §6 — Pattern C audit cadence; this runbook's §7 is the GitHub + Vercel concretisation of that cadence.
+- [`docs/mothership/dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md) §6 — Dual-Lane Repo audit cadence; this runbook's §7 is the GitHub + Vercel concretisation of that cadence.
 - [`docs/mothership/03-secure-architecture.md §3.2`](../mothership/03-secure-architecture.md#32-audit-cadence) — the secret-rotation cadence this runbook operationalises.
 - [`.github/ISSUE_TEMPLATE/audit-mismatch.md`](../../.github/ISSUE_TEMPLATE/audit-mismatch.md) — the template §5 files mismatches with.

@@ -6,7 +6,7 @@ The deterministic, per-engagement provisioning matrix. Every step the operator r
 
 Read this file alongside `06-operator-rebuild-prompt-v3.md` (the prompt-by-prompt runbook) and `19-engagement-evidence-log-template.md` (the per-client evidence log this matrix references).
 
-> **Pattern C is canonical** (`02b-pattern-c-architecture.md`, locked 2026-04-28). Where a row's behaviour will change once Pattern C has fully propagated through the per-engagement workflow, the row links to `§N+1 — Pattern C deltas` at the foot of this document. Until then, the row in the main matrix describes today's behaviour.
+> **Dual-Lane Repo is canonical** (`02b-dual-lane-architecture.md`, locked 2026-04-28). Where a row's behaviour will change once Dual-Lane Repo has fully propagated through the per-engagement workflow, the row links to `§N+1 — Dual-Lane Repo deltas` at the foot of this document. Until then, the row in the main matrix describes today's behaviour.
 
 ---
 
@@ -179,11 +179,11 @@ Owns: the Day 1 / 3 / 7 / 14 / 30 touchpoints in `06 §7`. Each row pairs a happ
 
 ---
 
-## §8 — Pattern C deltas
+## §8 — Dual-Lane Repo deltas
 
-Pattern C (`02b-pattern-c-architecture.md`, locked 2026-04-28) is canonical, but a few of the matrix rows describe behaviour that exists today and changes once the in-flight P5.4 propagation lands. This annex names the deltas; when the propagation issue ships, the rows in §1–§7 absorb the new behaviour and this annex collapses.
+Dual-Lane Repo (`02b-dual-lane-architecture.md`, locked 2026-04-28) is canonical, but a few of the matrix rows describe behaviour that exists today and changes once the in-flight P5.4 propagation lands. This annex names the deltas; when the propagation issue ships, the rows in §1–§7 absorb the new behaviour and this annex collapses.
 
-| Step ID | Today's behaviour (in §1–§7) | Post-Pattern-C behaviour (when P5.4 ships) |
+| Step ID | Today's behaviour (in §1–§7) | Post-Dual-Lane behaviour (when P5.4 ships) |
 |---|---|---|
 | A-01 | Site repo created manually via `gh repo create`. | `forge provision` step 2 creates the site repo as part of the same command that creates the pipeline repo (`02b §2 step 2`). |
 | B1-01 | Pipeline repo created manually via `gh repo create`. | `forge provision` step 2b creates the pipeline repo immediately after the site repo (`02b §2 step 2b`). Status flips to `full`. |
@@ -193,7 +193,7 @@ Pattern C (`02b-pattern-c-architecture.md`, locked 2026-04-28) is canonical, but
 | B2-01 to B2-03, B2-05 to B2-08, B2-12 | Each step run by hand against Vercel / Resend / Twilio / n8n APIs. | `forge provision` steps 8–10 (`05 §P5.4c`) absorb every row except `B2-04`, `B2-09`, `B2-10` (which stay `manual` per `14 §3`). Status flips from `future-CLI` to `full`. |
 | H-01 | `07-client-handover-pack.md` rendered manually with `sed`-style substitution. | `forge provision` step 13 (`05 §P5.4d`) renders the handover pack as the final phase of provision. Status flips to `full`. |
 
-When the propagation issue ships, this annex moves into the matrix proper and is deleted from here. Until then, **trust the main matrix's "today" status, not the post-Pattern-C column**.
+When the propagation issue ships, this annex moves into the matrix proper and is deleted from here. Until then, **trust the main matrix's "today" status, not the post-Dual-Lane column**.
 
 ---
 

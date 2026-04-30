@@ -1,12 +1,14 @@
 <!-- OPERATOR-ONLY. Canonical enforcement surface for the trust model defined in 02-architecture.md and 03-secure-architecture.md. -->
 
-# Pattern C — Enforcement Checklist
+# Dual-Lane Repo — Enforcement Checklist
 
-> **Status:** Source of truth for Pattern C compliance. Every architectural assertion in `02-architecture.md` and every "never" rule in `03-secure-architecture.md §1` is enforced by an explicit MUST / MUST-NOT row below. Cross-link, do not duplicate. Last updated: 2026-04-28.
+> **Status:** Source of truth for Dual-Lane Repo compliance. Every architectural assertion in `02-architecture.md` and every "never" rule in `03-secure-architecture.md §1` is enforced by an explicit MUST / MUST-NOT row below. Cross-link, do not duplicate. Last updated: 2026-04-28.
+>
+> **Naming note (2026-04-30):** This model was previously called "Pattern C" (the third option weighed in `11 §1`). It was renamed to "Dual-Lane Repo" for clarity. The stable control identifiers below — `C-MUST-1` … `C-MUST-NOT-6` — keep the historical `C-` letter so existing cross-references (in `.dual-lane.yml`, the spinout runbooks, and the secure-architecture doc) don't break. Treat the `C-` as an opaque ID prefix, not a live reference to "Pattern C".
 
-## §1 — Definition of Pattern C
+## §1 — Definition
 
-"Pattern C" is the operator's **two-repo** trust model (canonical and locked 2026-04-28; see `02b-pattern-c-architecture.md`). Each engagement has three repos in scope:
+The Dual-Lane Repo is the operator's **two-repo** trust model (canonical and locked 2026-04-28; see `02b-dual-lane-architecture.md`). Each engagement has three repos in scope:
 
 - **Platform repo** — `{{BRAND_SLUG}}/{{BRAND_SLUG}}-platform` (private, operator-only). Holds the autopilot templates, prompts, n8n workflow JSON, dashboard, storefront pack, per-client mirrors, and these platform docs. Workflows here run only against the platform repo's own `main` (e.g. `platform-smoke.yml`). See `02-architecture.md §1` and `02b §1`.
 - **Site repo** — `{{BRAND_SLUG}}/<client-slug>-site` (private during engagement; transferred to the client at handover). Branches: `main` (client-readable Next.js + admin portal). **No** `.github/workflows/` files on the site repo — the directory is empty by design (`02b §1`, `02b §4`).
@@ -15,6 +17,8 @@
 The defining property: the autopilot lives in a **separate repo the client has no Read access to**, not on a hidden branch. The site repo is autopilot-free for the entire engagement, not just at handover (`02b §6`).
 
 > **Historical note.** Earlier drafts of this checklist described an `operator/main` overlay branch on the site repo. That model is **deprecated** as of 2026-04-28 (decision recorded in `11 §1`; canonical statement in `02b`). The two-branch overlay survives only as historical context inside `11 §1`, `10 §2`, and the migration prompt-pack (`16`, `17`) under banners labelled "Historical / decision record." If a row below references the deprecated branch, it is a drift bug — fix it in the same PR.
+
+> Throughout this checklist, "C-MUST-*" / "C-MUST-NOT-*" are stable control IDs, kept verbatim from the original Pattern-C draft so cross-references survive the rename.
 
 This checklist is the *enforcement* of the two-repo model. The architecture docs are the *what*; the rows below are the *must / must-not / how to verify*.
 
@@ -47,7 +51,7 @@ Must return zero matches.
 
 Autopilot workflows (`triage`, `execute*`, `plan-issues`, `deep-research`, `codex-review`, `auto-merge`, `project-sync`, `setup-cli`, `ai-smoke-test`, `deploy-dashboard`) ship on the **pipeline repo's `main`**. The site repo's `.github/workflows/` directory is empty by design — site `main` may carry vanilla CI (lint/test) only, but in practice today it is empty.
 
-**Why:** GitHub Actions cron `schedule:` triggers fire from a repo's default branch. Keeping the autopilot in a *separate repo* the client has no Read access to means the workflows are invisible by **permission**, not by branch-listing politeness (`02b §6`). The deprecated `operator/main` overlay model relied on the client's discretion not to look at other branches; Pattern C's two-repo model removes the question entirely.
+**Why:** GitHub Actions cron `schedule:` triggers fire from a repo's default branch. Keeping the autopilot in a *separate repo* the client has no Read access to means the workflows are invisible by **permission**, not by branch-listing politeness (`02b §6`). The deprecated `operator/main` overlay model relied on the client's discretion not to look at other branches; the Dual-Lane Repo's two-repo model removes the question entirely.
 
 **Verify:**
 
@@ -204,7 +208,7 @@ Must list only `{{BRAND_SLUG}}-bot` (and the client's own GitHub username, if an
 
 ## §4 — Pre-migration gate (per client spinout)
 
-Before running `docs/migrations/<client>-spinout.md` (the spinout runbook tracked by issue #141), confirm the source artefact set is Pattern-C-ready. Each row maps to a §2 or §3 control.
+Before running `docs/migrations/<client>-spinout.md` (the spinout runbook tracked by issue #141), confirm the source artefact set is Dual-Lane-ready. Each row maps to a §2 or §3 control.
 
 | # | Pre-flight check | Source control | Ready? |
 |---|---|---|---|
@@ -253,7 +257,7 @@ Default: **quarterly**. Mandatory triggers (audit on the same day, not at next q
 - Every new client repo onboarded (run §5 before declaring spinout done — that *is* the first audit).
 - Every change to this checklist (re-read across all engagements).
 
-Audit procedure: walk every C-MUST and C-MUST-NOT row, run its verify line for every active client, log result in `docs/operator/INCIDENT_LOG.md` (mothership repo) under a `Pattern C audit YYYY-QN` heading. Cross-link `docs/ops/audit-runbook.md` once issue #145 lands.
+Audit procedure: walk every C-MUST and C-MUST-NOT row, run its verify line for every active client, log result in `docs/operator/INCIDENT_LOG.md` (mothership repo) under a `Dual-Lane audit YYYY-QN` heading. Cross-link `docs/ops/audit-runbook.md` once issue #145 lands.
 
 ---
 
@@ -263,6 +267,6 @@ Audit procedure: walk every C-MUST and C-MUST-NOT row, run its verify line for e
 - `03-secure-architecture.md` — the four "never" rules and the secret topology this checklist mirrors.
 - `09-github-account-topology.md` — org / bot account / repo layout.
 - `docs/migrations/` — spinout runbooks that cite §4 and §5 as gate / acceptance.
-- `docs/BACKLOG.md` — Pattern C audit cadence backlog row pointing here.
+- `docs/BACKLOG.md` — Dual-Lane Repo audit cadence backlog row pointing here.
 
 *Last updated: 2026-04-29.*

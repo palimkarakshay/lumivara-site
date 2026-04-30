@@ -64,7 +64,7 @@ The TAM/SAM framing the investor deck uses is **deliberately conservative**. Hea
 
 1. **The "Phone-as-CMS" architecture is real today.** n8n + Claude + GitHub Actions + Vercel previews are all production-grade primitives, not bleeding-edge research. Lumivara's own `lumivara-forge.com` runs the full pipeline. `[S] §B-n8n-MCP` — vendor docs.
 2. **Multi-AI fallback (Claude → Gemini → OpenAI) is documented and live in this repo.** See `docs/AI_ROUTING.md`. `[V] §B-Self` — operator-internal, verified by inspection.
-3. **Pattern C two-repo isolation (Pattern C Architecture) is locked.** See `docs/mothership/02b-pattern-c-architecture.md`. `[V] §B-Self`.
+3. **two-repo isolation (Dual-Lane Repo) (Dual-Lane Repo Architecture) is locked.** See `docs/mothership/02b-dual-lane-architecture.md`. `[V] §B-Self`.
 4. **AI hallucination is the single biggest engineering risk.** SWE-bench Bash Only stress test shows even strongest 2025/2026 models fail ~33% on real GitHub issues, and high-profile incidents have included an autonomous agent deleting a production database in seconds when staging boundaries were unclear. `[S] §B-SWE-bench` — secondary-source aggregation. The mitigation — Plan-then-Execute + tap-to-publish + Lighthouse/axe gates — is built in this repo.
 5. **Required engineering effort to get from today's repo to production-hardened pipeline: ~150–300 hours.** `[S] §B-Build-Effort` — Gemini's estimate; consistent with this repo's existing P5–P7 phase plan in `docs/mothership/00-INDEX.md`.
 
@@ -86,7 +86,7 @@ The TAM/SAM framing the investor deck uses is **deliberately conservative**. Hea
 2. **ADA / WCAG legal liability** — `[V] §B-ADA-Lawsuits`. Mitigation: programmatic accessibility testing in CI; carry E&O + cyber-liability insurance once over $50k revenue.
 3. **Anthropic / Google / OpenAI provider outage** — `[V] §B-Self`. Mitigation: deterministic multi-AI fallback ladder.
 4. **Operator burnout** — `[S] §B-Founder-Burnout` (2025 startup-founder burnout survey: 73% of tech founders hide burnout; 65% of startup failures attributed to it). Mitigation: 30-client cap, session-budget charter, weekly cadence, planned 2-week break before client #25.
-5. **Vendor lock-in for the client** — structurally impossible by Pattern C: domain, code, hosting all in client's name. `[V] §B-Self`.
+5. **Vendor lock-in for the client** — structurally impossible by Dual-Lane Repo: domain, code, hosting all in client's name. `[V] §B-Self`.
 6. **Single bad client poisoning the queue** — `[V] §B-Self`. Mitigation: per-client rate limits, tier cadence, "say-no-to" filter.
 
 **Deck mapping.** §6 directly powers `06-drawbacks-and-honest-risks.md` and the risk slides of every stakeholder deck.

@@ -1,15 +1,15 @@
 <!-- BEGIN:lane-banner -->
-> _Lane: ⚪ Both — this charter governs every AI agent working in either lane (Site / Pipeline) of this Pattern C-readying repo._
+> _Lane: ⚪ Both — this charter governs every AI agent working in either lane (Site / Pipeline) of this Dual-Lane-readying repo._
 
 # AI agent charter — `palimkarakshay/lumivara-site`
 
-This file is the runtime charter for every AI agent (Claude Code, Codex, Gemini) working in this repo. Read top-to-bottom before any tool call. The four sections below are independent (Pattern C lane awareness, Next.js gotchas, session-budget gates, Vercel parity) and all four bind every run.
+This file is the runtime charter for every AI agent (Claude Code, Codex, Gemini) working in this repo. Read top-to-bottom before any tool call. The four sections below are independent (Dual-Lane Repo lane awareness, Next.js gotchas, session-budget gates, Vercel parity) and all four bind every run.
 <!-- END:lane-banner -->
 
-<!-- BEGIN:pattern-c-orientation -->
-# Pattern C lane awareness (highest priority)
+<!-- BEGIN:dual-lane-orientation -->
+# Dual-Lane Repo lane awareness (highest priority)
 
-This repo is the **Phase 1 proof-of-concept** for the Pattern C two-repo trust model (per [`docs/migrations/00-automation-readiness-plan.md §1`](docs/migrations/00-automation-readiness-plan.md)). Two logically separate entities are co-housed in this tree until the P5.6 spinout splits them into their final repos:
+This repo is the **Phase 1 proof-of-concept** for the Dual-Lane two-repo trust model (Dual-Lane Repo) (per [`docs/migrations/00-automation-readiness-plan.md §1`](docs/migrations/00-automation-readiness-plan.md)). Two logically separate entities are co-housed in this tree until the P5.6 spinout splits them into their final repos:
 
 | Lane | Entity | What lives in it (high level) | Becomes (post-P5.6) |
 |---|---|---|---|
@@ -19,14 +19,14 @@ This repo is the **Phase 1 proof-of-concept** for the Pattern C two-repo trust m
 
 Hard rules for every agent run:
 
-1. **Operator IP never lands on a Site-only file.** When implementing a Site issue, do not edit anything under `docs/mothership/`, `docs/storefront/`, `docs/decks/`, `docs/research/`, `docs/migrations/`, `docs/n8n-workflows/`, `dashboard/`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/plan-issue*`, `scripts/test-routing*`, `scripts/lib/`, or `.github/workflows/` unless the issue carries the `infra-allowed` label. The `pattern-c-audit.sh §2` enforces this.
+1. **Operator IP never lands on a Site-only file.** When implementing a Site issue, do not edit anything under `docs/mothership/`, `docs/storefront/`, `docs/decks/`, `docs/research/`, `docs/migrations/`, `docs/n8n-workflows/`, `dashboard/`, `scripts/triage-*`, `scripts/execute-*`, `scripts/gemini-*`, `scripts/codex-*`, `scripts/plan-issue*`, `scripts/test-routing*`, `scripts/lib/`, or `.github/workflows/` unless the issue carries the `infra-allowed` label. The `dual-lane-audit.sh §2` enforces this.
 2. **Client #1 brand identifiers stay out of operator-scope files.** Per [`docs/mothership/15-terminology-and-brand.md §6`](docs/mothership/15-terminology-and-brand.md), the strings `Lumivara People Advisory`, `Lumivara People Solutions`, `people advisory`, `lumivara.ca`, `Beas Banerjee` are forbidden in operator-scope docs except inside the `15 §7` client-example appendix or a labelled `> _Client example — see 15 §7._` callout.
-3. **Run [`scripts/pattern-c-audit.sh`](scripts/pattern-c-audit.sh) after any structural change** (rename, new top-level file, new doc folder). Five-check sweep: stale brand, operator-pitch contamination, forbidden Client #1 strings, high-entropy committed secrets, duplicate doc numbers. Add a `<!-- pattern-c-audit:allow -->` per-line marker (or a doc-level allow-list entry in the script) only when the hit is genuinely legitimate and explain the carve-out in the same PR.
+3. **Run [`scripts/dual-lane-audit.sh`](scripts/dual-lane-audit.sh) after any structural change** (rename, new top-level file, new doc folder). Five-check sweep: stale brand, operator-pitch contamination, forbidden Client #1 strings, high-entropy committed secrets, duplicate doc numbers. Add a `<!-- dual-lane-audit:allow -->` per-line marker (or a doc-level allow-list entry in the script) only when the hit is genuinely legitimate and explain the carve-out in the same PR.
 4. **Cross-link with relative paths within a lane.** Inside `docs/mothership/` link to other `docs/mothership/...` siblings via `./` or to other lanes via `../<lane>/...`. The relative-path discipline lets the spinout filter trees without rewriting links.
 5. **The canonical lane map is [`docs/00-INDEX.md`](docs/00-INDEX.md).** When adding a new doc or top-level file, update that index (and `docs/<lane>/00-INDEX.md` if the lane has one) in the same PR.
 
-The architecture this charter enforces is locked in [`docs/mothership/02b-pattern-c-architecture.md`](docs/mothership/02b-pattern-c-architecture.md). The MUST / MUST-NOT enforcement rows are in [`docs/mothership/pattern-c-enforcement-checklist.md`](docs/mothership/pattern-c-enforcement-checklist.md).
-<!-- END:pattern-c-orientation -->
+The architecture this charter enforces is locked in [`docs/mothership/02b-dual-lane-architecture.md`](docs/mothership/02b-dual-lane-architecture.md). The MUST / MUST-NOT enforcement rows are in [`docs/mothership/dual-lane-enforcement-checklist.md`](docs/mothership/dual-lane-enforcement-checklist.md).
+<!-- END:dual-lane-orientation -->
 
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know

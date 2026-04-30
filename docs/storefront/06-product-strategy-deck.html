@@ -382,12 +382,12 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <li><strong>Phone-edit shortcut</strong> — submit a change from a phone in 30 seconds.</li>
 <li><strong>AI autopilot that implements + previews changes</strong> — multi-AI router (Claude → Gemini → OpenAI), plan-then-execute pipeline.</li>
 <li><strong>Tier-based cadence</strong> — T1 ships next morning, T2 within 2 hours, T3 within 1 hour.</li>
-<li><strong>Pattern C two-repo architecture</strong> — autopilot lives in an operator-only pipeline repo; the client's site repo is a clean Next.js codebase they own outright.</li>
+<li><strong>two-repo architecture (Dual-Lane Repo)</strong> — autopilot lives in an operator-only pipeline repo; the client's site repo is a clean Next.js codebase they own outright.</li>
 </ol>
 <blockquote>
 <p>Layers 2–5 are what nobody else is shipping in this market segment.</p>
 </blockquote>
-<p><span class="small">Source: <code>docs/AI_ROUTING.md</code>, <code>docs/mothership/02b-pattern-c-architecture.md</code>, <code>docs/mothership/04-tier-based-agent-cadence.md</code>.</span></p>
+<p><span class="small">Source: <code>docs/AI_ROUTING.md</code>, <code>docs/mothership/02b-dual-lane-architecture.md</code>, <code>docs/mothership/04-tier-based-agent-cadence.md</code>.</span></p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 56px 72px; }
 h1 { color: #1f1f1f; font-family: 'Fraunces', Georgia, serif; font-size: 2.4em; margin-bottom: 0.2em; }
@@ -441,7 +441,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <td>Trivial/easy non-design PRs auto-merge once the Vercel preview check is green. Design and critical-path changes always wait for a human tap.</td>
 </tr>
 <tr>
-<td><strong>Pattern C</strong></td>
+<td><strong>Dual-Lane Repo</strong></td>
 <td>Two private repos per client: <code>&lt;slug&gt;-site</code> (clean, client-readable, transferable) + <code>&lt;slug&gt;-pipeline</code> (operator-only, holds workflows + prompts + cron). The client cannot see the autopilot — at end of engagement they get a vanilla repo.</td>
 </tr>
 <tr>
@@ -450,7 +450,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 </tr>
 </tbody>
 </table>
-<p><span class="small">Source: <code>docs/AI_ROUTING.md</code>, <code>docs/ADMIN_PORTAL_PLAN.md</code>, <code>docs/mothership/02b-pattern-c-architecture.md §1</code>, <code>docs/mothership/04-tier-based-agent-cadence.md §1</code>.</span></p>
+<p><span class="small">Source: <code>docs/AI_ROUTING.md</code>, <code>docs/ADMIN_PORTAL_PLAN.md</code>, <code>docs/mothership/02b-dual-lane-architecture.md §1</code>, <code>docs/mothership/04-tier-based-agent-cadence.md §1</code>.</span></p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-paginate="true" data-background-color="#fafaf7" data-color="#1f1f1f" data-theme="default" data-style="section { font-family: 'Inter', system-ui, sans-serif; padding: 56px 72px; }
 h1 { color: #1f1f1f; font-family: 'Fraunces', Georgia, serif; font-size: 2.4em; margin-bottom: 0.2em; }
@@ -746,7 +746,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <blockquote>
 <p>The phone-edit shortcut speaks directly to &quot;I want to edit it myself, but not learn anything new.&quot;<br />
 The retainer speaks directly to &quot;no surprise invoices.&quot;<br />
-Pattern C handover speaks directly to &quot;I won't be locked in.&quot;</p>
+Dual-Lane Repo handover speaks directly to &quot;I won't be locked in.&quot;</p>
 </blockquote>
 <p><span class="small">Source: <code>docs/storefront/01-gig-profile.md</code> Parts 4 &amp; 6, <code>docs/storefront/04-slide-deck.md</code> &quot;Honest objections.&quot;</span></p>
 </section>
@@ -791,7 +791,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 </blockquote>
 <blockquote>
 <p><strong>&quot;I'm worried about being locked in.&quot;</strong><br />
-<em>You can't be. Pattern C means the autopilot is in our repo, not yours. Cancel any time; you keep a clean Next.js site.</em></p>
+<em>You can't be. Dual-Lane Repo means the autopilot is in our repo, not yours. Cancel any time; you keep a clean Next.js site.</em></p>
 </blockquote>
 <p><span class="small">Source: <code>docs/storefront/00-quick-start.md</code> &quot;Is this marketable?&quot;, <code>docs/storefront/04-slide-deck.md</code> objections slide.</span></p>
 </section>
@@ -1783,13 +1783,13 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <td><strong>Client demands the autopilot when they leave</strong></td>
 <td>Low</td>
 <td>Med</td>
-<td>Contract: &quot;site = client; system = operator-licensed.&quot; Pattern C makes this physically true — the autopilot was never on their repo.</td>
+<td>Contract: &quot;site = client; system = operator-licensed.&quot; Dual-Lane Repo makes this physically true — the autopilot was never on their repo.</td>
 </tr>
 <tr>
 <td><strong>Secret leak (token in client repo)</strong></td>
 <td>Low</td>
 <td>Critical</td>
-<td>Org-level secrets only; vendor GitHub App (no PAT); <code>.claudeignore</code>; <code>pattern-c-enforcement-checklist.md</code>.</td>
+<td>Org-level secrets only; vendor GitHub App (no PAT); <code>.claudeignore</code>; <code>dual-lane-enforcement-checklist.md</code>.</td>
 </tr>
 <tr>
 <td><strong>Bot ships breaking change to prod</strong></td>
@@ -1866,7 +1866,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <tr>
 <td><strong>A larger player (Webflow, Framer) ships an AI-edit feature</strong></td>
 <td>Could compress the differentiation from 4 layers to 3.</td>
-<td>Pattern C ownership claim is structurally hard to copy without changing their business model.</td>
+<td>Dual-Lane Repo ownership claim is structurally hard to copy without changing their business model.</td>
 </tr>
 <tr>
 <td><strong>Solo-operator dependency</strong></td>
@@ -2219,7 +2219,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <li><strong><code>scripts/</code></strong> — triage prompts, execute prompts, multi-AI router, plan-issue, bootstrap-kanban.</li>
 <li><strong><code>n8n/</code></strong> — workflow JSON exports (intake-web/email/sms, notify, record, deploy-confirmed).</li>
 <li><strong><code>client-template/</code></strong> — Next.js 16 scaffold with admin portal, Auth.js v5, design tokens.</li>
-<li><strong><code>pattern-c-enforcement-checklist.md</code></strong> — MUST / MUST-NOT rows that gate every client spinout.</li>
+<li><strong><code>dual-lane-enforcement-checklist.md</code></strong> — MUST / MUST-NOT rows that gate every client spinout.</li>
 <li><strong><code>docs/wiki/</code></strong> — dual-lane operator/client wiki, scaffolded into each client repo at engagement time.</li>
 </ul>
 <blockquote>
@@ -2296,7 +2296,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 </tr>
 <tr>
 <td><strong>What we provide that others don't</strong></td>
-<td>Phone-edit + multi-AI autopilot + Pattern C &quot;autopilot is hidden&quot; + monthly improvements baked in. Empty quadrant.</td>
+<td>Phone-edit + multi-AI autopilot + Dual-Lane Repo &quot;autopilot is hidden&quot; + monthly improvements baked in. Empty quadrant.</td>
 </tr>
 <tr>
 <td><strong>What customers say they want</strong></td>
@@ -2360,7 +2360,7 @@ code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; }
 <ul>
 <li><code>docs/mothership/00-INDEX.md</code> — master map</li>
 <li><code>docs/mothership/01-business-plan.md</code> — positioning, mothership-vs-client separation, risk register</li>
-<li><code>docs/mothership/02-architecture.md</code> + <code>02b-pattern-c-architecture.md</code> — two-repo Pattern C</li>
+<li><code>docs/mothership/02-architecture.md</code> + <code>02b-dual-lane-architecture.md</code> — two-repo Dual-Lane Repo</li>
 <li><code>docs/mothership/04-tier-based-agent-cadence.md</code> — cron + model + auto-merge per tier</li>
 <li><code>docs/mothership/08-future-work.md</code> — legal, vault, payment automation, market research</li>
 <li><code>docs/mothership/18-capacity-and-unit-economics.md</code> — single source of truth for cost / cliffs</li>

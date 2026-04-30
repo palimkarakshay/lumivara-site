@@ -170,7 +170,7 @@ class Candidate:
             "Open the source above and follow the section the marker is "
             "attached to. If the section is ambiguous, label this issue "
             "`status/needs-clarification` and stop — do not guess.\n\n"
-            "## Pattern C lane\n"
+            "## Dual-Lane Repo lane\n"
             "🛠 Pipeline by default (operator IP / docs). Override via marker "
             "`labels=`. The seeder never auto-applies `infra-allowed`.\n\n"
             f"<!-- {SEEDER_VERSION}:source_id={self.source_id} -->\n"

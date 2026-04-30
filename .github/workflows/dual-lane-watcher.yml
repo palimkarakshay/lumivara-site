@@ -1,14 +1,14 @@
-name: Pattern C watcher
+name: Dual-Lane watcher
 
-# Daily watchdog over the Pattern C invariants. Runs the audit script and the
-# spinout dry-run; if either reports a hard failure (or if §3 / §5 advisory
+# Daily watchdog over the Dual-Lane Repo invariants. Runs the audit script and
+# the spinout dry-run; if either reports a hard failure (or if §3 / §5 advisory
 # counts move outside the allow-listed baseline), the workflow opens or
-# updates a single GitHub Issue tagged `area/pattern-c` + `status/needs-triage`
+# updates a single GitHub Issue tagged `area/dual-lane` + `status/needs-triage`
 # so the existing triage / execute loop picks it up.
 #
 # Why this workflow exists:
 #   The user-facing answer to "make the migration quick, painless and easy
-#   when it arrives" is the manifest at /.pattern-c.yml + the dry-run at
+#   when it arrives" is the manifest at /.dual-lane.yml + the dry-run at
 #   scripts/forge-spinout-dry-run.sh + this watchdog. Together they make
 #   drift visible the day after it lands, not the day of the spinout.
 #
@@ -19,9 +19,9 @@ name: Pattern C watcher
 #   - Closes the issue automatically once the next run goes green.
 #
 # Cross-references:
-#   - docs/mothership/02b-pattern-c-architecture.md — canonical Pattern C.
-#   - docs/mothership/pattern-c-enforcement-checklist.md — MUST / MUST-NOT.
-#   - scripts/pattern-c-audit.sh §1–§6 — the actual checks.
+#   - docs/mothership/02b-dual-lane-architecture.md — canonical Dual-Lane Repo.
+#   - docs/mothership/dual-lane-enforcement-checklist.md — MUST / MUST-NOT.
+#   - scripts/dual-lane-audit.sh §1–§6 — the actual checks.
 #   - scripts/forge-spinout-dry-run.sh — the manifest validator.
 
 on:
@@ -38,8 +38,8 @@ on:
         default: "false"
   pull_request:
     paths:
-      - ".pattern-c.yml"
-      - "scripts/pattern-c-audit.sh"
+      - ".dual-lane.yml"
+      - "scripts/dual-lane-audit.sh"
       - "scripts/forge-spinout-dry-run.sh"
 
 permissions:
@@ -47,7 +47,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: pattern-c-watcher
+  group: dual-lane-watcher
   cancel-in-progress: true
 
 jobs:
@@ -59,16 +59,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run pattern-c-audit.sh
+      - name: Run dual-lane-audit.sh
         id: audit
         env:
           STRICT: ${{ inputs.strict || 'false' }}
         run: |
           set -uo pipefail
-          AUDIT_OUT=$(bash scripts/pattern-c-audit.sh 2>&1) || true
+          AUDIT_OUT=$(bash scripts/dual-lane-audit.sh 2>&1) || true
           AUDIT_EXIT=$?
           {
-            echo "=== pattern-c-audit.sh ==="
+            echo "=== dual-lane-audit.sh ==="
             echo "$AUDIT_OUT"
             echo
             echo "(audit exit code: $AUDIT_EXIT)"
@@ -97,7 +97,7 @@ jobs:
           set -uo pipefail
           AUDIT_FAILED=0
           # Hard-fail rules: §1 brand, §2 contamination, §6 manifest coverage.
-          # §3 / §4 / §5 are advisory by design (see scripts/pattern-c-audit.sh).
+          # §3 / §4 / §5 are advisory by design (see scripts/dual-lane-audit.sh).
           if grep -qE '✗ [0-9]+ .Lumivara Infotech' /tmp/audit.txt; then AUDIT_FAILED=1; fi
           if grep -qE '✗ operator pitch present on the site repo' /tmp/audit.txt; then AUDIT_FAILED=1; fi
           if grep -qE '✗ [0-9]+ tracked file' /tmp/audit.txt; then AUDIT_FAILED=1; fi
@@ -108,7 +108,7 @@ jobs:
           fi
           echo "failed=$AUDIT_FAILED" >> "$GITHUB_OUTPUT"
           {
-            echo "## Pattern C watcher — $(date -u +%Y-%m-%d)"
+            echo "## Dual-Lane watcher — $(date -u +%Y-%m-%d)"
             echo
             echo "Triggered by: \`${{ github.event_name }}\`"
             echo "Strict mode: \`$STRICT\`"
@@ -125,7 +125,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -uo pipefail
-          TITLE="Pattern C watcher: drift detected"
+          TITLE="Dual-Lane watcher: drift detected"
           # Find an existing open issue with this exact title (single-issue-per-failure).
           EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number,title --jq '.[] | select(.title=="'"$TITLE"'") | .number' | head -n1)
           if [ -n "$EXISTING" ]; then
@@ -135,7 +135,7 @@ jobs:
             echo "Opening new tracking issue."
             gh issue create \
               --title "$TITLE" \
-              --label "area/pattern-c" \
+              --label "area/dual-lane" \
               --label "status/needs-triage" \
               --label "priority/P1" \
               --body-file /tmp/issue-body.md \
@@ -152,11 +152,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -uo pipefail
-          TITLE="Pattern C watcher: drift detected"
+          TITLE="Dual-Lane watcher: drift detected"
           EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number,title --jq '.[] | select(.title=="'"$TITLE"'") | .number' | head -n1)
           if [ -n "$EXISTING" ]; then
             echo "Closing tracking issue #$EXISTING — audit is green."
-            gh issue comment "$EXISTING" --body "Pattern C watcher returned green on $(date -u +%Y-%m-%d). Closing this issue; the watcher will reopen on the next failure."
+            gh issue comment "$EXISTING" --body "Dual-Lane watcher returned green on $(date -u +%Y-%m-%d). Closing this issue; the watcher will reopen on the next failure."
             gh issue close "$EXISTING" --reason completed
           fi
 
@@ -164,7 +164,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pattern-c-audit-${{ github.run_id }}
+          name: dual-lane-audit-${{ github.run_id }}
           path: |
             /tmp/audit.txt
             /tmp/dryrun.txt
@@ -177,5 +177,5 @@ jobs:
           # On PRs, fail the workflow so the PR check is red. On schedule, the
           # tracking issue is the signal — workflow itself stays green so it
           # doesn't spam the operator with email failures every morning.
-          echo "Pattern C drift detected on this PR — see the audit output above." >&2
+          echo "Dual-Lane drift detected on this PR — see the audit output above." >&2
           exit 1

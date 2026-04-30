@@ -3,9 +3,9 @@
 
 # Artifact allow / deny / required-new tables
 
-These three tables govern what may, must not, and must newly land on a per-client repo's `main` during a spinout from `palimkarakshay/lumivara-site` (today's de-facto Client #1 repo) to a clean per-client repo. They mirror, in a single embeddable surface, the four "never" rules in [`docs/mothership/03-secure-architecture.md §1`](../mothership/03-secure-architecture.md) and the MUST / MUST-NOT rows in [`docs/mothership/pattern-c-enforcement-checklist.md`](../mothership/pattern-c-enforcement-checklist.md).
+These three tables govern what may, must not, and must newly land on a per-client repo's `main` during a spinout from `palimkarakshay/lumivara-site` (today's de-facto Client #1 repo) to a clean per-client repo. They mirror, in a single embeddable surface, the four "never" rules in [`docs/mothership/03-secure-architecture.md §1`](../mothership/03-secure-architecture.md) and the MUST / MUST-NOT rows in [`docs/mothership/dual-lane-enforcement-checklist.md`](../mothership/dual-lane-enforcement-checklist.md).
 
-> **Drift is a bug.** If §1 of `03-secure-architecture.md` or §3 of `pattern-c-enforcement-checklist.md` changes, update Table B in the same PR. The marker comment `<!-- artifact-allow-deny:v1 -->` exists to make future bulk-edits searchable.
+> **Drift is a bug.** If §1 of `03-secure-architecture.md` or §3 of `dual-lane-enforcement-checklist.md` changes, update Table B in the same PR. The marker comment `<!-- artifact-allow-deny:v1 -->` exists to make future bulk-edits searchable.
 
 ---
 
@@ -34,7 +34,7 @@ These paths are safe to copy verbatim from `palimkarakshay/lumivara-site` (the s
 | `README.md` | Public README. The current text is mostly Next.js boilerplate plus a "Design system" pointer; verify no mothership references survive (see Acceptance, §9 A2 of the spinout runbook). |
 | `CONTRIBUTING.md` | Contribution conventions. Verify it does not reference operator runbooks. |
 | `CHANGELOG.md` | Site-history ledger — keep, it's part of the engagement narrative. |
-| `CODE_OF_CONDUCT.md` | Contributor Covenant + Pattern C addendum. Both repos carry the same text per `.pattern-c.yml` (`both` lane, no transform). |
+| `CODE_OF_CONDUCT.md` | Contributor Covenant + Dual-Lane Repo addendum. Both repos carry the same text per `.dual-lane.yml` (`both` lane, no transform). |
 | `404.html`, `index.html` | Default Next.js pages — neutral. |
 | `assets/` | Repo-level design refs (e.g. brand swatches). Verify nothing operator-internal. |
 | `e2e/` | Playwright test specs. |
@@ -48,7 +48,7 @@ These paths are safe to copy verbatim from `palimkarakshay/lumivara-site` (the s
 
 ## Table B — Forbidden (must NOT exist on client repo's `main`)
 
-Mirrors `03-secure-architecture.md §1` (the four "never" rules) and `pattern-c-enforcement-checklist.md §3` C-MUST-NOT-1..6 byte-for-byte. Drift is a bug.
+Mirrors `03-secure-architecture.md §1` (the four "never" rules) and `dual-lane-enforcement-checklist.md §3` C-MUST-NOT-1..6 byte-for-byte. Drift is a bug.
 
 | Path / pattern | Rule violated |
 |---|---|
@@ -68,19 +68,19 @@ Mirrors `03-secure-architecture.md §1` (the four "never" rules) and `pattern-c-
 | `docs/research/` | C-MUST-NOT-2 — operator-side market & viability research, persona work, source bibliography. |
 | `n8n/**` (any JSON workflow exports) | C-MUST-NOT-2 — exposes endpoints, HMAC-signed routes, n8n credential names. |
 | `dashboard/` | C-MUST-NOT-4 — operator dashboard reveals per-client costs and other clients' metadata. |
-| `AGENTS.md`, `CLAUDE.md` | C-MUST-NOT-2 — operator AI-agent runtime charters. The site repo doesn't host an agent runtime post-handover (`.pattern-c.yml` transform `pipeline-only-after-spinout`). |
+| `AGENTS.md`, `CLAUDE.md` | C-MUST-NOT-2 — operator AI-agent runtime charters. The site repo doesn't host an agent runtime post-handover (`.dual-lane.yml` transform `pipeline-only-after-spinout`). |
 | `.claude/` | C-MUST-NOT-2 — operator-only Claude Code settings (model defaults, hooks, subagent config). |
-| `.pattern-c.yml` | C-MUST-NOT-2 — the spinout manifest itself; meaningful only inside the operator repo. |
+| `.dual-lane.yml` | C-MUST-NOT-2 — the spinout manifest itself; meaningful only inside the operator repo. |
 | `scripts/triage-*` | C-MUST-NOT-2 — autopilot triage prompts and rubric. |
 | `scripts/execute-*` | C-MUST-NOT-2 — autopilot execution prompts. |
 | `scripts/gemini-*`, `scripts/codex-*` | C-MUST-NOT-2 — fallback router scripts. |
 | `scripts/plan-issue*` | C-MUST-NOT-2 — plan-generation rubric. |
 | `scripts/test-routing*`, `scripts/test-forge-routing*` | C-MUST-NOT-2 — model-routing tests. |
 | `scripts/bootstrap-kanban.sh`, `scripts/bootstrap-forge-project.sh`, `scripts/create-mothership-seed-issues.sh`, `scripts/seed-codex-review-backlog.py` | C-MUST-NOT-2 — operator-only project / backlog setup. |
-| `scripts/forge-*`, `scripts/pattern-c-audit.sh`, `scripts/recheck-missed-reviews.py`, `scripts/bot-usage-report.py`, `scripts/issues/` | C-MUST-NOT-2 — Forge / Pattern C / autopilot tooling. |
+| `scripts/forge-*`, `scripts/dual-lane-audit.sh`, `scripts/recheck-missed-reviews.py`, `scripts/bot-usage-report.py`, `scripts/issues/` | C-MUST-NOT-2 — Forge / Dual-Lane Repo / autopilot tooling. |
 | `scripts/lib/` (entire dir) | C-MUST-NOT-2 — model-selection and inventory helpers (`routing.py`, `inventory_backfill.py`, `__init__.py`). |
-| `scripts/**` (catch-all) | C-MUST-NOT-2 — by `.pattern-c.yml`, all of `scripts/` is pipeline-lane. The rows above enumerate today's filenames; the directory itself is the contract — new pipeline scripts inherit forbidden status by default. |
-| `.github/workflows/triage.yml`, `plan-issues.yml`, `execute*.yml`, `codex-review.yml`, `codex-review-backlog.yml`, `codex-review-recheck.yml`, `codex-pr-fix.yml`, `deep-research.yml`, `auto-merge.yml`, `project-sync.yml`, `setup-cli.yml`, `ai-smoke-test.yml`, `deploy-dashboard.yml`, `deploy-drift-watcher.yml`, `forge-execute.yml`, `forge-triage.yml`, `forge-smoke-test.yml`, `pattern-c-watcher.yml`, `bot-usage-monitor.yml` | C-MUST-2 — autopilot workflows live on `operator/main` only, never on `main`. |
+| `scripts/**` (catch-all) | C-MUST-NOT-2 — by `.dual-lane.yml`, all of `scripts/` is pipeline-lane. The rows above enumerate today's filenames; the directory itself is the contract — new pipeline scripts inherit forbidden status by default. |
+| `.github/workflows/triage.yml`, `plan-issues.yml`, `execute*.yml`, `codex-review.yml`, `codex-review-backlog.yml`, `codex-review-recheck.yml`, `codex-pr-fix.yml`, `deep-research.yml`, `auto-merge.yml`, `project-sync.yml`, `setup-cli.yml`, `ai-smoke-test.yml`, `deploy-dashboard.yml`, `deploy-drift-watcher.yml`, `forge-execute.yml`, `forge-triage.yml`, `forge-smoke-test.yml`, `dual-lane-watcher.yml`, `bot-usage-monitor.yml` | C-MUST-2 — autopilot workflows live on `operator/main` only, never on `main`. |
 | `.github/workflows/**` (catch-all) | C-MUST-2 — every workflow under this directory is operator-side by default. New workflow files inherit forbidden status until an explicit Table A row is added. |
 | Any committed string matching `[A-Za-z0-9+/=]{32,}` outside `package-lock.json` and image binaries | C-MUST-NOT-1 — no committed secrets. |
 | Any string matching `palimkarakshay\.github\.io/.*-mothership` | C-MUST-NOT-4 — dashboard URL never on a client surface. |
@@ -114,9 +114,9 @@ Files that must be present on the new client repo's `main` and that did *not* ex
 | `docs/CLIENT_HANDOVER.md` | Rendered from `docs/mothership/07-client-handover-pack.md` per the per-client intake YAML in the mothership's `docs/clients/lumivara-people-advisory/intake.md` | The single mothership-derived artefact that ever leaves the operator's hands. |
 | `README.md` overlay (optional) | Client-branded overlay if the source `README.md` carries Forge-branded language | The source README is mostly neutral; a per-client overlay only ships if branding diverges. Confirm by re-reading after copy. |
 | `docs/wiki/` (per-client subset only) | The 🌐 and ⚪ pages from `palimkarakshay/lumivara-site/docs/wiki/` (see `docs/wiki/_partials/lane-key.md` and `docs/wiki/_partials/do-not-copy.md`) | Operator-side pages (🛠) are excluded by Table B; the client-safe pages may ship. |
-| Branch `operator/main` (overlay; not on `main`) | Workflows, scripts, and per-engagement notes copied from `palimkarakshay/lumivara-site/.github/workflows/` and `palimkarakshay/lumivara-site/scripts/` to a sibling overlay branch | Pattern C C-MUST-2 — the autopilot lives here, never on `main`. The overlay branch is created during the spinout but its contents are explicitly *not* on `main`. |
-| `LICENSE` (per-client overlay) | New per-engagement `Proprietary — <Client Name>` license assigned at handover, per [`docs/mothership/21-ip-protection-strategy.md §3.3`](../mothership/21-ip-protection-strategy.md) and the `.pattern-c.yml` `LICENSE` row's `site-strips-pipeline-section` transform | The source `LICENSE` is the operator's All-Rights-Reserved interim notice. The pipeline repo retains it forever; the client repo gets a per-client license, not a copy of the source. |
-| `docs/00-INDEX.md` (transformed) | Source `docs/00-INDEX.md` reduced via `.pattern-c.yml` transform `site-strips-pipeline-rows` | The site repo's index lists only Site + Both rows; pipeline-lane rows (`docs/mothership/`, `docs/storefront/`, etc.) are stripped because the targets they link to are forbidden by Table B. The pipeline copy keeps everything verbatim. |
+| Branch `operator/main` (overlay; not on `main`) | Workflows, scripts, and per-engagement notes copied from `palimkarakshay/lumivara-site/.github/workflows/` and `palimkarakshay/lumivara-site/scripts/` to a sibling overlay branch | Dual-Lane Repo C-MUST-2 — the autopilot lives here, never on `main`. The overlay branch is created during the spinout but its contents are explicitly *not* on `main`. |
+| `LICENSE` (per-client overlay) | New per-engagement `Proprietary — <Client Name>` license assigned at handover, per [`docs/mothership/21-ip-protection-strategy.md §3.3`](../mothership/21-ip-protection-strategy.md) and the `.dual-lane.yml` `LICENSE` row's `site-strips-pipeline-section` transform | The source `LICENSE` is the operator's All-Rights-Reserved interim notice. The pipeline repo retains it forever; the client repo gets a per-client license, not a copy of the source. |
+| `docs/00-INDEX.md` (transformed) | Source `docs/00-INDEX.md` reduced via `.dual-lane.yml` transform `site-strips-pipeline-rows` | The site repo's index lists only Site + Both rows; pipeline-lane rows (`docs/mothership/`, `docs/storefront/`, etc.) are stripped because the targets they link to are forbidden by Table B. The pipeline copy keeps everything verbatim. |
 
 **Verify:**
 
@@ -131,26 +131,26 @@ git -C <client-repo> ls-tree main -- docs/CLIENT_HANDOVER.md
 
 ---
 
-## Known mismatches with `.pattern-c.yml`
+## Known mismatches with `.dual-lane.yml`
 
-[`.pattern-c.yml`](../../.pattern-c.yml) is the machine-readable manifest that the spinout dry-run (`scripts/forge-spinout-dry-run.sh`) and audit (`scripts/pattern-c-audit.sh §6`) read at runtime. The rows below disagree with this human-readable doc; the operator must reconcile each before P5.6. Rows in Tables A/B/C are flagged ✱ where the disagreement applies.
+[`.dual-lane.yml`](../../.dual-lane.yml) is the machine-readable manifest that the spinout dry-run (`scripts/forge-spinout-dry-run.sh`) and audit (`scripts/dual-lane-audit.sh §6`) read at runtime. The rows below disagree with this human-readable doc; the operator must reconcile each before P5.6. Rows in Tables A/B/C are flagged ✱ where the disagreement applies.
 
-| Path | This doc says | `.pattern-c.yml` says | Resolution direction (operator decides) |
+| Path | This doc says | `.dual-lane.yml` says | Resolution direction (operator decides) |
 |---|---|---|---|
-| `.claudeignore` | Table C: required-new on client repo, verbatim from `03-secure-architecture.md §2.3` | `both` lane with transform `pipeline-only-after-spinout` (NOT copied to site) | Pick one model. Either the site repo gets a §2.3-rendered `.claudeignore` (then `.pattern-c.yml` row needs `site` lane and a render transform), or it doesn't (then Table C row drops to "optional / future"). |
-| `docs/BACKLOG.md` ✱ | Table B: forbidden (operator notes) | `both` lane with transform `site-strips-pipeline-rows` | If a stripped site-relevant backlog is intended, Table B should move this to Table C (transformed). Otherwise `.pattern-c.yml` should switch this row to `pipeline`. |
-| `docs/ADMIN_PORTAL_PLAN.md` | Table B: forbidden ("operator-only architecture pack") | `both` lane, no transform ("Admin portal lives on Site, but the implementation playbook is operator-authored. Both copies appropriate.") | If the playbook ships to the client, Table B row should be removed and a Table A row added. Otherwise `.pattern-c.yml` should switch to `pipeline`. |
+| `.claudeignore` | Table C: required-new on client repo, verbatim from `03-secure-architecture.md §2.3` | `both` lane with transform `pipeline-only-after-spinout` (NOT copied to site) | Pick one model. Either the site repo gets a §2.3-rendered `.claudeignore` (then `.dual-lane.yml` row needs `site` lane and a render transform), or it doesn't (then Table C row drops to "optional / future"). |
+| `docs/BACKLOG.md` ✱ | Table B: forbidden (operator notes) | `both` lane with transform `site-strips-pipeline-rows` | If a stripped site-relevant backlog is intended, Table B should move this to Table C (transformed). Otherwise `.dual-lane.yml` should switch this row to `pipeline`. |
+| `docs/ADMIN_PORTAL_PLAN.md` | Table B: forbidden ("operator-only architecture pack") | `both` lane, no transform ("Admin portal lives on Site, but the implementation playbook is operator-authored. Both copies appropriate.") | If the playbook ships to the client, Table B row should be removed and a Table A row added. Otherwise `.dual-lane.yml` should switch to `pipeline`. |
 | `docs/deploy/` ✱ | Table B: forbidden ("operator-side notes") | `both` lane, no transform ("Production-integrity notes touch the site repo's deploy; relevant to both sides at spinout.") | Same shape as `ADMIN_PORTAL_PLAN.md`. |
 
-This doc does not modify `.pattern-c.yml`; reconciliation is filed as separate Pattern C audit follow-ups.
+This doc does not modify `.dual-lane.yml`; reconciliation is filed as separate Dual-Lane Repo audit follow-ups.
 
 ---
 
 ## See also
 
-- [`.pattern-c.yml`](../../.pattern-c.yml) — the machine-readable lane manifest read by `forge-spinout-dry-run.sh` and `pattern-c-audit.sh §6`. Tables A/B/C above are the human-readable, narrative-shaped projection of the same lane assignments.
-- [`pattern-c-enforcement-checklist.md §3`](../mothership/pattern-c-enforcement-checklist.md) — the canonical MUST-NOT controls (Table B mirrors the path/content rows).
-- [`pattern-c-enforcement-checklist.md §4`](../mothership/pattern-c-enforcement-checklist.md) — the pre-migration gate that gates any spinout against this checklist.
+- [`.dual-lane.yml`](../../.dual-lane.yml) — the machine-readable lane manifest read by `forge-spinout-dry-run.sh` and `dual-lane-audit.sh §6`. Tables A/B/C above are the human-readable, narrative-shaped projection of the same lane assignments.
+- [`dual-lane-enforcement-checklist.md §3`](../mothership/dual-lane-enforcement-checklist.md) — the canonical MUST-NOT controls (Table B mirrors the path/content rows).
+- [`dual-lane-enforcement-checklist.md §4`](../mothership/dual-lane-enforcement-checklist.md) — the pre-migration gate that gates any spinout against this checklist.
 - [`03-secure-architecture.md §1`](../mothership/03-secure-architecture.md) — the four "never" rules; Table B rows 1–4 mirror them byte-for-byte.
 - [`03-secure-architecture.md §2.3`](../mothership/03-secure-architecture.md) — the `.claudeignore` block referenced by Table C.
 

@@ -23,7 +23,7 @@ The principle: every internal noun should be **immediately understood by a senio
 | **Tier** | Fine | **Tier** (keep) | Industry-standard. |
 | **Trust zone** | Slightly heavy | **Zone** (keep, but drop "trust" prefix in casual references) | "Trust zone" is correct security terminology; just don't repeat the modifier 5 times per page. |
 | **Vendor bot account** | Two words doing one job | **Bot Account** | "Vendor" is implicit; just call it the bot. |
-| **Operator overlay** | Specific to the two-branch trick — and that trick is being reworked (`11 §1`) | TBD after `11` lands | Will become "Pipeline branch" if Pattern A wins, or "Pipeline repo" if Pattern C wins. |
+| **Operator overlay** | Specific to the two-branch trick — and that trick is being reworked (`11 §1`) | TBD after `11` lands | Will become "Pipeline branch" if Pattern A wins, or "Pipeline repo" if Dual-Lane Repo wins. |
 
 ### One-page glossary, post-rename
 

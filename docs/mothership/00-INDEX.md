@@ -23,7 +23,7 @@
 
 > _Lane: 🛠 Pipeline — operator-only business pack; never copied to a client repo._
 >
-> **Folder name retained.** Per the operator decision on 2026-04-29, this folder stays as `docs/mothership/` even though [`15b §2`](./15b-naming-conventions.md) locks the long-term rename to `docs/platform/`. Prose terminology (`mothership` → `platform` in noun usage) is being swept incrementally — `scripts/pattern-c-audit.sh` keeps the brand-drift checks green. The companion folder `docs/freelance/` was renamed to `docs/storefront/` on the same day per the same lock.
+> **Folder name retained.** Per the operator decision on 2026-04-29, this folder stays as `docs/mothership/` even though [`15b §2`](./15b-naming-conventions.md) locks the long-term rename to `docs/platform/`. Prose terminology (`mothership` → `platform` in noun usage) is being swept incrementally — `scripts/dual-lane-audit.sh` keeps the brand-drift checks green. The companion folder `docs/freelance/` was renamed to `docs/storefront/` on the same day per the same lock.
 
 This folder is the **operator-side runbook for the practice that builds, ships, and maintains small-business websites with an AI autopilot**. It is the successor to (and supersedes for operator concerns) `docs/TEMPLATE_REBUILD_PROMPT.md`. The original template stays as a historical artefact; the v3 rebuild prompt lives at `06-operator-rebuild-prompt-v3.md`.
 
@@ -56,9 +56,9 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 |---|---|---|---|---|
 | 00 | `00-INDEX.md` (this file) | "Where do I find X?" | Operator | Once |
 | 01 | `01-business-plan.md` | "What is the business, what does it sell, and what name does it operate under?" | Operator | Once, revisit quarterly |
-| 02 | `02-architecture.md` | "How is the mothership repo structured, and how do the per-client site + pipeline repos relate to it?" — Pattern C canonical | Operator | Once |
-| 02b | `02b-pattern-c-architecture.md` | "What is Pattern C, in one self-contained file?" — the canonical architecture statement (locked 2026-04-28) | Operator | Once; cross-linked from every doc that touches architecture |
-| 03 | `03-secure-architecture.md` | "How do I keep client zones, secrets, and costs strictly isolated from the mothership?" — Pattern C aligned; canonical App identity model at `§3.X`, two-phase HMAC rotation at `§3.Y` | Operator | Once, revisit on every secret rotation |
+| 02 | `02-architecture.md` | "How is the mothership repo structured, and how do the per-client site + pipeline repos relate to it?" — Dual-Lane Repo canonical | Operator | Once |
+| 02b | `02b-dual-lane-architecture.md` | "What is Dual-Lane Repo, in one self-contained file?" — the canonical architecture statement (locked 2026-04-28) | Operator | Once; cross-linked from every doc that touches architecture |
+| 03 | `03-secure-architecture.md` | "How do I keep client zones, secrets, and costs strictly isolated from the mothership?" — Dual-Lane Repo aligned; canonical App identity model at `§3.X`, two-phase HMAC rotation at `§3.Y` | Operator | Once, revisit on every secret rotation |
 | 03b | `03b-security-operations-checklist.md` | "What does the operator do, and how often, to keep the security posture from drifting?" — monthly + quarterly cadences, recovery drill template, secret rotation schedule matrix, anti-pattern detection | Operator | **Per monthly + quarterly pass** |
 | 04 | `04-tier-based-agent-cadence.md` | "How often does the AI bot run for a Tier 0 / 1 / 2 / 3 client, and which models does it use?" | Operator | Once, revisit when pricing tiers change |
 | 05 | `05-mothership-repo-buildout-plan.md` | "What are the phases I run Claude through to build the new mothership repo from scratch?" | Operator (run with Claude) | Once |
@@ -68,7 +68,7 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 09 | `09-github-account-topology.md` | "Should I create a new GitHub org/account, and what are the three identities?" | Operator | Once |
 | 09b | `09b-lumivara-forge-setup-plan.md` | "How do I actually set up the Lumivara Forge GitHub org with real slugs?" — companion to 09 (renamed 2026-04-29 from `10-lumivara-infotech-setup-plan.md`; the prior `10` collided with the critique series, and the 'Infotech' working name was retired by `15 §4`) | Operator | Once (at brand-lock time) |
 | 10 | `10-critique-executive-summary.md` | "Is the pack viable? What are the top 10 issues?" | Operator | Read first when revisiting the pack |
-| 11 | `11-critique-architectural-issues.md` | "What structural problems block production?" — names the cron-on-default-branch bug + three pick-one fix patterns. **Pattern C chosen 2026-04-28; canonical statement now in `02b`.** | Operator | Once; closed in canonical docs by Pattern C propagation (this PR series) |
+| 11 | `11-critique-architectural-issues.md` | "What structural problems block production?" — names the cron-on-default-branch bug + three pick-one fix patterns. **Dual-Lane Repo chosen 2026-04-28; canonical statement now in `02b`.** | Operator | Once; closed in canonical docs by Dual-Lane Repo propagation (this PR series) |
 | 12 | `12-critique-security-secrets.md` | "Where do the secrets / cost-firewall leaks come from?" — single-Owner break-glass, per-client Resend keys, two-phase HMAC rotation, GitHub-App swap | Operator | Once; closed by Run B in `16 §2` |
 | 13 | `13-critique-ai-and-scaling.md` | "Do the maths reconcile? Where are the scaling cliffs?" — Action minutes, AI cost, Claude/Actions/n8n cliffs, model-rubric notes | Operator | Once; closed by Run C in `16 §3` |
 | 14 | `14-critique-operations-sequencing.md` | "What sequencing/coherency gaps need closing?" — Tier-0 honesty, OAuth manual scope, rollback paths, backups, engagement-log schema | Operator | Once; closed by Run D in `16 §4` |
@@ -84,9 +84,9 @@ Read top-to-bottom on your first pass; cross-link from each doc thereafter.
 | 21 | `21-vault-strategy-adr.md` | "Which vault stores the operator's IP and business secrets, what goes in it, who can see what, and how does it stay separate from the per-client runtime topology in `03 §3`?" — picks 1Password Business with vendor-agnostic structure / roles / rotation / SOP / migration plan from `pass` | Operator | Once; revisit at Cliff 5 (`18 §6`) when a second seat lands |
 | 22 | `22-engagement-risk-protection.md` | "What is Lumivara Forge's documented posture against the three client-engagement risks — data privacy (PIPEDA / Law 25), IP leakage in client contracts, and clients failing to pay after signing? What gets disclosed at onboarding, what goes in the MSA / SOW, and what is explicitly a human-only step?" — drafts §3 IP clauses + §4 non-payment safeguards + §5 risk register + §6 onboarding flow for counsel review | Operator | **Per engagement (§6) + once for counsel review** |
 | 11 | `11-market-research.md` | "What is the market size, competitive landscape, channel/conversion model, and expansion vision for Product 1 (Lumivara Forge Sites)?" — TAM/SAM/SOM estimates, six-competitor scan, §3 phase-1 validation questions, §4 four-phase expansion (verticals → geo → white-label → SaaS). Pulled forward from `08 §5` per issue #112. | Operator | Once; revisit quarterly from month 6 of paid operations |
-| — | `pattern-c-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
+| — | `dual-lane-enforcement-checklist.md` | "What MUST and MUST-NOT be true on every client repo for the two-repo / two-branch trust model? How do I gate a spinout against it?" — the canonical enforcement of `02` + `03` | Operator | **Per spinout + quarterly audit** |
 | — | `templates/00-templates-index.md` | "Vertical-specific content prompts and intake forms for each client business type — restaurant is full; plumber/realtor/recruiter are stubs; six more verticals planned" | Operator | **Per engagement (restaurant = full; others = stub)** |
-| — | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) | "How do I spin Lumivara People Advisory out into its own client repo, end-to-end?" — phased one-shot runbook with allow/deny tables (`docs/migrations/_artifact-allow-deny.md`), per-phase dry-run / rollback / acceptance, and Pattern C §4/§5 as gate / acceptance set | Operator | **Once (per Client #1 spinout)** |
+| — | [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md) | "How do I spin Lumivara People Advisory out into its own client repo, end-to-end?" — phased one-shot runbook with allow/deny tables (`docs/migrations/_artifact-allow-deny.md`), per-phase dry-run / rollback / acceptance, and Dual-Lane Repo §4/§5 as gate / acceptance set | Operator | **Once (per Client #1 spinout)** |
 
 Existing context that this folder builds on (do not duplicate):
 
@@ -167,7 +167,7 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 
 ## Quick links
 
-- **Canonical architecture (Pattern C):** `02b-pattern-c-architecture.md`
+- **Canonical architecture (Dual-Lane Repo):** `02b-dual-lane-architecture.md`
 - **Capacity / cost / cliffs (single source of truth):** `18-capacity-and-unit-economics.md` — §1 assumptions, §6 cliffs, §7 change log
 - **Launch + operating cost model (practice-wide P&L, breakeven, plan-lock table):** `20-launch-and-operating-cost-model.md` — §2 launch, §3 recurring, §4 Year-1 vs Year-3, §5 breakeven, §6 plan-lock
 - **IP protection strategy (inventory, mechanism, contracts, insurance, jurisdictions, lawyer-review checklist):** `21-ip-protection-strategy.md` — §1 inventory, §2 mechanisms, §3 assignment policy, §4 insurance, §5 jurisdictions, §6 sequencing, §7 lawyer checklist
@@ -183,7 +183,7 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 - **Security operations cadence (monthly / quarterly / drill / rotation matrix / anti-patterns): `03b-security-operations-checklist.md`**
 - **Vault strategy (operator IP & business secrets — 1Password Business; per-client runtime topology stays in `03 §3`): `21-vault-strategy-adr.md`**
 - **Engagement risk protection (data privacy + IP clauses + non-payment safeguards + onboarding/disclosure flow — drafts the operator's MSA/SOW input for counsel review): `22-engagement-risk-protection.md`**
-- **Pattern C enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `pattern-c-enforcement-checklist.md`**
+- **Dual-Lane Repo enforcement (MUST / MUST-NOT, pre-migration gate, post-migration verification): `dual-lane-enforcement-checklist.md`**
 - **Terminology policy + forbidden strings: `15-terminology-and-brand.md §6`** — what may appear where, with the audit-grep recipe.
 - **Client example appendix: `15-terminology-and-brand.md §7`** — the single canonical home for legitimate Client #1 references in operator-scoped docs.
 - **Client #1 spinout runbook: [`docs/migrations/lumivara-people-advisory-spinout.md`](../migrations/lumivara-people-advisory-spinout.md)**
@@ -193,7 +193,7 @@ The operator's GitHub org slug, the bot account name, the Resend sending domain,
 
 ---
 
-## Pattern C canonical, as of 2026-04-28
+## Dual-Lane Repo canonical, as of 2026-04-28
 
 The architecture is locked. Each engagement gets two private repos in the operator's org — `<slug>-site` (client-readable) and `<slug>-pipeline` (operator-only) — with a single org-level GitHub App bridging them via short-lived installation tokens. The deprecated `operator/main` branch overlay and the legacy `VENDOR_GITHUB_PAT` are gone from the canonical docs (`02`, `02b`, `04`, `05`, `06`, `09`); they survive only inside the critique series (`10`, `11`, `12`) and the migration prompt-pack (`16`, `17`), where they appear under prominent **Historical / decision record** banners. When in doubt, `02b` is the source of truth.
 

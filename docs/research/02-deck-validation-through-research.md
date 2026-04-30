@@ -74,7 +74,7 @@ For a future first hire (likely contract engineer or VA). Claims are mostly oper
 | Slide | Claim | Source |
 |---|---|---|
 | Culture pitch | 73% of tech founders hide burnout; 65% of startup failures attributed to founder burnout | `[S] §B-Founder-Burnout` |
-| What you'll work on | Pattern C, multi-AI router, n8n, admin portal | `[V] §B-Self` |
+| What you'll work on | Dual-Lane Repo, multi-AI router, n8n, admin portal | `[V] §B-Self` |
 | Compensation framing | Tier-cadence and capacity cliffs determine when 2nd-engineer slot opens (Cliff 5, client #26) | `[V] §B-Self` |
 
 ---

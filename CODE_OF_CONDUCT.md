@@ -4,7 +4,7 @@
 
 ## Our pledge
 
-In the interest of fostering an open and welcoming environment, the maintainers of `palimkarakshay/lumivara-site` and any future Pattern C spinout repos (`<slug>-site`, `<slug>-pipeline`, `<brand>-platform`) pledge to make participation in our project a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
+In the interest of fostering an open and welcoming environment, the maintainers of `palimkarakshay/lumivara-site` and any future Dual-Lane Repo spinout repos (`<slug>-site`, `<slug>-pipeline`, `<brand>-platform`) pledge to make participation in our project a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
 ## Our standards
 
@@ -23,11 +23,11 @@ Examples of unacceptable behaviour:
 - Public or private harassment.
 - Publishing others' private information, such as a physical or electronic address, without explicit permission.
 - Other conduct which could reasonably be considered inappropriate in a professional setting.
-- Attempting to extract operator IP (autopilot prompts, runbooks, the storefront pack) by social-engineering routes outside Pattern C's permission boundaries.
+- Attempting to extract operator IP (autopilot prompts, runbooks, the storefront pack) by social-engineering routes outside Dual-Lane Repo's permission boundaries.
 
-## Pattern C-specific responsibilities
+## Dual-Lane Repo-specific responsibilities
 
-This project enforces a two-repo trust model (see [`docs/mothership/02b-pattern-c-architecture.md`](docs/mothership/02b-pattern-c-architecture.md)). Contributors and AI agents must respect the lane separation:
+This project enforces a two-repo trust model (see [`docs/mothership/02b-dual-lane-architecture.md`](docs/mothership/02b-dual-lane-architecture.md)). Contributors and AI agents must respect the lane separation:
 
 - Do not attempt to read, copy, or reference operator-only paths (`docs/mothership/`, `docs/storefront/`, `docs/decks/`, `docs/research/`, `dashboard/`, operator-only scripts) from a Site-lane PR.
 - Do not paste verbatim copy from `docs/mothership/` or `docs/storefront/` into a client-shared chat, email, gist, or proposal — this is a stricter standard than copyright; it's the trade-secret protection per [`docs/mothership/21-ip-protection-strategy.md §2.3`](docs/mothership/21-ip-protection-strategy.md).
@@ -55,4 +55,4 @@ For security-sensitive concerns, follow [`SECURITY.md`](.github/SECURITY.md) —
 
 ## Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/), version 2.1, available at <https://www.contributor-covenant.org/version/2/1/code_of_conduct.html>, with Pattern C-specific additions for the two-repo trust model this project enforces.
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/), version 2.1, available at <https://www.contributor-covenant.org/version/2/1/code_of_conduct.html>, with Dual-Lane Repo-specific additions for the two-repo trust model this project enforces.

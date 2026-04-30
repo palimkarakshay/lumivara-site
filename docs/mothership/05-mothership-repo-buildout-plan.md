@@ -102,7 +102,7 @@ This is the biggest phase. Split it the same way the admin portal was split (5 p
 | Sub-phase | Deliverable |
 |---|---|
 | P5.4a | `cli/` package skeleton (`package.json`, `tsconfig`, `commander.js` setup, single `forge --help` command) |
-| P5.4b | `forge provision` — steps 1–7 of the flow in `02-architecture.md §3` (validate, create site repo, create pipeline repo, scope org secrets, push `client-template/` to site `main`, push `workflows-template/` + `scripts/` to pipeline `main`, install the GitHub App on the site repo) — Pattern C; see `02b §2` |
+| P5.4b | `forge provision` — steps 1–7 of the flow in `02-architecture.md §3` (validate, create site repo, create pipeline repo, scope org secrets, push `client-template/` to site `main`, push `workflows-template/` + `scripts/` to pipeline `main`, install the GitHub App on the site repo) — Dual-Lane Repo; see `02b §2` |
 | P5.4c | `forge provision` — steps 8–10 (Vercel API linked to site repo, n8n REST API, Twilio number purchase) |
 | P5.4d | `forge provision` — steps 11–13 (kanban bootstrap on site repo via App token, cross-repo smoke test, handover render) and `--resume` |
 | P5.4e | `forge teardown` — all four modes (handover, archive, pause, rebuild-vanilla) |
@@ -142,18 +142,18 @@ The existing `lumivara-site` repo is *de facto* Client #1's repo today. Make it 
 
 ---
 
-## P5.6 — Migrate `lumivara-site` to Pattern C two-repo shape 🟢 (partly manual)
+## P5.6 — Migrate `lumivara-site` to Dual-Lane two-repo shape 🟢 (partly manual)
 
 **Estimated turns:** 80–100 + manual GitHub UI clicks.
 
-Under Pattern C the existing repo splits into two: a clean site repo for the client, and a separate operator-only pipeline repo that holds every workflow and script. The agent does the bulk; the operator does the GitHub UI clicks (rename, App install, branch protection).
+Under Dual-Lane Repo the existing repo splits into two: a clean site repo for the client, and a separate operator-only pipeline repo that holds every workflow and script. The agent does the bulk; the operator does the GitHub UI clicks (rename, App install, branch protection).
 
 1. **Operator (manual):** rename `palimkarakshay/lumivara-site` to `palimkarakshay/lumivara-people-advisory-site` in the GitHub UI. (This becomes the **site** repo.)
 2. **Operator (manual):** push the new mothership repo's main first; verify it works.
 3. **Operator (manual):** create the matching **pipeline** repo:
    ```bash
    gh repo create palimkarakshay/lumivara-people-advisory-pipeline --private \
-     --description "Operator-only pipeline for lumivara-people-advisory-site. Pattern C."
+     --description "Operator-only pipeline for lumivara-people-advisory-site. Dual-Lane Repo."
    ```
 4. **Agent:** populate the pipeline repo from the (still-pre-migration) site repo:
    ```bash
@@ -180,7 +180,7 @@ Under Pattern C the existing repo splits into two: a clean site repo for the cli
    git rm scripts/plan-issue.py scripts/test-routing.py scripts/bootstrap-kanban.sh
    git rm -r scripts/lib
    git rm -r docs/mothership docs/freelance docs/operator
-   git commit -m "chore: remove autopilot artefacts; Pattern C migration"
+   git commit -m "chore: remove autopilot artefacts; Dual-Lane Repo migration"
    git push origin main
    ```
    Add `.claudeignore` per `03-secure-architecture.md §2.3` for belt-and-braces.

@@ -20,9 +20,9 @@ Operator-side inventory of every intellectual-property asset the practice owns o
 - [`08-future-work.md §2`](./08-future-work.md#2-client-contract-terms-legal) — MSA / SOW / AUP drafting trigger.
 - [`08-future-work.md §4`](./08-future-work.md#4-ip--business-secrets-vault) — vault + break-glass envelope (operational protection).
 - [`20-launch-and-operating-cost-model.md §2`](./20-launch-and-operating-cost-model.md) — line items for trademark filing, MSA drafting, insurance premium.
-- [`02b-pattern-c-architecture.md`](./02b-pattern-c-architecture.md) — the two-repo trust model that keeps the operator's secrets out of every client repo (the *technical* protection of the autopilot trade secret).
+- [`02b-dual-lane-architecture.md`](./02b-dual-lane-architecture.md) — the two-repo trust model that keeps the operator's secrets out of every client repo (the *technical* protection of the autopilot trade secret).
 
-> **Why this doc exists.** The autopilot — pipeline repos, n8n workflows, multi-AI router prompts, dashboard UI, freelance content prompt pack — is the moat. If a competitor (or an unhappy client) can copy it wholesale, the practice is reduced to a thin Next.js services agency. Pattern C protects it *technically*; this doc protects it *legally*. Both layers are necessary; neither is sufficient.
+> **Why this doc exists.** The autopilot — pipeline repos, n8n workflows, multi-AI router prompts, dashboard UI, freelance content prompt pack — is the moat. If a competitor (or an unhappy client) can copy it wholesale, the practice is reduced to a thin Next.js services agency. Dual-Lane Repo protects it *technically*; this doc protects it *legally*. Both layers are necessary; neither is sufficient.
 >
 > **Scope.** This is the operator's working plan, not a published policy. Anything client-facing (privacy page, AUP, termination clause) is owned by [`08`](./08-future-work.md). Anything about *how secrets are stored* (1Password, break-glass) is owned by [`08 §4`](./08-future-work.md#4-ip--business-secrets-vault). This doc owns the *legal posture* only.
 
@@ -98,13 +98,13 @@ A trade secret is only protected if the holder takes **reasonable steps** to kee
 
 | Step | Status | Owned by |
 |---|---|---|
-| Private repos only; org-level membership tightly controlled | ✅ Today | [`02b-pattern-c-architecture.md`](./02b-pattern-c-architecture.md) |
+| Private repos only; org-level membership tightly controlled | ✅ Today | [`02b-dual-lane-architecture.md`](./02b-dual-lane-architecture.md) |
 | Confidentiality banner on every operator-only doc (`<!-- CONFIDENTIAL — OPERATOR-ONLY -->`) | ✅ Today | This folder |
 | `.claudeignore` + `.cursorignore` exclude operator-only paths from agent uploads | ⚠️ Partial — verify before each engagement | [`03-secure-architecture.md`](./03-secure-architecture.md) |
 | Non-redistribution clause in the MSA (client may not share operator-side prompts/workflows) | ⏳ Drafted in [`08 §2`](./08-future-work.md#2-client-contract-terms-legal); pending lawyer | §3 below |
 | Contractor / sub-contractor NDA before any access | ⏳ Pending — see §3.4 | §3 below |
 | Operator-controlled vault for credentials (1Password Business + break-glass envelope) | ⏳ Trigger: before client #5 | [`08 §4`](./08-future-work.md#4-ip--business-secrets-vault) |
-| Pattern C zone isolation (no client repo can read pipeline repo) | ✅ Today | [`pattern-c-enforcement-checklist.md`](./pattern-c-enforcement-checklist.md) |
+| Dual-Lane Repo zone isolation (no client repo can read pipeline repo) | ✅ Today | [`dual-lane-enforcement-checklist.md`](./dual-lane-enforcement-checklist.md) |
 | Audit log + variable registry inventory | ✅ Today | [`docs/ops/variable-registry.md`](../ops/variable-registry.md) |
 
 > **Trade-secret fragility.** Once a trade secret is leaked publicly, it cannot be re-secured. The patent route (§2.4) is the only fallback for genuinely novel mechanisms — and patents require disclosure, which is the opposite of secrecy. Pick one stance per asset; don't try to be both.

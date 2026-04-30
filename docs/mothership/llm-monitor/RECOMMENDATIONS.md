@@ -45,7 +45,7 @@ the work actually addressed it).
 
 ## Active recommendations (last 30 days)
 
-_No items yet — first llm-monitor run hasn't completed._
+_No active recommendations in the rolling window._
 
 <!-- AUTO-END -->
 

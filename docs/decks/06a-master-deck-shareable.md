@@ -139,3 +139,74 @@ The benefit isn't "AI." It's **the gap between intent and a published change col
 > Pitch line: *"Your website stops decaying — and you never call a developer for a typo again."*
 
 ---
+
+<!-- _class: lead -->
+
+# 2 · What we provide that others don't
+
+*The moat, in plain English.*
+
+---
+
+## The category we sit in
+
+| Category | Example providers | Their model |
+|---|---|---|
+| Templated DIY builders | Squarespace, Wix, Webflow | Drag-and-drop. Client maintains. Vendor owns the data. |
+| Freelance "site builds" | Solo Upwork / Fiverr devs | Build, hand off, disappear. Each future change is a custom invoice. |
+| Boutique web agencies | Local 5-person shops | Big setup fee, monthly retainer for *availability*, $150–$300 / edit. |
+| Headless CMS + dev | Sanity / Contentful + freelancer | Real codebase, but client must learn a CMS *and* still call a dev. |
+| AI-site generators | Framer AI, Durable, Bookmark | One-prompt sites. Templated under the hood; hosted in vendor stack. |
+| **Lumivara Forge** | — | Real codebase the client owns + AI autopilot operator-managed + edits from a phone shortcut + flat subscription. |
+
+The market is full of Next.js developers. It is **not** full of operators who can hand a non-technical owner a site that maintains itself.
+
+---
+
+## Five things only we ship today
+
+1. **Phone-as-CMS** over a real codebase. A shortcut on the client's phone routes a plain-English instruction into a code change with a live preview. Nothing to log into.
+2. **Multi-vendor AI fallback ladder.** Triage, plan, execute, and review each have a primary model and a fallback so a single-vendor outage never blocks the queue.
+3. **Plan-then-execute pipeline.** Every routine change gets a structured AI plan written as a comment *before* code is touched. The client reads the plan first.
+4. **Tier-based cadence.** A sold dial that controls how aggressively the autopilot runs (manual through hourly). The bot's "energy" is part of the price, not an internal toggle.
+5. **Two-repo isolation.** The client's site lives in a clean, transferable repository in their own account. The autopilot, prompts, and operator IP live in a separate repository they never see — so if they ever leave, the site is genuinely "vanilla".
+
+---
+
+## Why each of those is hard to copy
+
+| Feature | What protects it |
+|---|---|
+| Phone-as-CMS | Requires identity, automation, signed webhooks, GitHub integration, and preview deploys wired together end-to-end. Multi-phase build effort. |
+| Multi-vendor fallback | Requires three live API contracts, a deterministic router, and prompt-pack parity across providers. Most freelancers hold one key. |
+| Plan-then-execute | An AI-authored plan comment lands on every routine issue before code does. Few competitors run this gate at all. |
+| Tier cadence | Tier reads through the whole pipeline — schedule, model selection, auto-merge gates all branch on it. Not a feature flag; a whole product surface. |
+| Two-repo isolation | A per-engagement install split between operator-side automation and client-side site. Operator IP stays operator-side; the client repo is genuinely portable if they ever leave. |
+
+The site is a commodity. The **system around the site** is the moat.
+
+---
+
+## What we deliberately do NOT sell
+
+- **Not a SaaS.** No self-serve onboarding, no shared multi-tenant database, no public sign-up.
+- **Not an agency.** No PMs, no design team, no employees in Stage 1. The operator runs everything until the cap.
+- **Not a hosting company.** The client's hosting account is the client's, in their name, on their card by month 1.
+- **Not a white-label reseller.** A reseller tier exists for agencies but is not promoted; quoted custom at a substantial premium.
+- **Not Shopify / e-commerce.** Wrong stack — referred elsewhere.
+
+The boundaries *are* the strategy. They keep the operator under the hour cap at saturation and keep the moat intact.
+
+---
+
+## Section recap — Differentiators
+
+- **Phone-as-CMS** is the headline feature. Nobody in our price band offers it.
+- **Multi-vendor fallback** turns a single-vendor risk into a sold feature ("we don't pause when one provider hiccups").
+- **Two-repo isolation** lets us license the system per engagement while the *site* is genuinely the client's.
+- **Tier cadence** turns "how aggressive is the bot" into a sold dial, not an internal toggle.
+- **The negative list** (what we don't sell) is itself a differentiator — boundaries clients can read and trust.
+
+> Pitch line: *"Other people sell you a website. We sell you a website that updates itself."*
+
+---

@@ -1,17 +1,17 @@
-# .pattern-c.yml — Pattern C migration manifest (canonical, machine-readable)
+# .dual-lane.yml — Dual-Lane Repo migration manifest (canonical, machine-readable)
 #
 # This file is the single source of truth for which path goes where when the
-# P5.6 spinout splits this single repo into the two-repo Pattern C topology
-# defined in docs/mothership/02b-pattern-c-architecture.md.
+# P5.6 spinout splits this single repo into the two-repo Dual-Lane topology
+# defined in docs/mothership/02b-dual-lane-architecture.md.
 #
 # Every tracked file in this repo MUST be covered by exactly one entry below
 # (most precise prefix wins). The validation that enforces "every tracked
-# file is classified" lives in scripts/pattern-c-audit.sh §6.
+# file is classified" lives in scripts/dual-lane-audit.sh §6.
 #
 # Read by:
 #   - scripts/forge-spinout-dry-run.sh — simulates the spinout and prints
 #     a per-lane file count + any uncovered files (the dry-run gate).
-#   - scripts/pattern-c-audit.sh §6 — fails the audit if a tracked file
+#   - scripts/dual-lane-audit.sh §6 — fails the audit if a tracked file
 #     is uncovered or if a contamination row matches a real path.
 #
 # Lanes:
@@ -25,9 +25,9 @@
 #                pipeline-only section before landing in the site repo).
 #   drop         Stays in this repo's history only; not copied at spinout.
 #                Build artefacts, local CLI state.
-#   contamination  Tracks Pattern C violations the operator hasn't decided how
-#                  to fix yet. Audit prints them but doesn't fail; they DO NOT
-#                  imply a lane assignment.
+#   contamination  Tracks Dual-Lane Repo violations the operator hasn't decided
+#                  how to fix yet. Audit prints them but doesn't fail; they DO
+#                  NOT imply a lane assignment.
 #
 # Path conventions:
 #   - Trailing slash means "directory" (every file under it is covered).
@@ -37,8 +37,8 @@
 
 version: 1
 locked: 2026-04-29
-canonical-architecture: docs/mothership/02b-pattern-c-architecture.md
-enforcement: docs/mothership/pattern-c-enforcement-checklist.md
+canonical-architecture: docs/mothership/02b-dual-lane-architecture.md
+enforcement: docs/mothership/dual-lane-enforcement-checklist.md
 
 lanes:
 
@@ -73,7 +73,7 @@ lanes:
     - .github/PULL_REQUEST_TEMPLATE.md
     - .github/SECURITY.md
     - .claude/
-    - .pattern-c.yml
+    - .dual-lane.yml
     - dashboard/
     - scripts/
     - docs/mothership/
@@ -112,7 +112,7 @@ lanes:
       note: "Site repo doesn't host an AI-agent runtime charter once handed to the client."
 
     - path: CODE_OF_CONDUCT.md
-      note: "Community standard; both repos carry the same Contributor Covenant + Pattern C addendum."
+      note: "Community standard; both repos carry the same Contributor Covenant + Dual-Lane Repo addendum."
 
     - path: LICENSE
       transform: site-strips-pipeline-section
@@ -167,15 +167,15 @@ lanes:
     # No tracked entries today; .next/ and .vercel/ are .gitignore'd.
 
 # ============================================================
-# CONTAMINATION — known Pattern C violations awaiting operator decision
-# Listed here so pattern-c-audit.sh §2 keeps them visible at every audit run.
+# CONTAMINATION — known Dual-Lane Repo violations awaiting operator decision
+# Listed here so dual-lane-audit.sh §2 keeps them visible at every audit run.
 # A path being listed here does NOT classify its lane; the audit treats it
 # as "no lane yet — operator decides."
 # ============================================================
 contamination:
   - path: src/app/lumivara-infotech/
-    rule: "Operator pitch on Site repo per Pattern C 02b §6 / C-MUST-1; needs operator decision (delete / rename to /forge / move to a separate operator-brand Vercel project)."
-    tracking: "PR #200 description; pattern-c-audit.sh §2."
+    rule: "Operator pitch on Site repo per Dual-Lane 02b §6 / C-MUST-1; needs operator decision (delete / rename to /forge / move to a separate operator-brand Vercel project)."
+    tracking: "PR #200 description; dual-lane-audit.sh §2."
 
   - path: src/content/lumivara-infotech.ts
     rule: "Content backing src/app/lumivara-infotech/. Same fate as the route."

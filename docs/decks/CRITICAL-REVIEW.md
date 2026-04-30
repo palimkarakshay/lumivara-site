@@ -73,3 +73,64 @@ Worse: each of the six per-vertical client pitch decks (doctors, dentists, lawye
 This is small but it is diagnostic. Every deck in the pack carries a banner reading *"brand-name reconsideration (D2) is open"* and the operator-domain is "pending registration." A business that cannot decide what to call itself is a business that has not yet been embarrassed into deciding by an external pressure (a customer asking, a competitor squatting, a regulator filing). The reason every deck has a placeholder banner is that the operator has been writing decks instead of being on the phone. The banner is the documentation hobby's signature.
 
 ---
+
+## 2. Where the math breaks
+
+The pack uses three layers of numerical authority — `[V]` verified, `[S]` secondary, `[C]` contested — and the casual reader sees that ledger and infers rigour. The careful reader notices that the load-bearing numbers, the ones the unit economics actually depend on, are mostly `[S]` or `[C]`.
+
+### 2.1 The "law firms spend $120–$150k/yr on SEO" number is a category error
+
+This number appears in `01-investor-deck.md`, `02-partner-deck.md`, the lawyer vertical pitch, and the prospective-client deck — usually in the form *"P1 — Premium solo professional (lawyer / coach / HR consultant) — Their existing budget: Law firms ~$120k – $150k / yr on SEO alone."*
+
+The source given is "First Page Sage 2024 / On-The-Map." Look at who First Page Sage's "law-firm SEO spend" averages actually represent. They are aggregations over law firms with **paid SEO retainers** — a population skewed heavily toward AmLaw 200, mid-size litigation firms, and firms with marketing budgets large enough to hire First Page Sage in the first place. The denominator is *firms that paid for SEO*, not *all firms*. The mean is dragged upward by big spenders.
+
+The persona this deck targets is **a solo lawyer or 2–10-person boutique** — i.e. precisely the segment that *isn't* in the First Page Sage sample. A solo immigration lawyer in Brampton is not spending $120k/yr on SEO. They are spending $0–$5k/yr on SEO and are extremely sensitive to the ROI math you are quoting.
+
+This is the most consequential factual error in the pack. The investor deck claim "Lumivara's slot: < 5% of their existing web/SEO line" depends on the $120k number. If the realistic solo-lawyer line is $5k/yr, then $4,500 setup + $249/mo ($7,488 over 24 months) is **a 75% increase** to their existing line, not a 5% allocation. The pitch reverses.
+
+### 2.2 The dental "5–10% of revenue on marketing" stat is `[S]`, not `[V]`
+
+The dental vertical pitch and the prospective-client deck quote *"a typical Canadian single-location general dentistry, 1–2 dentists, ~$1M gross, already spends $11,050 – $30,100/yr [on the marketing line items we displace]."* The supporting source row is `[S] §B-Dental-Spend` — i.e., Secondary, not independently Verified. The investor deck's persona slide acknowledges this: *(`[S] §B-Dental-Spend`)*.
+
+But the ROI math in the dental deck is presented as if the $11k–$30k range were certain. A practice owner reading the deck will not check the bibliography. They will read "you currently spend $11–$30k; we charge $7,488 over 24 months; obvious win." If the actual spend is $4–$8k (which is plausible for a single-doc, suburban-Canada practice with a Squarespace site and no SEO retainer), the math collapses and the deck's centrepiece chart is misleading.
+
+This is not a footnote-rigor problem. It is **an honest-pricing problem**. You cannot claim the negative list makes you the honest vendor and then quote a marketing-spend range whose lower bound you cannot verify.
+
+### 2.3 The 95% pre-comp gross margin is a tautology when there is no labour
+
+The investor and partner decks both lead with "95% pre-comp gross margin." This is technically defensible — at 30 clients × $249 MRR = $7,470/mo MRR, with $900–$1,100/mo cash overhead, the arithmetic works. It is also **meaningless as a business signal** for two reasons:
+
+1. **Pre-comp** means *before paying yourself.* In services businesses, the operator's labour is the dominant cost. Calling a one-person services practice "95% gross margin pre-comp" is the same as saying "I have 95% gross margin if you don't count me." A barber chair has 95% gross margin pre-comp. So does a sole-proprietor accountant. The number is a category-correct truism, not a competitive insight.
+2. The comparison the deck draws — "AI-enabled solo operators commonly report 65–75% gross margins; traditional agencies compress to 40–50% under headcount load" (`[S] §B-Solopreneur-Margin`) — is again `[S]`. And it's apples-to-oranges: agency margins are **post-payroll**, your number is pre-comp. The two cannot be compared on the same row.
+
+A sophisticated investor will see this in two seconds and downgrade their read of the entire numerical pack.
+
+### 2.4 The TAM calculation is performative
+
+The investor deck cites the global management-consulting market as "USD $161.2B in 2024 (low end of $161B–$466B)" and notes that *"at 30 active clients, we serve ~0.0023% of Canadian small businesses."* This is the textbook **TAM/SAM theatre** — invoking a giant denominator to imply that "the market is decisively not the bottleneck."
+
+This is true and unhelpful. The market is also "decisively not the bottleneck" for a sandwich shop in Hamilton. The bottleneck for any solo services practice is **distribution and trust**, not market size. Citing $161B of management consulting in an investor deck for a 30-client web-services retainer is the kind of thing the investor pattern-matches as *unsophisticated about their own model*. It would be more credible to remove the slide entirely.
+
+### 2.5 The "year-1 take-home CAD ~$118–$128k" is reverse-engineered, not forecast
+
+Trace the chain: `docs/storefront/03-cost-analysis.md` Part D forecasts month-by-month MRR ramp; `docs/mothership/18` provides capacity-and-cost cliffs; the deck pack collapses these into a single take-home headline. The chain has the *appearance* of a model. The **inputs** to the model are:
+
+- The *operator's chosen price list*, not market-tested prices.
+- The *operator's chosen acquisition cadence* (3–4 clients/month from month 4–9), not measured conversion data.
+- The *operator's chosen retention assumption* (clean churn only at exits), not observed retention.
+
+Three operator-chosen inputs × an arithmetic engine = an output that looks like a forecast. It is not a forecast. It is a budget. The honest framing is *"if I sell at this price, at this cadence, with this retention, I will take home this much"* — every word of which is conditional on a fact the operator does not yet have. Putting the destination number on slide 7 of an investor deck implies a level of confidence that the underlying data does not support.
+
+### 2.6 The "competitor" pricing comparison is rigged on the high end
+
+The "what it costs vs. the alternatives" slide lists Lumivara T2 at CAD $7,488 over 24 months against:
+
+- "Boutique agency: $15,000 – $30,000+"
+- "DesignJoy-class subscription: $120,000+"
+- "DIY builder: $400 – $3,300 + your time"
+
+DesignJoy is not a real comparison for the dental / legal / boutique-services ICP. DesignJoy is a design-subscription serving venture-backed startups and SaaS companies — a buyer who has never heard of the operator's ICP. Putting DesignJoy in the comparison table is **rhetorical, not informational** — it makes the operator's price look reasonable by anchoring against a price the buyer would never have considered. The same trick is more subtly run with the boutique-agency upper bound ($30,000+) — which represents the agency's *highest-billing client*, not the modal one.
+
+A buyer comparing real options is comparing Squarespace ($17–$139/mo) against you ($249/mo + $4,500 setup). The honest gap is *"are you 13× more valuable than Squarespace? Make the case in one sentence without using the word 'codebase.'"* The deck does not make that case. It hides behind DesignJoy and the boutique-agency tail.
+
+---

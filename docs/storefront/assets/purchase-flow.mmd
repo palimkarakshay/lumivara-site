@@ -1,0 +1,37 @@
+%% Lumivara Forge — purchase flow (Phase 1 design).
+%% Source for docs/storefront/09-purchase-flow.md §1.
+%% Render: npx -y @mermaid-js/mermaid-cli -i purchase-flow.mmd -o purchase-flow.png
+
+flowchart TD
+    Landing[Prospect lands on lumivara-forge.com] --> Tiers{Compare tiers}
+    Tiers -->|Visual matrix or<br/>'help me choose' quiz| TierPick[Prospect targets a tier]
+    TierPick --> ExistingSite{Have a website already?}
+
+    ExistingSite -->|No| Intake[In-app intake form<br/>see 07 handover-pack YAML]
+    ExistingSite -->|Yes — happy with it| PathA[Path A — keep & integrate<br/>see 07-client-migration-strategy §2]
+    ExistingSite -->|Yes — want a new one| PathB[Path B — full migration<br/>see 07-client-migration-strategy §3]
+    ExistingSite -->|Mixed| Hybrid[Hybrid<br/>see 07-client-migration-strategy §4]
+
+    PathA --> Intake
+    PathB --> Intake
+    Hybrid --> Intake
+
+    Intake --> TalkFirst{Want to talk first?}
+    TalkFirst -->|Yes — Growth/Bespoke prefer this| Discovery[Cal.com discovery call<br/>30 min, optional]
+    TalkFirst -->|No — self-serve| Quote
+    Discovery --> Quote[Operator confirms tier + scope<br/>and emails a quote]
+
+    Quote --> Contract[Contract & terms acceptance<br/>checkbox + click-to-sign,<br/>signed PDF emailed to operator]
+    Contract --> Pay[Stripe Checkout — setup fee<br/>hosted page, no PCI scope]
+    Pay --> Subscribe[Stripe Subscription created<br/>monthly retainer billed Day 30]
+    Subscribe --> Onboard[Operator-side onboarding<br/>see 06-operator-rebuild-prompt-v3]
+    Onboard --> Active[Active client<br/>tracked in admin portal]
+
+    Active --> Cancelled{30-day cancel?}
+    Cancelled -->|Yes| Stop[Stop autopilot, keep site<br/>per 02-pricing-tiers stop-conditions]
+    Cancelled -->|No| Active
+
+    %% Drop-off / fallback branches
+    Tiers -.->|Wants to talk first| Discovery
+    Intake -.->|Abandons form| Followup[Operator follows up via<br/>contact-form lane]
+    Followup -.-> Discovery

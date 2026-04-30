@@ -133,15 +133,20 @@ class Candidate:
         return h.hexdigest()[:16]
 
     def render_body(self) -> str:
-        anchor = (
+        # source_path is stored relative to repo root (set by build_plan),
+        # so this URL is portable across environments. body_anchor goes
+        # into BOTH the visible link text and the URL target so reviewers
+        # land directly on the marker's section.
+        link_text = (
             f"{self.source_path}{self.body_anchor}"
             if self.body_anchor
             else self.source_path
         )
+        link_url = f"../blob/main/{self.source_path}{self.body_anchor}"
         return (
             "## Source\n"
             f"Filed by `scripts/doc-task-seeder.py` from a `<!-- bot-task -->` "
-            f"marker in [`{anchor}`](../blob/main/{self.source_path}). The "
+            f"marker in [`{link_text}`]({link_url}). The "
             "seeder is deterministic — it does not invent tasks; the marker "
             "exists verbatim in the doc.\n\n"
             "## What to do\n"
@@ -221,7 +226,16 @@ def context_around(text: str, offset: int, lines: int = 5) -> str:
     return text[start:end].strip("\n")
 
 
-def scan_doc(path: Path) -> list[Candidate]:
+def scan_doc(path: Path, rel_path: str) -> list[Candidate]:
+    """Scan one doc for markers.
+
+    `path` is the absolute path on disk used for reading; `rel_path` is
+    the repo-rooted MANIFEST entry that becomes the candidate's
+    canonical `source_path`. Storing the relative path is load-bearing:
+    it makes `source_id` stable across environments (local vs CI
+    runner) and keeps the rendered issue URL `../blob/main/<rel>`
+    portable.
+    """
     text = path.read_text(encoding="utf-8")
     fences = fenced_block_ranges(text)
     out: list[Candidate] = []
@@ -243,7 +257,7 @@ def scan_doc(path: Path) -> list[Candidate]:
         line = text.count("\n", 0, m.start()) + 1
         out.append(
             Candidate(
-                source_path=str(path),
+                source_path=rel_path,
                 title=title,
                 labels=labels,
                 body_anchor=anchor,
@@ -586,7 +600,7 @@ def build_plan(repo_root: Path, max_new: int, existing: set[str]) -> Plan:
         if not p.is_file():
             plan.errors.append(f"MANIFEST entry missing on disk: {rel}")
             continue
-        for cand in scan_doc(p):
+        for cand in scan_doc(p, rel):
             if cand.source_id in existing:
                 plan.skipped_existing.append(cand)
                 continue

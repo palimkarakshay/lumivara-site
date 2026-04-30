@@ -160,10 +160,20 @@ jobs:
             if [ -n "$ISSUE" ]; then
               gh issue comment "$ISSUE" \
                 --repo palimkarakshay/lumivara-site \
-                --body "Codex review requested but no OpenAI / Gemini / OpenRouter key is configured. Removing \`model/codex\` so the next execute run picks this up via Claude — keeps the issue out of the \`status/awaiting-review\` dead-letter state in case GitHub Models is also unreachable."
+                --body "Codex review requested but no OpenAI / Gemini / OpenRouter key is configured. Removing \`model/codex\` AND \`type/code-review\` so the next execute run picks this up via Claude — keeps the issue out of the \`status/awaiting-review\` dead-letter state in case GitHub Models is also unreachable."
+              # Both labels must come off: scripts/lib/routing.py treats
+              # `type/code-review` as a CODEX_TYPE_HINTS safety net that
+              # routes to codex-review.yml even when `model/codex` is
+              # absent (seed-codex-review-backlog.py applies both, and
+              # the recheck path uses the same pair). Removing only
+              # `model/codex` would loop the issue back through this
+              # workflow on the next execute run instead of handing it
+              # to Claude. (Codex P1 finding round 2 on PR #244,
+              # 2026-04-30.)
               gh issue edit "$ISSUE" \
                 --repo palimkarakshay/lumivara-site \
-                --remove-label "model/codex" || true
+                --remove-label "model/codex" \
+                --remove-label "type/code-review" || true
             fi
             echo "ok=false" >> "$GITHUB_OUTPUT"
             exit 0

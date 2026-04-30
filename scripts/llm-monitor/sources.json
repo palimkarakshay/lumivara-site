@@ -1,0 +1,98 @@
+{
+  "_comment": "Source list for llm-monitor. Edit freely; collectors read this at runtime. Keep arrays sorted alphabetically within each section to minimise merge conflicts.",
+  "_models_we_track": [
+    "claude-opus-4-7",
+    "claude-sonnet-4-6",
+    "claude-haiku-4-5",
+    "claude-code",
+    "anthropic-sdk",
+    "anthropic-mcp",
+    "gpt-5.5",
+    "openai-codex",
+    "gemini-2.5-pro",
+    "gemini-2.5-flash"
+  ],
+  "_dev_stack_we_track": [
+    "nextjs",
+    "vercel",
+    "github-actions",
+    "playwright",
+    "vitest"
+  ],
+  "_keywords": [
+    "anthropic",
+    "claude",
+    "claude code",
+    "claude-code",
+    "claude opus",
+    "claude sonnet",
+    "claude haiku",
+    "mcp",
+    "model context protocol",
+    "openai sdk",
+    "gpt-5",
+    "codex",
+    "gemini",
+    "google ai studio",
+    "agent sdk",
+    "tool use"
+  ],
+  "hackernews": {
+    "queries": [
+      "claude code",
+      "anthropic",
+      "claude api",
+      "model context protocol",
+      "mcp server",
+      "agent sdk",
+      "codex cli",
+      "gemini api",
+      "next.js 16",
+      "vercel",
+      "github actions"
+    ],
+    "lookback_hours": 36,
+    "min_points": 5
+  },
+  "rss": {
+    "feeds": [
+      {"name": "Anthropic News", "url": "https://www.anthropic.com/news/rss.xml"},
+      {"name": "OpenAI Blog", "url": "https://openai.com/blog/rss.xml"},
+      {"name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml"},
+      {"name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/"},
+      {"name": "Latent Space", "url": "https://www.latent.space/feed"},
+      {"name": "Hugging Face Blog", "url": "https://huggingface.co/blog/feed.xml"},
+      {"name": "Vercel Changelog", "url": "https://vercel.com/changelog/feed.xml"},
+      {"name": "Next.js Blog", "url": "https://nextjs.org/feed.xml"},
+      {"name": "GitHub Changelog", "url": "https://github.blog/changelog/feed/"}
+    ],
+    "lookback_hours": 48
+  },
+  "reddit": {
+    "subreddits": [
+      "ClaudeAI",
+      "LocalLLaMA",
+      "MachineLearning",
+      "OpenAI",
+      "singularity"
+    ],
+    "lookback_hours": 36,
+    "min_score": 10,
+    "min_comments": 5
+  },
+  "github": {
+    "repos": [
+      "anthropics/anthropic-sdk-python",
+      "anthropics/anthropic-sdk-typescript",
+      "anthropics/claude-code",
+      "googleapis/python-genai",
+      "openai/openai-python",
+      "vercel/next.js",
+      "vercel/vercel"
+    ],
+    "lookback_hours": 48,
+    "include_releases": true,
+    "include_issues": true,
+    "issue_min_reactions": 3
+  }
+}

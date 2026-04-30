@@ -699,3 +699,198 @@ If any *other* risk lands, the system absorbs it. If burnout lands, the system s
 > Pitch line: *"We've named the risks, mitigated the operational ones, watch-listed the strategic ones, and put the operator's wellbeing at the top of the list."*
 
 ---
+
+<!-- _class: lead -->
+
+# 9 · Resources required
+
+*Money, time, tooling, people.*
+
+---
+
+## Money — month-1 outlay
+
+| Line item | Cost (CAD) | Notes |
+|---|---|---|
+| Domain (`lumivara-forge.com / .ca`) | ~$40 | Annual; brand-domain registration is the trigger to flip operator-domain banner from "pending" to live. |
+| GitHub org (free tier ok) | $0 | Free for unlimited private repos; minutes via the GitHub Free Action allotment. |
+| Vercel Hobby | $0 | Free tier covers small-business traffic; clients pay if they outgrow it. |
+| Resend (free tier) | $0 | Covers magic-link emails for all clients to ~3,000 emails/month. |
+| Twilio (per-client #) | ~$1.15/mo USD | Pay-as-you-go, billed per client. |
+| Anthropic Claude Pro | ~$20 USD/mo | Pro until client #6, then Max 5x ($100), then Max 20x ($200). |
+| Gemini API | $0 | Free tier (500 RPD on Flash) covers our volume. |
+| OpenAI / Codex | $0 → ~$30/mo USD | Pay-go; modest spend in code-review path. |
+| n8n on Railway | ~$5–$10/mo | Hobby tier; Pro at Cliff 3. |
+| **Total month-1** | **~CAD $90–$120** | Almost all of which is AI subscriptions. |
+
+Source: `docs/storefront/03-cost-analysis.md` Part A; `docs/mothership/18 §1`.
+
+---
+
+## Money — month-12 outlay (scaled to ~30 clients)
+
+| Line item | Cost (CAD) | Notes |
+|---|---|---|
+| Anthropic Max 20x + 2nd seat | ~$605 / mo | Triggered at client #26. |
+| OpenAI / Codex (review at scale) | ~$50–$100 / mo | More PRs reviewed. |
+| 1Password Business Teams | ~$11 / mo | One operator seat. |
+| Bitwarden self-hosted backup | ~$5 / mo | On Railway. |
+| Twilio per-client × 30 | ~$50 / mo USD | $1.15 × 30. |
+| Railway (n8n Pro) | ~$25 / mo | Cliff 3 upgrade. |
+| Accountant + bookkeeping | ~$100–$170 / mo | $1k–$2k / yr smoothed. |
+| Insurance (professional liability) | ~$35 / mo | $400/yr Ontario sole prop, triggered above $50k revenue. |
+| **Total month-12** | **~CAD $900–$1,100** | Still a tiny fraction of MRR. |
+
+The infrastructure cost stays under 5% of revenue at 30 clients. The dominant cost is operator time.
+
+---
+
+## One-time legal + IP setup
+
+| Item | Cost (CAD) | Trigger |
+|---|---|---|
+| MSA + SOW templates from a Canadian small-business lawyer | $1,500 – $2,500 | Before client #2 |
+| Privacy / PIPEDA review (optional) | $0 (DIY) or $500 | Before client #3 |
+| Trademark check (CIPO Class 42 + USPTO) | $400 – $800 | Before public branding |
+| 1Password Business + break-glass envelope | $100 / yr | Before client #5 |
+| **Total one-time** | **~CAD $2,000 – $3,800** | Spread across months 1–4 |
+
+Source: `docs/mothership/08-future-work.md §6` sequencing.
+
+---
+
+## Time — operator hours per month
+
+| Activity | Hours / mo at 1 client | Hours / mo at 30 clients |
+|---|---|---|
+| Per-client PR review + monitoring | 2–3 | 60–90 |
+| Monthly improvement runs (T2/T3) | 1.5 | 25–35 |
+| Client communications | 0.5 | 7–15 |
+| Quarterly strategy calls | 0.3 | 8–10 |
+| Sales / new client onboarding | varies | 10–20 |
+| Pipeline maintenance | 2–4 | 4–6 (fixed cost) |
+| **Total** | **~6** | **~115–175** |
+
+At 30 clients the operator is **at the cap**. That's the trigger for VA + 2nd-engineer hires (months 9–12).
+
+Source: `docs/storefront/03-cost-analysis.md` Part A "Your time" + Part E.
+
+---
+
+## People — the hire ladder
+
+| Trigger | Role | Hours / cost |
+|---|---|---|
+| Cross 25 active clients | Part-time VA for client comms triage | 5 hrs/wk · ~CAD $300/mo |
+| Cross 35 active clients | Part-time second engineer for monthly improvement runs | Variable · unlocked by Cliff 5 (2nd Anthropic seat) |
+| Cross 50 active clients | "You've built an agency. Decide if that's what you wanted." | Stage 2 / 3 conversation |
+
+The hire ladder is deliberately *late*. The autopilot exists so the operator can hold ~30 clients without help.
+
+Source: `docs/storefront/03-cost-analysis.md` Part E.
+
+---
+
+## Tooling — the operator stack
+
+- **Claude Pro/Max** — primary AI; OAuth-bound to GitHub Actions via `CLAUDE_CODE_OAUTH_TOKEN`.
+- **Gemini API + OpenAI API** — fallback ladder.
+- **n8n on Railway** — capture and dispatch hub.
+- **GitHub** — source of truth (Issues, Actions, Project v2).
+- **Vercel** — hosting + preview builds + deploy hooks.
+- **Resend** — magic-link emails.
+- **Twilio** — per-client SMS numbers.
+- **Auth.js v5 + Octokit** — admin portal stack.
+- **1Password + YubiKey** — secrets vault.
+- **GitHub Pages SPA** — operator dashboard (mobile-first).
+
+Most of this is already wired up on Client #1's site; the work is to **separate** it cleanly into pipeline + per-client repos under Pattern C.
+
+---
+
+## What an investor / partner would actually contribute
+
+We are not raising capital. The three concrete asks (in priority order) are:
+
+1. **Warm intros.** Two ICP-fit prospects (P1 / P2 / P3) per quarter is a meaningful tailwind for the first 12 months.
+2. **Pressure-testing.** Stress-test the plan on the contested claims (`[C] §B-MC-Market` market sizing, `[S] §B-Solopreneur-Margin` margin band). Deck 05 is the structured version of this conversation.
+3. **Optionality on a future round.** If Stage 2 (small-team agency) or Stage 3 (productisation into a SaaS) opens in 24+ months, first-look access to participate.
+
+For partner-shaped contributions (revenue-share, co-operator), see `docs/decks/02-partner-deck.md`.
+
+---
+
+## Section recap — Resources
+
+- **Month 1 cash outlay: ~CAD $90 – $120** (mostly AI subs).
+- **Month 12 cash outlay: ~CAD $900 – $1,100** (still <5% of revenue).
+- **One-time legal + vault: ~CAD $2,000 – $3,800** spread over months 1–4.
+- **Operator time scales** to 115–175 hrs/mo at 30 clients — the cap.
+- **First hire is a VA at client #25**; first engineer at client #35.
+- The non-capital asks of any external supporter are **intros, pressure-testing, optionality**.
+
+> Pitch line: *"For under $5k of cash and 175 hours a month at saturation, this practice produces ~$120k take-home in year 1."*
+
+---
+
+<!-- _class: lead -->
+
+# Closing
+
+---
+
+## The one-sentence summary
+
+> **Lumivara Forge** sells small-business websites that you edit from your phone and that quietly improve themselves every month — for a flat subscription fee, on a real codebase you own outright.
+
+Built on the **autopilot** that already runs on Client #1's site (operator-brand domain `lumivara-forge.com` pending registration). Packaged as a four-tier ladder (T0 / T1 / T2 / T3). Run by one operator, with a hire-ladder that kicks in at 25 / 35 / 50 clients.
+
+Year-1 destination: **30 active clients, ~$120k take-home, day job replaced.**
+
+---
+
+## What every section collapses to
+
+| Section | The answer in one line |
+|---|---|
+| 1 — Benefits | The site stops decaying; flat fee replaces $200/edit invoices. |
+| 2 — Differentiators | Phone-as-CMS over a real codebase, multi-AI fallback, Pattern C operator/client split. |
+| 3 — Customer voice | Autonomy + predictability + ownership + custom looks. |
+| 4 — Competitor claims | Squarespace owns "edit yourself"; we own "edit yourself + own the code". |
+| 5 — End goal | 30 retainer clients in Stage 1; agency or SaaS optional later. |
+| 6 — Steps | Brand → critique-closure → pipeline repo → Client #1 → storefront → cliffs at 6/16/26/30. |
+| 7 — Project plan | $5k → $15–21k → $22k MRR over months 1–3 / 4–9 / 10–12. |
+| 8 — Challenges | Outages mitigated; burnout is the single biggest existential risk. |
+| 9 — Resources | <$5k cash + 175 op-hrs/mo at saturation through year 1. |
+
+---
+
+## Pre-publication gate (mirrors `docs/decks/00-INDEX.md`)
+
+Before sharing this deck — even with a single named recipient — walk these checks:
+
+- [ ] Every number, percentage, or dollar figure has a `[V]` row in `docs/research/03-source-bibliography.md`. Numbers without a `[V]` row are removed or downgraded with an explicit footnote.
+- [ ] Brand placeholder is locked to `Lumivara Forge`.
+- [ ] Pricing matches the current `docs/storefront/02-pricing-tiers.md` table.
+- [ ] No verbatim Client #1 brand strings (the operator is the subject, not the showcased client).
+- [ ] If shared with a single named recipient, frontmatter records the recipient + date sent so a stale version isn't re-sent.
+
+---
+
+<!-- _class: lead -->
+
+# Thank you.
+
+<br/>
+
+*Master deck — operator-scope, confidential.*
+
+Source files reconciled in this deck:
+`docs/mothership/00-INDEX.md` · `01-business-plan.md` · `02b-pattern-c-architecture.md` · `04-tier-based-agent-cadence.md` · `08-future-work.md` · `15-terminology-and-brand.md` · `18-capacity-and-unit-economics.md`
+`docs/storefront/00-quick-start.md` · `01-gig-profile.md` · `02-pricing-tiers.md` · `03-cost-analysis.md` · `04-slide-deck.md` · `05-template-hardening-notes.md` · `06-positioning-slide-deck.md`
+`docs/decks/00-INDEX.md` · `01-investor-deck.md` · `02-partner-deck.md` · `03-employee-deck.md` · `04-prospective-client-deck.md` · `05-advisor-deck.md`
+`docs/research/00-INDEX.md` · `03-source-bibliography.md` · `04-client-personas.md` · `06-drawbacks-and-honest-risks.md`
+`docs/AI_ROUTING.md` · `docs/ADMIN_PORTAL_PLAN.md` · `docs/migrations/00-automation-readiness-plan.md`
+
+<span class="small">© 2026 — system proprietary, licensed per engagement.</span>
+

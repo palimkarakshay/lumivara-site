@@ -1,3 +1,5 @@
+<!-- pricing-parity audit: verified 2026-04-30 by issue #216 — T0/T1/T2/T3 setup, monthly, and USD-conversion figures aligned across docs/storefront/04-slide-deck.md, docs/decks/04-prospective-client-deck.md, docs/storefront/06-product-strategy-deck.md. Re-run via `scripts/lib/` is not yet available; the grep command is recorded in the audit PR description. -->
+
 # 02 — Pricing Tiers (the four-tier ladder)
 
 Four tiers, from "I just want to get online" to "we're a small firm and want this fully managed." Each tier has a one-time **setup fee** and a monthly **subscription**. The subscription is what turns this from a freelance grind into a real business.

@@ -41,7 +41,7 @@ The files here fill the gap between *"the site shell exists"* and *"the site rea
 |---|---|---|---|---|
 | 1 | Restaurant | `restaurant-intake-form.md` | `restaurant-prompts.md` | ✅ Full (12 prompts; 10 required + 2 bonus) |
 | 2 | Plumbing / trades | `plumber-intake-form.md` | `plumber-prompts.md` | ✅ Full (12 prompts; 10 required + 2 conditional) |
-| 3 | Real-estate (single agent) | — | `realtor-prompts.md` | 🔲 Stub (headings only) |
+| 3 | Real-estate (single agent) | `realtor-intake-form.md` | `realtor-prompts.md` | ✅ Full (12 prompts; 10 required + 2 conditional) |
 | 4 | Recruitment / staffing | `recruiter-intake-form.md` | `recruiter-prompts.md` | ✅ Full (12 prompts; 10 required + 2 conditional) |
 | 5 | Law (solo practice) | — | — | ⏳ Planned |
 | 6 | Barber / salon | — | — | ⏳ Planned |

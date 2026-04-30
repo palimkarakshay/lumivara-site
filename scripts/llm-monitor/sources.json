@@ -57,14 +57,18 @@
   "rss": {
     "feeds": [
       {"name": "Anthropic News", "url": "https://www.anthropic.com/news/rss.xml"},
-      {"name": "OpenAI Blog", "url": "https://openai.com/blog/rss.xml"},
+      {"name": "GitHub Changelog", "url": "https://github.blog/changelog/feed/"},
       {"name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml"},
-      {"name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/"},
-      {"name": "Latent Space", "url": "https://www.latent.space/feed"},
       {"name": "Hugging Face Blog", "url": "https://huggingface.co/blog/feed.xml"},
-      {"name": "Vercel Changelog", "url": "https://vercel.com/changelog/feed.xml"},
+      {"name": "Import AI (Jack Clark)", "url": "https://importai.substack.com/feed"},
+      {"name": "Latent Space", "url": "https://www.latent.space/feed"},
+      {"name": "Lobsters", "url": "https://lobste.rs/rss"},
       {"name": "Next.js Blog", "url": "https://nextjs.org/feed.xml"},
-      {"name": "GitHub Changelog", "url": "https://github.blog/changelog/feed/"}
+      {"name": "OpenAI Blog", "url": "https://openai.com/blog/rss.xml"},
+      {"name": "Pragmatic Engineer", "url": "https://newsletter.pragmaticengineer.com/feed"},
+      {"name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/"},
+      {"name": "TLDR AI", "url": "https://tldr.tech/api/rss/ai"},
+      {"name": "Vercel Changelog", "url": "https://vercel.com/changelog/feed.xml"}
     ],
     "lookback_hours": 6
   },
@@ -94,6 +98,19 @@
     "include_releases": true,
     "include_issues": true,
     "issue_min_reactions": 3
+  },
+  "stackoverflow": {
+    "_comment": "StackExchange API v2.3 questions endpoint. Anonymous read quota (300 req/day per IP) is plenty for our every-2h cadence; STACKEXCHANGE_API_KEY in env upgrades to 10000 req/day if ever needed. Tags must match Stack Overflow's exact tag slugs (kebab-case).",
+    "tags": [
+      "anthropic",
+      "claude",
+      "claude-code",
+      "next.js",
+      "openai-api",
+      "vercel"
+    ],
+    "lookback_hours": 12,
+    "min_score": 0
   },
   "statuspages": {
     "_comment": "Provider status pages — load-bearing input for the every-15-min watch lane. All listed pages run on Statuspage.io and expose /api/v2/status.json + /api/v2/incidents/unresolved.json.",

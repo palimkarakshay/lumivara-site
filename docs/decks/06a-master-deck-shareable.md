@@ -28,7 +28,7 @@ What we sell, who we sell it to, who we sell against, where the business is goin
 
 <br/>
 
-*Compiled 2026-04-30 (refreshed end-of-day to reflect the same day's pipeline-lane work — an extended multi-vendor fallback ladder, a bot self-awareness loop that ingests provider quirks into the prompts at runtime, an operator recording pipeline, four-tier doc-task self-automation, two more vertical templates promoted to Full, and a Canadian-privacy-law breach-notification research seed). A shareable companion to the operator-scope master deck; the same nine product-positioning questions, with internal-only specifics generalised for external readers.*
+*Compiled 2026-04-30 (refreshed end-of-day to reflect the same day's pipeline-lane work — an extended multi-vendor fallback ladder, a bot self-awareness loop that ingests provider quirks into the prompts at runtime, an operator recording pipeline, four-tier doc-task self-automation, two more vertical content templates promoted to Full, a Canadian-privacy-law breach-notification research seed, and **a new per-vertical sales playbook pack** covering six high-LTV professional-services verticals — doctors, dentists, lawyers, accountants, physiotherapy, optometry — with operator-only sales templates and matching client-facing pitch decks; the structured response to recent advisor pushback that the operator-side stack is "over-engineered crap that won't ever sell"). A shareable companion to the operator-scope master deck; the same nine product-positioning questions, with internal-only specifics generalised for external readers.*
 
 <span class="small">Shareable with serious external readers (advisors, prospective partners, investors, sophisticated prospects). Not a substitute for the audience-specific stakeholder decks (investor / partner / employee / client / advisor) — those remain the right artefact when a single voice is needed. The brand name shown in this deck is a placeholder under active reconsideration; the architecture and the economics described do not depend on it.</span>
 
@@ -831,6 +831,21 @@ If you're forwarding this deck to a third party, walk these checks first:
 - [ ] If a more audience-specific deck (investor / partner / employee / client / advisor) would serve the recipient better, you've offered it instead.
 
 This deck is **shareable**, not **public**. The audience-fit rule still applies.
+
+---
+
+## For an advisor doing a comprehensive read — the deck pack
+
+This deck is the **comprehensive overview** an advisor reads to ground all nine questions in one read. Three companion documents make the read complete:
+
+| Read order | Document | Why |
+|---|---|---|
+| 1 | This deck (`06a-master-deck-shareable.md`) | The nine questions answered in one shareable read. ~50 slides. |
+| 2 | `05-advisor-deck.md` | The pressure-test companion — what's contested, where to push, including the recent "over-engineered crap won't sell" pushback (Contested claim 6) and the "How we're working to ensure it sells" rebuttal slide. ~14 slides. |
+| 3 | One vertical pitch deck from `vertical-pitches/` (pick the vertical with the warmest pipeline) | The client-safe distillation that proves the sales math at the per-vertical level. ~14 slides. |
+| 4 (optional) | The matching operator-only sales template from `docs/mothership/sales-verticals/` | Per-vertical regulator-of-record cross-walk, prospecting heuristics, and 24-month ROI math against published competitor pricing. ~450–510 lines, dense reference reading. |
+
+Forward this deck plus `05-advisor-deck.md` for any advisor / strategic-partner conversation. The two together cover the "what is the business, and where would you push?" question completely. Add (3) when the advisor's lens is go-to-market specifically.
 
 ---
 

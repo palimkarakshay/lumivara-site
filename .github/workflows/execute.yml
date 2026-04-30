@@ -118,6 +118,19 @@ jobs:
           emit(decision.audit())
           emit("```")
 
+          # Lane exclusivity: forge-execute.yml is the sole Claude
+          # implementer for area/forge issues. If routing picks the Claude
+          # path on an area/forge issue, defer to the forge cron and exit
+          # cleanly. Non-Claude dispatches (gemini-research, codex-review)
+          # fall through because forge-execute does not handle those.
+          if decision.workflow == "claude" and "area/forge" in labels:
+              emit(
+                  f"\nSelected issue #{num} carries area/forge; deferring "
+                  "Claude implementation to forge-execute.yml. Exiting cleanly."
+              )
+              out.write("issue=0\nworkflow=none\nmodel=\nprovider=\n")
+              sys.exit(0)
+
           # Code-edit workflows always run on Claude. Gemini and Codex
           # paths produce research / review artefacts, not code commits.
           # Cline is downgraded to Sonnet by the router itself.

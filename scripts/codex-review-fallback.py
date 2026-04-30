@@ -7,9 +7,11 @@ PR auto-merges. When OpenAI is unavailable (no key, 429 quota, transient
 HTTP failure) we still want *some* second-opinion review rather than
 silently shipping unreviewed code, so this helper walks a small ladder:
 
-    1. OpenAI gpt-5.5  (Codex CLI tier, ChatGPT Plus)   — preferred
-    2. Gemini 2.5 Pro  (Google AI Studio free tier)     — fallback
-    3. defer           (label PR `review-deferred`)     — last resort
+    1. OpenAI gpt-5.5 / OPENAI_API_KEY        — preferred
+    1b. OpenAI gpt-5.5 / OPENAI_API_KEY_BACKUP — second key (independent
+        quota window; the operator runs two accounts)
+    2. Gemini 2.5 Flash (Google AI Studio free tier, 500 RPD)
+    3. defer (label PR `review-deferred`)     — last resort
 
 Why these two providers and not three? The triage / plan / execute ladders
 already use Claude, so using Claude here too would defeat the point of an
@@ -17,11 +19,19 @@ already use Claude, so using Claude here too would defeat the point of an
 options in the project; if both are down the run defers cleanly.
 
 Inputs (env):
-    PROMPT_FILE      path to a file containing the full review prompt
-    OPENAI_API_KEY   optional; OpenAI attempted only when set
-    GEMINI_API_KEY   optional; Gemini attempted only when set
-    OPENAI_MODEL     default: gpt-5.5
-    GEMINI_MODEL     default: gemini-2.5-pro
+    PROMPT_FILE             path to a file containing the full review prompt
+    OPENAI_API_KEY          optional; tried first when set
+    OPENAI_API_KEY_BACKUP   optional; tried after OPENAI_API_KEY on
+                            429/error so a quota-exhausted primary key
+                            doesn't silently skip the OpenAI leg
+    GEMINI_API_KEY          optional; Gemini attempted only when set
+    OPENAI_MODEL            default: gpt-5.5
+    GEMINI_MODEL            default: gemini-2.5-flash (matches the
+                            `Code review on PR diff` row in
+                            docs/AI_ROUTING.md — free-tier 500 RPD
+                            keeps the fallback unconstrained; the
+                            previous `gemini-2.5-pro` default 429'd
+                            in lockstep with OpenAI)
 
 Outputs:
     Writes the review markdown to /tmp/review.md (or $REVIEW_OUT).
@@ -57,9 +67,9 @@ def _post_json(url: str, payload: dict, headers: dict, timeout: int = 90) -> dic
         return json.loads(r.read())
 
 
-def try_openai(prompt: str) -> tuple[str | None, str]:
-    """Return (review_markdown, status). status ∈ {ok, no_key, quota, error}."""
-    key = (os.environ.get("OPENAI_API_KEY") or "").strip()
+def _try_openai_with_key(prompt: str, key: str, label: str
+                         ) -> tuple[str | None, str]:
+    """Single-key attempt. status ∈ {ok, no_key, quota, error}."""
     if not key:
         return None, "no_key"
     model = os.environ.get("OPENAI_MODEL", "gpt-5.5")
@@ -80,14 +90,45 @@ def try_openai(prompt: str) -> tuple[str | None, str]:
     except urllib.error.HTTPError as e:
         body = e.read().decode()[:500]
         if e.code == 429:
-            print(f"::warning::OpenAI 429 — quota exhausted. {body}",
-                  file=sys.stderr)
+            print(f"::warning::OpenAI ({label}) 429 — quota exhausted. "
+                  f"{body}", file=sys.stderr)
             return None, "quota"
-        print(f"::warning::OpenAI HTTP {e.code}: {body}", file=sys.stderr)
+        print(f"::warning::OpenAI ({label}) HTTP {e.code}: {body}",
+              file=sys.stderr)
         return None, "error"
     except Exception as exc:  # network, json, anything else
-        print(f"::warning::OpenAI call failed: {exc}", file=sys.stderr)
+        print(f"::warning::OpenAI ({label}) call failed: {exc}",
+              file=sys.stderr)
         return None, "error"
+
+
+def try_openai(prompt: str) -> tuple[str | None, str]:
+    """Try OPENAI_API_KEY first, then OPENAI_API_KEY_BACKUP on 429/error.
+
+    The operator runs two OpenAI accounts (one paid, one free); the
+    quota windows on the two are independent, so a 429 on the primary
+    is no reason to skip the secondary. Returns the first success;
+    returns the *last* observed status when neither key works (so the
+    deferred-review comment surfaces the real reason — typically
+    `quota` rather than `no_key`).
+    """
+    primary = (os.environ.get("OPENAI_API_KEY") or "").strip()
+    backup = (os.environ.get("OPENAI_API_KEY_BACKUP") or "").strip()
+    if not primary and not backup:
+        return None, "no_key"
+
+    last_status = "no_key"
+    for key, label in (
+        (primary, "OPENAI_API_KEY"),
+        (backup, "OPENAI_API_KEY_BACKUP"),
+    ):
+        if not key:
+            continue
+        review, status = _try_openai_with_key(prompt, key, label)
+        if review:
+            return review, status
+        last_status = status
+    return None, last_status
 
 
 def try_gemini(prompt: str) -> tuple[str | None, str]:
@@ -95,7 +136,7 @@ def try_gemini(prompt: str) -> tuple[str | None, str]:
     key = (os.environ.get("GEMINI_API_KEY") or "").strip()
     if not key:
         return None, "no_key"
-    model = os.environ.get("GEMINI_MODEL", "gemini-2.5-pro")
+    model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
     url = GEMINI_URL.format(model=model, key=key)
     try:
         resp = _post_json(
@@ -166,11 +207,12 @@ def main() -> int:
     gemini_status = status
 
     # 3. Defer — both providers unavailable.
+    gemini_model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
     with open(out_path, "w") as f:
         f.write(
             "## Code review unavailable\n\n"
-            "Both OpenAI (gpt-5.5) and Gemini 2.5 Pro were unavailable for "
-            "this review pass.\n\n"
+            f"Both OpenAI (gpt-5.5) and {gemini_model} were unavailable "
+            "for this review pass.\n\n"
             f"- OpenAI status: `{openai_status}`\n"
             f"- Gemini status: `{gemini_status}`\n\n"
             "This PR has been labelled `review-deferred`. A scheduled "

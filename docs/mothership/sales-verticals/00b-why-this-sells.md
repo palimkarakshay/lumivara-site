@@ -107,6 +107,56 @@ If the advisor names a comparable, that is gold and we incorporate it. If the ad
 
 ---
 
-*This file is in progress; subsequent commits add the client / partner / employee lenses.*
+## 3 · Why opt for Lumivara — the prospective-client lens
 
-*Last updated: 2026-04-30 — added §2 advisor / investor lens.*
+The prospect's question, distilled: *"Every vendor I've talked to either over-promises and disappears, or asks me to learn a CMS and still call them. Why is yours different?"* The honest answer is that **the difference is the things on our refuse-list, not the things on our feature-list.** The feature-list is replicable; the refuse-list is not.
+
+Walk the prospect through the inversion in their own language. The seven taxes in §1 are not abstract — every prospect has paid at least three of them in the last 24 months. The pitch is to name them in the order the prospect has lived them.
+
+### 3.1 The four inversions a prospect can verify on the discovery call itself
+
+These are the four checks the prospect can run *during the first 30-minute call* — without a contract, without a deposit, without a leap of faith — and walk away knowing whether we are the real thing.
+
+| Check | What the prospect does | What confirms us |
+|---|---|---|
+| **The "edit my own site" check** | Pulls out their phone. We walk them through what the home-screen shortcut would look like and show a recorded clip of one going through end-to-end. | A 30-second loop from voice memo → preview link → tap-to-publish, on a real Next.js codebase, on a domain that would be in their name. |
+| **The "what happens if you go away" check** | Asks: *"If you disappear tomorrow, what do I keep?"* | We answer: domain (in their registrar), code (in their GitHub), hosting (on their Vercel account, on their card, in their name). They keep the running site. They lose the autopilot. Nothing else changes. |
+| **The "what won't you sell me" check** | Asks: *"Why won't you do SEO / chatbots / ghost-written content / lead-gen guarantees?"* | We give the regulator citation and the platform-TOS citation per refusal (from `00a-negative-list-rationale.md`). They feel relief, because they have already been pitched at least one of those by a vendor whose name they no longer use. |
+| **The "what does it cost when I'm wrong" check** | Asks: *"What if I sign and then change my mind in month 2?"* | 30 days' notice, no exit penalty, the licensee keeps everything they paid for. The setup-fee is for the build, which they own; the retainer covers the autopilot, which is licensed per engagement. |
+
+A prospect who passes all four checks on Call 1 is a buyer. A prospect who pushes back on any one of them is, almost always, a prospect who has internalised one of the seven hidden taxes as "just how it is" and is not yet ready to stop paying it.
+
+### 3.2 Why the negative list is the closer, not a hurdle
+
+Most vendors treat their refusals as awkward concessions to slip past the prospect. Ours is the close.
+
+Each refusal on `00a-negative-list-rationale.md` is paired with a **structural alternative we do charge for** — the work that genuinely compounds. When the prospect hears the refusal *and* the alternative back-to-back, the pitch lands as: *"the vendor who told me they would not sell me X told me what they will sell me instead, and the alternative is the work I already wish my last vendor had done."* The relief is the close.
+
+Concrete examples from the negative list, in client language:
+
+- *"We won't promise you a #1 Google ranking — your college / bar / board prohibits us from making that promise on your behalf, and Google itself rejects the claim. What we will do is ship Core Web Vitals ≥ 90 mobile, JSON-LD schema for the entities Google AI Overviews quote, WCAG 2.1 AA accessibility, a 301-redirect map at migration, and content freshness from your dictation — every month, in the flat fee."*
+- *"We won't put an AI chatbot on your homepage — the precedent (Moffatt v. Air Canada, 2024) makes you, not us, liable for what it says. The AI lives on our side, in the editorial pipeline that prepares your changes. Your patients / clients / customers see real Book Now / Contact buttons; the AI never speaks to them."*
+- *"We won't ghost-write your professional content — Google's E-E-A-T (Helpful Content Update, now in core ranking) demotes it, and your regulator treats unsupported professional claims as advertising failures. You dictate in your own voice (15-second voice memo); we structure, format, schema-tag, and ship."*
+- *"We won't run review-gating — Google, Yelp, the FTC, and the Canadian Competition Bureau have all explicitly prohibited it; the penalty lands on you. We will run honest review collection — typical lift is 3–6× monthly review volume in the first quarter, without the legal risk."*
+- *"We won't replace your EMR / case-management / PMS — that would make us a covered entity (HIPAA / PHIPA), and would lock you into us in a way we deliberately do not want to construct. We will deep-link / webhook into the system you already use."*
+
+The pitch sentence we want every prospect to leave Call 1 with:
+
+> *"They told me what they would not sell me, and they explained why each refusal protected me legally. Then they told me what they would do instead, and the price for the lot was below my current vendor's monthly retainer. I'd rather buy from a vendor who can't be made to lie to me than from one who can."*
+
+### 3.3 Why this fixes the itch *for the kind of prospect we sell to*
+
+The buyer profile is the high-LTV professional-services owner — solo lawyer, dentist, optometrist, family GP, accountant, physiotherapist, boutique-firm partner. For that buyer specifically, the seven hidden taxes compound differently than they do for an e-commerce shop or a venture-funded SaaS marketing team:
+
+- The **"feeling stupid" tax** (§1.1) is amplified, because they spend their working life being the most competent person in their professional room and they feel the contrast acutely when they cannot publish a typo fix.
+- The **"$200 typo" tax** (§1.2) is amplified, because they bill at $200–$700/hr and the indignity of paying $180 to a vendor for a phone-number change is greater than the dollar cost.
+- The **"vendor lied → regulator punished" tax** (§1.6) is *catastrophic*, because their entire livelihood depends on a clean licence. A regulator letter is not a marketing problem; it is a career problem.
+- The **"I don't own this" tax** (§1.4) is amplified, because their professional identity is bound to their domain — `<their-name>law.com`, `<practice>dental.com` — and losing the domain is losing the practice's address.
+
+Lumivara Forge inverts every one of those amplifications. The deck does not have to argue this for an e-commerce shop, because we don't sell to e-commerce shops. The deck only has to argue this for the prospect we have actually invited into the call — and for that prospect, the inversion of the seven taxes is the answer to *every* objection at once.
+
+---
+
+*This file is in progress; subsequent commits add the partner / employee lenses + cross-walk + closing.*
+
+*Last updated: 2026-04-30 — added §3 prospective-client lens.*

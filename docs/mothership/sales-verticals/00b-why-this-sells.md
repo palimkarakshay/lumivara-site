@@ -44,6 +44,26 @@ The negative list is not what we don't sell. It is **what we cannot be made to s
 
 ---
 
-*This file is a skeleton; subsequent commits add the per-stakeholder lenses.*
+## 1 · The seven hidden taxes — the itches every alternative leaves unscratched
 
-*Last updated: 2026-04-30 — initial skeleton.*
+A prospect arrives carrying the residue of every previous attempt to solve "I need a website that doesn't decay." Each previous attempt levied a tax they have stopped naming because they assumed it was unavoidable. The taxes are:
+
+| # | Tax | The alternative that levies it | What the prospect quietly thinks |
+|---|---|---|---|
+| 1 | **The "I feel stupid" tax** | DIY builders (Squarespace / Wix / Webflow / Framer / Durable). | *"I am a competent professional in my actual job, and yet here I am at 11pm fighting a WYSIWYG editor that won't put the photo where I want it."* |
+| 2 | **The "$200 typo" tax** | Boutique agency on per-edit billing. | *"It cost me $180 to change a phone number. I will never call that vendor again unless something is on fire."* |
+| 3 | **The "two-week wait" tax** | Solo freelancer + Slack-DM model. | *"I emailed two weeks ago. The change is done. The dev is now on holiday. The page is still wrong."* |
+| 4 | **The "I don't own this" tax** | Webflow / Squarespace / Framer-hosted / agency-hosted. | *"If I leave, I lose the site. So I don't leave. So they raise the price."* |
+| 5 | **The "preserved corpse" tax** | WP Buffs / GoDaddy maintenance on a decaying WordPress. | *"They keep the lights on. The site still looks like 2018. I am paying to keep an old thing old."* |
+| 6 | **The "vendor lied to me, regulator punished me" tax** | "We do everything!" agencies — SEO guarantees, AI receptionists, ghost-written content, review-gating, lead-volume promises. | *"My college / bar / board / the FTC sent me a letter about my own website. The vendor stopped answering."* (See `00a-negative-list-rationale.md` §1–§10 for the regulator + platform-TOS specifics.) |
+| 7 | **The "two cognitive loads" tax** | Headless CMS (Sanity / Contentful) + a freelance dev. | *"I learned the CMS *and* I still need to call the developer for layout. I now have two people to chase, not zero."* |
+
+The prospect does not arrive saying "I want to stop paying tax #6." They arrive saying "*I want to update my own site.*" The hidden ask is to stop paying *all seven* without having to articulate any of them.
+
+The Lumivara Forge product is, structurally, the inversion of all seven simultaneously. That is the itch: nothing they have tried inverts more than two of them at once. Phone-as-CMS inverts 1 + 2 + 3. Real-codebase ownership inverts 4 + 5. The negative list inverts 6. The single-vendor model (no separate CMS) inverts 7. **One product, seven inversions.** Nothing on the market today bundles all seven, which is why the buyer who reads the deck and feels relief is the buyer.
+
+---
+
+*This file is in progress; subsequent commits add the per-stakeholder lenses.*
+
+*Last updated: 2026-04-30 — added §1 hidden-tax map.*

@@ -29,8 +29,11 @@ without having to explain the tech behind it.
 | `07-client-migration-strategy.md` | Operator playbook for prospects who already have a website. Covers source-platform catalog, Path A (keep & integrate), Path B (full migration), hybrids, edge cases, a 15-minute sales-conversation script, and a decision matrix. | A prospect already has a site (Squarespace / Wix / WordPress / Shopify / etc.) and you need to triage Path A vs B vs Hybrid before quoting. |
 | `08-client-migration-summary.md` | Sales-facing distillation of `07`. ≤400 words, two-column "If you want to keep your site / If you want a fresh start," with hybrid callout and a CTA to `/contact`. Safe to share with prospects. | Sending to a prospect mid-conversation, dropping into a proposal, or linking from a Fiverr/LinkedIn FAQ. |
 | `07-marketing-strategy.md` | Locked tagline + product pitch, ICP (primary / secondary / tertiary), positioning matrix vs. Squarespace / WordPress / agency / freelance dev, ranked channel plan, and a week-by-week first-90-days launch calendar. **DRAFT — pending operator approval (issue #115).** | Planning the channel mix, briefing a hire on how we sell, or auditing whether a tagline change is on-brand. |
+| `09-purchase-flow.md` | Phase-1 design for the prospect funnel: end-to-end Mermaid flow, intake-form schema (mapped to the handover-pack YAML), tier comparison UX (matrix + optional quiz), payment-processor decision (Stripe Checkout + Subscriptions), contract / terms acceptance, demo placement (live site + Cal.com), prospect state machine, and the Operator Approval Checklist that gates Phase-2 wiring. **No in-app code lands until §8 is ticked.** | A prospect asks how to buy; planning the Phase-2 issues that wire the flow into `src/`. |
 | `assets/landing-copy.md` | First-pass landing-page copy for whichever surface the Forge brand eventually lives on (hero, three benefits, social-proof slot, FAQ teaser, closing CTA). Doc draft — not yet wired into `src/`. | Drafting / reviewing the public marketing landing for Forge before site integration. |
 | `assets/intro-email.md` | Three intro-email templates: cold-to-warm-network, LinkedIn-comment follow-up, Upwork proposal opener. ~120 words each, shared closing CTA. | Sending outbound or following up on a warm reply during the launch calendar. |
+| `assets/purchase-flow.mmd` | Standalone Mermaid `flowchart TD` source for the purchase flow (renderable via `npx -y @mermaid-js/mermaid-cli -i purchase-flow.mmd -o purchase-flow.png`). Embedded by reference from `09-purchase-flow.md`. | Dropping the funnel diagram into a deck or a deck-companion doc. |
+| `assets/intake-form-schema.json` | Machine-readable `{ "fields": [...] }` schema for the intake form, keyed 1:1 to `docs/mothership/07-client-handover-pack.md` YAML keys. Lets a Phase-2 executor render the form without re-reading `09-purchase-flow.md`. | Implementing the Phase-2 intake-form route once §8 is ratified. |
 
 ## How to use this pack
 
@@ -73,4 +76,4 @@ Everything inside `docs/mothership/` is operator-only and never ships in a clien
 
 ---
 
-*Last updated: 2026-04-29.*
+*Last updated: 2026-04-30.*

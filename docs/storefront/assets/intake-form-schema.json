@@ -1,0 +1,361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Lumivara Forge purchase-flow intake form. Phase 1 design — see docs/storefront/09-purchase-flow.md §2. Field names map 1:1 to docs/mothership/07-client-handover-pack.md YAML keys so a Phase-2 executor can render the form and pipe answers straight into the per-client handover render. Section ordering reflects the on-screen flow (identity → engagement → site → brand → content → integrations → migration → meta).",
+  "version": "0.1.0",
+  "status": "draft — pending operator approval",
+  "produces_yaml_at": "docs/clients/<client_slug>/intake.md",
+  "fields": [
+    {
+      "name": "client_slug",
+      "label": "Slug for your project (lowercase, hyphenated)",
+      "type": "text",
+      "required": true,
+      "validation": "^[a-z][a-z0-9-]{2,40}$",
+      "why_we_ask": "Used as the GitHub repo name and the Vercel project name. Defines the URL of every internal artefact.",
+      "sample": "viktor-law",
+      "handover_key": "client_slug",
+      "section": "identity"
+    },
+    {
+      "name": "client_name",
+      "label": "Business name (display)",
+      "type": "text",
+      "required": true,
+      "validation": "1-80 chars",
+      "why_we_ask": "The brand name we display on the site, in the footer, and in handover correspondence.",
+      "sample": "Viktor Mihailovic Law",
+      "handover_key": "client_name",
+      "section": "identity"
+    },
+    {
+      "name": "client_legal_name",
+      "label": "Legal entity name (for contract & invoices)",
+      "type": "text",
+      "required": true,
+      "validation": "1-120 chars",
+      "why_we_ask": "Goes on the contract and the Stripe invoice. Often differs from the display name (e.g. a numbered Ontario Inc. operating as the brand).",
+      "sample": "V. Mihailovic Professional Corporation",
+      "handover_key": "client_legal_name",
+      "section": "identity"
+    },
+    {
+      "name": "client_descriptor",
+      "label": "One-line description of what you do",
+      "type": "text",
+      "required": true,
+      "validation": "20-160 chars",
+      "why_we_ask": "Drives the meta description, OpenGraph card, and the home-page hero. Plain English, not jargon.",
+      "sample": "solo immigration & corporate law practice",
+      "handover_key": "client_descriptor",
+      "section": "identity"
+    },
+    {
+      "name": "client_location",
+      "label": "Primary city / region",
+      "type": "text",
+      "required": true,
+      "validation": "1-80 chars",
+      "why_we_ask": "Local SEO signal and contact-page copy. We do not collect a street address at intake.",
+      "sample": "Toronto, Ontario",
+      "handover_key": "client_location",
+      "section": "identity"
+    },
+    {
+      "name": "client_primary_email",
+      "label": "Your primary email (for sign-in & contracts)",
+      "type": "email",
+      "required": true,
+      "validation": "RFC 5322 email",
+      "why_we_ask": "The magic-link login for /admin and the contact email on the contract. Must be the email you actually read.",
+      "sample": "viktor@viktorlaw.ca",
+      "handover_key": "client_primary_email",
+      "section": "identity"
+    },
+    {
+      "name": "client_primary_phone",
+      "label": "Phone number (for SMS edits + urgent contact)",
+      "type": "tel",
+      "required": false,
+      "validation": "E.164 (e.g. +14165550177)",
+      "why_we_ask": "Allowlisted for the SMS-in lane on Tier 1+ and used as the urgent-issue contact. Optional for Tier 0.",
+      "sample": "+14165550177",
+      "handover_key": "client_primary_phone",
+      "section": "identity"
+    },
+    {
+      "name": "tier",
+      "label": "Service tier",
+      "type": "select",
+      "required": true,
+      "options": ["0", "1", "2", "3"],
+      "validation": "one of 0/1/2/3 — see docs/storefront/02-pricing-tiers.md",
+      "why_we_ask": "Drives setup-fee amount, Stripe price IDs, included edits, and SLA hours. The 'help me choose' quiz writes a recommendation here that the prospect can override.",
+      "sample": "2",
+      "handover_key": "tier",
+      "section": "engagement",
+      "open_decision": "Tier ladder reconciliation — `02-pricing-tiers.md` ships 4 tiers (0-3); the live `/lumivara-infotech` page ships 3 (Launchpad/Growth/Bespoke). The intake schema follows `02-pricing-tiers.md` since that is the canonical operator doc; the on-site copy must reconcile in Phase 2."
+    },
+    {
+      "name": "primary_cta",
+      "label": "What is the ONE thing you want a visitor to do?",
+      "type": "text",
+      "required": true,
+      "validation": "1-80 chars",
+      "why_we_ask": "Anchors the hero CTA and every internal link. Per 01-gig-profile §7 question 3 — the most-asked intake question.",
+      "sample": "Book a consultation",
+      "handover_key": "primary_cta",
+      "section": "engagement"
+    },
+    {
+      "name": "domain",
+      "label": "Domain you want the site to live at",
+      "type": "text",
+      "required": true,
+      "validation": "valid hostname",
+      "why_we_ask": "Drives the Vercel domain config, Resend sub-domain, and the canonical URL in every meta tag.",
+      "sample": "viktorlaw.ca",
+      "handover_key": "domain",
+      "section": "site"
+    },
+    {
+      "name": "registrar",
+      "label": "Where is the domain registered?",
+      "type": "select",
+      "required": true,
+      "options": [
+        "Cloudflare",
+        "GoDaddy",
+        "Namecheap",
+        "Hover",
+        "Google Domains / Squarespace Domains",
+        "Other",
+        "I haven't bought one yet"
+      ],
+      "validation": "one of the listed options",
+      "why_we_ask": "Determines DNS-handover steps (07-client-migration-strategy §3.5). 'I haven't bought one yet' kicks off a domain-purchase add-on.",
+      "sample": "Hover",
+      "handover_key": "registrar",
+      "section": "site"
+    },
+    {
+      "name": "page_list",
+      "label": "Pages you want at launch",
+      "type": "checkbox-multi-with-other",
+      "required": true,
+      "validation": "1-12 entries",
+      "why_we_ask": "Defines the IA. Defaults seeded from the per-tier page-count cap (Tier 0 = 3 pages, Tier 1 = 5, Tier 2 = 7, Tier 3 = unlimited but bounded at intake).",
+      "sample": ["home", "practice-areas", "about", "insights", "contact", "privacy"],
+      "handover_key": "page_list",
+      "section": "site"
+    },
+    {
+      "name": "voice_adjectives",
+      "label": "Three words for your brand voice",
+      "type": "text-multi",
+      "required": true,
+      "validation": "exactly 3 entries",
+      "why_we_ask": "Drives copy tone in AI-assisted draft generation. Per 01-gig-profile §7 question 4.",
+      "sample": ["precise", "calm", "authoritative"],
+      "handover_key": "voice_adjectives",
+      "section": "brand"
+    },
+    {
+      "name": "mood_adjectives",
+      "label": "Three words for your visual mood",
+      "type": "text-multi",
+      "required": true,
+      "validation": "exactly 3 entries",
+      "why_we_ask": "Drives palette and typographic choices. Per 01-gig-profile §7 question 5.",
+      "sample": ["ink", "ivory", "serif-only"],
+      "handover_key": "mood_adjectives",
+      "section": "brand"
+    },
+    {
+      "name": "reference_sites",
+      "label": "Three websites you like the look of (with one-sentence why)",
+      "type": "text-multi",
+      "required": false,
+      "validation": "0-3 entries",
+      "why_we_ask": "Calibrates design direction faster than adjectives alone. Per 01-gig-profile §7 question 7.",
+      "sample": [
+        "stripe.com — calm hero, clean type",
+        "linear.app — confident voice, dark mode polish",
+        "cal.com — minimal, fast, accessible"
+      ],
+      "handover_key": null,
+      "section": "brand",
+      "open_decision": "No matching key in 07-client-handover-pack.md today. Either add `reference_sites` to the handover schema (preferred — useful future reference) or drop this from the intake. Strawman: add it."
+    },
+    {
+      "name": "logo_assets",
+      "label": "Logo files (optional upload)",
+      "type": "file-multi",
+      "required": false,
+      "validation": "<=10MB total, .svg/.png/.pdf",
+      "why_we_ask": "Lets us start brand work in parallel with copy. Optional — we can refer a logo designer if you don't have one.",
+      "sample": null,
+      "handover_key": null,
+      "section": "brand"
+    },
+    {
+      "name": "existing_copy",
+      "label": "Existing copy / content (optional upload)",
+      "type": "file-multi",
+      "required": false,
+      "validation": "<=20MB total, any text or PDF",
+      "why_we_ask": "If you've written about your business anywhere, share it. We polish what you give us; we don't ghostwrite from scratch.",
+      "sample": null,
+      "handover_key": null,
+      "section": "content"
+    },
+    {
+      "name": "integrations",
+      "label": "Tools you want wired in",
+      "type": "checkbox-multi",
+      "required": false,
+      "options": [
+        "Cal.com booking",
+        "Calendly booking",
+        "OpenTable / Square Appointments / Squarespace booking",
+        "Stripe checkout / Lemon Squeezy",
+        "Resend (email)",
+        "Crisp / Intercom (chat)",
+        "Greenhouse / Lever (jobs)",
+        "Mailchimp / ConvertKit newsletter",
+        "Cookie/consent banner (PIPEDA / GDPR)",
+        "Other (describe in notes)"
+      ],
+      "validation": "0-N entries; per-tier eligibility enforced in Phase-2 UI",
+      "why_we_ask": "Tier 0 includes none. Tier 1 includes Cal.com or one equivalent. Tier 2 unlocks Resend + chat. Tier 3 unlocks the full set + one custom CRM webhook (per 02-pricing-tiers.md).",
+      "sample": ["Cal.com booking", "Resend (email)"],
+      "handover_key": "integrations",
+      "section": "integrations"
+    },
+    {
+      "name": "have_existing_site",
+      "label": "Do you have a website today?",
+      "type": "select",
+      "required": true,
+      "options": [
+        "No — green-field build",
+        "Yes — I'm happy with it (Path A: keep & integrate)",
+        "Yes — I want a new one (Path B: full migration)",
+        "Yes — keep some of it, replace some (Hybrid)"
+      ],
+      "validation": "one of the listed options",
+      "why_we_ask": "Routes to the migration playbook in 07-client-migration-strategy.md. Path A/B/Hybrid each unlock different downstream questions in Phase 2.",
+      "sample": "No — green-field build",
+      "handover_key": null,
+      "section": "migration",
+      "open_decision": "Per the plan, do Path A prospects use the same intake form or a slimmer variant? Recommendation: same schema; this field controls which downstream sections render (e.g. the migration sub-form for Path B/Hybrid only)."
+    },
+    {
+      "name": "existing_site_url",
+      "label": "URL of your current site (if any)",
+      "type": "url",
+      "required": false,
+      "validation": "valid URL — required iff have_existing_site != 'No'",
+      "why_we_ask": "Lets us run the source-platform catalog (07-client-migration-strategy §1) and quote migration effort.",
+      "sample": "https://viktorlaw.squarespace.com",
+      "handover_key": null,
+      "section": "migration"
+    },
+    {
+      "name": "existing_site_platform",
+      "label": "What is your current site built on?",
+      "type": "select",
+      "required": false,
+      "options": [
+        "Squarespace",
+        "Wix",
+        "Webflow",
+        "WordPress (self-hosted)",
+        "WordPress.com",
+        "Shopify",
+        "GoDaddy / Hostinger / Bluehost page builder",
+        "Static custom build (HTML / CSS / JS)",
+        "I'm not sure"
+      ],
+      "validation": "one of the listed options — required iff have_existing_site != 'No'",
+      "why_we_ask": "Determines whether Path A's script-injection lane is available (per 07-client-migration-strategy §1).",
+      "sample": "Squarespace",
+      "handover_key": null,
+      "section": "migration"
+    },
+    {
+      "name": "wants_discovery_call",
+      "label": "Want a 30-minute discovery call before paying?",
+      "type": "boolean",
+      "required": false,
+      "validation": "boolean",
+      "why_we_ask": "Routes Tier 2 / Tier 3 prospects to the optional Cal.com slot. Tier 0 / Tier 1 default to self-serve unless explicitly requested.",
+      "sample": false,
+      "handover_key": null,
+      "section": "engagement"
+    },
+    {
+      "name": "notes",
+      "label": "Anything else we should know?",
+      "type": "textarea",
+      "required": false,
+      "validation": "0-2000 chars",
+      "why_we_ask": "Catch-all for context that doesn't fit a field — accessibility needs, deadlines, stakeholders. Surfaces in the operator's onboarding pack.",
+      "sample": "Bilingual EN/FR site requested in month 3.",
+      "handover_key": "notes",
+      "section": "meta"
+    },
+    {
+      "name": "consent_terms",
+      "label": "I agree to the terms of service and the cancellation / refund policy.",
+      "type": "checkbox-required",
+      "required": true,
+      "validation": "must be true",
+      "why_we_ask": "Click-to-sign acceptance for the contract step (§5 of 09-purchase-flow.md). The signed PDF is emailed to the operator and the client by the e-sign tool.",
+      "sample": true,
+      "handover_key": null,
+      "section": "meta"
+    }
+  ],
+  "handover_keys_not_collected_at_intake": [
+    {
+      "key": "tier_name",
+      "reason": "Derived from `tier` at render time."
+    },
+    {
+      "key": "included_edits",
+      "reason": "Derived from `tier` (per 02-pricing-tiers.md)."
+    },
+    {
+      "key": "improvement_run_cadence",
+      "reason": "Derived from `tier`."
+    },
+    {
+      "key": "sla_hours",
+      "reason": "Derived from `tier`."
+    },
+    {
+      "key": "cal_link",
+      "reason": "Issued by operator after Cal.com slot creation."
+    },
+    {
+      "key": "contact_email",
+      "reason": "Defaults to `client_primary_email`; overridable post-launch."
+    },
+    {
+      "key": "twilio_inbound_number",
+      "reason": "Provisioned by operator post-payment (Tier 1+)."
+    },
+    {
+      "key": "operator_email",
+      "reason": "Constant per the brand-domain banner in docs/storefront/README.md."
+    },
+    {
+      "key": "operator_urgent_phone",
+      "reason": "Constant per operator setup."
+    },
+    {
+      "key": "registrar_url",
+      "reason": "Derived from `registrar` selection."
+    }
+  ]
+}

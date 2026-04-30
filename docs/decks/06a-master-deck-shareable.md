@@ -221,6 +221,59 @@ The negative list is not scope shrinkage. It is a list of *what every competitor
 
 ---
 
+## Why this sells — the itch that never scratches
+
+A prospect arrives carrying the residue of every previous attempt to solve "I need a website that doesn't decay." Each previous attempt levied a hidden tax they have stopped naming because they assumed it was unavoidable.
+
+| # | Hidden tax | The alternative that levies it |
+|---|---|---|
+| 1 | "I feel stupid" at a WYSIWYG editor at 11pm | DIY builders |
+| 2 | $200 to change a phone number | Boutique agency on per-edit billing |
+| 3 | Two-week wait for a typo | Solo freelancer + Slack-DM model |
+| 4 | "If I leave I lose the site" | Vendor-hosted builders / agency-hosted |
+| 5 | Pay-to-keep-an-old-thing-old | WordPress maintenance shops |
+| 6 | Vendor lied → regulator punished me | "We do everything!" agencies — promises a vertical regulator, a platform TOS, or the FTC will not allow |
+| 7 | Two cognitive loads (CMS *and* developer) | Headless CMS + freelance dev |
+
+The product is structurally the inversion of all seven simultaneously. **One product, seven inversions.** Phone-as-CMS inverts 1+2+3. Real-codebase ownership inverts 4+5. The negative list inverts 6. The single-vendor model inverts 7.
+
+---
+
+## Why the boundaries are the moat — the investor / advisor read
+
+The negative list is **a cash-flow-positive filter**, not a scope cut. A standard agency retainer carries a hidden subsidy: the licensee pays for things the agency cannot legally deliver inside a flat monthly fee, on the working assumption that the regulator / platform / FTC will not notice. Three things compound that liability:
+
+1. Discovery skews to the licensee — regulator advertising rules and recent precedent attach the failure to the licensee, not the vendor.
+2. Selection skews against the agency — the licensees sophisticated enough to read the regulator notice are the ones who churn.
+3. Pricing skews under disclosure — once a prospect has heard the negative-list reasoning, every competitor's bundle reads as a liability transfer.
+
+| Axis | Standard agency book | This book under the negative list |
+|---|---|---|
+| Churn | Concentrated at the moment a regulator letter arrives | Distributed and predictable; no regulator surprises |
+| NPS / referral intensity | Dampened by silent dread of "they cut a corner" | Amplified by *"this vendor finally told me what was actually going on with my last vendor"* |
+| Price elasticity | Compresses each renewal | Stays inelastic — boundaries the prospect can't unbundle |
+
+> Pitch line: *Show us another retainer-services business in this price band where every refusal maps to a regulator citation, a platform-TOS clause, an FTC rule, or an operator-economics constraint — and where the same negative list produces a lower-churn, higher-NPS, more inelastic small book than a standard agency's larger one. Name the comparable, or the over-engineering critique resolves.*
+
+---
+
+## Why opt for us — the prospective-client read
+
+Four checks the prospect can run *during the first 30-minute call* — without a contract, without a deposit, without a leap of faith:
+
+| Check | What confirms us |
+|---|---|
+| Edit-my-own-site | A 30-second loop from voice memo → preview link → tap-to-publish, on a real codebase, on a domain that would be in the prospect's name. |
+| What-happens-if-you-go-away | Domain in their registrar, code in their account, hosting on their card. They keep the running site; they lose only the autopilot. |
+| What-won't-you-sell-me | Per refusal, a regulator citation and a platform-TOS clause. Relief, because they have already been pitched at least one of those by a vendor whose name they no longer use. |
+| Cost-when-I'm-wrong | 30 days' notice, no exit penalty, the licensee keeps everything they paid for. |
+
+Pass all four on Call 1 → buyer. Push back on any one → almost always a prospect who has internalised one of the seven hidden taxes as "just how it is" and is not yet ready to stop paying it.
+
+> Pitch line: *They told me what they would not sell me, and they explained why each refusal protected me legally. Then they told me what they would do instead, and the price for the lot was below my current vendor's monthly retainer. I'd rather buy from a vendor who can't be made to lie to me than one who can.*
+
+---
+
 ## Section recap — Differentiators
 
 - **Phone-as-CMS** is the headline feature. Nobody in our price band offers it.

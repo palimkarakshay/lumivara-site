@@ -148,6 +148,26 @@ The site is a commodity. The system *around* the site is the moat.
 
 ---
 
+## Why the boundaries are the moat
+
+Operator-internal source: [`docs/mothership/sales-verticals/00b-why-this-sells.md §2`](../mothership/sales-verticals/00b-why-this-sells.md). The case in one paragraph:
+
+The negative list (no SEO ranking guarantees, no public AI chatbot, no ghost-written content, no lead-volume promises, no review-gating, no all-in-one EMR replacement, no white-label, no equity-only deals, no paid ads, no social media management) is **a cash-flow-positive filter, not a scope cut**. A standard agency retainer carries a hidden subsidy: the licensee pays for things the agency cannot legally deliver inside a flat monthly fee, on the working assumption that the regulator, the platform TOS, or the FTC will not notice. Three things compound that liability — discovery skews to the licensee (every regulator + platform + *Moffatt v. Air Canada* (2024 BCCRT 149) attaches failure to the licensee, not the vendor); selection skews against the agency (sophisticated licensees churn); pricing skews under disclosure (once a prospect has heard the negative-list reasoning, every competitor's bundle reads as a liability transfer).
+
+| Axis | Standard agency book | Lumivara Forge book under the negative list |
+|---|---|---|
+| Churn | Concentrated at the moment a regulator letter arrives | Distributed and predictable; no regulator surprises |
+| NPS / referral intensity | Dampened by silent dread of "they cut a corner" | Amplified by *"this vendor finally told me what was actually going on with my last vendor"* |
+| Price elasticity | Compresses each renewal | Stays inelastic — boundaries the prospect can't unbundle |
+
+And every drawback in `docs/research/06-drawbacks-and-honest-risks.md` is **bounded *because* the negative list is enforced** — D1 (no public AI surface, hallucination lives behind the publish gate), D3 (the cap holds because the refusals keep load below it), D5 (we can afford accessibility CI because we don't run the SEO retainer that would compete for that budget), D7 (the negative list is itself the qualifier), D8 (the moat is the structural refusal to take the liability transfer that funds every competitor's growth — durable across model generations).
+
+The investor question is not "does the negative list reduce TAM?" — it does, by design — but **"does the negative list make the closed buyers more valuable?"** It does on three measurable axes (churn, NPS, price elasticity), and that is what makes the 4×–10× private-comp band sustainable for this practice.
+
+> Pitch sentence: *Show us another retainer-services business in this price band where every refusal maps to a regulator citation, a platform-TOS clause, an FTC rule, or an operator-economics constraint — and where the same negative list produces a lower-churn, higher-NPS, more inelastic 30-client book than a standard agency's 200-client book.*
+
+---
+
 ## Comparable valuation — for sizing only
 
 We are not raising. If we were, the relevant private comparables (`[V] §B-SaaS-Multiples`, SaaS Capital + Aventis Advisors + Multiples.vc 2025-2026):

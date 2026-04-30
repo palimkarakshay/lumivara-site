@@ -99,6 +99,19 @@
     "include_issues": true,
     "issue_min_reactions": 3
   },
+  "stackoverflow": {
+    "_comment": "StackExchange API v2.3 questions endpoint. Anonymous read quota (300 req/day per IP) is plenty for our every-2h cadence; STACKEXCHANGE_API_KEY in env upgrades to 10000 req/day if ever needed. Tags must match Stack Overflow's exact tag slugs (kebab-case).",
+    "tags": [
+      "anthropic",
+      "claude",
+      "claude-code",
+      "next.js",
+      "openai-api",
+      "vercel"
+    ],
+    "lookback_hours": 12,
+    "min_score": 0
+  },
   "statuspages": {
     "_comment": "Provider status pages — load-bearing input for the every-15-min watch lane. All listed pages run on Statuspage.io and expose /api/v2/status.json + /api/v2/incidents/unresolved.json.",
     "providers": [

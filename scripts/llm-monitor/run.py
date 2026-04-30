@@ -42,7 +42,7 @@ COLLECTORS_DIR = ROOT / "collectors"
 #   watch (every ~15min): outage / fresh-issue detection only —
 #                         used by llm-monitor-watch.yml
 COLLECTORS_BY_MODE = {
-    "sweep": ["hackernews", "rss", "reddit", "github", "statuspages"],
+    "sweep": ["hackernews", "rss", "reddit", "github", "stackoverflow", "statuspages"],
     "watch": ["statuspages"],
 }
 COLLECTOR_NAMES = COLLECTORS_BY_MODE["sweep"]  # back-compat default

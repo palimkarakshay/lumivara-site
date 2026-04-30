@@ -94,7 +94,11 @@ jobs:
           # (already wired for plan-issue.py + codex-* workflows).
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Mirrors the OPENAI_API_KEY_BACKUP fallback used in
+          # plan-issues.yml + codex-review.yml — the operator stores
+          # the key in either OPENAI_API_KEY or OPENAI_API_KEY_BACKUP
+          # depending on quota state, so always read both.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_API_KEY_BACKUP }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}

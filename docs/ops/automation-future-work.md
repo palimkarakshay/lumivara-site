@@ -69,37 +69,35 @@ Closing this gap is the single highest-leverage automation change available; eve
 
 The operator pays Max 20x regardless of usage; the goal is to keep the bots productive round the clock. The cadence bumps in PR #223 are the first half of this; the rows below are the rest.
 
-### 2.1 Cron-trigger `execute-complex.yml`
+### 2.1 Cron-trigger `execute-complex.yml` ✓ shipped
 **Why now.** `execute-complex.yml` is dispatch-only today, so `complexity/complex` issues sit idle until the operator manually fires it. With Max 20x quota the bot can chew through one of these every 4-6 hours overnight.
 
-**Sketch.** Add `cron: '47 */4 * * *'` (offset :47, every 4h). Keep `manual-only` skip behaviour so explicitly-parked items are still respected. Run audit summary lists what was attempted vs. completed.
+**Shipped.** `cron: '47 */4 * * *'` added (offset :47, every 4h). Auto-pick step already handled "no eligible issue" gracefully (exits cleanly). `manual-only` skip behaviour preserved — explicitly-parked items stay parked. Maker-checker pair (codex-review on every PR + auto-merge gate) is unchanged, so the safety story holds.
 
-**Risk.** Complex bot work landing without operator review — mitigated by `codex-review.yml` running on every PR opened (so the maker-checker pair holds), and by the operator's auto-merge gate which still requires the review to pass.
-
-### 2.2 Lower the `manual-only` bar in triage
+### 2.2 Lower the `manual-only` bar in triage ✓ shipped
 **Why now.** Today `complexity/complex` automatically gets `manual-only`, keeping cron off. With the new `execute-complex.yml` cron + Max 20x posture, the operator wants the bot to attempt these too.
 
-**Sketch.** Edit `scripts/triage-prompt.md` to remove the automatic `manual-only` for `complexity/complex` issues that ALSO have `auto-routine`. Keep the operator's ability to apply `manual-only` explicitly (still respected). Combined with §2.1, this turns `complex` into "bot tries, operator reviews" instead of "operator must manually trigger."
-
-**Risk.** Bot fans out across more concurrent items — mitigated by the existing `claude-runtime` concurrency group which still single-flights the general lane.
+**Shipped.** `scripts/triage-prompt.md` no longer auto-applies `manual-only` to `complexity/complex`. The operator can still apply `manual-only` explicitly when an item genuinely needs human dispatch (high-blast-radius schema, irreversible infra, etc.). The rationale-comment template now reads `Auto-routine: yes (cron-eligible via execute-complex.yml every 4h)` for complex+auto-routine items. `claude-runtime` concurrency still single-flights the general lane.
 
 ### 2.3 Doc-task seeder daily (in flight on PR #226)
 Already in flight. Surfaces backlog stuck in planning docs into the work queue.
 
-### 2.4 Bump `pattern-c-watcher.yml` to twice-daily
+### 2.4 Bump `pattern-c-watcher.yml` to twice-daily ✓ shipped
 **Why now.** Catches Pattern C drift twice as fast for the deploy push.
 
-**Sketch.** `0 14 * * *` → `0 2,14 * * *`. Single-line cron change.
+**Shipped.** `0 14 * * *` → `0 2,14 * * *`. Drift now surfaces within 12h instead of 24h.
 
-### 2.5 Bump `deploy-drift-watcher.yml` to `*/15`
+### 2.5 Bump `deploy-drift-watcher.yml` to `*/15` ✓ shipped
 **Why now.** Vercel ↔ main drift caught within 15 min instead of 30. Vercel API has plenty of headroom for this cadence.
 
-### 2.6 Backlog-harvest cron — revive planless items
+**Shipped.** `*/30 * * * *` → `*/15 * * * *`.
+
+### 2.6 Backlog-harvest cron — revive planless items ✓ shipped
 **Standard:** SRE practice — periodic queue scrub.
 
 **Why now.** Items that arrived before `plan-issues.yml` existed, or whose plan failed silently, sit forever without `plan/detailed`. With Max 20x quota the operator can afford to sweep them up nightly.
 
-**Sketch.** New `.github/workflows/backlog-harvest.yml`, daily 03:00 UTC. Lists open `auto-routine` + `status/planned` issues with no `plan/detailed` label, dispatches `plan-issues.yml` for up to 5 of them.
+**Shipped.** `.github/workflows/backlog-harvest.yml`, daily 03:00 UTC. Lists open `auto-routine` + `status/planned` issues older than 24h that lack `plan/detailed` (and aren't on-hold/blocked/awaiting-review/in-progress/human-only), oldest first, and dispatches `plan-issues.yml` for up to 5 per run. Soft-fail on dispatch errors (warning in step summary; the regular planner retries the next tick).
 
 ---
 
@@ -111,6 +109,8 @@ Already in flight. Surfaces backlog stuck in planning docs into the work queue.
 **Sketch.** New `.github/workflows/pipeline-health.yml`, daily 06:00 UTC. Walks every cron from `automation-map.md`, asserts each ran in the last `cadence × 3` window. Files (or updates) a single rolling P1 issue for any miss. Reads its catalog from `automation-map.md` so it can't drift from the source of truth.
 
 **Cost.** Free; one Python run/day.
+
+**Partial coverage today.** `backlog-digest.yml` (every 2h, offset :37) gives the operator an always-fresh narrative brief — what shipped, what's stuck, what's queued — readable from any device including Steam Deck/Android (the operator's actual surfaces). It does NOT replace the heartbeat watchdog: the digest *summarises* motion but cannot detect "cron silently stopped firing" the way §3.1 will.
 
 ---
 

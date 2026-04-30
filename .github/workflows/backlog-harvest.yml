@@ -1,0 +1,171 @@
+name: Backlog harvest (revive planless items)
+
+# Nightly backstop for `plan-issues.yml`. The main planner runs every
+# 30 min (`15,45 * * * *`) and scans the queue, but items can slip
+# through — examples:
+#
+#   * Issues that arrived before `plan-issues.yml` existed.
+#   * Items where the planner errored and never retried.
+#   * Issues whose labels drifted (someone removed `status/needs-triage`
+#     manually) leaving them in `status/planned` without a plan.
+#
+# This workflow finds open `auto-routine` + `status/planned` issues
+# that LACK `plan/detailed` AND are older than 24h (giving the regular
+# planner enough time to have tried), and dispatches `plan-issues.yml`
+# for up to 5 of them per run. Daily 03:00 UTC — quiet window before
+# the main triage / execute crons start their day.
+#
+# Per `docs/ops/automation-future-work.md §2.6` (24/7 utilisation phase).
+#
+# Cross-references:
+#   - .github/workflows/plan-issues.yml — the planner this dispatches.
+#   - docs/ops/automation-map.md        — Watcher tier (this is a backstop watcher).
+
+on:
+  schedule:
+    # Daily at 03:00 UTC = 22:00 EST / 23:00 EDT. Runs while the operator
+    # is asleep so the morning brief shows fresh plans on items that
+    # had been stuck.
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      max_items:
+        description: "Maximum issues to dispatch in this run (default 5)"
+        required: false
+        default: "5"
+      min_age_hours:
+        description: "Only harvest items older than N hours (default 24)"
+        required: false
+        default: "24"
+
+permissions:
+  contents: read
+  issues: read
+  actions: write  # to dispatch plan-issues.yml
+
+concurrency:
+  group: backlog-harvest-runtime
+  cancel-in-progress: true
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find planless items and dispatch planner
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAX_ITEMS: ${{ inputs.max_items || '5' }}
+          MIN_AGE_HOURS: ${{ inputs.min_age_hours || '24' }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          import os
+          import subprocess
+          import sys
+          from datetime import datetime, timedelta, timezone
+
+          REPO = "palimkarakshay/lumivara-site"
+          MAX_ITEMS = int(os.environ.get("MAX_ITEMS", "5"))
+          MIN_AGE_HOURS = int(os.environ.get("MIN_AGE_HOURS", "24"))
+          NOW = datetime.now(timezone.utc)
+          AGE_CUTOFF = NOW - timedelta(hours=MIN_AGE_HOURS)
+
+          # Pull all open issues with auto-routine + status/planned. The gh
+          # CLI's --label flag ANDs the labels server-side; we then filter
+          # client-side for the missing `plan/detailed` + age constraint.
+          out = subprocess.check_output([
+              "gh", "issue", "list", "--repo", REPO,
+              "--state", "open",
+              "--label", "auto-routine",
+              "--label", "status/planned",
+              "--limit", "200",
+              "--json", "number,title,labels,createdAt,url",
+          ], text=True)
+          rows = json.loads(out) if out.strip() else []
+
+          # Skip items already labelled. Skip items younger than the cutoff
+          # so we don't race the regular planner. Skip on-hold / blocked /
+          # awaiting-review — operator-attested states the planner mustn't
+          # disturb.
+          SKIP_IF_PRESENT = {
+              "plan/detailed",
+              "status/on-hold",
+              "status/blocked",
+              "status/awaiting-review",
+              "status/in-progress",
+              "human-only",
+          }
+
+          eligible = []
+          for r in rows:
+              labels = {l["name"] for l in r.get("labels") or []}
+              if labels & SKIP_IF_PRESENT:
+                  continue
+              created = datetime.fromisoformat(
+                  r["createdAt"].replace("Z", "+00:00"))
+              if created > AGE_CUTOFF:
+                  continue
+              age_h = (NOW - created).total_seconds() / 3600.0
+              eligible.append((age_h, r["number"], r["title"], r["url"]))
+
+          # Oldest first — those have been waiting the longest.
+          eligible.sort(reverse=True)
+          to_dispatch = eligible[:MAX_ITEMS]
+
+          summary_lines = [
+              "# Backlog harvest",
+              "",
+              f"_Run at {NOW.isoformat()}_",
+              "",
+              f"- Candidates scanned: **{len(rows)}**",
+              f"- Eligible (planless, older than {MIN_AGE_HOURS}h, "
+              f"not on-hold/blocked): **{len(eligible)}**",
+              f"- Dispatched this run (cap {MAX_ITEMS}): **{len(to_dispatch)}**",
+              "",
+          ]
+
+          if not to_dispatch:
+              summary_lines.append("_(nothing to harvest — queue is healthy)_")
+          else:
+              summary_lines.append("**Dispatched to `plan-issues.yml`:**")
+              for age_h, num, title, url in to_dispatch:
+                  summary_lines.append(
+                      f"- [#{num}]({url}) — {title} (waiting {age_h:.0f}h)")
+
+          # Dispatch plan-issues.yml for each eligible item with the
+          # specific issue number. The planner's dispatch input accepts
+          # an issue number and plans that one item.
+          dispatch_failures = []
+          for _, num, _, _ in to_dispatch:
+              try:
+                  subprocess.check_call([
+                      "gh", "workflow", "run", "plan-issues.yml",
+                      "--repo", REPO,
+                      "--field", f"issue={num}",
+                  ])
+                  print(f"Dispatched plan-issues.yml for #{num}")
+              except subprocess.CalledProcessError as exc:
+                  print(f"Dispatch failed for #{num}: {exc}", file=sys.stderr)
+                  dispatch_failures.append(num)
+
+          if dispatch_failures:
+              summary_lines += [
+                  "",
+                  "**Dispatch failures:**",
+                  *[f"- #{n}" for n in dispatch_failures],
+              ]
+
+          step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          if step_summary:
+              with open(step_summary, "a") as fh:
+                  fh.write("\n".join(summary_lines) + "\n")
+
+          if dispatch_failures:
+              # Soft fail: surface failures in the step summary but don't
+              # mark the workflow red — the regular planner will retry
+              # the next cron tick.
+              print(f"::warning::dispatch failed for {len(dispatch_failures)} item(s)")
+          PY

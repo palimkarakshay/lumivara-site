@@ -1,6 +1,22 @@
 name: Execute backlog item — manual / complex
 
+# Aggressive deploy-push phase: also fires on a 4-hour cron (offset :47)
+# so `complexity/complex` + `auto-routine` + P1 items don't sit idle
+# overnight waiting for the operator to dispatch manually. Per
+# `docs/ops/automation-future-work.md §2.1`. The auto-pick step already
+# handles "no eligible issue" gracefully (exits cleanly), so the cron
+# is safe to fire even when the queue is empty.
+#
+# Concurrency group `claude-runtime` is shared with `execute.yml` →
+# never races. If `execute.yml` is mid-run when the :47 tick arrives,
+# this run waits in the queue.
+
 on:
+  schedule:
+    # Every 4 hours at offset :47. Clear of every other watcher offset
+    # (:00 hour-cluster, :15/:45 plan, :17 codex-recheck, :23/:53 bot-usage,
+    # :30 deploy-drift, :37 backlog-digest). Six runs/day.
+    - cron: "47 */4 * * *"
   workflow_dispatch:
     inputs:
       issue:

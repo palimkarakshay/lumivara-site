@@ -24,6 +24,12 @@ An issue is in scope for *this* triage if **any** of the following hold:
 If an issue is **not** in scope, leave it alone — the general triage agent will handle it.
 Do **not** remove `status/needs-triage` from non-forge issues.
 
+**Skip `do-not-triage` issues.** Meta / dashboard / control issues (e.g. the rolling bot-usage
+report from `bot-usage-monitor.yml`, the doc-task-seeder control issue) carry this label.
+They are not actionable backlog; do not classify them. They will not appear in the
+forge-execute queue regardless because they lack `auto-routine`, but skipping them
+explicitly keeps the queue scan focused on real work.
+
 ## Inputs
 
 `gh` is authenticated. Repo: `palimkarakshay/lumivara-site`.

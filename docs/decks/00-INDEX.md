@@ -24,6 +24,8 @@ Five stakeholder decks, one master deck (with a shareable companion), plus this 
 | 06 | `06-master-deck.md` | **Master synthesis** — the nine product-positioning questions answered in one deck for operator self-review and as the canonical source the stakeholder decks read out from | Operator-honest, exhaustive | **Operator-scope; do not share without selecting a stakeholder deck first** | ~50 slides |
 | 06a | `06a-master-deck-shareable.md` | **Shareable companion to the master deck** — same nine questions, generalised for external readers (advisor / prospective partner / sophisticated investor / serious prospect doing diligence) | Externally-presentable, range-based | External, NDA-friendly; reader's pre-share checklist on the closing slide | ~50 slides |
 
+A pre-rendered, self-contained HTML version of the shareable companion lives next to the source: [`06a-master-deck-shareable.html`](06a-master-deck-shareable.html) (open in any browser — arrow keys / space to advance). Regenerate after edits with `npx -y @marp-team/marp-cli --html docs/decks/06a-master-deck-shareable.md -o docs/decks/06a-master-deck-shareable.html`.
+
 ---
 
 ## How the decks relate to existing material

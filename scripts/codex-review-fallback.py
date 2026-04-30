@@ -16,7 +16,15 @@ silently shipping unreviewed code, so this helper walks a small ladder:
         cadence with headroom
     2b. Gemini 2.5 Flash                        — same key, higher
         quota (500 RPD); used when Pro 429s
-    3.  defer (label PR `review-deferred`)      — last resort
+    3.  GitHub Models (Llama-3.3-70b)           — uses existing
+        GITHUB_TOKEN; independent rate-limit pool from OpenAI / Gemini
+        so this leg covers the simultaneous-outage case the prior
+        ladder defered on. Falls through to gpt-4.1-mini within the
+        leg on 429.
+    4.  OpenRouter free models                  — DeepSeek R1 (reasoning)
+        first, Qwen3 Coder second on the same key. Yet another
+        independent rate-limit pool.
+    5.  defer (label PR `review-deferred`)      — last resort
 
 Why these two providers and not three? The triage / plan / execute ladders
 already use Claude, so using Claude here too would defeat the point of an
@@ -45,10 +53,28 @@ Inputs (env):
     GEMINI_MODEL            DEPRECATED: still honoured for back-compat,
                             but if set it is treated as the Pro slot.
                             New code should use the two split variables.
+    GITHUB_TOKEN            optional; when set, GitHub Models leg fires.
+                            The repo's standard GITHUB_TOKEN already
+                            works — no new secret needed.
+    GITHUB_MODELS_PRIMARY   default: meta/Llama-3.3-70B-Instruct
+    GITHUB_MODELS_FALLBACK  default: openai/gpt-4.1-mini (intentionally
+                            a different model family from the OpenAI leg
+                            so a model-specific outage doesn't kill both
+                            slots in the GitHub Models leg)
+    OPENROUTER_API_KEY      optional; when set, OpenRouter leg fires.
+                            Free-tier models share daily caps but pools
+                            are independent from OpenAI / Gemini /
+                            GitHub Models.
+    OPENROUTER_PRIMARY      default: deepseek/deepseek-r1:free
+                            (reasoning model; strongest free option for
+                            code review)
+    OPENROUTER_FALLBACK     default: qwen/qwen3-coder:free
+                            (code-tuned, fires when R1 daily cap hits)
 
 Outputs:
     Writes the review markdown to /tmp/review.md (or $REVIEW_OUT).
-    Prints a single line to stdout: ENGINE=<openai|gemini|deferred>
+    Prints a single line to stdout:
+        ENGINE=<openai|gemini|github|openrouter|deferred>
     Exits 0 always (the workflow handles the "deferred" case via labelling).
 
 Hallucination guard: the prompt itself instructs the model to never invent
@@ -67,6 +93,8 @@ GEMINI_URL = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     "{model}:generateContent?key={key}"
 )
+GITHUB_MODELS_URL = "https://models.github.ai/inference/chat/completions"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 
 def _post_json(url: str, payload: dict, headers: dict, timeout: int = 90) -> dict:
@@ -215,6 +243,113 @@ def try_gemini(prompt: str) -> tuple[str | None, str, str]:
     return None, last_status, flash_model or pro_model
 
 
+def _try_openai_compat(url: str, key: str, model: str, prompt: str,
+                       label: str, extra_headers: dict | None = None
+                       ) -> tuple[str | None, str]:
+    """Single-shot call to any OpenAI-compatible chat-completion endpoint.
+
+    GitHub Models, OpenRouter, Mistral, Groq, Cerebras and friends all
+    speak the same `/chat/completions` shape, so this helper covers them
+    all. Returns (text, status) with status ∈ {ok, no_key, quota, error}.
+    """
+    if not key:
+        return None, "no_key"
+    headers = {
+        "Authorization": f"Bearer {key}",
+        "Content-Type": "application/json",
+    }
+    if extra_headers:
+        headers.update(extra_headers)
+    try:
+        resp = _post_json(
+            url,
+            {
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.2,
+            },
+            headers,
+        )
+        text = (resp.get("choices") or [{}])[0].get("message", {}).get("content")
+        if not text:
+            return None, "error"
+        return text, "ok"
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()[:500]
+        if e.code in (401, 403):
+            print(f"::warning::{label} ({model}) auth error {e.code}: {body}",
+                  file=sys.stderr)
+            return None, "error"
+        if e.code == 429:
+            print(f"::warning::{label} ({model}) 429 — quota exhausted. {body}",
+                  file=sys.stderr)
+            return None, "quota"
+        print(f"::warning::{label} ({model}) HTTP {e.code}: {body}",
+              file=sys.stderr)
+        return None, "error"
+    except Exception as exc:
+        print(f"::warning::{label} ({model}) call failed: {exc}",
+              file=sys.stderr)
+        return None, "error"
+
+
+def try_github_models(prompt: str) -> tuple[str | None, str, str]:
+    """Walk GITHUB_MODELS_PRIMARY then GITHUB_MODELS_FALLBACK on the
+    standard GITHUB_TOKEN. Returns (review, status, model_used)."""
+    key = (os.environ.get("GITHUB_TOKEN") or "").strip()
+    if not key:
+        return None, "no_key", ""
+    primary = os.environ.get("GITHUB_MODELS_PRIMARY",
+                             "meta/Llama-3.3-70B-Instruct")
+    fallback = os.environ.get("GITHUB_MODELS_FALLBACK",
+                              "openai/gpt-4.1-mini")
+    last_status = "no_key"
+    for model in (primary, fallback):
+        if not model:
+            continue
+        review, status = _try_openai_compat(
+            GITHUB_MODELS_URL, key, model, prompt, "GitHub Models",
+        )
+        if review:
+            return review, status, model
+        last_status = status
+        if primary == fallback:
+            break
+    return None, last_status, fallback or primary
+
+
+def try_openrouter(prompt: str) -> tuple[str | None, str, str]:
+    """Walk OPENROUTER_PRIMARY then OPENROUTER_FALLBACK on the same key.
+    Returns (review, status, model_used)."""
+    key = (os.environ.get("OPENROUTER_API_KEY") or "").strip()
+    if not key:
+        return None, "no_key", ""
+    primary = os.environ.get("OPENROUTER_PRIMARY",
+                             "deepseek/deepseek-r1:free")
+    fallback = os.environ.get("OPENROUTER_FALLBACK",
+                              "qwen/qwen3-coder:free")
+    # OpenRouter recommends an HTTP-Referer + X-Title header so usage
+    # is attributable in their dashboard. Both are optional but kind to
+    # the free-tier service.
+    extra = {
+        "HTTP-Referer": "https://github.com/palimkarakshay/lumivara-site",
+        "X-Title": "lumivara-codex-review",
+    }
+    last_status = "no_key"
+    for model in (primary, fallback):
+        if not model:
+            continue
+        review, status = _try_openai_compat(
+            OPENROUTER_URL, key, model, prompt, "OpenRouter", extra,
+        )
+        if review:
+            return review, status, model
+        last_status = status
+        if primary == fallback:
+            break
+    return None, last_status, fallback or primary
+
+
 def main() -> int:
     prompt_file = os.environ.get("PROMPT_FILE")
     if not prompt_file or not os.path.exists(prompt_file):
@@ -252,24 +387,64 @@ def main() -> int:
         return 0
     gemini_status = status
 
-    # 3. Defer — both providers unavailable. Report the model that
-    # caused the last Gemini status (the second of Pro/Flash, unless
-    # only one was attempted) so the deferred-review comment is honest
-    # about which model actually 429'd.
     gemini_label = gemini_model_used or os.environ.get(
         "GEMINI_FLASH_MODEL", "gemini-2.5-flash"
+    )
+
+    # 3. GitHub Models fallback (Llama-3.3-70b → gpt-4.1-mini on the
+    # standard GITHUB_TOKEN). Independent rate-limit pool from
+    # OpenAI / Gemini, so this leg covers the simultaneous-outage
+    # case the prior ladder defered on.
+    review, status, gh_model_used = try_github_models(prompt)
+    if review:
+        with open(out_path, "w") as f:
+            f.write(
+                f"_Engine: GitHub Models / {gh_model_used} fallback "
+                f"(OpenAI: {openai_status}; Gemini: {gemini_status})._"
+                "\n\n" + review
+            )
+        print("ENGINE=github")
+        return 0
+    gh_status = status
+
+    # 4. OpenRouter fallback (DeepSeek R1 → Qwen3 Coder). Yet another
+    # independent rate-limit pool. R1 is a reasoning model so this is
+    # the strongest free option for code review when everything else
+    # is rate-limited.
+    review, status, or_model_used = try_openrouter(prompt)
+    if review:
+        with open(out_path, "w") as f:
+            f.write(
+                f"_Engine: OpenRouter / {or_model_used} fallback "
+                f"(OpenAI: {openai_status}; Gemini: {gemini_status}; "
+                f"GitHub Models: {gh_status})._\n\n" + review
+            )
+        print("ENGINE=openrouter")
+        return 0
+    or_status = status
+
+    # 5. Defer — every provider unavailable. Report each so the
+    # deferred-review comment is honest about which legs were tried.
+    gh_label = gh_model_used or os.environ.get(
+        "GITHUB_MODELS_FALLBACK", "openai/gpt-4.1-mini"
+    )
+    or_label = or_model_used or os.environ.get(
+        "OPENROUTER_FALLBACK", "qwen/qwen3-coder:free"
     )
     with open(out_path, "w") as f:
         f.write(
             "## Code review unavailable\n\n"
-            f"Both OpenAI ({openai_model}) and Gemini ({gemini_label}) "
-            "were unavailable for this review pass.\n\n"
-            f"- OpenAI status: `{openai_status}`\n"
-            f"- Gemini status: `{gemini_status}` (last model tried: "
-            f"`{gemini_label}`)\n\n"
+            f"All review legs were unavailable this pass:\n\n"
+            f"- OpenAI ({openai_model}) status: `{openai_status}`\n"
+            f"- Gemini status: `{gemini_status}` "
+            f"(last model tried: `{gemini_label}`)\n"
+            f"- GitHub Models status: `{gh_status}` "
+            f"(last model tried: `{gh_label}`)\n"
+            f"- OpenRouter status: `{or_status}` "
+            f"(last model tried: `{or_label}`)\n\n"
             "This PR has been labelled `review-deferred`. A scheduled "
             "re-review run (`codex-review-recheck.yml`) will retry once "
-            "either provider's quota window resets.\n\n"
+            "any provider's quota window resets.\n\n"
             "## Verdict\n\nrequest-changes\n"
         )
     print("ENGINE=deferred")

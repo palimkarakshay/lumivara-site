@@ -102,61 +102,61 @@ jobs:
             exit 1
           fi
 
-      # The review pass walks a small provider ladder:
-      #   OPENAI_API_KEY → OPENAI_API_KEY_BACKUP → Gemini 2.5 Flash → defer
-      # so a 429 on either OpenAI account or a Codex outage no longer
-      # silently skips the consistency check. We only short-circuit when
-      # ALL THREE of `OPENAI_API_KEY`, `OPENAI_API_KEY_BACKUP` and
-      # `GEMINI_API_KEY` are missing — at that point there's no second
-      # opinion available at all and the workflow defers via a label.
+      # The review pass walks a five-leg provider ladder:
+      #   OPENAI_API_KEY → OPENAI_API_KEY_BACKUP → Gemini Pro → Gemini
+      #   Flash → GitHub Models (Llama-3.3-70b → gpt-4.1-mini) →
+      #   OpenRouter (DeepSeek R1 → Qwen3 Coder) → defer
+      # so a 429 / outage on any single leg no longer silently skips
+      # the consistency check. We only short-circuit (defer immediately)
+      # when EVERY OpenAI / Gemini / OpenRouter key is missing — GitHub
+      # Models uses the auto-provisioned GITHUB_TOKEN and is therefore
+      # always available, but it shares a rate-limit pool with all
+      # GitHub Actions traffic so we don't hard-rely on it as the sole
+      # review path.
       - name: Verify review-engine availability
         id: verify
         env:
-          # Pass BOTH OpenAI keys through. codex-review-fallback.py walks
-          # primary → backup so a 429 on the paid account drops to the
-          # free account (independent quota window) before Gemini.
+          # Pass all keys through. codex-review-fallback.py walks the
+          # ladder; on this repo OPENAI_API_KEY is the free-tier ChatGPT
+          # account and OPENAI_API_KEY_BACKUP is the paid account, so a
+          # 429 on the free key falls through to paid (and the bill only
+          # grows on overflow).
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY_BACKUP: ${{ secrets.OPENAI_API_KEY_BACKUP }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GH_TOKEN: ${{ github.token }}
           MODE: ${{ steps.target.outputs.mode }}
           ISSUE: ${{ steps.target.outputs.issue }}
           PR: ${{ steps.target.outputs.pr }}
         run: |
+          # GitHub Models uses GITHUB_TOKEN which is always present in
+          # GitHub Actions, so there is no longer a "no review possible"
+          # case — the script will at minimum attempt the GitHub Models
+          # leg. We still log a warning when the operator-provided keys
+          # are missing so the run summary makes the configuration
+          # state obvious.
           if [ -z "$OPENAI_API_KEY" ] && [ -z "$OPENAI_API_KEY_BACKUP" ] \
-             && [ -z "$GEMINI_API_KEY" ]; then
-            echo "::warning::OPENAI_API_KEY, OPENAI_API_KEY_BACKUP and GEMINI_API_KEY all missing — review skipped."
-            if [ "$MODE" = "issue" ] && [ -n "$ISSUE" ]; then
-              gh issue comment "$ISSUE" \
-                --repo palimkarakshay/lumivara-site \
-                --body "Code review requested but neither OPENAI nor GEMINI keys are configured. Removing \`model/codex\` so the next execute run picks this up via Claude."
-              gh issue edit "$ISSUE" \
-                --repo palimkarakshay/lumivara-site \
-                --remove-label "model/codex" || true
-            elif [ "$MODE" = "pr" ] && [ -n "$PR" ]; then
-              gh label create "review-deferred" --repo palimkarakshay/lumivara-site \
-                --color "fbca04" --description "Codex/Gemini review unavailable; will be re-tried by codex-review-recheck.yml" 2>/dev/null || true
-              gh pr edit "$PR" --repo palimkarakshay/lumivara-site \
-                --add-label "review-deferred" || true
-              gh pr comment "$PR" \
-                --repo palimkarakshay/lumivara-site \
-                --body "_Auto-review deferred: no OPENAI or GEMINI key configured. \`codex-review-recheck.yml\` will retry once a key is available._" || true
-            fi
-            echo "ok=false" >> "$GITHUB_OUTPUT"
-            exit 0
+             && [ -z "$GEMINI_API_KEY" ] && [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::warning::No operator-provided review keys set (OPENAI / GEMINI / OPENROUTER all missing). Falling through to GitHub Models leg only."
           fi
-          # Codex CLI is only required for the OpenAI path; absent that key
-          # we still continue with Gemini, so a missing CLI is non-fatal.
+          # Codex CLI is only required for the OpenAI leg; absent that key
+          # we still continue with the rest of the ladder, so a missing
+          # CLI is non-fatal.
           codex --version || true
           echo "ok=true" >> "$GITHUB_OUTPUT"
 
-      - name: Run code review pass (OpenAI → backup → Gemini → defer)
+      - name: Run code review pass (OpenAI → backup → Gemini Pro → Flash → GitHub Models → OpenRouter → defer)
         if: steps.verify.outputs.ok == 'true'
         id: review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY_BACKUP: ${{ secrets.OPENAI_API_KEY_BACKUP }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # GITHUB_TOKEN is read by the script for both gh CLI calls
+          # and the GitHub Models leg of the fallback ladder.
+          GITHUB_TOKEN: ${{ github.token }}
           GH_TOKEN: ${{ github.token }}
           MODE: ${{ steps.target.outputs.mode }}
           ISSUE: ${{ steps.target.outputs.issue }}

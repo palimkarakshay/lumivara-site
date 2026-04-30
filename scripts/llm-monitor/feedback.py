@@ -34,9 +34,11 @@ from pathlib import Path
 REPO = os.environ.get("REPO", "palimkarakshay/lumivara-site")
 ROOT = Path(__file__).resolve().parents[2]
 KNOWN_ISSUES = ROOT / "docs" / "mothership" / "llm-monitor" / "KNOWN_ISSUES.md"
+RECOMMENDATIONS = ROOT / "docs" / "mothership" / "llm-monitor" / "RECOMMENDATIONS.md"
 AUTO_START = "<!-- AUTO-START — everything below is rewritten by feedback.py -->"
 AUTO_END = "<!-- AUTO-END -->"
 ROLLUP_DAYS = 14
+RECS_RETENTION_DAYS = 30
 TITLE_PREFIX = "[llm-monitor]"
 
 
@@ -118,12 +120,12 @@ def render_known_issues(records: list[dict], originals: dict, today: datetime | 
     return "\n".join(lines)
 
 
-def update_known_issues(content: str) -> bool:
-    """Splice `content` between AUTO-START and AUTO-END markers. Returns
-    True if the file changed."""
-    if not KNOWN_ISSUES.exists():
+def _splice_auto_section(path: Path, content: str) -> bool:
+    """Replace text between AUTO-START / AUTO-END markers in `path`.
+    Returns True if the file actually changed."""
+    if not path.exists():
         return False
-    current = KNOWN_ISSUES.read_text()
+    current = path.read_text()
     if AUTO_START not in current or AUTO_END not in current:
         # Markers missing — refuse to rewrite blindly.
         return False
@@ -132,8 +134,66 @@ def update_known_issues(content: str) -> bool:
     new = pre + AUTO_START + "\n" + content.rstrip() + "\n\n" + AUTO_END + post
     if new == current:
         return False
-    KNOWN_ISSUES.write_text(new)
+    path.write_text(new)
     return True
+
+
+def update_known_issues(content: str) -> bool:
+    return _splice_auto_section(KNOWN_ISSUES, content)
+
+
+def render_recommendations(records: list[dict], originals: dict,
+                           today: datetime | None = None) -> str:
+    """Render the active-recommendations section. Dedupes by recommendation
+    slug; keeps the highest-severity record per slug."""
+    today = today or datetime.now(timezone.utc)
+    cutoff = today - timedelta(days=RECS_RETENTION_DAYS)
+
+    by_slug: dict[str, dict] = {}
+    for r in records:
+        rec = (r.get("recommendation") or "").strip()
+        if not rec:
+            continue
+        orig = originals.get(r["id"], {})
+        ts = _parse_iso(orig.get("ts", ""))
+        if ts < cutoff:
+            continue
+        slug = _slug(rec)
+        cur = by_slug.get(slug)
+        if cur is None or r.get("severity", 0) > cur["_record"].get("severity", 0):
+            by_slug[slug] = {"_record": r, "_orig": orig, "_slug": slug}
+
+    lines: list[str] = ["", "## Active recommendations (last 30 days)", ""]
+    if not by_slug:
+        lines.append("_No active recommendations in the rolling window._")
+        lines.append("")
+        return "\n".join(lines)
+
+    # Group by subject for readability
+    by_subject: dict[str, list] = {}
+    for entry in by_slug.values():
+        r = entry["_record"]
+        by_subject.setdefault(r.get("subject", "general"), []).append(entry)
+
+    for subj, entries in by_subject.items():
+        lines.append(f"### {subj}")
+        lines.append("")
+        for entry in entries:
+            r = entry["_record"]
+            o = entry["_orig"]
+            slug = entry["_slug"]
+            url = o.get("url", "")
+            line = (f"- `{slug}` — {r.get('recommendation', '')}"
+                    f" _(seen via [{o.get('source', '?')}]({url}); "
+                    f"sev {r.get('severity', '?')} · "
+                    f"impact: {','.join(r.get('impact_targets') or ['—'])})_")
+            lines.append(line)
+        lines.append("")
+    return "\n".join(lines)
+
+
+def update_recommendations(content: str) -> bool:
+    return _splice_auto_section(RECOMMENDATIONS, content)
 
 
 def _list_open_auto_issues() -> set[str]:
@@ -240,6 +300,10 @@ def main() -> int:
     body = render_known_issues(records, originals)
     changed = update_known_issues(body)
     print(f"[feedback] KNOWN_ISSUES.md changed: {changed}")
+
+    rec_body = render_recommendations(records, originals)
+    rec_changed = update_recommendations(rec_body)
+    print(f"[feedback] RECOMMENDATIONS.md changed: {rec_changed}")
 
     if not args.no_issues:
         filed = open_issues_for_high_signal(records, originals, dry_run=args.dry_run)

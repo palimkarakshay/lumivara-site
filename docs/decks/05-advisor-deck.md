@@ -27,7 +27,7 @@ For a senior advisor / mentor we are asking to push hard on the unfinished parts
 
 <br/>
 
-*Confidential. Single-recipient deck. Refreshed 2026-04-30.*
+*Confidential. Single-recipient deck. Refreshed 2026-04-30 (end-of-day refresh: added Contested claim 6 + How-we-ensure-it-sells section in response to advisor pushback that the operator-side stack is "over-engineered crap that won't ever sell"; six per-vertical sales playbooks now live under [`docs/mothership/sales-verticals/`](../mothership/sales-verticals/) — each carrying per-vertical 24-month ROI math, regulator-of-record, and vendor-displacement detail).*
 
 <span class="small">This deck is structured around what's contested, not what's settled. The settled parts live in `docs/decks/01-investor-deck.md` and `docs/storefront/06-positioning-slide-deck.md`. **Brand-name reconsideration (D2) is now formally open** per [`docs/mothership/15c-brand-and-domain-decision.md`](../mothership/15c-brand-and-domain-decision.md) — your read on the brand question (Open Strategic Question 1, below) is now actually load-bearing, not hypothetical.</span>
 
@@ -35,11 +35,12 @@ For a senior advisor / mentor we are asking to push hard on the unfinished parts
 
 ## What we're asking you for
 
-Fifteen minutes per slide, on three things:
+Fifteen minutes per slide, on four things:
 
 1. **The contested claims.** Push on `[C]` rows in `docs/research/03-source-bibliography.md` — especially the management-consulting market sizing and the AI-premium valuation framing.
 2. **The plan-margin assumptions.** Stress-test our 95% pre-comp gross margin and the year-1 take-home of CAD ~$118 – $128k.
 3. **The 30-client cap as the actual ceiling.** Is the cap protective, or is it a way to dodge the sales work that would prove this is a real business?
+4. **The "over-engineered crap won't sell" pushback** (Contested claim 6, below). Read the new per-vertical sales playbooks in [`docs/mothership/sales-verticals/`](../mothership/sales-verticals/) and tell us which vertical's math you'd press on first. The pack is the structured response to this critique; if it's still "won't sell" after a 30-minute read of one of the six templates, that's a critical signal we'd act on before Phase 2.
 
 If you want to push on something else, push there. We'll re-route the slides on the fly.
 
@@ -117,6 +118,40 @@ If you find a hole in any of the above, please push — but the load-bearing que
 
 ---
 
+### Contested claim 6 — "This is over-engineered crap and won't ever sell"
+
+> _Verbatim feedback from a senior advisor, 2026-04-30. Treated here as the load-bearing pushback to address before Phase 2._
+
+| Question | Our position |
+|---|---|
+| Is the operator-side stack over-engineered? | **Partly yes, deliberately.** The complexity is not the product — it's the *leverage* that lets one operator hold 95% pre-comp gross margin at 30 clients (`docs/storefront/03-cost-analysis.md` Part D). What the client buys is a website + a phone-edit shortcut + a flat retainer. What's "over-engineered" is the multi-AI fallback + Dual-Lane Repo + CI gates *behind* that simple front. The advisor's instinct that the operator-side build has out-paced the sales work is not wrong. |
+| Is it "crap"? | The stack ships preview-PRs to a real client site every week (Client #1 / `lumivara-forge.com` build). Pipeline is operational, not theoretical. The dispute is whether the *pace* of sales work matches the *pace* of platform work — historically, no. Phase 2 changes that ratio. |
+| Will it sell? | **Testable claim**, addressed below. The new [`docs/mothership/sales-verticals/`](../mothership/sales-verticals/) pack (added 2026-04-30) makes the math concrete per vertical: status-quo digital spend in our six target verticals already runs CAD $7k-$60k/yr per practice; T2 is $10,476 over 24 months; per-engagement payback is 1-5 acquired clients per vertical. If the math is right, the unit economics work; if the math is wrong, the advisor's pushback wins. |
+
+---
+
+## How we're working to ensure it sells
+
+The over-engineering critique is partly about *priority*: too much platform, too little go-to-market preparation. The 2026-04-30 sprint changed the priority.
+
+| Action | Status | Evidence |
+|---|---|---|
+| **Per-vertical sales playbooks for the six high-LTV verticals.** Each runs the same 18-section spine: persona, pain map, basic + aspirational requirements, Lumivara Forge mapping, regulator-of-record, why-now stats, R-reasons, ROI math, switching-risks, three-call sales flow, 6-8 objection handlers, source citations, prospecting heuristics, vendor-pattern displacement table. | ✅ Live (six rows Full as of this commit) | [`docs/mothership/sales-verticals/00-INDEX.md`](../mothership/sales-verticals/00-INDEX.md), `doctors-sales-template.md`, `dentists-sales-template.md`, `lawyers-sales-template.md`, `accountants-sales-template.md`, `physiotherapy-sales-template.md`, `optometry-sales-template.md`. Each ~450-510 lines, dense, citation-traced, operator-only. |
+| **24-month ROI math is now per-vertical, not generic.** Status-quo digital spend ranges have been pulled per vertical against published competitor pricing + practice-management benchmarks. Per-engagement payback is sized to the practice's own LTV math (rostered patient, dental procedure, legal matter, accounting engagement, allied-health treatment plan, optometry retail bundle). | ✅ Live | §13 of every vertical template. |
+| **Regulator-of-record cross-walk.** Each vertical names the actual statute / college / state board that makes a non-compliant site a real liability — not a generalised "ADA bad" frame. CPSO, RCDSO, LSO §4.2, CPA Ontario §401-§403, COO §6 + §14, FTC Contact Lens Rule, Quebec Bill 96. | ✅ Live | §9 of every vertical template. |
+| **Vendor-displacement maps.** Each vertical names the *category* of incumbent vendor we displace (template builders, PMS-bundled sites, reputation-management bundles, vertical-marketing agencies). The pitch differentiation is structural, not promotional. | ✅ Live | §19 of every vertical template. |
+| **Prospecting heuristics.** 10-14 signal evaluation rubrics per vertical for spotting prospects with bad sites in the displacement window — without naming individual practices in operator-scope docs (defamation discipline). The operator's CRM holds the names; this folder holds the test. | ✅ Live | §19 of every vertical template. |
+| **Sales-cycle calendar.** Tax season is a no-pitch window for accountants; equity-meeting cycles slow law-firm decisions; multi-discipline wellness centres need all discipline leads on Call 1. The patterns are documented per vertical, not improvised on a live call. | ✅ Live | §15 / §18 of every vertical template. |
+| **Honest backfill list.** Every `[S]`-flagged number in every vertical template ledgers an open `area/research` issue to backfill `docs/research/03-source-bibliography.md` with the primary source before externally quoting. We do not externally quote `[S]` numbers; the audit log enforces this. | ⏳ Pending — issues to be filed | §17 of every vertical template; gating via `03-source-bibliography.md §C`. |
+| **First-paid-client closure.** Lumivara Forge runs in production today on Client #1's site. The next milestone is **paying Client #2**, not feature work on the platform. Phase 2 (`docs/migrations/01-poc-perfection-plan.md`) explicitly de-prioritises non-revenue work until the second close lands. | ⏳ Phase 2 entry condition | `docs/migrations/01-poc-perfection-plan.md`. |
+| **Public lumivara-forge.com case-study site.** Strategic Question 3 below — staying quiet vs. publishing. The advisor pushback on "won't sell" tilts the answer toward publishing this quarter. | ⏳ Decision pending | Strategic Question 3, this deck. |
+
+The pitch sentence we'd want the advisor to push on after reading the new pack:
+
+> *"Each of the six vertical templates carries 24-month math against the prospect's own published-cost line items, plus a per-engagement payback ratio rooted in the prospect's own per-client LTV. If the math is wrong on any one of those six rows, the over-engineering critique compounds and the unit economics fail. If the math is right on at least three of six, the practice survives the cap with margin to spare. We'd rather hear which vertical you'd press on first than defend in the abstract."*
+
+---
+
 ## Three open strategic questions
 
 These don't have answers in the deck pack yet. Your read on each would directly shape the next 90 days.
@@ -145,6 +180,6 @@ Not approval. Specifically:
 
 *Confidential — single recipient.*
 
-*Source files for this deck: `docs/research/03-source-bibliography.md` (the [V]/[S]/[C] flags) · `docs/research/06-drawbacks-and-honest-risks.md` · `docs/mothership/01-business-plan.md`, `18-capacity-and-unit-economics.md` · `docs/storefront/03-cost-analysis.md`*
+*Source files for this deck: `docs/research/03-source-bibliography.md` (the [V]/[S]/[C] flags) · `docs/research/04-client-personas.md` · `docs/research/05-reasons-to-switch-to-lumivara-forge.md` · `docs/research/06-drawbacks-and-honest-risks.md` · `docs/mothership/01-business-plan.md`, `18-capacity-and-unit-economics.md` · `docs/mothership/sales-verticals/00-INDEX.md` (six per-vertical sales playbooks; the structured response to the "over-engineered crap won't sell" pushback in Contested claim 6) · `docs/storefront/03-cost-analysis.md`*
 
 <span class="small">© 2026 — confidential.</span>

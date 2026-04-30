@@ -59,6 +59,8 @@ Reading order for a new operator session that needs to understand the deck pack:
 3. This file
 4. `06-master-deck.md` if you want the whole picture in one read; otherwise the specific stakeholder deck the audience needs
 
+**Per-vertical sales playbooks (operator-only).** When the conversation moves from "is this a real business?" (the deck pack) to "how do we actually close a specific prospect in vertical X?", the operator reads the matching template under [`docs/mothership/sales-verticals/`](../mothership/sales-verticals/). The pack covers six high-LTV verticals (doctors, dentists, lawyers, accountants, physiotherapy, optometry); each carries 24-month ROI math against published competitor pricing in that vertical, the regulator-of-record cross-walk (CPSO / RCDSO / LSO / CPA Ontario / COO / FTC Contact Lens Rule etc.), the three-call sales flow, and the prospecting heuristics. The deck pack does not duplicate this content; the prospective-client deck distils a *persona*-tailored subset for client-facing use, while the sales-verticals folder stays operator-only. When advisor / partner / investor reading raises the "won't ever sell" pushback (`05-advisor-deck.md` Contested claim 6), forward them the matching vertical template — that is the structured response.
+
 ---
 
 ## Brand and pricing variables
@@ -79,4 +81,4 @@ Before any deck in this folder is shared externally, walk these checks:
 
 ---
 
-*Last updated: 2026-04-30 — refreshed every deck after today's pipeline-lane work landed (brand + domain ADR `15c`, extended five-leg `codex-review` fallback ladder, `llm-monitor` bot self-awareness pipeline, `record-ingest` operator recording pipeline, doc-task seeder per OWASP LLM08, plumber + recruiter vertical templates promoted Stub → Full, PIPEDA breach-notification research seed). Brand-name reconsideration (D2) is open; decks continue to use `Lumivara Forge` as a placeholder until D2 lands.*
+*Last updated: 2026-04-30 — refreshed every deck after today's pipeline-lane work landed (brand + domain ADR `15c`, extended five-leg `codex-review` fallback ladder, `llm-monitor` bot self-awareness pipeline, `record-ingest` operator recording pipeline, doc-task seeder per OWASP LLM08, plumber + recruiter vertical content templates promoted Stub → Full, PIPEDA breach-notification research seed, **and the new per-vertical sales playbook pack at [`docs/mothership/sales-verticals/`](../mothership/sales-verticals/)** — six full templates (doctors, dentists, lawyers, accountants, physiotherapy, optometry) that serve as the structured response to the advisor pushback that the operator-side stack is "over-engineered crap that won't ever sell"; reflected in `05-advisor-deck.md` Contested claim 6 and `06-master-deck.md` source-files-reconciled list). Brand-name reconsideration (D2) is open; decks continue to use `Lumivara Forge` as a placeholder until D2 lands.*

@@ -28,7 +28,7 @@ What we sell, who we sell it to, who we sell against, where the business is goin
 
 <br/>
 
-*Compiled 2026-04-30 (refreshed end-of-day after the same-day pipeline-lane work landed: brand + domain ADR `15c`, extended five-leg `codex-review` fallback ladder, `llm-monitor` bot self-awareness pipeline, `record-ingest` operator recording pipeline, doc-task seeder per OWASP LLM08, plumber + recruiter vertical templates promoted Stub → Full, PIPEDA breach-notification research seed). Reconciles `docs/storefront/06-positioning-slide-deck.md` (operator-internal nine-questions deck) with the five stakeholder decks in `docs/decks/01`–`05`.*
+*Compiled 2026-04-30 (refreshed end-of-day after the same-day pipeline-lane work landed: brand + domain ADR `15c`, extended five-leg `codex-review` fallback ladder, `llm-monitor` bot self-awareness pipeline, `record-ingest` operator recording pipeline, doc-task seeder per OWASP LLM08, plumber + recruiter vertical templates promoted Stub → Full, PIPEDA breach-notification research seed, **and the new per-vertical sales playbook pack at `docs/mothership/sales-verticals/`** — six templates (doctors, dentists, lawyers, accountants, physiotherapy, optometry) promoted from index-only to Full as the structured response to the advisor pushback that the operator-side stack is "over-engineered crap that won't ever sell"; see [`docs/decks/05-advisor-deck.md`](./05-advisor-deck.md) Contested claim 6 for the rebuttal). Reconciles `docs/storefront/06-positioning-slide-deck.md` (operator-internal nine-questions deck) with the five stakeholder decks in `docs/decks/01`–`05`.*
 
 <span class="small">Operator-scope deck — confidential. Stakeholder-specific subsets live in `docs/decks/01`–`05`. Every load-bearing statistic cites a `[V]` / `[S]` / `[C]` row in `docs/research/03-source-bibliography.md`. **Brand-name reconsideration (D2) is open** per [`docs/mothership/15c-brand-and-domain-decision.md`](../mothership/15c-brand-and-domain-decision.md); this deck continues to use `Lumivara Forge` as a placeholder until D2 lands.</span>
 
@@ -891,10 +891,10 @@ Before sharing this deck — even with a single named recipient — walk these c
 *Master deck — operator-scope, confidential.*
 
 Source files reconciled in this deck:
-`docs/mothership/00-INDEX.md` · `01-business-plan.md` · `02b-dual-lane-architecture.md` · `04-tier-based-agent-cadence.md` · `08-future-work.md` · `15-terminology-and-brand.md` · `18-capacity-and-unit-economics.md`
+`docs/mothership/00-INDEX.md` · `01-business-plan.md` · `02b-dual-lane-architecture.md` · `04-tier-based-agent-cadence.md` · `08-future-work.md` · `15-terminology-and-brand.md` · `18-capacity-and-unit-economics.md` · `sales-verticals/00-INDEX.md` (six per-vertical sales playbooks — doctors / dentists / lawyers / accountants / physiotherapy / optometry; the structured response to the "won't ever sell" pushback addressed in `decks/05` Contested claim 6)
 `docs/storefront/00-quick-start.md` · `01-gig-profile.md` · `02-pricing-tiers.md` · `03-cost-analysis.md` · `04-slide-deck.md` · `05-template-hardening-notes.md` · `06-positioning-slide-deck.md`
 `docs/decks/00-INDEX.md` · `01-investor-deck.md` · `02-partner-deck.md` · `03-employee-deck.md` · `04-prospective-client-deck.md` · `05-advisor-deck.md`
-`docs/research/00-INDEX.md` · `03-source-bibliography.md` · `04-client-personas.md` · `06-drawbacks-and-honest-risks.md`
+`docs/research/00-INDEX.md` · `03-source-bibliography.md` · `04-client-personas.md` · `05-reasons-to-switch-to-lumivara-forge.md` · `06-drawbacks-and-honest-risks.md`
 `docs/AI_ROUTING.md` · `docs/ADMIN_PORTAL_PLAN.md` · `docs/migrations/00-automation-readiness-plan.md`
 
 <span class="small">© 2026 — system proprietary, licensed per engagement.</span>

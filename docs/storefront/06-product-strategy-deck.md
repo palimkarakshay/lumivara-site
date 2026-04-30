@@ -30,7 +30,7 @@ style: |
 A working answer to nine questions:
 **benefits · differentiation · customer voice · competitor claims · end goal · steps · plan · risks · resources.**
 
-<span class="small">Operator-only working deck · 2026-04-29 · sourced from `docs/mothership/` + `docs/storefront/`</span>
+<span class="small">Operator-only working deck · refreshed 2026-04-30 · sourced from `docs/mothership/` + `docs/storefront/`. **Brand-name reconsideration (D2) is open** per [`docs/mothership/15c-brand-and-domain-decision.md`](../mothership/15c-brand-and-domain-decision.md); deck continues to use `Lumivara Forge` as a placeholder.</span>
 
 ---
 
@@ -139,15 +139,16 @@ Lumivara Forge **inverts** that:
 
 <br/>
 
-Five layers, from "table stakes" to "uniquely ours":
+Six layers, from "table stakes" to "uniquely ours":
 
 1. **Modern Next.js 16 site** — most freelancers can do this. Table stakes.
 2. **Phone-edit shortcut** — submit a change from a phone in 30 seconds.
-3. **AI autopilot that implements + previews changes** — multi-AI router (Claude → Gemini → OpenAI), plan-then-execute pipeline.
-4. **Tier-based cadence** — T1 ships next morning, T2 within 2 hours, T3 within 1 hour.
-5. **two-repo architecture (Dual-Lane Repo)** — autopilot lives in an operator-only pipeline repo; the client's site repo is a clean Next.js codebase they own outright.
+3. **AI autopilot that implements + previews changes** — multi-vendor router (Claude → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter on the deepest stage), plan-then-execute pipeline.
+4. **Tier-based cadence + 24/7 watch tier** — T1 ships next morning, T2 within 2 hours, T3 within 1 hour, plus an operator-side watch tier that sweeps every 15 min.
+5. **Two-repo architecture (Dual-Lane Repo)** — autopilot lives in an operator-only pipeline repo; the client's site repo is a clean Next.js codebase they own outright.
+6. **Bot self-awareness pipeline** — `llm-monitor` watches provider status + RSS + Stack Overflow, auto-rewrites `KNOWN_ISSUES.md` + `RECOMMENDATIONS.md`, and the runtime prompts ingest those files. The fleet learns from yesterday's bugs without an operator typing.
 
-> Layers 2–5 are what nobody else is shipping in this market segment.
+> Layers 2–6 are what nobody else is shipping in this market segment.
 
 <span class="small">Source: `docs/AI_ROUTING.md`, `docs/mothership/02b-dual-lane-architecture.md`, `docs/mothership/04-tier-based-agent-cadence.md`.</span>
 
@@ -160,7 +161,7 @@ Five layers, from "table stakes" to "uniquely ours":
 | Layer | Concrete capability |
 |---|---|
 | **Phone-edit** | iOS/Android Shortcut → admin portal → n8n webhook → GitHub issue → bot. Auth.js v5 + magic-link, Google, or Entra ID. |
-| **Multi-AI router** | Claude Opus primary; Gemini 2.5 Pro for 1M-context audits; gpt-5.5 for code review. **Outage in one provider doesn't pause the client's site.** |
+| **Multi-vendor router** | Claude Opus 4.7 primary; Gemini 2.5 Pro for 1M-context audits + planning; gpt-5.5 for code review with a five-leg fallback (Gemini Pro → Flash → GitHub Models → OpenRouter); free-tier-accessible all the way through. **Outage in one provider doesn't pause the client's site.** |
 | **Plan-then-execute** | Every routine issue gets a structured implementation plan first, *then* code. Plans are explainable to the operator before any code is written. |
 | **Auto-merge gate** | Trivial/easy non-design PRs auto-merge once the Vercel preview check is green. Design and critical-path changes always wait for a human tap. |
 | **Dual-Lane Repo** | Two private repos per client: `<slug>-site` (clean, client-readable, transferable) + `<slug>-pipeline` (operator-only, holds workflows + prompts + cron). The client cannot see the autopilot — at end of engagement they get a vanilla repo. |
@@ -551,7 +552,7 @@ By **month 24**:
 
 | Risk | Likelihood | Impact | Mitigation already built |
 |---|---|---|---|
-| **Anthropic outage / throttle** | Med | High | Multi-AI fallback ladder (Claude → Gemini → OpenAI); triage + execute survive Claude-down. |
+| **Anthropic outage / throttle** | Med | High | Five-leg multi-vendor fallback ladder (Claude → Gemini Pro → Gemini Flash → GitHub Models → OpenRouter); every stage has a primary + at least two fallbacks; triage + execute + review all survive Claude-down. `llm-monitor` ingests provider-status updates so the prompts know when a provider is degraded. |
 | **Single client floods the queue** | Low | Med | Per-client `CONCURRENCY_CAP` Variable; tier cadence; "noisy client" rule defers work. |
 | **Operator burnout** | Med | High | Hard cap of 30 retainers until VA hired; budget charter (50%/80% gates); cap weekly hours. |
 | **Client demands the autopilot when they leave** | Low | Med | Contract: "site = client; system = operator-licensed." Dual-Lane Repo makes this physically true — the autopilot was never on their repo. |

@@ -659,3 +659,127 @@ If any *other* risk lands, the system absorbs it. If burnout lands, the system s
 > Pitch line: *"We've named the risks, mitigated the operational ones, watch-listed the strategic ones, and put the operator's wellbeing at the top of the list."*
 
 ---
+
+<!-- _class: lead -->
+
+# 9 · Resources required
+
+*Money, time, tooling, people.*
+
+---
+
+## Money — month-1 outlay
+
+| Line item | Cost (CAD) | Notes |
+|---|---|---|
+| Domain | ~$40 | Annual; the registration is the trigger to flip the operator-domain banner from "pending" to live. |
+| GitHub org (free tier) | $0 | Free for unlimited private repos; CI minutes via the free allotment. |
+| Vercel Hobby | $0 | Free tier covers small-business traffic; clients pay if they outgrow it. |
+| Email sender (free tier) | $0 | Covers magic-link emails for all clients to a few thousand emails/month. |
+| Per-client SMS number | ~$1.15/mo USD | Pay-as-you-go, billed per client. |
+| Anthropic Claude Pro | ~$20 USD/mo | Pro until the early-tier saturation cliff, then Max 5x, then Max 20x. |
+| Gemini API | $0 | Free tier covers our volume. |
+| OpenAI / Codex | $0 → ~$30/mo USD | Pay-go; modest spend in code-review path. |
+| Automation hub (hobby) | ~$5–$10/mo | Hobby tier; paid plan at the relevant cliff. |
+| **Total month-1** | **~CAD $90–$120** | Almost all of which is AI subscriptions. |
+
+---
+
+## Money — month-12 outlay (scaled to a full Stage 1 book)
+
+| Line item | Cost (CAD) | Notes |
+|---|---|---|
+| Anthropic Max 20x + 2nd seat | ~$605 / mo | Triggered at the late-Stage-1 cliff. |
+| OpenAI / Codex (review at scale) | ~$50–$100 / mo | More PRs reviewed. |
+| 1Password Business Teams | ~$11 / mo | One operator seat. |
+| Bitwarden self-hosted backup | ~$5 / mo | On the same automation host. |
+| Per-client SMS × full book | tens of $/mo USD | Scales linearly with client count. |
+| Automation hub (paid tier) | ~$25 / mo | Cliff upgrade. |
+| Accountant + bookkeeping | ~$100–$170 / mo | Smoothed annual fee. |
+| Insurance (professional liability) | ~$35 / mo | Triggered above the revenue threshold for Ontario sole-prop. |
+| **Total month-12** | **~CAD $900–$1,100** | Still a tiny fraction of monthly revenue. |
+
+The infrastructure cost stays under 5% of revenue at the Stage 1 cap. The dominant cost is operator time.
+
+---
+
+## One-time legal + IP setup
+
+| Item | Cost (CAD) | Trigger |
+|---|---|---|
+| MSA + SOW templates from a Canadian small-business lawyer | $1,500 – $2,500 | Before client #2 |
+| Privacy / PIPEDA review (optional) | $0 (DIY) or $500 | Before client #3 |
+| Trademark check (CIPO Class 42 + USPTO) | $400 – $800 | Before public branding |
+| 1Password Business + break-glass envelope | $100 / yr | Before client #5 |
+| **Total one-time** | **~CAD $2,000 – $3,800** | Spread across months 1–4 |
+
+---
+
+## Time — operator hours per month
+
+| Activity | Hours / mo at 1 client | Hours / mo at the Stage 1 cap |
+|---|---|---|
+| Per-client PR review + monitoring | 2–3 | 60–90 |
+| Monthly improvement runs (mid-/top-tier) | 1.5 | 25–35 |
+| Client communications | 0.5 | 7–15 |
+| Quarterly strategy calls | 0.3 | 8–10 |
+| Sales / new client onboarding | varies | 10–20 |
+| Pipeline maintenance | 2–4 | 4–6 (fixed cost) |
+| **Total** | **~6** | **~115–175** |
+
+At the Stage 1 cap the operator is **at the workweek ceiling**. That's the trigger for VA + 2nd-engineer hires (months 9–12).
+
+---
+
+## People — the hire ladder
+
+| Trigger | Role | Hours / cost |
+|---|---|---|
+| Approaching the Stage 1 cap | Part-time VA for client comms triage | 5 hrs/wk · low-three-figure CAD/mo |
+| Past the Stage 1 cap | Part-time second engineer for monthly improvement runs | Variable · unlocked by the late-cliff seat upgrade |
+| Well past the Stage 1 cap | "You've built an agency. Decide if that's what you wanted." | Stage 2 / 3 conversation |
+
+The hire ladder is deliberately *late*. The autopilot exists so the operator can hold the Stage 1 cap without help.
+
+---
+
+## Tooling — the operator stack, at a category level
+
+- **Primary AI subscription** (with two API-based fallbacks).
+- **Workflow automation hub** for capture and dispatch.
+- **GitHub** as source of truth (Issues, Actions, Project boards).
+- **Vercel** for hosting + preview builds + deploy hooks.
+- **Email sender** for magic-link auth.
+- **Per-client SMS provider** for the phone-shortcut path.
+- **Identity + GitHub API client** for the admin-portal stack.
+- **Password manager + hardware key** for the secrets vault.
+- **Static site** for the operator dashboard (mobile-first).
+
+Most of this is already wired up on the showcase client; the work is to **separate** it cleanly into the operator-side pipeline plus per-client repos.
+
+---
+
+## What an external supporter would actually contribute
+
+We are not raising capital. The three concrete asks (in priority order) are:
+
+1. **Warm intros.** Two ICP-fit prospects per quarter is a meaningful tailwind for the first 12 months.
+2. **Pressure-testing.** Stress-test the plan on the contested claims (market sizing, margin band).
+3. **Optionality on a future round.** If Stage 2 (small-team agency) or Stage 3 (productisation into a SaaS) opens later, first-look access to participate.
+
+For partner-shaped contributions (revenue-share, co-operator), see the partner-specific deck.
+
+---
+
+## Section recap — Resources
+
+- **Month 1 cash outlay: ~CAD $90 – $120** (mostly AI subs).
+- **Month 12 cash outlay: ~CAD $900 – $1,100** (still <5% of revenue).
+- **One-time legal + vault: ~CAD $2,000 – $3,800** spread over months 1–4.
+- **Operator time scales** to a full workweek at the Stage 1 cap.
+- **First hire is a VA approaching the cap**; first engineer past it.
+- The non-capital asks of any external supporter are **intros, pressure-testing, optionality**.
+
+> Pitch line: *"For a few thousand dollars of cash and a bounded workweek at saturation, this practice produces a sustainable solo-operator income in year 1."*
+
+---

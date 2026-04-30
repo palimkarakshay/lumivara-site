@@ -147,3 +147,76 @@ Source paraphrases: `docs/storefront/00-quick-start.md` "Is this marketable?" + 
 > Pitch line: *"Your website stops decaying — and you never call a developer for a typo again."*
 
 ---
+
+<!-- _class: lead -->
+
+# 2 · What we provide that others don't
+
+*The moat, in plain English.*
+
+---
+
+## The category we sit in
+
+| Category | Example providers | Their model |
+|---|---|---|
+| Templated DIY builders | Squarespace, Wix, Webflow | Drag-and-drop. Client maintains. Vendor owns the data. |
+| Freelance "site builds" | Solo Upwork / Fiverr devs | Build, hand off, disappear. Each future change is a custom invoice. |
+| Boutique web agencies | Local 5-person shops | Big setup fee, monthly retainer for *availability*, $150–$300 / edit. |
+| Headless CMS + dev | Sanity / Contentful + freelancer | Real codebase, but client must learn a CMS *and* still call a dev. |
+| AI-site generators | Framer AI, Durable, Bookmark | One-prompt sites. Templated under the hood; hosted in vendor stack. |
+| **Lumivara Forge** | — | Real codebase the client owns + AI autopilot operator-managed + edits from a phone shortcut + flat subscription. |
+
+The market is full of Next.js developers. It is **not** full of operators who can hand a non-technical owner a site that maintains itself.
+
+Source: `docs/storefront/01-gig-profile.md` Closing note.
+
+---
+
+## Five things only we ship today
+
+1. **Phone-as-CMS** over a real codebase. A shortcut on the client's phone routes through n8n + Claude into a GitHub PR with a Vercel preview. No CMS to log into. (`docs/ADMIN_PORTAL_PLAN.md`.)
+2. **Multi-AI fallback ladder.** Claude Opus → Gemini → OpenAI Codex. Triage, plan, execute, review — each stage has a fallback so a single-vendor outage never blocks the queue. (`docs/AI_ROUTING.md`.)
+3. **Plan-then-Execute pipeline.** Every routine issue gets a structured AI plan as a PR comment *before* code is written. The client reads the plan first.
+4. **Tier-based cadence.** T0 manual, T1 daily, T2 every 2h, T3 hourly. The bot's "energy" is a sold dial. (`docs/mothership/04-tier-based-agent-cadence.md`.)
+5. **Pattern C two-repo isolation.** Client gets a clean `<slug>-site` repo (private → transferable). The pipeline, prompts, and operator IP live in a separate `<slug>-pipeline` repo the client never sees. (`docs/mothership/02b-pattern-c-architecture.md`.)
+
+---
+
+## Why each of those is hard to copy
+
+| Feature | What protects it |
+|---|---|
+| Phone-as-CMS | Requires Auth.js v5 + n8n workflows + HMAC + Octokit + Vercel deploy hooks wired together. ~5 phases of build (`docs/ADMIN_PORTAL_PLAN.md`). |
+| Multi-AI fallback | Requires three live API contracts, a deterministic router, and prompt-pack parity across providers. Most freelancers hold one key. |
+| Plan-then-Execute | Every routine issue gets an AI-authored plan comment before code lands. Few competitors run this gate at all. |
+| Tier cadence | The pipeline reads tier from a per-client variable; cron schedule, model selection, and auto-merge gates all branch on it. Not a feature flag — a whole product surface. |
+| Pattern C isolation | A GitHub App + two-repo split + per-engagement install ID. Operator IP stays operator-side; the client repo is genuinely "vanilla" if they ever leave. |
+
+The site is a commodity. The **system around the site** is the moat.
+
+---
+
+## What we deliberately do NOT sell
+
+- **Not a SaaS.** No self-serve onboarding, no shared multi-tenant DB, no public sign-up. (`docs/mothership/01-business-plan.md §6`.)
+- **Not an agency.** No PMs, no design team, no employees. The operator runs everything until ~30 clients.
+- **Not a hosting company.** The client's hosting account is the client's, in their name, on their card by month 1.
+- **Not a white-label reseller.** Tier 4 exists for agencies but is not promoted; quoted custom at 2× T3 minimum.
+- **Not Shopify / e-commerce.** Wrong stack — referred elsewhere.
+
+The boundaries *are* the strategy. They keep the operator under 175 hours a month at saturation and keep the moat intact.
+
+---
+
+## Section recap — Differentiators
+
+- **Phone-as-CMS** is the headline feature. Nobody in our price band offers it.
+- **Multi-AI fallback** turns a single-vendor risk into a sold feature ("we don't pause when one provider hiccups").
+- **Pattern C** lets us license the system per engagement while the *site* is genuinely the client's.
+- **Tier cadence** turns "how aggressive is the bot" into a sold dial, not an internal toggle.
+- **The negative list** (what we don't sell) is itself a differentiator — boundaries clients can read and trust.
+
+> Pitch line: *"Other people sell you a website. We sell you a website that updates itself."*
+
+---

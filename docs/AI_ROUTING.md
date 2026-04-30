@@ -160,14 +160,22 @@ back clean. Full design + hallucination guards: see
 `scripts/codex-review-fallback.py`:
 
 ```
-OpenAI gpt-5.5  →  Gemini 2.5 Pro  →  defer
+OPENAI_API_KEY → OPENAI_API_KEY_BACKUP → Gemini 2.5 Flash → defer
 ```
 
-- **Gemini fallback** — when `OPENAI_API_KEY` is missing or returns
-  429, Gemini 2.5 Pro produces the review instead. The PR is labelled
-  both `codex-reviewed` (so auto-merge can proceed if there are no
-  blocker/major findings) and `codex-reviewed-by-gemini` (so the
-  monitoring dashboard can spot a degraded Codex path).
+- **Dual OpenAI keys** — the operator runs two OpenAI accounts (one
+  paid, one free) with independent quota windows. The script tries
+  the primary first; on 429 (quota) or transient HTTP error it tries
+  the backup before falling through to Gemini. A 429 on the paid
+  account no longer skips the free one.
+- **Gemini fallback** — when both OpenAI keys are missing or returning
+  429, Gemini 2.5 Flash produces the review instead. Flash, not Pro:
+  the 500-RPD free-tier quota is what keeps this fallback genuinely
+  unconstrained (Pro 429'd in lockstep with OpenAI in production).
+  The PR is labelled both `codex-reviewed` (so auto-merge can proceed
+  if there are no blocker/major findings) and
+  `codex-reviewed-by-gemini` (so the monitoring dashboard can spot a
+  degraded Codex path).
 - **Defer** — when both providers are unavailable, the PR is labelled
   `review-deferred`. `auto-merge.yml` refuses to enable auto-merge
   while that label is set. `codex-review-recheck.yml` retries every

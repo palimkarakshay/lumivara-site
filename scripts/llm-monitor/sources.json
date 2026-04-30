@@ -94,5 +94,17 @@
     "include_releases": true,
     "include_issues": true,
     "issue_min_reactions": 3
+  },
+  "statuspages": {
+    "_comment": "Provider status pages — load-bearing input for the every-15-min watch lane. All listed pages run on Statuspage.io and expose /api/v2/status.json + /api/v2/incidents/unresolved.json.",
+    "providers": [
+      {"name": "Anthropic", "url": "https://status.anthropic.com"},
+      {"name": "OpenAI", "url": "https://status.openai.com"},
+      {"name": "Vercel", "url": "https://www.vercel-status.com"},
+      {"name": "GitHub", "url": "https://www.githubstatus.com"},
+      {"name": "Cloudflare", "url": "https://www.cloudflarestatus.com"},
+      {"name": "Hugging Face", "url": "https://status.huggingface.co"}
+    ],
+    "lookback_hours": 6
   }
 }

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# OPERATOR-ONLY. Lane: 🛠 Pipeline.
 """
 Doc-task seeder — periodically scans curated planning docs for
 automatable tasks the operator (or an agent) has flagged with a
@@ -81,9 +82,25 @@ SEEDER_VERSION = "doc-task-bot/v1"
 CONTROL_ISSUE_TITLE = "Doc-task seeder — proposal log + approval gate"
 APPROVAL_LABEL = "seeder/approved"
 
-# Curated manifest of source docs. Each path is scanned for `bot-task:`
-# markers. Adding to this list is intentional; the seeder does not glob
-# the world. Extend the list in a follow-up PR with operator review.
+# Curated manifest of source docs. Each path is scanned for
+# `bot-task:` markers. Adding to this list is intentional; the seeder
+# does not glob the world. Extend the list in a follow-up PR with
+# operator review.
+#
+# What's IN the manifest:
+#   - Planning docs that contain `[ ]` rows describing future work
+#     (migrations, future-work list, templates index).
+#   - Recurring backlog tracker (BACKLOG.md, progress-tracker.md).
+# What's deliberately NOT in the manifest:
+#   - `docs/ops/automation-map.md`, `docs/ops/automation-future-work.md`,
+#     `docs/ops/doc-task-seeder.md` — these are operator docs ABOUT the
+#     pipeline (including this seeder). Including them would create a
+#     reflexive loop where the seeder proposes work on its own
+#     subsystem.
+#   - `docs/AI_*.md`, `docs/N8N_SETUP.md`, etc. — operator setup docs;
+#     not bot-actionable backlog.
+#   - `docs/research/`, `docs/decks/` — outputs and pitches; not
+#     backlog containers.
 MANIFEST: list[str] = [
     "docs/migrations/00-automation-readiness-plan.md",
     "docs/migrations/01-poc-perfection-plan.md",

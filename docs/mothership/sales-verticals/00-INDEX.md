@@ -46,7 +46,7 @@ The persona pack tells you *who* to sell to. The reasons-to-switch pack tells yo
 | 3 | Law (solo + small firm) | P1 | T2 | [`lawyers-sales-template.md`](./lawyers-sales-template.md) | ✅ Full |
 | 4 | Accounting / bookkeeping | P1 | T1 / T2 | [`accountants-sales-template.md`](./accountants-sales-template.md) | ✅ Full |
 | 5 | Physiotherapy / chiropractic / wellness | P2 | T2 | [`physiotherapy-sales-template.md`](./physiotherapy-sales-template.md) | ✅ Full |
-| 6 | Optometry | P2 | T2 | [`optometry-sales-template.md`](./optometry-sales-template.md) | ⏳ Planned |
+| 6 | Optometry | P2 | T2 | [`optometry-sales-template.md`](./optometry-sales-template.md) | ✅ Full |
 
 **Legend:** ✅ Full = persona, pain map, ROI math, objection handlers, sources all complete. 🔲 Stub = file exists with section headings only. ⏳ Planned = not yet stubbed.
 
@@ -162,4 +162,4 @@ When promoting a `🔲 Stub` to `✅ Full`:
 
 ---
 
-*Last updated: 2026-04-30 — index seeded; first five rows (doctors / dentists / lawyers / accountants / physiotherapy) promoted to Full. Subsequent commit will promote optometry as its template lands.*
+*Last updated: 2026-04-30 — initial publication of all six full vertical sales templates (doctors, dentists, lawyers, accountants, physiotherapy, optometry). Operator follow-up: backfill the `[S]`-flagged source rows listed in each template's §17 into `../../research/03-source-bibliography.md` before externally quoting.*

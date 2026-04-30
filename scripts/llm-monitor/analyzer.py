@@ -47,22 +47,40 @@ MAX_TOKENS = 8000
 RECORDS_PER_BATCH = 25  # Keep prompt under ~50k input tokens
 
 CLASSIFY_PROMPT = """You are the analyzer stage of an LLM-monitoring pipeline. The input is
-a JSON array of social/news records about LLMs and SDKs. For EACH record,
-emit one entry in your output JSON. Do NOT add fields, do NOT skip records.
+a JSON array of social/news records about LLMs, SDKs, and dev-tooling
+that this operator pipeline depends on. For EACH record, emit one entry
+in your output JSON. Do NOT add fields, do NOT skip records.
+
+The pipeline this serves is a Pattern C two-repo trust model:
+
+  - SITE = Lumivara People Advisory marketing site (Next.js)
+  - PIPELINE = Lumivara Forge operator framework (this repo's
+    .github/workflows + scripts; the bot fleet itself)
+  - MOTHERSHIP = operator's strategic docs / business plan (docs/mothership/)
+  - STOREFRONT = client-facing storefront docs / public surface
+    (docs/storefront/)
+  - CLIENT_REPOS = client-#1-and-beyond delivery repos (post-spinout)
+
+Tag `impact_targets` with the SUBSET of those five surfaces this
+record could plausibly affect (positively or negatively). Empty array
+means "interesting context, but no concrete impact on our stack".
 
 Output ONLY a single JSON object of this shape, no preamble, no fences:
 
 {
   "records": [
     {
-      "id":          "<exact id from input>",
-      "kind":        "bug" | "feature" | "best_practice" | "comparison" | "news" | "noise",
-      "subject":     "claude-opus-4-7" | "claude-sonnet-4-6" | "claude-haiku-4-5" | "claude-code" | "anthropic-sdk" | "mcp" | "openai-gpt-5.5" | "openai-codex" | "gemini-2.5-pro" | "gemini-2.5-flash" | "general",
-      "severity":    1-5,
-      "novelty":     1-5,
-      "summary":     "<one sentence, quotable>",
-      "action_hint": "<one line if severity>=4 AND action is obvious, else empty string>",
-      "dedupe_group": "<short slug; same slug = same underlying issue>"
+      "id":              "<exact id from input>",
+      "kind":            "bug" | "feature" | "best_practice" | "comparison" | "news" | "noise",
+      "subject":         "claude-opus-4-7" | "claude-sonnet-4-6" | "claude-haiku-4-5" | "claude-code" | "anthropic-sdk" | "mcp" | "openai-gpt-5.5" | "openai-codex" | "gemini-2.5-pro" | "gemini-2.5-flash" | "nextjs" | "vercel" | "github-actions" | "general",
+      "impact_targets":  ["site" | "pipeline" | "mothership" | "storefront" | "client_repos", ...],
+      "severity":        1-5,
+      "novelty":         1-5,
+      "summary":         "<one sentence, quotable, technical>",
+      "client_summary":  "<one sentence in plain English suitable for a non-technical client newsletter; empty if not client-relevant>",
+      "action_hint":     "<one line if severity>=4 AND action is obvious, else empty string>",
+      "recommendation":  "<one line suggestion to ENHANCE our self-automation system based on this record; empty if not applicable>",
+      "dedupe_group":    "<short slug; same slug = same underlying issue>"
     }
   ]
 }
@@ -79,10 +97,22 @@ Novelty rubric:
   3 = a developing thread; new details on something already known
   1 = pure repetition of the same complaint as other records in batch
 
-Be conservative on severity 5. If unsure, choose 4. The action_hint is
-shown verbatim to engineers — keep it concrete (e.g. "pin
-@anthropic-ai/sdk to 0.65.x", "switch model id to claude-opus-4-7", "add
-retry on 529 overloaded_error"). If no clear action, leave empty.
+Field-by-field guidance:
+- `action_hint` is for engineers. Concrete (e.g. "pin @anthropic-ai/sdk
+  to 0.65.x", "switch model id to claude-opus-4-7", "add retry on 529
+  overloaded_error"). Empty when no clear action.
+- `recommendation` is for the SELF-AUTOMATION SYSTEM, not for the
+  immediate bug. It answers "should we add a new bot, watcher, prompt
+  hook, or check?" Examples: "add a daily npm-audit watcher", "monitor
+  Vercel changelog RSS", "have plan-issue.py reject plans that touch
+  next.config.ts without a migration note". Empty when this record
+  doesn't suggest a system-level enhancement.
+- `client_summary` is for prospective-client newsletters — plain
+  English, no acronyms, focuses on outcome ("AI tools we use will be
+  faster next month") not internals. Empty when the record is purely
+  internal-engineering interest.
+
+Be conservative on severity 5. If unsure, choose 4.
 """
 
 
@@ -135,16 +165,29 @@ def _stub_classify(records: list[dict]) -> dict:
         subject = "general"
         for s in ("claude-opus-4-7", "claude-sonnet-4-6", "claude-code",
                   "anthropic-sdk", "mcp", "openai-gpt-5.5", "openai-codex",
-                  "gemini-2.5-pro", "gemini-2.5-flash"):
+                  "gemini-2.5-pro", "gemini-2.5-flash", "nextjs", "vercel",
+                  "github-actions"):
             stem = s.split("-")[0]
             if stem in text or s in text:
                 subject = s
                 break
+        # Heuristic impact targets — coarse but better than nothing.
+        impact: list[str] = []
+        if subject in ("claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5",
+                       "claude-code", "anthropic-sdk", "mcp", "openai-gpt-5.5",
+                       "openai-codex", "gemini-2.5-pro", "gemini-2.5-flash",
+                       "github-actions"):
+            impact.append("pipeline")
+        if subject in ("nextjs", "vercel"):
+            impact.extend(["site", "storefront"])
         out.append({
             "id": r["id"], "kind": kind, "subject": subject,
+            "impact_targets": impact,
             "severity": sev, "novelty": 3,
             "summary": (r.get("title") or "")[:200],
+            "client_summary": "",
             "action_hint": "",
+            "recommendation": "",
             "dedupe_group": kind + "-" + subject,
         })
     return {"records": out}
@@ -192,11 +235,26 @@ def summarize(classified: dict, originals: list[dict]) -> dict:
     subjects = Counter(c["subject"] for c in classified["records"])
     sev_hist = Counter(c["severity"] for c in classified["records"])
     high = []
+    recommendations = []
+    client_items = []
+    impacts = Counter()
     for c in classified["records"]:
+        for tgt in c.get("impact_targets") or []:
+            impacts[tgt] += 1
         if c["severity"] >= 4 and c["kind"] in ("bug", "feature", "best_practice"):
             orig = by_id.get(c["id"], {})
             high.append({**c, "url": orig.get("url"), "title": orig.get("title"),
                          "source": orig.get("source"), "ts": orig.get("ts")})
+        if (c.get("recommendation") or "").strip():
+            orig = by_id.get(c["id"], {})
+            recommendations.append({**c, "url": orig.get("url"),
+                                    "title": orig.get("title"),
+                                    "source": orig.get("source")})
+        if (c.get("client_summary") or "").strip():
+            orig = by_id.get(c["id"], {})
+            client_items.append({**c, "url": orig.get("url"),
+                                 "title": orig.get("title"),
+                                 "source": orig.get("source")})
     return {
         "records": classified["records"],
         "originals_by_id": by_id,
@@ -207,7 +265,10 @@ def summarize(classified: dict, originals: list[dict]) -> dict:
             "by_kind": dict(kinds),
             "by_subject": dict(subjects),
             "by_severity": {str(k): v for k, v in sev_hist.items()},
+            "by_impact": dict(impacts),
             "high_signal": high,
+            "recommendations": recommendations,
+            "client_items": client_items,
         },
     }
 

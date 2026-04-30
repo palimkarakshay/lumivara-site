@@ -12,6 +12,13 @@
     "gemini-2.5-pro",
     "gemini-2.5-flash"
   ],
+  "_dev_stack_we_track": [
+    "nextjs",
+    "vercel",
+    "github-actions",
+    "playwright",
+    "vitest"
+  ],
   "_keywords": [
     "anthropic",
     "claude",
@@ -39,7 +46,10 @@
       "mcp server",
       "agent sdk",
       "codex cli",
-      "gemini api"
+      "gemini api",
+      "next.js 16",
+      "vercel",
+      "github actions"
     ],
     "lookback_hours": 36,
     "min_points": 5
@@ -51,7 +61,10 @@
       {"name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml"},
       {"name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/"},
       {"name": "Latent Space", "url": "https://www.latent.space/feed"},
-      {"name": "Hugging Face Blog", "url": "https://huggingface.co/blog/feed.xml"}
+      {"name": "Hugging Face Blog", "url": "https://huggingface.co/blog/feed.xml"},
+      {"name": "Vercel Changelog", "url": "https://vercel.com/changelog/feed.xml"},
+      {"name": "Next.js Blog", "url": "https://nextjs.org/feed.xml"},
+      {"name": "GitHub Changelog", "url": "https://github.blog/changelog/feed/"}
     ],
     "lookback_hours": 48
   },
@@ -73,7 +86,9 @@
       "anthropics/anthropic-sdk-typescript",
       "anthropics/claude-code",
       "googleapis/python-genai",
-      "openai/openai-python"
+      "openai/openai-python",
+      "vercel/next.js",
+      "vercel/vercel"
     ],
     "lookback_hours": 48,
     "include_releases": true,

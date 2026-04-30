@@ -421,13 +421,20 @@ def run_verification(cand: Candidate, mode: str) -> bool:
 
 
 def load_existing_source_ids(token: str | None) -> set[str]:
+    """Return the set of source_ids that have ever been filed.
+
+    Queries `--state all` (open + closed). The contract is that
+    closing a filed issue does NOT unblock re-filing — to genuinely
+    re-file, the operator must edit the source marker title or
+    body_anchor, which changes the source_id.
+    """
     if not token:
         return set()
     cmd = [
         "gh", "issue", "list",
         "--repo", REPO,
-        "--state", "open",
-        "--limit", "500",
+        "--state", "all",
+        "--limit", "1000",
         "--json", "number,body",
     ]
     try:
@@ -765,10 +772,14 @@ def main() -> int:
                         f"file_issue failed for {cand.title!r}: {exc}"
                     )
                     print(f"FAIL  {cand.title}: {exc}", file=sys.stderr)
-            # Approval is per-run, never standing — clear the label
-            # after a successful apply.
-            if plan.filed:
-                remove_approval_label(token, control_issue)  # type: ignore[arg-type]
+            # Approval is per-run, never standing (OWASP LLM08).
+            # Clear the label after EVERY --apply attempt regardless
+            # of how many issues were filed — including zero. A
+            # zero-file apply (e.g. all source_ids gate-dropped, or
+            # all already-existing) still consumes the operator's
+            # attestation; leaving the label set would let a stale
+            # approval carry into the next run.
+            remove_approval_label(token, control_issue)  # type: ignore[arg-type]
     else:
         # Dry-run: ensure the control issue exists and post a proposal
         # comment so the operator has something to react to. Skipped

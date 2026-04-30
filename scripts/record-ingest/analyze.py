@@ -38,8 +38,10 @@ Usage:
         --output <json> [--model claude-opus-4-7] [--dry-run]
 
 Honours AGENTS.md's model-default table — Opus by default. Falls back to a
-deterministic stub when ANTHROPIC_API_KEY is missing or --dry-run is set,
-so the orchestrator can be exercised end-to-end without an API call.
+deterministic stub when ANTHROPIC_API_KEY is missing, --dry-run is passed,
+or the orchestrator's DRY_RUN=1 env contract is set, so the pipeline can
+be exercised end-to-end without an API call (and without surprise spend
+when an operator has a key exported in their shell).
 """
 from __future__ import annotations
 
@@ -214,7 +216,14 @@ def main() -> int:
     transcript_path = Path(args.transcript)
     transcript = transcript_path.read_text()
 
-    if args.dry_run or not os.environ.get("ANTHROPIC_API_KEY"):
+    # Honour the orchestrator's DRY_RUN env contract — same env var that
+    # transcribe.sh and seed-inbox-issue.py read directly. Without this,
+    # `DRY_RUN=1 ingest.sh` still hits the Anthropic API when a key is
+    # exported, which contradicts the documented "skip Claude / whisper"
+    # behaviour and can incur unintended cost.
+    dry_run = args.dry_run or os.environ.get("DRY_RUN") == "1"
+
+    if dry_run or not os.environ.get("ANTHROPIC_API_KEY"):
         out = _stub(transcript_path)
     else:
         prompt = (

@@ -73,7 +73,23 @@ process_file() {
       "$HERE/transcribe.sh" "$audio_tmp" "$transcript_path"
       rm -f "$audio_tmp"
       ;;
-    image/*|application/pdf|text/*)
+    text/*)
+      # Inline the file's contents so the analyser sees the real note /
+      # document and can extract anchored quotes + action items. We use a
+      # synthetic [00:00:00] anchor as the line stamp for the whole asset
+      # so the drift-guard (which insists every claim cite a [hh:mm:ss]
+      # anchor present in the transcript) accepts citations from text.
+      {
+        printf '# %s\n\n' "$id"
+        printf '_Source: %s_  \n' "$base"
+        printf '_MIME: %s_  \n\n' "$mime"
+        printf '[00:00:00] (text asset — full contents below)\n\n'
+        printf '```\n'
+        cat "$src"
+        printf '\n```\n'
+      } > "$transcript_path"
+      ;;
+    image/*|application/pdf)
       {
         printf '# %s\n\n' "$id"
         printf '_Source: %s_  \n' "$base"

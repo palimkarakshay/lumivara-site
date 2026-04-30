@@ -26,7 +26,7 @@ One page that lists every workflow, its cron, its concurrency group, the scripts
 | Workflow | Cron | Concurrency group | Notes |
 |---|---|---|---|
 | `triage.yml` | `*/10 * * * *` | `triage-runtime` | Skips `area/forge` (lane exclusivity, codified in `scripts/triage-prompt.md`). |
-| `forge-triage.yml` | `*/10 * * * *` | `forge-triage-runtime` | Owns `area/forge` exclusively. |
+| `forge-triage.yml` | `5,15,25,35,45,55 * * * *` | `forge-triage-runtime` | Owns `area/forge` exclusively. Offset 5 from `triage.yml`'s `*/10` so the two lanes interleave instead of firing simultaneously. |
 | `plan-issues.yml` | `15,45 * * * *` | `plan-runtime` | Claude maker → Codex checker. |
 | `execute.yml` | `*/30 * * * *` | `claude-runtime` | On Claude path + `area/forge`, walks the queue and skips forge items (defers to `forge-execute.yml`); does not exit early. Non-Claude routes (gemini-research, codex-review) fall through. |
 | `execute-{single,multi,complex}.yml` | dispatch | `claude-runtime` | Same group → never races `execute.yml`. |

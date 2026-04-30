@@ -18,6 +18,7 @@ Use the `gh` CLI (available on the runner; authenticated automatically via `GH_T
 **Eligible for triage** — an issue is eligible if all of the following hold:
 - State: `open`
 - NOT labeled `human-only`
+- NOT labeled `do-not-triage` — meta / dashboard / control issues (e.g. the rolling bot-usage report from `bot-usage-monitor.yml`, the doc-task-seeder control issue) carry this label. They are not actionable backlog; classifying them wastes Opus turns and applies false `priority/*` labels to non-work items.
 - NOT labeled `area/forge` — that lane is owned exclusively by `forge-triage.yml` (`scripts/forge-triage-prompt.md`). If you see an issue with `area/forge` and `status/needs-triage`, skip it; the forge triage cron will classify it on its next pass. Lane exclusivity removes a label-write race that otherwise occurs on freshly-opened issues.
 - AND either:
   - Labeled `status/needs-triage`, OR

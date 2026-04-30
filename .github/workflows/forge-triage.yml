@@ -15,7 +15,14 @@ name: Forge triage (high cadence)
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    # 5,15,25,35,45,55 — every 10 min, offset 5 from `triage.yml`'s
+    # `*/10`. Different concurrency groups (`triage-runtime` vs
+    # `forge-triage-runtime`) mean both lanes can run in parallel, but
+    # the offset means they don't fire SIMULTANEOUSLY at peak — two
+    # back-to-back Claude Code sessions on the same issue (in the
+    # ~30s before `area/forge` is applied) is the failure mode the
+    # stagger prevents.
+    - cron: '5,15,25,35,45,55 * * * *'
   workflow_dispatch:
     inputs:
       dry_run:

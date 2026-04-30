@@ -1,0 +1,71 @@
+name: Doc-task seeder smoke test
+
+# Verifies scripts/doc-task-seeder.py against its deterministic
+# contracts: marker regex, fenced-block exclusion, source_id
+# stability, FORBIDDEN_LABELS sanitation, approval-gate parser.
+# No AI provider or GitHub API calls — pure logic.
+#
+# Mirrors forge-smoke-test.yml: runs on every push/PR that touches
+# the seeder, weekly cron for catch-the-rotten-fixture, dispatch.
+
+on:
+  push:
+    paths:
+      - 'scripts/doc-task-seeder.py'
+      - 'scripts/test-doc-task-seeder.py'
+      - '.github/workflows/doc-task-seeder.yml'
+      - '.github/workflows/seeder-smoke-test.yml'
+      - 'docs/ops/doc-task-seeder.md'
+  pull_request:
+    paths:
+      - 'scripts/doc-task-seeder.py'
+      - 'scripts/test-doc-task-seeder.py'
+      - '.github/workflows/doc-task-seeder.yml'
+      - '.github/workflows/seeder-smoke-test.yml'
+      - 'docs/ops/doc-task-seeder.md'
+  schedule:
+    # Mondays 12:45 UTC — 15 min after forge-smoke-test.yml; same
+    # weekly cluster, no on-the-hour collision.
+    - cron: '45 12 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seeder-smoke-runtime
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyYAML
+        run: pip install --quiet pyyaml
+
+      - name: Run seeder smoke test
+        run: python3 scripts/test-doc-task-seeder.py
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Doc-task seeder smoke test"
+            echo ""
+            echo "Pure-logic checks against scripts/doc-task-seeder.py:"
+            echo ""
+            echo "- Workflow file shape (cron, dispatch input, concurrency)"
+            echo "- Operator contract doc (OWASP / NIST citations, four-tier defence)"
+            echo "- Marker regex + attribute parser"
+            echo "- Fenced-code-block exclusion (Tier-1 hallucination guard)"
+            echo "- source_id stability + scope (path + title + anchor only)"
+            echo "- FORBIDDEN_LABELS sanitation (infra-allowed dropped)"
+            echo "- Operator approval-gate parser (inline + bullet forms)"
+          } >> "$GITHUB_STEP_SUMMARY"

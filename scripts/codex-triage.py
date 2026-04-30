@@ -161,11 +161,19 @@ def main() -> int:
 
     result = subprocess.run(
         ["gh", "issue", "list", "--repo", REPO, "--state", "open",
-         "--label", "status/needs-triage", "--json", "number,title,body",
+         "--label", "status/needs-triage", "--json", "number,title,body,labels",
          "--limit", str(MAX_ISSUES)],
         check=True, capture_output=True, text=True,
     )
     issues = json.loads(result.stdout)
+    # Filter out do-not-triage meta / dashboard / control issues. The
+    # rule is codified in scripts/triage-prompt.md and must be enforced
+    # on every triager (Claude, Gemini, Codex) because triage.yml runs
+    # the full ladder in `auto` mode.
+    issues = [
+        i for i in issues
+        if "do-not-triage" not in {l.get("name") for l in i.get("labels", [])}
+    ]
     if not issues:
         thinking("Codex triage: no needs-triage issues remain — earlier engines handled the queue.")
         print("Codex triage: no needs-triage issues remain.")

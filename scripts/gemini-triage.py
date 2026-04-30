@@ -189,14 +189,22 @@ def thinking(msg: str) -> None:
 
 
 def main():
-    # Fetch open issues still labeled needs-triage (those Claude missed)
+    # Fetch open issues still labeled needs-triage (those Claude missed).
+    # Pull labels too so we can filter out do-not-triage meta / dashboard /
+    # control issues — the rule is codified in scripts/triage-prompt.md
+    # and must be enforced on every triager (Claude, Gemini, Codex)
+    # because triage.yml runs the full ladder in `auto` mode.
     result = subprocess.run(
         ["gh", "issue", "list", "--repo", REPO, "--state", "open",
-         "--label", "status/needs-triage", "--json", "number,title,body",
+         "--label", "status/needs-triage", "--json", "number,title,body,labels",
          "--limit", str(MAX_ISSUES)],
         check=True, capture_output=True, text=True,
     )
     issues = json.loads(result.stdout)
+    issues = [
+        i for i in issues
+        if "do-not-triage" not in {l.get("name") for l in i.get("labels", [])}
+    ]
     if not issues:
         thinking("Gemini fallback: no needs-triage issues remain — Claude handled the queue.")
         print("Gemini fallback: no needs-triage issues remain. Claude handled everything.")

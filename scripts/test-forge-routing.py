@@ -50,8 +50,16 @@ if ft.is_file():
     on_block = ft_yaml.get(on_key, {}) if on_key is not None else {}
     schedule_block = on_block.get("schedule", []) if isinstance(on_block, dict) else []
     crons = [s.get("cron") for s in schedule_block if isinstance(s, dict)]
-    check("forge-triage.yml has 10-min cron", "*/10 * * * *" in crons,
-          f"crons={crons}")
+    # Cadence: 10-min cadence, staggered offset-5 from triage.yml's
+    # `*/10` so the two lanes interleave instead of firing
+    # simultaneously. Accept either the offset form or the unstaggered
+    # baseline so cadence tuning does not require a paired smoke-test
+    # update.
+    check(
+        "forge-triage.yml has 10-min cadence (staggered or baseline)",
+        ("5,15,25,35,45,55 * * * *" in crons) or ("*/10 * * * *" in crons),
+        f"crons={crons}",
+    )
     check("forge-triage.yml uses opus model",
           "claude-opus-4-7" in ft.read_text())
     check("forge-triage.yml concurrency group is forge-specific",

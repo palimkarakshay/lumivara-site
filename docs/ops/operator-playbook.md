@@ -210,6 +210,9 @@ Pre-empted in [`POC §8.4`](../migrations/01-poc-perfection-plan.md#84--the-but-
 | **The catalog you're selling** | [`docs/decks/04-prospective-client-deck.md`](../decks/04-prospective-client-deck.md), [`docs/storefront/01-gig-profile.md`](../freelance/01-gig-profile.md) |
 | **The brand-lock policy** | [`docs/mothership/15-terminology-and-brand.md`](../mothership/15-terminology-and-brand.md) |
 | **The variable registry** (when wiring secrets) | [`docs/ops/variable-registry.md`](./variable-registry.md) |
+| **What runs and when** (every cron / workflow / script) | [`docs/ops/automation-map.md`](./automation-map.md) |
+| **Gaps in the pipeline** (next-PR shopping list) | [`docs/ops/automation-future-work.md`](./automation-future-work.md) |
+| **Doc-driven backlog capture** (`<!-- bot-task -->` markers) | [`docs/ops/doc-task-seeder.md`](./doc-task-seeder.md) |
 
 ---
 

@@ -15,11 +15,29 @@ findings back into the codebase so the bots are **self-aware** of:
 * deprecated APIs or model IDs,
 * features and tools we should adopt.
 
-The output is a daily digest **plus** an auto-maintained
+The output is a digest **plus** an auto-maintained
 [`docs/mothership/llm-monitor/KNOWN_ISSUES.md`](../../docs/mothership/llm-monitor/KNOWN_ISSUES.md)
 that triage / plan / execute prompts ingest as context. That is the
-"self-awareness" layer — every executor run starts from yesterday's
-field reports instead of frozen training data.
+"self-awareness" layer — every executor run starts from the last
+14 days of field reports instead of frozen training data.
+
+## Cadence (tiered, since 2026-04-30)
+
+Two cron tiers, picked by `--mode`:
+
+| Tier | Cron | Collectors | Outputs | Purpose |
+|---|---|---|---|---|
+| **watch** | every 15 min (`4,19,34,49 * * * *`) | `statuspages` | `KNOWN_ISSUES.md`, auto-issues | Outage detection on Anthropic / OpenAI / Vercel / GitHub / Cloudflare / Hugging Face |
+| **sweep** | every 2 h (`13 */2 * * *`) | all 5 collectors | digests + newsletters + KNOWN_ISSUES + RECOMMENDATIONS + auto-issues | Full content sweep |
+
+Watch and sweep share the same dedupe set (`state/seen.json` via
+actions/cache), so an outage caught at 11:04 by the watch tier won't
+re-emit when the 13:13 sweep runs. They also share the
+`llm-monitor` concurrency group so writes to `KNOWN_ISSUES.md` are
+serialised.
+
+Workflows: [`llm-monitor-watch.yml`](../../.github/workflows/llm-monitor-watch.yml) +
+[`llm-monitor.yml`](../../.github/workflows/llm-monitor.yml).
 
 ## Architecture (three layers, kept separate)
 
@@ -52,14 +70,20 @@ collectors/        →  store.py            →  analyzer.py        →  digest.
 ## Running locally
 
 ```bash
-# Collect everything once (no API keys → only HN + RSS + GitHub run)
+# Full sweep (default — every 2h tier). Runs all 5 collectors,
+# rewrites digest + newsletters, refreshes KNOWN_ISSUES + RECOMMENDATIONS.
 ANTHROPIC_API_KEY=... \
 REDDIT_CLIENT_ID=... REDDIT_CLIENT_SECRET=... \
 GH_TOKEN=$(gh auth token) \
-python3 scripts/llm-monitor/run.py
+python3 scripts/llm-monitor/run.py --mode=sweep
 
-# Or run a single collector for debugging
+# Watch tier — every 15 min. Statuspages only; skips digest /
+# newsletter rewrite. Used for outage detection between sweeps.
+python3 scripts/llm-monitor/run.py --mode=watch
+
+# Single-collector debugging
 python3 scripts/llm-monitor/collectors/hackernews.py
+python3 scripts/llm-monitor/collectors/statuspages.py
 ```
 
 ## Source list
@@ -67,12 +91,21 @@ python3 scripts/llm-monitor/collectors/hackernews.py
 Configured in [`sources.json`](sources.json). v1 covers:
 
 * **HackerNews** — Algolia API, no auth. Story + comment search.
+  Sweep-only.
 * **RSS** — Anthropic news, OpenAI blog, Google DeepMind, Simon
-  Willison, Latent Space.
+  Willison, Latent Space, Hugging Face, Vercel, Next.js, GitHub
+  changelog. Sweep-only.
 * **Reddit** — r/LocalLLaMA, r/ClaudeAI, r/OpenAI, r/singularity,
   r/MachineLearning. Public JSON or OAuth (rate limit difference).
-* **GitHub** — releases + recent issues for `anthropics/anthropic-sdk-python`,
-  `anthropics/claude-code`, `openai/openai-python`, `googleapis/python-genai`.
+  Sweep-only.
+* **GitHub** — releases + recent issues for the SDKs / CLIs we
+  depend on (`anthropics/anthropic-sdk-{python,typescript}`,
+  `anthropics/claude-code`, `openai/openai-python`,
+  `googleapis/python-genai`, `vercel/next.js`, `vercel/vercel`).
+  Sweep-only.
+* **Statuspages** — `/api/v2/status.json` + `/api/v2/incidents/unresolved.json`
+  for Anthropic / OpenAI / Vercel / GitHub / Cloudflare / Hugging
+  Face. **Used by both watch and sweep tiers.**
 
 v2 (deferred — flag in [§ "More bot setup needed"](#more-bot-setup-needed) below):
 

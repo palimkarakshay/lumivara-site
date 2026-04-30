@@ -7,21 +7,46 @@ The day-to-day "what do I do when…" for the
 [`llm-monitor` pipeline](../../../scripts/llm-monitor/README.md). Read
 the README first for architecture; this file is the runbook.
 
-## TL;DR — what happens daily
+## TL;DR — what happens, and how often
 
-1. **06:13 UTC**: cron triggers
-   [`.github/workflows/llm-monitor.yml`](../../../.github/workflows/llm-monitor.yml).
-2. Collectors fan out (HN / RSS / Reddit / GitHub), drop noise via
+The pipeline runs in **two cadence tiers** (since 2026-04-30 — operator
+asked for "super aggressive" coverage):
+
+### Watch tier — every 15 min
+[`.github/workflows/llm-monitor-watch.yml`](../../../.github/workflows/llm-monitor-watch.yml)
+fires at `:04`, `:19`, `:34`, `:49` past every hour. It runs ONLY the
+`statuspages` collector against six provider status pages
+(Anthropic / OpenAI / Vercel / GitHub / Cloudflare / Hugging Face).
+On a hit:
+
+1. Classified by Claude Opus (severity / kind / impact).
+2. Auto-section of [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) rewritten with
+   the new entry.
+3. Severity-≥4 outage gets an auto-discovered GitHub issue (labels:
+   `auto-discovered` + `infra-allowed` + `status/needs-triage`).
+4. Digest + newsletters are **NOT** rewritten — those are committed
+   by the sweep tier on a 2-hour cadence so the git tree doesn't churn
+   every 15 min.
+
+### Sweep tier — every 2 h
+[`.github/workflows/llm-monitor.yml`](../../../.github/workflows/llm-monitor.yml)
+fires at `13 */2 * * *` (`:13` every other hour: 00:13, 02:13, … 22:13
+UTC). It runs the full collector set:
+
+1. HN / RSS / Reddit / GitHub / statuspages all fan out, drop noise via
    per-source thresholds, and emit JSONL to the orchestrator.
-3. New (deduped) records are batched into Claude Opus, which classifies
-   each by `kind` × `subject` × `severity` × `novelty`.
-4. A daily digest lands at `digests/YYYY-MM-DD.md`.
-5. The auto-section of [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) is
-   rewritten with the last-14-days roll-up — this is what the bot
-   prompts read at the start of every triage / plan / execute run.
-6. Severity-≥4 bugs with a clear `action_hint` get filed as GitHub
-   issues labelled `auto-discovered` + `infra-allowed` so the
-   triage / plan / execute pipeline picks them up automatically.
+2. New (deduped) records are batched into Claude Opus.
+3. Digest written at `digests/YYYY-MM-DD.md` (overwritten on each sweep
+   in the same UTC day; the date stamp gives a single file per day).
+4. Operator + client newsletters written at
+   `newsletters/operator-YYYY-MM-DD.md` and `newsletters/client-…`.
+5. `KNOWN_ISSUES.md` and `RECOMMENDATIONS.md` auto-sections rewritten.
+6. Severity-≥4 bugs with `action_hint` get auto-discovered issues.
+
+Watch and sweep share the dedupe set (via `actions/cache`) so a watch
+hit at 11:04 won't re-emit on the 12:13 sweep. They share the
+`llm-monitor` concurrency group so writes to `KNOWN_ISSUES.md` are
+serialised — no two-writer race.
 
 ## Required secrets
 
@@ -39,14 +64,20 @@ assignments are coarse. Add the key as soon as practical.
 ## Manual triggers
 
 ```bash
-# Dry-run: heuristic stub, no GH issues filed, no commits.
-gh workflow run llm-monitor.yml -f dry_run=true -f no_issues=true
+# Sweep — full pipeline, dry-run + no GH issues (safest first try).
+gh workflow run llm-monitor.yml -f mode=sweep -f dry_run=true -f no_issues=true
 
-# Real run, but no auto-issues (safe-mode for the first few days).
+# Watch — outage detection only, dry-run.
+gh workflow run llm-monitor-watch.yml -f dry_run=true -f no_issues=true
+
+# Real sweep, but no auto-issues (safe-mode for the first few days).
 gh workflow run llm-monitor.yml -f no_issues=true
 
 # Just the GitHub collector (cheap test of the SDK pipeline).
 gh workflow run llm-monitor.yml -f collectors=github -f no_issues=true
+
+# Just the statuspages collector (verifies the watch tier).
+gh workflow run llm-monitor.yml -f collectors=statuspages -f no_issues=true
 ```
 
 ## Off-switches
@@ -57,16 +88,19 @@ The bot has three "off" levels, in order of impact:
    `no_issues=true` and force-run, OR add `auto-discovered` to a
    blocklist in `feedback.py`. The digest still updates. Use this
    when the bot is filing duplicates or noise and you need a day to
-   tune thresholds.
-2. **Pause everything but keep the file** — disable the workflow:
+   tune thresholds. **Apply to BOTH workflows** — `llm-monitor.yml`
+   and `llm-monitor-watch.yml`.
+2. **Pause everything but keep the file** — disable the workflows:
    ```bash
    gh workflow disable llm-monitor.yml
+   gh workflow disable llm-monitor-watch.yml
    ```
    Re-enable with `gh workflow enable`. KNOWN_ISSUES.md will start
    ageing out (entries older than 14 days drop on the next run).
-3. **Hard kill** — delete `.github/workflows/llm-monitor.yml`. The
-   prompts will keep reading KNOWN_ISSUES.md but the file will go
-   stale. Don't do this without replacing the file with a
+3. **Hard kill** — delete both workflow files
+   (`.github/workflows/llm-monitor.yml` and `.github/workflows/llm-monitor-watch.yml`).
+   The prompts will keep reading KNOWN_ISSUES.md but the file will
+   go stale. Don't do this without replacing the file with a
    "deprecated" notice.
 
 ## Tuning thresholds
@@ -139,17 +173,23 @@ No code changes are needed — the analyzer prompt is built from
 
 ## Cost ledger
 
-Each daily run is approximately:
+The tiered cadence has two cost profiles. Per-run costs:
 
-* ~4 collector subprocesses, ~30s each → 2 min CI
-* 1-3 Claude Opus calls (depends on volume) → ~$0.10-0.50 with
-  current Anthropic pricing
-* 1 commit + push, occasional `gh issue create` → $0
+| Tier | Frequency | Per-run CI | Per-run analyzer | Per-run total |
+|---|---|---|---|---|
+| Watch | every 15 min (96/day) | ~30s (1 collector, 6 HTTP calls) | $0 most runs (no new records → analyzer skipped) — $0.05 on incident days | ≤ $0.05 |
+| Sweep | every 2 h (12/day) | ~2 min (5 collectors) | $0.10–0.50 (1–3 Opus calls) | ~$0.30 |
+
+Daily total at steady state: ~96 × $0 + ~12 × $0.30 = **~$3.60/day**
+(~$110/month) on Anthropic API. On an outage day add maybe $0.50.
 
 Per AGENTS.md "quality first" charter, this cost is well below the
-operator's quota and not the limiting factor. The future
-"client-onboarding" milestone may revisit cadence — until then, run
-daily with Opus.
+Max 20x quota and not the limiting factor. The watch tier in
+particular is dirt-cheap because the `analyzer.classify(...)` call
+is skipped on no-op runs (record dedupe catches everything).
+
+The future "client-onboarding" milestone may revisit cadence
+trade-offs — until then, run aggressively with Opus.
 
 ## Cross-refs
 

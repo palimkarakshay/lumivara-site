@@ -224,32 +224,92 @@ def _classify_one_batch(prompt: str, records: list[dict]) -> dict:
 
 
 def _stub_classify(records: list[dict]) -> dict:
-    """Offline classifier used by --dry-run. Heuristic only."""
+    """Offline classifier used when every API provider is unavailable.
+
+    Tightened 2026-04-30 after the first production run misclassified
+    "Noctua releases 3D CAD models" as `vercel/bug/sev4` because the
+    BODY mentioned the word "fail" in a comment. The new rules:
+
+    1. Subject detection requires the WHOLE keyword (no `s.split("-")[0]`
+       stem matching) and is title-only — body comments don't decide
+       the topic.
+    2. A record is only `bug` if BOTH the title carries a bug keyword
+       AND the subject was identified (i.e. it's about something we
+       care about). General-subject records max out at sev=3.
+    3. Statuspages records use the kind_hint provided by the collector
+       (which already knows the indicator → kind/severity mapping).
+    """
     out = []
     for r in records:
         title = (r.get("title") or "").lower()
         body = (r.get("body") or "").lower()
-        text = title + " " + body
-        if any(w in text for w in ("bug", "broken", "regression", "outage", "error", "fail")):
-            kind, sev = "bug", 4
-        elif any(w in text for w in ("released", "release", "launch", "announc")):
-            kind, sev = "news", 3
-        elif any(w in text for w in ("vs ", "compared", "benchmark")):
-            kind, sev = "comparison", 2
-        elif any(w in text for w in ("how to", "tip", "best practice", "pattern")):
-            kind, sev = "best_practice", 3
-        else:
-            kind, sev = "noise", 1
+        raw = r.get("raw") or {}
+        source = r.get("source", "")
+
+        # Subject — title-only, exact-keyword match. Order is important:
+        # more-specific names first so "claude-code" beats "claude".
         subject = "general"
-        for s in ("claude-opus-4-7", "claude-sonnet-4-6", "claude-code",
-                  "anthropic-sdk", "mcp", "openai-gpt-5.5", "openai-codex",
-                  "gemini-2.5-pro", "gemini-2.5-flash", "nextjs", "vercel",
-                  "github-actions"):
-            stem = s.split("-")[0]
-            if stem in text or s in text:
-                subject = s
+        SUBJECT_KEYWORDS = [
+            ("claude-code",      ["claude code", "claude-code"]),
+            ("claude-opus-4-7",  ["claude opus", "claude-opus", "opus 4.7"]),
+            ("claude-sonnet-4-6",["claude sonnet", "claude-sonnet", "sonnet 4.6"]),
+            ("claude-haiku-4-5", ["claude haiku", "claude-haiku", "haiku 4.5"]),
+            ("anthropic-sdk",    ["anthropic sdk", "anthropic-sdk", "@anthropic-ai/sdk"]),
+            ("mcp",              ["mcp", "model context protocol"]),
+            ("openai-codex",     ["codex cli", "openai codex"]),
+            ("openai-gpt-5.5",   ["gpt-5", "gpt5", "openai gpt"]),
+            ("gemini-2.5-pro",   ["gemini 2.5 pro", "gemini-2.5-pro"]),
+            ("gemini-2.5-flash", ["gemini 2.5 flash", "gemini-2.5-flash"]),
+            ("nextjs",           ["next.js", "nextjs"]),
+            ("vercel",           ["vercel"]),
+            ("github-actions",   ["github actions", "github-actions"]),
+        ]
+        for subj, kws in SUBJECT_KEYWORDS:
+            if any(kw in title for kw in kws):
+                subject = subj
                 break
-        # Heuristic impact targets — coarse but better than nothing.
+
+        # Statuspages — collector already supplies the right kind via
+        # raw.kind_hint. Use the score as severity (collector populates
+        # that with our 0-5 mapping).
+        if source == "statuspages":
+            kind = raw.get("kind_hint") or "bug"
+            sev = int(r.get("score") or 3)
+            # Statuspage titles already encode the provider; preserve
+            # the subject for routing.
+            provider = (raw.get("provider") or "").lower()
+            if provider in ("anthropic", "openai", "google", "gemini"):
+                subject = subject if subject != "general" else "anthropic-sdk" if provider == "anthropic" else "general"
+            elif provider == "vercel":
+                subject = "vercel"
+            elif provider == "github":
+                subject = "github-actions"
+        else:
+            text_for_kind = title  # title-only for non-statuspage sources too
+            BUG_WORDS = ("bug", "broken", "regression", "outage",
+                         "crash", "fails to ", "doesn't work", "not working",
+                         "error 5", "503", "504", "529", "overloaded")
+            NEWS_WORDS = ("releases", "released", "launches", "launched",
+                          "announces", "announcing", "introducing")
+            COMPARISON_WORDS = (" vs ", " compared", "benchmark",
+                                "head-to-head")
+            BEST_PRACTICE_WORDS = ("how to", "best practice", "guide to",
+                                   "pattern for", "lessons from")
+
+            if any(w in text_for_kind for w in BUG_WORDS) and subject != "general":
+                kind, sev = "bug", 4
+            elif any(w in text_for_kind for w in BUG_WORDS):
+                kind, sev = "bug", 3  # general-subject bugs max at 3
+            elif any(w in text_for_kind for w in NEWS_WORDS):
+                kind, sev = "news", 3
+            elif any(w in text_for_kind for w in COMPARISON_WORDS):
+                kind, sev = "comparison", 2
+            elif any(w in text_for_kind for w in BEST_PRACTICE_WORDS):
+                kind, sev = "best_practice", 3
+            else:
+                kind, sev = "noise", 1
+
+        # Impact targets — derived from subject.
         impact: list[str] = []
         if subject in ("claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5",
                        "claude-code", "anthropic-sdk", "mcp", "openai-gpt-5.5",
@@ -258,6 +318,7 @@ def _stub_classify(records: list[dict]) -> dict:
             impact.append("pipeline")
         if subject in ("nextjs", "vercel"):
             impact.extend(["site", "storefront"])
+
         out.append({
             "id": r["id"], "kind": kind, "subject": subject,
             "impact_targets": impact,

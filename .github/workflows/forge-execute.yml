@@ -12,7 +12,12 @@ name: Forge execute (high cadence)
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    # Every 15 min — aggressive deploy-push phase. Forge is the most
+    # active lane right now (doc refactors, Pattern C work, mothership
+    # docs). The forge-execute-runtime concurrency group keeps this
+    # single-flight; faster cadence shortens the queue without
+    # fanning out simultaneous Claude sessions within the lane.
+    - cron: '*/15 * * * *'
   workflow_dispatch:
     inputs:
       issue:

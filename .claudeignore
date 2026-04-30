@@ -47,37 +47,28 @@ dashboard/node_modules/
 # operator-only context; uncommenting now would break the autopilot.
 #
 # # Pipeline-only paths — operator IP, never read into a Site-lane context.
-# .github/workflows/
-# scripts/triage-*
-# scripts/execute-*
-# scripts/gemini-*
-# scripts/codex-*
-# scripts/plan-issue*
-# scripts/test-routing*
-# scripts/forge-*
-# scripts/bootstrap-*
-# scripts/lib/
-# scripts/pattern-c-audit.sh
-# scripts/forge-spinout-dry-run.sh
-# scripts/recheck-*
-# scripts/seed-*
-# dashboard/
+# # Mirrors docs/mothership/03-secure-architecture.md §2.3 byte-for-byte.
+# # Issue #212 caveat: §2.3 predates Pattern C and does not cover dashboard/,
+# # docs/decks/, docs/research/, docs/migrations/, docs/n8n-workflows/,
+# # docs/_deprecated/, docs/wiki/, docs/ops/, docs/AI_*.md, docs/MONITORING.md,
+# # docs/N8N_SETUP.md, docs/OPERATOR_SETUP.md, docs/TEMPLATE_REBUILD_PROMPT.md,
+# # AGENTS.md, CLAUDE.md, .pattern-c.yml, or the forge-*/bootstrap-*/recheck-*/
+# # seed-* script families. A separate issue should modernise §2.3 to be
+# # Pattern-C-aware before the spinout uncomments this block.
+# docs/operator/
+# docs/clients/
 # docs/mothership/
 # docs/storefront/
-# docs/decks/
-# docs/research/
-# docs/migrations/
-# docs/n8n-workflows/
-# docs/_deprecated/
-# docs/wiki/
-# docs/AI_CONSISTENCY.md
-# docs/AI_ROUTING.md
-# docs/GEMINI_TASKS.md
-# docs/MONITORING.md
-# docs/N8N_SETUP.md
-# docs/OPERATOR_SETUP.md
-# docs/TEMPLATE_REBUILD_PROMPT.md
-# docs/ops/
-# AGENTS.md
-# CLAUDE.md
-# .pattern-c.yml
+# n8n/
+# workflows-template/
+# scripts/
+# .github/workflows/triage.yml
+# .github/workflows/execute*.yml
+# .github/workflows/plan-issues.yml
+# .github/workflows/deep-research.yml
+# .github/workflows/codex-review.yml
+# .github/workflows/auto-merge.yml
+# .github/workflows/project-sync.yml
+# .github/workflows/setup-cli.yml
+# .github/workflows/ai-smoke-test.yml
+# .github/workflows/deploy-dashboard.yml

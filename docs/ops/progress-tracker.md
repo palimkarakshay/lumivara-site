@@ -9,9 +9,9 @@
 >
 > **Refresh cadence:** every Monday morning (the operator updates this same sitting they update [`operator-playbook.md`](./operator-playbook.md) §3). Gate-flip refreshes are immediate.
 >
-> **Last refreshed:** 2026-04-29 (D-0 of POC plan)
+> **Last refreshed:** 2026-04-30 (D-1 of POC plan)
 > **Demo target window:** early July 2026 (~ 9 weeks out)
-> **Streak counter:** 0 / 10 (gate not yet started — D-1 task pending)
+> **Streak counter:** 0 / 10 (gate not yet started — D-1 walk in progress; close-merged sub-pass landed 2026-04-30, see §3 below)
 
 ---
 
@@ -54,7 +54,7 @@ The high-level migration sequence from [`docs/migrations/00-automation-readiness
 **Operator carries (4 sittings, ~6 hours total):**
 
 - ☐ **D-0 Wed 04-29 — O4a trademark knock-out search ([#196](https://github.com/palimkarakshay/lumivara-site/issues/196)).** PDF saved to `docs/legal/`. Verdict logged on issue. (~60 min)
-- ☐ **D-1 Thu 04-30 — open streak tracker [#195](https://github.com/palimkarakshay/lumivara-site/issues/195) + walk every open issue + bulk-classify project items.** (~90 min)
+- ◐ **D-1 Thu 04-30 — open streak tracker [#195](https://github.com/palimkarakshay/lumivara-site/issues/195) + walk every open issue + bulk-classify project items.** (~90 min) — close-merged sub-pass landed 2026-04-30 (20 `status/awaiting-review` items closed against their feedback PRs: #7, #12, #13, #16, #22, #32, #45, #107, #117, #143, #178, #180, #208, #209, #211, #212, #213, #215, #216, #217). Triple-classification + project-board pass still operator-owed.
 - ☐ **D-2 Fri 05-01 — Vercel mirror sitting ([#197](https://github.com/palimkarakshay/lumivara-site/issues/197)).** (~90 min)
 - ☐ **D-3 AM Mon 05-04 — first-time backfill promote ([#198](https://github.com/palimkarakshay/lumivara-site/issues/198)).** (~30 min + 30 min wait)
 
@@ -101,9 +101,9 @@ The §6 demo-readiness gate from [`POC §6`](../migrations/01-poc-perfection-pla
 
 | # | Condition | Status |
 |---|---|---|
-| 6.5 | Brand-lock audit: every doc reads `Lumivara Forge` consistently (or `{{BRAND}}` consistently — no mixed state) | ☐ — Known offenders: issues #107, #110, #111, #112 still say "Infotech" |
-| 6.6 | Pricing parity across `02-pricing-tiers.md`, `04-prospective-client-deck.md`, `06-product-strategy-deck.md`, `04-slide-deck.md` | ☐ |
-| 6.7 | Source-bibliography health: every `[V]`-flagged claim has a live row in `03-source-bibliography.md` | ☐ |
+| 6.5 | Brand-lock audit: every doc reads `Lumivara Forge` consistently (or `{{BRAND}}` consistently — no mixed state) | ☐ — Remaining open offenders: #110, #111. (#107 closed 2026-04-30 via PR #133; #112 already closed via PR #203.) |
+| 6.6 | Pricing parity across `02-pricing-tiers.md`, `04-prospective-client-deck.md`, `06-product-strategy-deck.md`, `04-slide-deck.md` | ◐ — Audit stamp recorded 2026-04-30 via #216 → PR #219. Operator countersign pending. |
+| 6.7 | Source-bibliography health: every `[V]`-flagged claim has a live row in `03-source-bibliography.md` | ◐ — Cross-walk audit recorded 2026-04-30 via #217 → PR #224. Operator countersign pending. |
 | 6.8 | Service catalog ↔ feature delivery: every "Built" row in `01-business-plan.md §4` is provably live | ☐ |
 
 ### §4.3 — Demo site readiness (5 rows)

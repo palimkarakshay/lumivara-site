@@ -157,6 +157,70 @@ Lumivara Forge inverts every one of those amplifications. The deck does not have
 
 ---
 
-*This file is in progress; subsequent commits add the partner / employee lenses + cross-walk + closing.*
+## 4 · The partner lens — why a co-operator joins instead of competes
 
-*Last updated: 2026-04-30 — added §3 prospective-client lens.*
+A prospective co-operator (the audience for `../../decks/02-partner-deck.md`) has a different question: *"You have refused so much. What is left for me to do, and is what is left worth my career stage?"*
+
+The answer is that the negative list is the moat **for the operator's role**, not a constraint on it. The work that survives the negative list is precisely the high-judgement work a senior operator wants:
+
+- **Plan-then-Execute architecture across six AI surfaces.** A solo freelancer cannot stand this up; an agency PM does not have the technical depth to stand this up. A co-operator who has shipped at scale recognises the leverage immediately.
+- **Per-vertical regulator awareness.** The same playbook does not work for CPSO + RCDSO + LSO + CPA + COO + College of Physiotherapists. Each requires its own version of the negative-list pitch. The co-operator who is good at this becomes structurally hard to replace.
+- **Dual-Lane Repo discipline.** The two-repo isolation is operationally non-trivial and self-rewarding — the cleaner the discipline, the easier the per-engagement provisioning.
+- **A 30-engagement book at >95% pre-comp gross margin** that pays out in cash, not equity, with clean exits on either side. That is a rare working environment in 2026.
+
+For the partner, "why this sells" is the same answer as for the advisor: the negative list is the structural reason a small book pays better than a large book, and the operator side is the apparatus that lets a small team hold the negative list at saturation.
+
+---
+
+## 5 · The employee lens — why the first hire stays
+
+The first VA (at client #25) and the first engineer (at client #35) join a practice where:
+
+- **The work is bounded.** The negative list literally lists what nobody is asked to do. There is no Sunday-night chatbot crisis because there is no chatbot.
+- **Quality is the only KPI.** The cap is real; growth is not the metric. CWV ≥ 90 mobile, axe-core green, the publish gate held — those are the metrics.
+- **The role is a craft seat, not a treadmill seat.** The improvement run is the same shape every month; the licensee dictates, the engineer ships, the operator reviews. Most agency engineers have never had that rhythm.
+
+The employee lens is the simplest of the five: *"Why this sells" to a hire is "we said no to all the things that make agency life miserable."*
+
+---
+
+## 6 · Cross-stakeholder cross-walk
+
+One row per stakeholder; one column for the question they actually ask; one column for the answer that is consistent with every other row.
+
+| Stakeholder | The question they actually ask | The cross-consistent answer |
+|---|---|---|
+| **Senior advisor** | *"Why isn't this over-engineered crap that won't sell?"* | The platform is the apparatus that lets a single operator enforce the negative list at saturation. The negative list is the qualifier that turns a 30-client book into the highest-margin shape of a professional-services practice in this price band. |
+| **Investor / strategic LP** | *"Why is the small book more valuable than a bigger one?"* | Lower churn (no regulator surprises), higher NPS (the buyer feels the truth), inelastic price (the bundle has visible boundaries). 4×–10× revenue band on private comps; the negative list is what makes the multiple sustainable. |
+| **Co-operator / partner** | *"What is left for me to do, and is it worth my career stage?"* | The work that survives the negative list is high-judgement: regulator-aware per-vertical pitching, plan-then-execute architecture, Dual-Lane Repo discipline. A 30-engagement book at >95% pre-comp gross margin in cash, not equity. |
+| **First hire** | *"Will this job make me miserable?"* | The negative list literally enumerates what nobody is asked to do. Bounded work, clean cadence, quality is the only KPI. |
+| **Prospective client** | *"Why is yours different from every vendor that disappointed me?"* | Every refusal we make is paired with a structural alternative. We physically cannot deliver the things that get you in trouble with your regulator. We will deliver Core Web Vitals, schema, accessibility, integration, and honest review collection — for less than your current vendor's retainer. |
+
+Every row is an answer to a different question and yet every row is the same shape: **the refusals are not modesty; they are the structural feature that makes everything else compound.**
+
+---
+
+## 7 · The single sentence that closes the file
+
+> *Lumivara Forge fixes the itch that never scratches because it is the only vendor in this price band whose business model is structurally incapable of selling the things that have hurt the prospect before — and structurally capable of delivering the work that the prospect's previous vendors silently neglected. The negative list is not what we don't sell. It is what makes the rest of what we sell believable.*
+
+When asked "why will this sell?" or "why opt for Lumivara?", read that sentence aloud, then walk back into whichever section above matches the audience. Every external slide that argues this case reads from this file; when this file changes, the matching slides need a re-render via the Marp pipeline (`scripts/render-decks.sh`) and a `dual-lane-audit.sh` pass.
+
+---
+
+## 8 · Where this content surfaces externally
+
+| Surface | Distillation level | Owner |
+|---|---|---|
+| Master deck (`../../decks/06-master-deck.md`) | One dedicated section: "Why this sells — the itch that never scratches" | Inherits from §1 + §2 above |
+| Master deck — shareable (`../../decks/06a-master-deck-shareable.md`) | Same section, generalised for external readers | Inherits from §1 + §2 above |
+| Advisor deck (`../../decks/05-advisor-deck.md`) | Strengthens Contested claim 6 with the §2.1 cash-flow-positive-filter framing and the §2.3 pitch sentence | Existing |
+| Investor deck (`../../decks/01-investor-deck.md`) | One slide: "Why the boundaries are the moat" | Inherits from §2.1 + §2.2 above |
+| Prospective-client deck (`../../decks/04-prospective-client-deck.md`) | One slide: "The seven things every previous vendor charged you for" + the four-checks framing from §3.1 | Inherits from §1 + §3 above |
+| Per-vertical pitch decks (`../../decks/vertical-pitches/<vertical>.md`) | Existing "what this is *not*" slides are unchanged; this file is the operator-internal companion | Inherits from `00a-negative-list-rationale.md` |
+
+The externally-visible content all reads from this file. When this file is updated, the affected slides need a re-render (`bash scripts/render-decks.sh incremental`) and a `dual-lane-audit.sh` pass. See [`../../AI_CLAUDE_DESIGN_PLAYBOOK.md §1`](../../AI_CLAUDE_DESIGN_PLAYBOOK.md) for the rendering pipeline.
+
+---
+
+*Last updated: 2026-04-30 — initial draft. Companion to `00a-negative-list-rationale.md` (the refusals) and `../../research/06-drawbacks-and-honest-risks.md` (the honest drawbacks). Together those three files are the operator-internal source of truth for every "why this sells / why opt for Lumivara" conversation across all five stakeholder lenses.*

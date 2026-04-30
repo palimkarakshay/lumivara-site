@@ -136,11 +136,41 @@ jobs:
           PR: ${{ steps.target.outputs.pr }}
         run: |
           # GitHub Models uses GITHUB_TOKEN which is always present in
-          # GitHub Actions, so there is no longer a "no review possible"
-          # case — the script will at minimum attempt the GitHub Models
-          # leg. We still log a warning when the operator-provided keys
-          # are missing so the run summary makes the configuration
-          # state obvious.
+          # GitHub Actions, so for PR mode there is no longer a "no
+          # review possible" case — the script will at minimum attempt
+          # the GitHub Models leg, and a deferred review is recovered
+          # by the codex-review-recheck.yml cron.
+          #
+          # Issue mode is different. An issue dispatched here via
+          # `model/codex` from execute.yml will be moved to
+          # `status/awaiting-review` once a review comment is posted,
+          # and execute.yml excludes that status from future picks. So
+          # if every leg defers (e.g. all operator keys missing AND
+          # GitHub Models org-disabled / scope denied / outage), the
+          # issue stalls indefinitely — there is no recheck cron for
+          # deferred ISSUES. Restore the original safety net for that
+          # case: when no operator key is configured, immediately
+          # remove `model/codex` so the next execute run picks the
+          # issue up on the Claude path. (Codex P1 finding on PR #244,
+          # 2026-04-30.)
+          if [ "$MODE" = "issue" ] \
+             && [ -z "$OPENAI_API_KEY" ] && [ -z "$OPENAI_API_KEY_BACKUP" ] \
+             && [ -z "$GEMINI_API_KEY" ] && [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::warning::Issue-mode review with no operator keys — rerouting back to Claude (avoids status/awaiting-review stall if GitHub Models also fails)."
+            if [ -n "$ISSUE" ]; then
+              gh issue comment "$ISSUE" \
+                --repo palimkarakshay/lumivara-site \
+                --body "Codex review requested but no OpenAI / Gemini / OpenRouter key is configured. Removing \`model/codex\` so the next execute run picks this up via Claude — keeps the issue out of the \`status/awaiting-review\` dead-letter state in case GitHub Models is also unreachable."
+              gh issue edit "$ISSUE" \
+                --repo palimkarakshay/lumivara-site \
+                --remove-label "model/codex" || true
+            fi
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # PR-mode all-keys-missing case: just log; the recheck cron
+          # plus the `review-deferred` label trail will recover any
+          # deferred PR review.
           if [ -z "$OPENAI_API_KEY" ] && [ -z "$OPENAI_API_KEY_BACKUP" ] \
              && [ -z "$GEMINI_API_KEY" ] && [ -z "$OPENROUTER_API_KEY" ]; then
             echo "::warning::No operator-provided review keys set (OPENAI / GEMINI / OPENROUTER all missing). Falling through to GitHub Models leg only."

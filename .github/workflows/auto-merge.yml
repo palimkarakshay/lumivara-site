@@ -10,6 +10,15 @@ permissions:
   contents: write
   pull-requests: write
 
+# Per-PR concurrency: opened, labeled, and ready_for_review can fire in
+# rapid succession on the same PR. Without a workflow-level group, two
+# attempts to enable auto-merge race; the second is a noisy no-op against
+# GitHub's idempotency check. Per-PR scoping keeps cross-PR work
+# parallel while serialising same-PR runs.
+concurrency:
+  group: auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   maybe-auto-merge:
     runs-on: ubuntu-latest

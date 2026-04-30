@@ -11,12 +11,23 @@ silently shipping unreviewed code, so this helper walks a small ladder:
     1b. OpenAI gpt-5.5 / OPENAI_API_KEY_BACKUP — second key (independent
         quota window; the operator runs two accounts)
     2. Gemini 2.5 Flash (Google AI Studio free tier, 500 RPD)
-    3. defer (label PR `review-deferred`)     — last resort
+    3. Anthropic Claude (model from ANTHROPIC_REVIEW_MODEL,
+       default claude-opus-4-7) — relaxed-independence fallback
+    4. defer (label PR `review-deferred`)     — last resort
 
-Why these two providers and not three? The triage / plan / execute ladders
-already use Claude, so using Claude here too would defeat the point of an
-"independent second opinion". OpenAI and Gemini are the only non-Claude
-options in the project; if both are down the run defers cleanly.
+On reviewer independence (policy revision 2026-04-30):
+
+    The original design excluded Claude from this ladder so reviews stayed
+    independent from the triage / plan / execute path. In practice the
+    OpenAI + Gemini ladder defers ~1 PR in 5 (both quotas often exhaust
+    in lockstep) and the operator was getting noisy "request-changes"
+    deferrals on every PR, defeating the goal. The trade-off was
+    re-evaluated and review coverage now wins: Claude is added as the
+    last engine before defer, with the engine clearly marked in the
+    review header so the operator can spot when the independence
+    guarantee was relaxed for that PR. OpenAI / Gemini still come first
+    so the preference for an independent reviewer stays intact whenever
+    either is reachable.
 
 Inputs (env):
     PROMPT_FILE             path to a file containing the full review prompt
@@ -25,6 +36,9 @@ Inputs (env):
                             429/error so a quota-exhausted primary key
                             doesn't silently skip the OpenAI leg
     GEMINI_API_KEY          optional; Gemini attempted only when set
+    ANTHROPIC_API_KEY       optional; Claude attempted only when set,
+                            and only after OpenAI + Gemini have both
+                            failed (independence-preserving order)
     OPENAI_MODEL            default: gpt-5.5
     GEMINI_MODEL            default: gemini-2.5-flash (matches the
                             `Code review on PR diff` row in
@@ -32,10 +46,14 @@ Inputs (env):
                             keeps the fallback unconstrained; the
                             previous `gemini-2.5-pro` default 429'd
                             in lockstep with OpenAI)
+    ANTHROPIC_REVIEW_MODEL  default: claude-opus-4-7 (per AGENTS.md
+                            quality-first phase; lower-cost models
+                            are explicitly deferred until cost
+                            optimisation phase)
 
 Outputs:
     Writes the review markdown to /tmp/review.md (or $REVIEW_OUT).
-    Prints a single line to stdout: ENGINE=<openai|gemini|deferred>
+    Prints a single line to stdout: ENGINE=<openai|gemini|anthropic|deferred>
     Exits 0 always (the workflow handles the "deferred" case via labelling).
 
 Hallucination guard: the prompt itself instructs the model to never invent
@@ -54,6 +72,9 @@ GEMINI_URL = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     "{model}:generateContent?key={key}"
 )
+ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
+ANTHROPIC_VERSION = "2023-06-01"
+ANTHROPIC_MAX_TOKENS = 4096
 
 
 def _post_json(url: str, payload: dict, headers: dict, timeout: int = 90) -> dict:
@@ -170,6 +191,56 @@ def try_gemini(prompt: str) -> tuple[str | None, str]:
         return None, "error"
 
 
+def try_anthropic(prompt: str) -> tuple[str | None, str]:
+    """Return (review_markdown, status). status ∈ {ok, no_key, quota, error}.
+
+    Last engine before defer. Walks ANTHROPIC_API_KEY first; this repo
+    does not yet store an ANTHROPIC_API_KEY_BACKUP so a single 429 ends
+    the leg. If the operator later adds a backup key, mirror the
+    OpenAI two-key pattern in `try_openai` above."""
+    key = (os.environ.get("ANTHROPIC_API_KEY") or "").strip()
+    if not key:
+        return None, "no_key"
+    model = os.environ.get("ANTHROPIC_REVIEW_MODEL", "claude-opus-4-7")
+    try:
+        resp = _post_json(
+            ANTHROPIC_URL,
+            {
+                "model": model,
+                "max_tokens": ANTHROPIC_MAX_TOKENS,
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            {
+                "x-api-key": key,
+                "anthropic-version": ANTHROPIC_VERSION,
+                "content-type": "application/json",
+            },
+            timeout=120,
+        )
+        # Anthropic returns content as a list of blocks; we want the
+        # first text block. Empty / non-text → treat as error.
+        blocks = resp.get("content") or []
+        text = ""
+        for b in blocks:
+            if b.get("type") == "text":
+                text = (b.get("text") or "").strip()
+                break
+        if not text:
+            return None, "error"
+        return text, "ok"
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()[:500]
+        if e.code in (429, 529):  # rate-limit / overloaded
+            print(f"::warning::Anthropic {e.code} — quota / overloaded. {body}",
+                  file=sys.stderr)
+            return None, "quota"
+        print(f"::warning::Anthropic HTTP {e.code}: {body}", file=sys.stderr)
+        return None, "error"
+    except Exception as exc:
+        print(f"::warning::Anthropic call failed: {exc}", file=sys.stderr)
+        return None, "error"
+
+
 def main() -> int:
     prompt_file = os.environ.get("PROMPT_FILE")
     if not prompt_file or not os.path.exists(prompt_file):
@@ -192,6 +263,7 @@ def main() -> int:
     # 2. Gemini fallback
     gemini_model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
     openai_model = os.environ.get("OPENAI_MODEL", "gpt-5.5")
+    anthropic_model = os.environ.get("ANTHROPIC_REVIEW_MODEL", "claude-opus-4-7")
     review, status = try_gemini(prompt)
     if review:
         with open(out_path, "w") as f:
@@ -208,17 +280,37 @@ def main() -> int:
         return 0
     gemini_status = status
 
-    # 3. Defer — both providers unavailable.
+    # 3. Anthropic Claude fallback (added 2026-04-30 — see module
+    # docstring). Independence trade-off is explicitly relaxed and the
+    # engine is marked in the review header so the operator can spot
+    # which PRs got the relaxed review path.
+    review, status = try_anthropic(prompt)
+    if review:
+        with open(out_path, "w") as f:
+            f.write(
+                f"_Engine: {anthropic_model} fallback "
+                f"(OpenAI: {openai_status}; Gemini: {gemini_status}). "
+                "Reviewer-independence guarantee relaxed for this PR — "
+                "see `scripts/codex-review-fallback.py` docstring._\n\n"
+                + review
+            )
+        print("ENGINE=anthropic")
+        return 0
+    anthropic_status = status
+
+    # 4. Defer — every provider unavailable.
     with open(out_path, "w") as f:
         f.write(
             "## Code review unavailable\n\n"
-            f"Both OpenAI ({openai_model}) and {gemini_model} were "
-            "unavailable for this review pass.\n\n"
+            f"All three providers — OpenAI ({openai_model}), "
+            f"{gemini_model}, and {anthropic_model} — were unavailable "
+            "for this review pass.\n\n"
             f"- OpenAI status: `{openai_status}`\n"
-            f"- Gemini status: `{gemini_status}`\n\n"
+            f"- Gemini status: `{gemini_status}`\n"
+            f"- Anthropic status: `{anthropic_status}`\n\n"
             "This PR has been labelled `review-deferred`. A scheduled "
             "re-review run (`codex-review-recheck.yml`) will retry once "
-            "either provider's quota window resets.\n\n"
+            "any provider's quota window resets.\n\n"
             "## Verdict\n\nrequest-changes\n"
         )
     print("ENGINE=deferred")

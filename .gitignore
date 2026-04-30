@@ -50,3 +50,19 @@ Thumbs.db
 .vercel
 .env*.local
 __pycache__/
+
+# Operator recording archive — see recordings/README.md and
+# docs/mothership/23-operator-recording-pipeline.md.
+# Folder structure (each section's README.md) IS tracked; everything else
+# (raw media, transcripts, analyses, manifest) is operator-private and
+# never enters git history.
+recordings/inbox/*
+!recordings/inbox/README.md
+recordings/archive/*/*
+!recordings/archive/*/README.md
+recordings/transcripts/*
+!recordings/transcripts/README.md
+recordings/analysis/*
+!recordings/analysis/README.md
+recordings/manifest.jsonl
+recordings/.state/

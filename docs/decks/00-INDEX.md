@@ -65,6 +65,12 @@ Reading order for a new operator session that needs to understand the deck pack:
 
 ---
 
+## Counter-read (operator-scope only)
+
+A deliberately unflattering harsh-critic review of this entire deck pack lives at [`CRITICAL-REVIEW.md`](./CRITICAL-REVIEW.md) (added 2026-04-30). It is the mirror, not the brochure: read it once, then act on the parts that sting. **Do not share externally, do not cite, do not mistake it for the kind read.** It exists to keep the deck pack honest as the practice moves toward client #2.
+
+---
+
 ## Brand and pricing variables
 
 All decks use the brand `Lumivara Forge` and CAD pricing from `docs/storefront/02-pricing-tiers.md`. If either changes — for example, the brand rename from `01-business-plan §1` ships, or pricing is bumped after the 5-review threshold — update each deck's title slide + pricing slide. The slugs in `docs/research/03-source-bibliography.md` are stable; deck content doesn't need to change beyond brand + tier prices.

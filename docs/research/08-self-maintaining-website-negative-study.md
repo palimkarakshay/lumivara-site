@@ -288,4 +288,132 @@ economics than the deck pack assumes.
 
 ---
 
-*Sections §4–§7 pending; external-research findings land in §8.*
+## §4 — Product viability and the value proposition
+
+### §4.1 — The product description survives a slide deck and dies on a sales call
+
+The deck pack's product description — *"clean Next.js marketing site,
+custom design, you own everything, edit by phone shortcut, AI ships the
+change to a preview, you tap publish, monthly improvement run on the
+side"* — is structurally well-written. It has a moment, a mechanic, and
+a result. Read it as a prospect would read it on a 30-minute discovery
+call:
+
+> *"OK, but how is that different from Squarespace? I can edit
+> Squarespace from my phone."*
+
+The answer the deck has prepared is *"Squarespace is a template, this
+is custom Next.js with Lighthouse 90+ scores."* That is a true sentence
+and a **sales-killing sentence**. It moves the conversation from
+*outcome* (does the prospect's business get better?) to *technology*
+(does the site rank slightly higher on a developer-tier benchmark?).
+The non-technical owner does not, and will not, value Lighthouse 90 vs
+Lighthouse 75. They value "did the call come in." The mechanic the
+deck is most proud of is the one the prospect does not buy.
+
+### §4.2 — The "you own everything" promise is structurally underused
+
+The single most defensible feature the offer has — the client owns
+the code, the domain, the hosting account; the operator is a vendor,
+not a hostage-taker — is also the feature **the prospect cannot evaluate
+without an existing painful experience to compare it against**. A
+prospect who has never been ransomed by a previous developer hears
+"you own everything" as an undifferentiated reassurance. It only
+becomes a closing point in front of a prospect who has *already* been
+burned. The deck pack treats this as a top-line differentiator; in
+the field it is a closer for ~10–20% of prospects, not the headline.
+
+### §4.3 — The phone-shortcut UX has a hidden onboarding tax
+
+The phone-edit promise depends on the owner installing an iOS Shortcut
+or Android equivalent, configuring authentication (Auth.js v5 magic
+link), and remembering the workflow weeks later when they want to use
+it. Empirically, single-step app onboarding (install + first use) for
+SMB owners over 40 runs ~30–50% completion; multi-step onboarding (the
+operator's flow includes a magic-link verification, a phone-shortcut
+install, and a first edit) runs **15–25%**. Of clients onboarded, a
+further fraction never returns to the shortcut after the first month;
+the WP-care analogue (§3.2) suggests 30–60% of customers default to
+emailing the operator within the first 90 days.
+
+The deck assumes near-100% adoption of the headline mechanic. The
+realistic adoption is closer to **20–40% sustained use** — meaning the
+majority of clients will use a fallback channel (email, web form, SMS),
+which is the channel that already exists at every competitor for free.
+The headline mechanic is therefore the value proposition for the
+**minority** of the customer base, and the rest are paying retainer
+prices for what is essentially "a developer who answers email
+quickly." That is a real product but it is **not** the product the
+deck describes.
+
+### §4.4 — "Tap publish" requires the owner to look at code review
+
+The flow is: prompt in → AI generates a plan + a diff → preview URL →
+owner taps publish. The owner is being asked to do **a code review of
+an LLM diff**, in 30 seconds, on a phone, while the diff may include
+subtle changes to tokens, components, layout, accessibility behaviour,
+and meta tags. The deck's framing — *"tap publish, you're in control"* —
+is technically true and **operationally a lie of omission**: the owner
+is not equipped to evaluate the change. They will tap publish on a
+plausible-looking preview the same way they accept a Word
+spell-checker suggestion — i.e., always, including when the suggestion
+is wrong.
+
+The Plan-then-Execute gate, axe-core, and Lighthouse CI guard against
+the *category* of regression they detect; they do not guard against
+the categories they don't (semantic copy errors, brand-voice drift,
+broken outbound links, contact-form routing changes, jurisdictional
+content compliance). The deck's mitigation language ("CI gates +
+preview + tap-to-publish") sounds like a defence and is in practice
+**a polite handover of responsibility from the operator to a client
+who cannot perform the duty.**
+
+### §4.5 — The price is in the dead zone
+
+CAD $99/mo (Tier 1) is too expensive vs Squarespace ($17/mo) and
+Hostinger ($3–$11/mo) and Durable ($15–$25/mo). CAD $249/mo (Tier 2)
+is too cheap vs a real fractional-CMO retainer ($1,500–$5,000/mo) or
+a real boutique-agency monthly ($800–$2,500/mo) — so the prospect who
+*can* afford to buy strategy assumes a $249 vendor cannot deliver it.
+CAD $599/mo (Tier 3) is in agency territory but without the agency's
+account-management surface (no PM, no Slack channel, no quarterly
+business review with three named people on a call). The pricing
+ladder occupies the **awkward valley** between SaaS DIY and
+human-services — too expensive to be an impulse, too cheap to be
+trusted as a managed service.
+
+A more honest tier shape would be: **(a)** $5,000–$8,000 setup fee
+with no retainer, sold as "a real custom marketing site you own,"
+billed once; **(b)** an optional $79–$149/mo "improvement-run-only"
+subscription for the minority of clients who specifically value that.
+The "phone-edit" mechanic disappears as a headline and reappears as a
+power-user feature for the 20–40% who use it. That offer is sellable
+today on Fiverr and Upwork without any of the dual-lane platform.
+The current ladder is not.
+
+### §4.6 — The verifiable proof point does not yet exist
+
+The single most important sentence a SaaS / productized-service can
+put in front of a prospect is *"here is a 60-second screen recording
+of the entire mechanic working on a real customer's site."* The
+operator does not have one. The recording would have to demonstrate:
+prompt in (with an actual owner's voice, not the operator's) → plan
+emitted → diff generated → preview deployed → owner taps publish on a
+phone → live site updated, end to end, in under 5 minutes. The
+operator's own marketing site is the only deployment of the pipeline,
+which means *the only "owner" the recording could feature is the
+operator themselves*. That is not a case study. That is a self-portrait.
+
+Until a non-operator owner appears on the recording, the value
+proposition is **described but not demonstrated**, and every
+prospect call has to rebuild trust from zero.
+
+**§4 liability score: 8.5 / 10** — the product description sounds
+better than it sells; the headline mechanic has 20–40% sustained
+adoption at best; tap-to-publish is a polite handover of responsibility
+to a buyer who cannot perform it; the price ladder is in a dead zone;
+and the proof point that would close the gap does not yet exist.
+
+---
+
+*Sections §5–§7 pending; external-research findings land in §8.*

@@ -69,6 +69,8 @@ Reading order for a new operator session that needs to understand the deck pack:
 
 A deliberately unflattering harsh-critic review of this entire deck pack lives at [`CRITICAL-REVIEW.md`](./CRITICAL-REVIEW.md) (added 2026-04-30). It is the mirror, not the brochure: read it once, then act on the parts that sting. **Do not share externally, do not cite, do not mistake it for the kind read.** It exists to keep the deck pack honest as the practice moves toward client #2.
 
+The prescriptive counter-plan — mitigations mapped to each problem, the Sales Sprint S0 design, the number-replacement plan, and the resequenced project plan — lives at [`CRITICAL-REVIEW-MITIGATIONS.md`](./CRITICAL-REVIEW-MITIGATIONS.md) (added 2026-05-01). Read it after the review. The single most important verdict it lands: **the PoC does not need further perfection — the bottleneck is sales, not engineering.** Stakeholder decks `01`/`02`/`03`/`05`/`06`/`06a` are formally **frozen** until client #5 closes; only the prospective-client deck and the dentist vertical pitch remain editable during Sales Sprint S0.
+
 ---
 
 ## Brand and pricing variables

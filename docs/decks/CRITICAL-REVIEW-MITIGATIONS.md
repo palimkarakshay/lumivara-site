@@ -473,7 +473,66 @@ The discipline this encodes: **the operator's first revenue is also the alarm cl
 
 ---
 
-## §7 — Tracking
+## §12 — Detailed task list (operator-blocking vs automation-blocking)
+
+> _Synthesises §11.1 + §11.3 + §11.4 into a single sequenced action plan. Tasks split into two lanes that can run in parallel — operator-blocking tasks need a human, automation-blocking tasks can be picked up by the existing auto-routine bot pipeline once labelled. Priorities are P0 (this week, blocks the demo), P1 (within 4 weeks, blocks Sales Sprint S0), P2 (before client #3), P3 (hidden cliff — before client #5)._
+
+### §12.1 — Operator-blocking tasks (humans / paperwork / money / DNS)
+
+| Pri | Task | Effort | Output / done-when |
+|---|---|---|---|
+| **P0** | **Set Vercel production env vars** (G5): `N8N_INTAKE_WEBHOOK_URL`, `N8N_DECISION_WEBHOOK_URL`, `N8N_DEPLOY_WEBHOOK_URL`, `N8N_HMAC_SECRET`. | 30 min | All three webhook dispatch helpers in `src/lib/admin/webhooks.ts` stop returning *"…not wired up yet"* errors in production. Also add to `needs-vercel-mirror` label issue per `AGENTS.md`. |
+| **P0** | **Provision n8n + import the 6 workflows** (G6). Pick host (Railway $5/mo OR Oracle Cloud free-tier — see §13). Import bundle from `docs/n8n-workflows/admin-portal/`. Wire credentials per workflow per the `README.md` there. Activate. Copy webhook URLs into Vercel env (closes P0 row above). | 1–2 days first time | All 6 workflows show "Active" in n8n UI; one synthetic test request through `intake-web` lands as a GitHub issue in the test client. |
+| **P0** | **Set up Resend domain authentication** (G9) for `lumivara-forge.com` — DKIM + SPF + DMARC DNS records added at registrar. | 30 min | Test send from `outreach@lumivara-forge.com` lands in inbox (not spam) on Gmail + Outlook + iCloud. Affects **Sales Sprint S0 reply rates directly.** |
+| **P0** | **Buy `lumivara-forge.com` + `.ca`**, point at Vercel project, set up the `outreach@…` mailbox via Resend or Google Workspace. Pre-existing in §5.6 step 1; restated here for the operator-task lane. | 30 min | Domain resolves, MX/A records green, mailbox sends + receives. |
+| **P0** | **Update `04-prospective-client-deck.md` + `vertical-pitches/dentists.md` for Path B + §9.1 honesty.** Ownership claim → "day 90 transfer." Negative list collapsed to 3 bullets. Replace dental `[S]` figure (G27 phone-shortcut wording also fixed here). | 2 hours | Deck reads under §9.1 honest-pitch language; ready to attach to Sales Sprint S0 emails. |
+| **P0** | **Build `prospects.csv`** — 50 named Ontario dentists, columns per §6 of the original review. | 4 hours | 50 rows; ready Thu morning for first cold email batch. |
+| **P0** | **Record 90-second phone-edit loop screen capture** (§8.2.2) on `lumivara-forge.com` from a borrowed phone. | 2 hours | One MP4 / Loom link, hosted on `lumivara-forge.com` or Loom; attaches to every cold email. |
+| **P0** | **Run §8.2.1 borrowed-phone test, 5×.** Fix any breakage discovered. | 1 day | All 5 loops succeed end-to-end <4 min wall-clock each. |
+| **P0** | **Publish one before/after Lighthouse case study** on `lumivara-forge.com`. | 4 hours | Live URL; Lighthouse before/after numbers + axe-violation count + audit-log link. |
+| **P0** | **Drafted `docs/ops/demo-recovery-playbook.md`** with one-line operator response for each of the 4 breakage scenarios (§8.2.3). | 2 hours | Page exists in repo; the act of writing it surfaces gaps. |
+| **P1** | **Engage Canadian small-business lawyer for MSA + SOW templates** (G8). $1,500–$2,500 flat fee. | 1 week wall-clock; 4 hours operator | MSA + SOW + AUP templates in `docs/operator/legal/`. Without this, no legal close on client #2. |
+| **P1** | **Quote E&O / cyber liability insurance** (G16). $400/yr Ontario sole-prop band. Bind before any non-operator client invoice clears. | 2–4 hours (broker call + binding) | Policy in force; certificate-of-insurance available on request. |
+| **P1** | **1Password Business + recovery envelope drill** (G15). | 1 hour first time + quarterly | Vault opened; recovery kit printed and sealed; first quarterly drill on calendar. |
+| **P1** | **Pre-arrange Ontario freelance Next.js fallback dev** (§9.1 option 6) on hourly retainer-when-invoked terms. | 4 hours (LinkedIn search + 2 calls) | Verbal agreement + email summary; no money changes hands until invoked. |
+| **P1** | **Publish `/subprocessors` page** (G22) listing Anthropic, Google, OpenAI, Vercel, Resend, Twilio (if used), GitHub, Railway. | 2 hours | Page live; sitemap entry; linked from `/privacy`. |
+| **P1** | **Write `docs/ops/domain-transfer-runbook.md`** (G21) — the operational steps to actually transfer registrar control at end-of-engagement. | 4 hours | Runbook + dry-run on operator's own domain before client #2. |
+| **P2** | **PIPEDA: PIA template + breach-notification runbook** (G10). One-pager per tier; promote `docs/research/07-pipeda-breach-notification.md` from research seed to operational doc. | 2–3 days | Templates in `docs/operator/legal/`; trigger threshold: client #3. |
+| **P2** | **Quebec Law 25 French-language privacy page.** | 1 day (translator) | French `/privacy` route; trigger: first Quebec prospect. |
+| **P3** | **Operator capacity-model enforcement** (H1) — write a `forge clients --status` script that warns at 25 active clients and refuses new at 30. | 1 day | CLI flag works; warning banner in admin portal. |
+
+**Operator P0 wall-clock total: ~3–4 working days**, parallelisable across Mon–Fri of week 1. The §5.6 day-by-day plan is exactly this list ordered by day-of-week.
+
+### §12.2 — Automation-blocking tasks (bot-runnable; label `auto-routine`)
+
+| Pri | Task | Effort | Done-when |
+|---|---|---|---|
+| **P0** | **Embed Vercel preview link inline in `/admin/client/[slug]/request/[number]/page.tsx`** (G2 nuanced — currently surfaced on `/preview` aggregate page, not the per-request detail). React component reading `findPreviewByCommit` result. | 1 day | A "Preview" button + inline iframe appears on the request page when the PR's preview build is `READY`. |
+| **P0** | **Surface auto-merge label as a visible badge** on `/admin/client/[slug]/request/[number]` (G23). | 2 hours | Badge says *"Auto-merge eligible"* or *"Operator-review only"* per the labels on the linked PR. |
+| **P0** | **Playwright e2e test of the intake → preview → publish loop** (G20 / H7). Stub n8n with a local Express handler returning 200 OK; assert the Server Actions invoke as expected and the deploy log records. | 2 days | `e2e/admin-publish-flow.spec.ts` green in CI. |
+| **P1** | **Per-client rate limiting middleware** (G12) on the public-facing intake endpoints. Use Upstash Redis (already in deps). 10 requests / minute default; configurable per client tier. | 1 day | Rate-limit header on responses; 429 on exceed; logged to deploy-log table. |
+| **P1** | **Sentry integration** (G11) — server + client. Free tier covers up to 5k events/mo. | 4 hours | Errors land in Sentry; daily digest email to operator. |
+| **P1** | **Engagement evidence log auto-population** (G17). GitHub Action that, on every PR merge into a client's main branch, appends a row to `docs/clients/<slug>/evidence-log.md` with Lighthouse delta + axe results + change-summary. | 1–2 days | Evidence log auto-grows; manual entries no longer required. |
+| **P1** | **Web Push notification for preview-ready** (G19). PWA service worker on `/admin`. | 1 day | When `findPreviewByCommit` returns `READY`, the client's open-tab admin page receives a push; tab can be closed and notification still arrives. |
+| **P1** | **Intake form self-serve flow** (G18). Server Action that takes the 5-min intake form, generates a moodboard preview via the AI pipeline, sends a Resend confirmation email with the preview link. | 2 days | New prospect visits `/intake`, fills in 8 fields, gets a moodboard within 24h without operator touching anything. |
+| **P1** | **Migrate admin allowlist from hardcoded array to Upstash Redis** (G25), with `/admin/settings` UI for CRUD + audit log. | 3–4 days | Adding a new admin email no longer requires a code commit. |
+| **P2** | **Stripe Subscriptions automation** (G7). Product per tier; `forge bill` CLI; n8n `payment-failed` workflow with day-0/+7/+14/+30/+60 lockout ladder. | 3–5 days minimum; second-opinion estimate 2–3 weeks for full lockout ladder | Automated invoice on signup; failed-charge handling; admin-portal "subscription paused" banner at +14 days. |
+| **P2** | **Deploy-drift-watcher post-deploy auto-retry + 4h escalation** (H1 / drift-watcher refinement). | 3–5 days | Drift issue auto-closes when watcher confirms `drift = 0`; escalates to operator if drift persists > 4 hours. |
+| **P2** | **Cost monitoring CLI** (H5): `forge costs --month --by-client`. | 3 days | CLI sums Vercel + Twilio + Railway + Anthropic + Gemini per client; flags anomalies; emails monthly digest. |
+| **P3** | **`forge provision` CLI** (G24). The Phase 5 onboarding deliverable. 1–2 weeks operator estimate; 3–4 weeks per second-opinion audit. **This is the largest single chunk in the list. Do not start until client #2 has paid.** | 1–4 weeks | One command provisions a new client end-to-end (with the OAuth manual-step overlay per G26). |
+| **P3** | **Multi-operator handoff playbook** (H3) + GitHub CODEOWNERS rules. | 1 week | Adding a contractor to the org doesn't break invariants. |
+
+**Automation P0 wall-clock total: ~3.5 days** — parallelisable with the operator P0 lane. P1 lane: ~2 weeks. P2/P3 lanes: post-revenue work.
+
+### §12.3 — How the two lanes interact
+
+The operator and automation lanes run **in parallel**, not sequential. The operator does §12.1 P0 (~3–4 days, mostly DNS / config / writing) while the bot — using the existing auto-routine label and the `execute.yml` cron — picks up §12.2 P0 (preview-embed inline, auto-merge badge, e2e test). By Thursday of week 1, both lanes converge: the operator has a working domain + 50-prospect list + recorded loop + honest deck + drafted recovery playbook; the bot has shipped the inline-preview UX + auto-merge badge + e2e test.
+
+**Forbidden during P0 week:** operator does NOT pick up automation-lane tasks. The operator's job is the §12.1 list. Automation lane is the bot's job. If the bot can't pick up a §12.2 task because of `infra-allowed`-label exclusions, the operator stamps the label and moves on; they do not implement.
+
+---
+
+
 
 A single GitHub issue should track Sales Sprint S0 at the operator level. Suggested title: *Sales Sprint S0 — first paying client #2 (90-day time-box, started YYYY-MM-DD)*. Labels: `meta/sales-sprint`, `priority/P1`, `human-only`. Body uses the §5.6 day-by-day plan as a checklist; updates happen in comments daily.
 

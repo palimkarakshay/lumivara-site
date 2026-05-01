@@ -4,9 +4,21 @@ The backlog lives in GitHub Issues, grouped in a Project v2 board called **Lumiv
 
 > **🚨 PRIORITY OVERRIDE — 2026-05-01.** Per [`docs/decks/CRITICAL-REVIEW-MITIGATIONS.md`](./decks/CRITICAL-REVIEW-MITIGATIONS.md), the **single highest-priority operator activity** until client #2 closes is **Sales Sprint S0** (90-day time-box; see §5.2 / §5.6 of that file). Every infrastructure / platform / deck-refresh item in this backlog is **paused** until Sprint S0 produces a paid CAD invoice from a non-operator client OR the 90-day clock expires. The PoC perfection plan ([`docs/migrations/01-poc-perfection-plan.md`](./migrations/01-poc-perfection-plan.md)) is **demoted from blanket gate to background telemetry**; its §1.1 streak now gates Phase 2 (mechanical rename) only.
 
-## 🔥 Active sprint (single item, top of stack)
+## 🔥 Active sprint (top of stack)
 
-- [ ] **Sales Sprint S0 — first paying client #2** — 90-day time-box. Daily cadence: 10 cold-outreach actions before noon, mix of personalised competitor-audit Looms (S0.T1), free-rebuild risk-reversal DMs (S0.T2), and adjacent-vendor referral asks (S0.T3) per [`CRITICAL-REVIEW-MITIGATIONS.md §3`](./decks/CRITICAL-REVIEW-MITIGATIONS.md#3--sales-acquisition-creative-options-sales-sprint-s0). Vertical: dentists (May–August recall-flush season). Exit: one paid CAD invoice cleared. Tracking: a single GitHub issue titled *"Sales Sprint S0 — first paying client #2 (90-day time-box, started YYYY-MM-DD)"*, labels `meta/sales-sprint priority/P1 human-only`. **Forbidden during sprint:** writing new decks, refactoring existing decks, opening Phase 0 §2.2 rows 3–12, touching the platform repo, renaming the brand, editing the negative list.
+> _Updated 2026-05-01: split into Phase 1A\* (demo-readiness gate, blocking) and Phase 1B (Sales Sprint S0). Per [`CRITICAL-REVIEW-MITIGATIONS.md §8`](./decks/CRITICAL-REVIEW-MITIGATIONS.md#8--demo-readiness-gate-the-hard-prerequisite-to-sales-sprint-s0) the operator surfaced four named integration gaps (G1–G4) on 2026-05-01. Sales Sprint S0 cannot start until those four close OR the §9.1 honest-pitch stack is committed in writing._
+
+### Step 1 — Phase 1A\* — Demo-readiness gate (2–4 week time-box, hard cap 4)
+
+- [ ] **G1 — Wire n8n orchestration hub end-to-end on the demo PoC.** Confirm hosting target (Railway vs. Oracle Cloud free-tier), wire the four credentials (Twilio inbound webhook, GitHub App PAT, Anthropic OAuth, Gemini API key), demo workflow runs from phone-edit → AI → preview link.
+- [ ] **G2 — Embed Vercel preview link inline in the client `/admin` page.** React component on `/admin/changes/[id]` showing preview URL as both clickable button and (ideally) `<iframe>`. Vercel deploy-hook payload already carries `preview_url` — surface it in the Server Action.
+- [ ] **G3 — Implement the publish-button auto-deploy Server Action.** Verify HMAC + Auth.js session → Octokit `pulls.merge` → audit log → wait for `deployment.succeeded` webhook → render production URL.
+- [ ] **G4 — Commit to Path B for the ownership claim.** Update `04-prospective-client-deck.md` and the dentist vertical pitch to say *"day-90 ownership transfer"* not *"day-1 ownership"*; align with §10.3 of the mitigations doc.
+- [ ] Run §8.2 checklist (1–6): borrowed-phone loop 5×, 90-second screen capture, four breakage-recovery scripts, what-can't-yet-do enumeration, axe-CI proves a real WCAG failure live, before/after Lighthouse case study live on `lumivara-forge.com`.
+
+### Step 2 — Phase 1B — Sales Sprint S0 (90-day time-box; starts only after Step 1 OR §9.1 commitment)
+
+- [ ] **Sales Sprint S0 — first paying client #2** — 90-day time-box. Daily cadence: 10 cold-outreach actions before noon, mix of personalised competitor-audit Looms (S0.T1), free-rebuild risk-reversal DMs (S0.T2), and adjacent-vendor referral asks (S0.T3) per [`CRITICAL-REVIEW-MITIGATIONS.md §3`](./decks/CRITICAL-REVIEW-MITIGATIONS.md#3--sales-acquisition-creative-options-sales-sprint-s0). Vertical: dentists (May–August recall-flush season). Exit: one paid CAD invoice cleared. Tracking: a single GitHub issue titled *"Sales Sprint S0 — first paying client #2 (90-day time-box, started YYYY-MM-DD)"*, labels `meta/sales-sprint priority/P1 human-only`. **Forbidden during sprint:** writing new decks, refactoring existing decks, opening Phase 0 §2.2 rows 3–12, touching the platform repo (except G1–G3 fixes if in flight), renaming the brand, editing the negative list.
 
 
 

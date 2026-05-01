@@ -388,7 +388,44 @@ That is enough to close a discovery call honestly. Everything else in the deck p
 - **Automation-blocking gaps (code/configuration the bot or operator-with-bot can fix):** G7, G11, G12, G17, G18, G19, G20, G23, G24 — **9 gaps**.
 - **Architectural choice (no work, just commit to a direction):** G13 — **1 gap**.
 
-The operator-blocking gaps are **time-and-money**, not skill — domain DNS, lawyer fees, insurance, vault drill, SHA. The automation-blocking gaps are mostly **1–2-day chunks**, except G7 (Stripe, 3–5 days) and G24 (`forge provision` CLI, 1–2 weeks). **None are blockers on closing the first paying client** if the §9.1 manual-with-disclosure stack is committed.
+The operator-blocking gaps are **time-and-money**, not skill — domain DNS, lawyer fees, insurance, vault drill, SHA. The automation-blocking gaps are mostly **1–2-day chunks**, except G7 (Stripe, 3–5 days, second-opinion estimate 2–3 weeks) and G24 (`forge provision` CLI, 1–2 weeks, second-opinion estimate 3–4 weeks). **None are blockers on closing the first paying client** if the §9.1 manual-with-disclosure stack is committed.
+
+### §11.3 — Additional gaps surfaced by independent codebase audit
+
+> _Independent Explore-agent audit of 18 implementation areas returned a **delivery-readiness score of 5.5/10** — substantively higher than the original review's "documentation hobby" framing implied, but consistent with the central diagnosis: real core platform, missing middle. The audit named three gaps the §11.1 inventory missed and a separate set of "hidden cliff" gaps that don't block client #2 but block client #5._
+
+| # | Gap | Class | Notes |
+|---|---|---|---|
+| **G25** | **Admin allowlist is hardcoded in `src/lib/admin-allowlist.ts`.** Adding a new admin = code commit + deploy. No `/admin/settings` UI for allowlist CRUD; no audit log on allowlist changes. | Automation-blocking | 3–4 days. Migrate to Upstash Redis (already a dep). At client #4+ the operator manages multiple delegated admin emails; hardcoded list doesn't scale. |
+| **G26** | **Per-client OAuth provisioning is half-baked.** `forge provision` CLI is planned to auto-create Vercel projects, n8n workflows, Twilio numbers — **but** Google Cloud Console OAuth 2.0 client creation is UI-only (no API), and Microsoft Entra consent prompts can't be automated. `14-critique-operations-sequencing §3` acknowledges *"~70% can be automated; OAuth apps will remain manual."* | Mixed | 1–2 weeks. The fix is a guided manual-step overlay in `forge provision` (copy-paste prompts with screenshots, validation checks), not full automation. |
+| **G27** | **Phone-shortcut path was deprecated (`docs/_deprecated/PHONE_SETUP.md`).** Canonical phone-edit path is now: client uses the `/admin` web form on their phone (PWA-style) → n8n → AI → preview → tap publish. The deck pack still occasionally implies an iOS Shortcut. **Update deck language** to match the canonical web-form path. | Architectural alignment | 1 hour. This is a deck wording fix, not a code fix. |
+
+### §11.4 — "Hidden cliff" gaps (don't block client #2; block client #5)
+
+These do not stop the demo. They stop the *sustainable delivery model* the deck pack promises. Address before the cap binds.
+
+| # | Hidden-cliff gap | Why it bites at scale |
+|---|---|---|
+| H1 | **No operator capacity-model enforcement.** Decks claim a 30-client cap but no tooling stops the operator taking a 31st. No client-pause CLI; no "you're at 25, time to hire" prompt. | At client #25–35, operator burnout is the single biggest existential risk per `01-business-plan §8`. Without enforcement, the cap is honour-system. |
+| H2 | **No client-success / ROI metrics.** Admin portal shows triage/execute pipeline status, not *"is client #1 getting ROI?"* No churn prediction, no usage-based tier-upgrade prompt. | Renewal conversations at month 12 are unsupported by data. Operator is selling tier upgrades from gut feel, not from "you used X this month, T3 would unlock Y." |
+| H3 | **No multi-operator handoff playbook.** All runbooks (`06`, `07`, `19-evidence-log`) assume one operator. Vault has access control; GitHub CODEOWNERS / approval rules do not exist. | Adding a contractor (per §9.1 stack) breaks several invariants the documentation assumes. |
+| H4 | **No vendor-portability story.** Decks claim *"operator-licensed system."* In reality Vercel, Resend, Twilio, n8n on Railway are operator-account-dependent. If the operator vanishes, the client's n8n workflows on the operator's Railway are stranded. | The "what happens if you go away" check in `04-prospective-client-deck.md` is partially false: site keeps running on Vercel; the autopilot does not. |
+| H5 | **No cost monitoring per client.** No CLI like `forge costs --month 2026-04 --by-client` summing Vercel + Twilio + Railway + Anthropic + Gemini per client. Operator discovers overruns in credit-card bills. | At 10+ clients, single-client AI/SMS overrun is invisible until billing date. |
+| H6 | **No client-escalation runbook.** Client #2 says *"my site is slow"* — no dashboard surfaces *"this client's intake-webhook latency is 5× baseline"*; no documented RCA flow. | Multi-client mode without an escalation playbook is a recipe for missed SLAs. |
+| H7 | **Missing e2e test for the full intake → prod loop.** 13 unit tests exist; only `e2e/a11y.spec.ts` and `e2e/smoke.spec.ts`. The single most demo-relevant flow is not covered. | Demo-day will be the first end-to-end test the loop has had. Murphy. |
+| H8 | **No deployment health check on the live site.** `deploy-drift-watcher` checks main vs prod; doesn't check whether prod is actually *serving* traffic or whether the client's custom-domain DNS broke. | Operator finds out the client's site is down via the client's angry text, not via monitoring. |
+
+### §11.5 — Revised delivery-readiness score
+
+**5.5/10**, where 10 is what the deck pack claims. The Explore-agent audit named the components that move the score:
+
+- **Score-up:** Admin portal real (Auth.js + GitHub + Vercel integration); HMAC handshake production-grade (timing-safe, replay-protected); deploy-drift-watcher prevents silent prod overwrites; n8n workflow templates exportable; evidence-log template schema-complete; deploy-promotion guard (`assertSafePromotion`) implemented and tested.
+- **Score-down:** `forge provision` CLI is critical-path-blocked (manual 13 steps per client); Stripe automation a stub; legal templates absent; PIPEDA posture incomplete; no error monitoring; admin allowlist hardcoded.
+
+The score is **acceptable for closing client #2** under the §9.1 manual-with-disclosure stack. It is **not acceptable for client #5** without the four catch-up workstreams in §12.
+
+---
+
 
 ---
 

@@ -936,5 +936,261 @@ liability scores in §1–§6 are what is being avoided by adopting it.
 
 ---
 
-*Section §8 (research synthesis + bibliography + methodology) lands in
-the next commit.*
+## §8 — Research synthesis, bibliography, and methodology
+
+### §8.1 — Methodology
+
+This document was assembled on 2026-05-01 by the operator-instance
+Claude Code agent on branch `claude/review-self-maintaining-website-28Fvp`,
+with two parallel harsh-critic research passes commissioned in
+background subagents:
+
+1. **Competitor & market research pass.** Brief: enumerate direct and
+   adjacent competitors as of May 2026; pressure-test SMB
+   willingness-to-pay; surface trust-and-adoption barriers for
+   AI-shipped code; benchmark distribution math; address the
+   "no-decay site" thesis from the buyer's revealed-preference angle;
+   surface anything fatal. WebSearch + WebFetch.
+2. **Operator-economics & sustainability pass.** Brief: pressure-test
+   the "$0/mo per client extra cost" claim against vendor ToS
+   (Anthropic, GitHub Actions, Vercel); investigate operator-burnout
+   data; gauge the future-of-work runway before commoditization;
+   estimate realistic API + CI + hosting cost at 30-client scale;
+   surface the trust-transfer / SPOF problem; surface anything fatal.
+   WebSearch + WebFetch.
+
+Both passes converged on **competitive substitution + vendor ToS +
+asset depreciation** as the dominant kill-factors. Convergence between
+two independent research briefs on three of the most damaging findings
+is taken as signal, not noise.
+
+### §8.2 — The single most damaging facts (convergence pick of both passes)
+
+Ranked by tractability of the threat:
+
+1. **Anthropic's own legal page now says Pro/Max OAuth is for
+   "ordinary, individual usage"; products and services "should use
+   API key authentication"; enforcement reserved at sole discretion,
+   no notice required.** [`code.claude.com/docs/en/legal-and-compliance`](https://code.claude.com/docs/en/legal-and-compliance).
+   The April 4 2026 ban on third-party agentic tools is the warning
+   shot. Forced API billing for the deck pack's 30-client pipeline
+   is plausibly **CAD $1,500–$4,000/mo**, wiping out Tier 1 and
+   cratering Tier 2/3 margins — putting the practice in the same band
+   as the WP-care analogue, which does this legally.
+2. **Wix Harmony shipped voice-driven AI editing on January 21 2026
+   at $17/mo with no upcharge; Squarespace Beacon AI does the same at
+   $16/mo; GoDaddy Airo packages an agentic compliance + app-builder
+   agent at $10–$25/mo distributed to ~21M existing GoDaddy customers.**
+   The "phone-edit + AI maintained" wedge is now a commodity feature
+   of every horizontal SMB site builder, distributed to ~100M existing
+   tenants at one-fifth to one-tenth the deck pack's Tier 2 price.
+3. **The asset itself is depreciating fast.** Google AI Overviews cut
+   organic CTR by 61–79%; global publisher Google traffic down ~33%
+   in 2025; TikTok Shop hit 18.2% of US social commerce; >50% of
+   Gen Z / Millennial shoppers prefer in-platform checkout. The
+   operator is selling a maintenance retainer on **a deprecating
+   asset**, in a year when the buyer's own analytics increasingly
+   say the asset matters less every quarter.
+
+### §8.3 — Bibliography (consolidated from both research passes)
+
+#### Vendor ToS and pricing — load-bearing for §5.6
+
+- [Anthropic — Claude Code Legal & Compliance](https://code.claude.com/docs/en/legal-and-compliance)
+- [Anthropic — Updates to Acceptable Use / Consumer Terms / Privacy Policy](https://privacy.claude.com/en/articles/9301722-updates-to-our-acceptable-use-policy-now-usage-policy-consumer-terms-of-service-and-privacy-policy)
+- [VentureBeat — Anthropic cuts off Claude subscriptions for OpenClaw and third-party AI agents (April 2026)](https://venturebeat.com/technology/anthropic-cuts-off-the-ability-to-use-claude-subscriptions-with-openclaw-and)
+- [The Register — Anthropic clarifies ban on third-party tool access to Claude (Feb 2026)](https://www.theregister.com/2026/02/20/anthropic_clarifies_ban_third_party_claude_access/)
+- [PYMNTS — Third-party agents lose access as Anthropic tightens Claude usage rules](https://www.pymnts.com/artificial-intelligence-2/2026/third-party-agents-lose-access-as-anthropic-tightens-claude-usage-rules/)
+- [Anthropic Claude Code OAuth policy explained, Feb 2026](https://aihackers.net/posts/anthropic-claude-code-oauth-policy-feb-2026/)
+- [Vercel — Fair Use Guidelines](https://vercel.com/docs/limits/fair-use-guidelines)
+- [Vercel — Hobby plan docs](https://vercel.com/docs/plans/hobby)
+- [Vercel — Pricing](https://vercel.com/pricing)
+- [Vercel — Pro plan](https://vercel.com/docs/plans/pro-plan)
+- [Vercel — Terms of Service](https://vercel.com/legal/terms)
+- [Vercel community — Hobby plan account remains blocked after exceeding fair use](https://community.vercel.com/t/vercel-hobby-plan-account-remains-blocked-after-exceeding-fair-use-limits/37700)
+- [Vercel community — Hobby plan flagged for abuse](https://community.vercel.com/t/hobby-plan-flagged-for-abuse/20838)
+- [Schematic — Vercel pricing & hidden costs 2026](https://schematichq.com/blog/vercel-pricing)
+- [Kuberns — Vercel pricing 2026 explained](https://kuberns.com/blogs/vercel-pricing/)
+- [GitHub — Billing for Actions](https://docs.github.com/billing/managing-billing-for-github-actions/about-billing-for-github-actions)
+- [GitHub Pricing](https://github.com/pricing)
+- [GitHub Changelog — 2026 Actions pricing changes](https://github.blog/changelog/2025-12-16-coming-soon-simpler-pricing-and-a-better-experience-for-github-actions/)
+- [CostOps — GitHub Actions per-minute rates](https://costops.dev/guides/github-actions-pricing)
+- [Apache Infra — GitHub Actions policy (250k min/wk benchmark)](https://infra.apache.org/github-actions-policy.html)
+
+#### Real cost of running multi-LLM dev agents — load-bearing for §5.1
+
+- [Finout — Claude Opus 4.7 pricing 2026](https://www.finout.io/blog/claude-opus-4.7-pricing-the-real-cost-story-behind-the-unchanged-price-tag)
+- [BenchLM — Claude API pricing Haiku 4.5 / Sonnet 4.6 / Opus 4.7](https://benchlm.ai/blog/posts/claude-api-pricing)
+- [Verdent — Claude Code pricing 2026, real usage benchmarks](https://www.verdent.ai/guides/claude-code-pricing-2026)
+- [Morph — The real cost of AI coding in 2026](https://www.morphllm.com/ai-coding-costs)
+- [Claude Code GitHub — `claude -p` with OAuth bills as API usage (#43333)](https://github.com/anthropics/claude-code/issues/43333)
+- [Claude Code GitHub — OAuth fallback feature request (#27990)](https://github.com/anthropics/claude-code/issues/27990)
+- [Paperclip discussion — ToS check on running Claude Code agents](https://github.com/paperclipai/paperclip/discussions/1163)
+
+#### Direct & adjacent competitors — load-bearing for §3 and §6
+
+- [Wix Harmony — ALM Corp analysis](https://almcorp.com/blog/wix-harmony-ai-website-builder-complete-guide-2026/)
+- [Wix Harmony launch — PetaPixel, Jan 21 2026](https://petapixel.com/2026/01/21/wix-harmony-lets-you-build-a-website-using-natural-language-prompts/)
+- [Wix Vibe Editor — Wix Help Center](https://support.wix.com/en/article/wix-vibe-about-the-wix-vibe-editor)
+- [Wix pricing](https://www.wix.com/plans)
+- [Squarespace Design Intelligence](https://www.squarespace.com/design-intelligence)
+- [Squarespace AI tools rollout — Search Engine Journal](https://www.searchenginejournal.com/squarespace-rolls-out-new-ai-tools-for-seo-and-design/557220/)
+- [Squarespace Beacon AI overview — Haskell Digital](https://www.haskelldigitalservices.com/blog/squarespace-finish-layer-97wc2-drs9h)
+- [GoDaddy Airo.ai press release](https://aboutus.godaddy.net/newsroom/news-releases/press-release-details/2025/GoDaddy-Brings-Agentic-AI-to-Small-Businesses-with-Launch-of-Airo-ai/default.aspx)
+- [GoDaddy Airo product page](https://www.godaddy.com/airo)
+- [Hostinger AI Website Builder](https://www.hostinger.com/ai-website-builder)
+- [Hostinger pricing](https://www.hostinger.com/pricing/website-builder)
+- [Durable pricing](https://durable.com/pricing)
+- [10Web AI Website Builder](https://10web.io/ai-website-builder/)
+- [Framer vs Webflow 2026 — FlowNinja](https://www.flowninja.com/blog/framer-vs-webflow)
+- [Framer review — Effloow](https://effloow.com/articles/framer-review-ai-website-builder-guide-2026)
+- [Vercel v0.app launch — SiliconANGLE Aug 2025](https://siliconangle.com/2025/08/11/vercels-v0-app-launches-allowing-anyone-create-deploy-working-app-website-using-prompts/)
+- [v0 by Vercel guide — NxCode 2026](https://www.nxcode.io/resources/news/v0-by-vercel-complete-guide-2026)
+- [Building a marketing site with v0 — MarsBased](https://marsbased.com/blog/2025/11/05/building-a-marketing-website-with-vercel-s-v0-our-honest-experience)
+- [Lovable pricing reality — Superblocks](https://www.superblocks.com/blog/lovable-dev-pricing)
+- [Cursor for non-developers — CodePup](https://codepup.ai/blog/best-cursor-alternative-non-developers)
+
+#### Managed-WP analogue + retainer pricing — load-bearing for §3.2
+
+- [WP Buffs alternatives & pricing — SeahawkMedia](https://seahawkmedia.com/compare/wp-buffs-alternatives/)
+- [Best WordPress care plans — FatLab](https://fatlabwebsupport.com/blog/website-maintenance/best-wordpress-care-plans/)
+- [Web maintenance retainer pricing — TheClayMedia 2025](https://theclaymedia.com/website-retainer-service-agency/)
+- [Website maintenance cost — Webstacks 2025](https://www.webstacks.com/blog/how-much-does-website-maintenance-cost)
+
+#### SaaS / SMB churn benchmarks — load-bearing for §3.2 and §6
+
+- [SaaS churn benchmarks 2025 — Vena](https://www.venasolutions.com/blog/saas-churn-rate)
+- [Optif.ai — B2B SaaS churn benchmarks](https://optif.ai/learn/questions/b2b-saas-churn-rate-benchmark/)
+- [Agile Growth Labs — SaaS churn benchmarks 2025](https://www.agilegrowthlabs.com/blog/saas-churn-rate-benchmarks-2025/)
+- [SerpSculpt — B2B retention statistics 2025](https://serpsculpt.com/b2b-customer-retention-statistics/)
+- [WeAreFounders — SaaS churn rates and CAC by industry, 2025 data](https://www.wearefounders.uk/saas-churn-rates-and-customer-acquisition-costs-by-industry-2025-data/)
+
+#### SMB willingness-to-pay — load-bearing for §2 and §4.5
+
+- [Law firm marketing budget 2026 — My Legal Academy](https://mylegalacademy.com/kb/law-firm-marketing-budget-allocation-guide-2026/amp)
+- [Solo law firm marketing reality — LuckyFishMedia](https://www.luckyfishmedia.com/2026/the-marketing-budget-reality-for-new-solo-law-firms-year-one-numbers/)
+- [Dental marketing budget — Vizisites 2025](https://vizisites.com/how-much-do-dentists-spend-on-marketing/)
+- [Dental SEO pricing — Digitalis Medical](https://digitalismedical.com/blog/dental-seo-pricing/)
+- [Marketing LTB — Small business website statistics](https://marketingltb.com/blog/statistics/small-business-website-statistics/)
+
+#### AI-shipped-code reliability — load-bearing for §4.4 and §6.2
+
+- [Veracode 2025 GenAI Code Security Report — Baytech writeup](https://www.baytechconsulting.com/blog/ai-vibe-coding-security-risk-2025)
+- [SoftwareSeni — AI-generated code risks deep dive](https://www.softwareseni.com/ai-generated-code-security-risks-why-vulnerabilities-increase-2-74x-and-how-to-prevent-them/)
+- [Replit DB deletion — Fortune (July 2025)](https://fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure/)
+- [Replit DB deletion — The Register](https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/)
+- [Lovable security crisis — TheNextWeb](https://thenextweb.com/news/lovable-vibe-coding-security-crisis-exposed)
+- [Vibe coding failures compendium — Crackr](https://crackr.dev/vibe-coding-failures)
+- [When the vibes are off — Lawfare on AI-code security risk](https://www.lawfaremedia.org/article/when-the-vibe-are-off--the-security-risks-of-ai-generated-code)
+
+#### Accessibility / regulatory exposure — load-bearing for §2.4
+
+- [2024 ADA accessibility lawsuit report — UsableNet](https://blog.usablenet.com/2024-digital-accessibility-lawsuit-report-relased-insights-for-2025)
+- [2025 mid-year ADA lawsuit report — EcomBack](https://www.ecomback.com/ada-website-lawsuits-recap-report/2025-mid-year-ada-website-lawsuit-report)
+- [ADA litigation analysis — DarrowEverett](https://darroweverett.com/ada-website-accessibility-litigation-insights-legal-analysis/)
+
+#### Distribution / cold-outbound benchmarks — load-bearing for §3.4
+
+- [Cold email benchmark report 2026 — Instantly](https://instantly.ai/cold-email-benchmark-report-2026)
+- [Cold-outbound reply benchmarks — TheDigitalBloom](https://thedigitalbloom.com/learn/cold-outbound-reply-rate-benchmarks/)
+- [B2B cold email benchmark 2025 — Built For B2B](https://www.builtforb2b.com/blog/b2b-cold-email-benchmark-2025)
+- [LinkedIn outreach state — Expandi H1 2025](https://expandi.io/blog/state-of-li-outreach-h1-2025/)
+- [LinkedIn outreach benchmarks — Belkins](https://belkins.io/blog/linkedin-outreach-study)
+- [CAC benchmarks 2026 — First Page Sage](https://firstpagesage.com/reports/average-cac-for-startups-benchmarks/)
+- [True CAC by industry — Tocobaga / SolvingHow](https://solvinghow.com/blog/if-you-know-these-4-holy-marketing-metrics-you-can-deduce-the-rest-of-your-funnel-2025-10-27)
+- [CAC by industry trends 2025 — growth-onomics](https://growth-onomics.com/customer-acquisition-cost-by-industry-2025-trends/)
+
+#### Asset-depreciation / future-of-work — load-bearing for §6.3 and §6.4
+
+- [AI Overviews CTR impact Sept 2025 — Seer Interactive](https://www.seerinteractive.com/insights/aio-impact-on-google-ctr-september-2025-update)
+- [AI Overviews killing CTR — DataSlayer](https://www.dataslayer.ai/blog/google-ai-overviews-the-end-of-traditional-ctr-and-how-to-adapt-in-2025)
+- [AI Overviews stats — WordStream](https://www.wordstream.com/blog/google-ai-overviews-statistics)
+- [Global Google traffic -33% — Press Gazette](https://pressgazette.co.uk/media-audience-and-business-data/google-traffic-down-2025-trends-report-2026/)
+- [TikTok Shop social commerce share — eMarketer](https://www.emarketer.com/press-releases/tiktok-shop-makes-up-nearly-20-of-social-commerce-in-2025/)
+- [Linktree / Stan Store / Beacons positioning — Beacons.ai](https://beacons.ai/i/blog/linktree-vs-stan)
+- [Stan Store vs Beacons vs Linktree — Tagnovate](https://tagnovate.com/blog/stan-store-vs-beacons-vs-linktree)
+- [Lovable $200M→$400M ARR — Fortune](https://fortune.com/2025/11/21/lovables-ceo-ai-vibe-coding-enterprise-ambitions-annual-revenue/)
+- [Vibe coding statistics 2026 — 13Labs](https://www.13labs.au/guides/vibe-coding-statistics-2026)
+- [Vibe coding by the numbers — FindSkill](https://findskill.ai/blog/vibe-coding-by-the-numbers/)
+- [State of vibe coding 2026 (SaaSpocalypse) — Taskade](https://www.taskade.com/blog/state-of-vibe-coding-2026)
+- [The SaaSpocalypse — The SaaS CFO](https://www.thesaascfo.com/the-saaspocalypse-ai-agents-vibe-coding-and-the-changing-economics-of-saas/)
+- [2026 SaaSpocalypse, B2B software stocks plunging 20% — Financial Content](https://markets.financialcontent.com/stocks/article/marketminute-2026-3-24-the-2026-saaspocalypse-why-b2b-software-stocks-are-plunging-20)
+- [Lovable — Small business trends 2026](https://lovable.dev/guides/small-business-trends-2026)
+
+#### Operator burnout / Canadian small-business climate — load-bearing for §5.3 and §5.5
+
+- [WiFiTalents — Entrepreneur burnout statistics](https://wifitalents.com/statistic/entrepreneur-burnout/)
+- [The Interview Guys — State of workplace burnout 2025](https://blog.theinterviewguys.com/workplace-burnout-in-2025-research-report/)
+- [ResourceGuru — 2025 agency overworking report](https://resourceguruapp.com/blog/agencies/agency-overworking-report-2025)
+- [Women Conquer Biz — Why solopreneurs burn out](https://www.womenconquerbiz.com/why-solopreneurs-burn-out-marketing-alone/)
+- [CFIB — Canada is losing businesses at an alarming rate (2026)](https://www.cfib-fcei.ca/en/media/canada-is-losing-businesses-at-an-alarming-rate-heres-how-we-fix-the-countrys-entrepreneurial-drought)
+- [Retail Insider — CFIB Q4 2025 closures vs openings](https://retail-insider.com/retail-insider/2026/04/canada-losing-businesses-at-an-alarming-rate-cfib/)
+- [Wealth Professional — CFIB closures outpace starts](https://www.wealthprofessional.ca/news/industry-news/small-business-closures-now-outpace-new-starts-in-canada-cfib/392288)
+- [Taskade — One-person company trends](https://www.taskade.com/blog/one-person-companies)
+- [PYMNTS — The one-person billion-dollar company is here](https://www.pymnts.com/artificial-intelligence-2/2026/the-one-person-billion-dollar-company-is-here/)
+
+#### DesignJoy / productized-services analogue
+
+- [DesignJoy blueprint — Zack Liu Medium](https://medium.com/@zack_liu/the-designjoy-blueprint-how-1-person-handles-35-clients-at-5-000-month-no-meetings-allowed-6fd59df830fe)
+- [Brett Williams 98% margin interview — Novum HQ](https://novumhq.com/brett-williams-interview/)
+- [Failory — DesignJoy review (cancellation/refund mechanics)](https://www.failory.com/blog/designjoy-review)
+- [Recreating DesignJoy — GetZendo](https://getzendo.io/blog/recreating-designjoy-business/)
+
+#### SLA / trust-transfer / freelance ownership norms — load-bearing for §5.3
+
+- [Kinsta — Hosting SLAs and guarantees](https://kinsta.com/blog/slas-guarantees-wordpress-hosting/)
+- [WP Agency Stack — Hosting SLAs explained for agencies](https://wpagencystack.com/hosting-slas-explained-for-agencies/)
+- [Quora — Domain & hosting ownership for freelance web devs](https://www.quora.com/When-doing-freelance-web-design-do-I-pay-for-and-manage-the-domain-name-and-web-hosting-for-my-clients)
+
+### §8.4 — Limits and what would change the read
+
+This document is one harsh read among many possible reads. Specific
+limits the operator should know:
+
+- **The vendor-ToS reading is current as of May 2026.** Anthropic,
+  Vercel, and GitHub can all loosen, tighten, or restate their
+  positions at any time. The §5.6 critique survives any *tightening*;
+  it is only weakened by an explicit *loosening* in writing — e.g.
+  Anthropic publishing a "commercial Pro/Max" tier, or Vercel
+  blessing the multi-client-on-Pro-team pattern. Re-check both pages
+  on every quarterly review.
+- **The competitive-substitution dating is empirical for Wix Harmony
+  (Jan 21 2026) and Squarespace Beacon AI (2025) and GoDaddy Airo
+  (2025) and Vercel v0 (Aug 2025).** If a future Wix / Squarespace
+  / GoDaddy product cycle *removes* AI-driven editing from the
+  default tier (highly unlikely), the §3.1 critique softens.
+- **The asset-depreciation read assumes 2025–2026 Google AIO + social
+  commerce trajectories continue.** A regulatory or platform reversal
+  (e.g., a successful publisher antitrust action against Google over
+  AIO compression) would slow the depreciation. The probability of
+  such a reversal landing within the operator's 24-month profitability
+  ramp is, on current evidence, low.
+- **The salvageable §7 offer assumes Canadian SMB demand for one-time
+  custom marketing sites holds at 2024–2026 levels.** CFIB Q4 2025
+  data shows Canadian small-business closures outpacing openings for
+  six consecutive quarters; if that continues for another year, the
+  §7 demand floor weakens too.
+
+A future review would be more useful than this one if the operator runs
+the §7.4 honest re-positioning pitch on 50 prospects in one vertical
+across 90 days and brings the reply-rate + close-rate evidence back. At
+that point the conversation moves from "is this a business" (the
+question this document settles negatively for the offer as written) to
+"what is the right shape of the business at the §7 scale" (the question
+the operator should be answering with data, not decks).
+
+---
+
+## §9 — The single sentence the operator should pin to the wall
+
+> **"The customer doesn't want a self-maintaining website. The customer
+> wants a website they don't have to think about — and the cheapest way
+> to get that today is to pay $17/month to Squarespace and never log
+> in. Until you can name a customer who paid you to *not* be Squarespace,
+> every additional artefact in this repo is a liability, not an asset."**
+
+---
+
+*Last updated: 2026-05-01. Sources current as of May 2026; quarterly
+re-check on the Anthropic / Vercel / GitHub ToS pages is the single
+highest-value maintenance cadence on this document.*

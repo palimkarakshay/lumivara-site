@@ -31,6 +31,7 @@ The rendered PDFs are the durable artefacts. Gemini share pages return 403 to pr
 | 06 | `06-drawbacks-and-honest-risks.md` | The risks, choke points, and engineering realities — published so the operator can answer them straight | Operator, investor & partner decks |
 | 07 | `07-pipeda-breach-notification.md` | PIPEDA breach-notification trigger, "as soon as feasible" window, 24-month record-keeping floor, plus PHIPA (Ontario) + Law 25 (Quebec) overlays — sourced seed for the future compliance checklist | Operator, future PIPEDA-checklist authors |
 | 08 | `08-self-maintaining-website-negative-study.md` | Harsh-critic mirror to the rest of this folder. Pressure-tests the **idea itself** — should the "self-maintaining website" product exist? Companion to `decks/CRITICAL-REVIEW.md` (which critiques the deck pack) and `06` (which catalogues in-model risks). External research from two parallel harsh-critic agents (competition + operator-economics passes, May 2026). | Operator, on a bad-faith Tuesday morning |
+| 09 | `09-pivot-plan-and-archive-list.md` | **Prescriptive companion** to `08`. Pivot evaluation matrix (eleven candidates ranked), the recommended hedged three-leg stack (senior freelance + AI consulting / AODA audits / corporate-hedge), 90-day week-by-week plan, file-by-file archive list (~70,000 lines), file-by-file keep list (~18,000 lines), un-archive criteria, risks of the pivot itself, and bibliography from three parallel research agents (May 2026). | Operator, on a Monday after the pivot decision |
 
 ---
 

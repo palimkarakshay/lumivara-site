@@ -1191,6 +1191,101 @@ the operator should be answering with data, not decks).
 
 ---
 
+## §10 — Cross-fed enhancements to §7 and §8.4 (added 2026-05-01)
+
+A second pass — three parallel research agents commissioned to stress-
+test §7 and §8.4 — surfaced material the first pass under-considered.
+The full prescriptive plan, archive list, and pivot recommendation
+lives in [`09-pivot-plan-and-archive-list.md`](./09-pivot-plan-and-archive-list.md).
+The cross-fed additions to this document are below — both for the
+operator's continuity-of-reading and so that `08` does not go stale
+relative to `09`.
+
+### §10.1 Additions to §7 (salvage paths)
+
+The original §7 lands a single salvage path: shrink the offer to a
+one-time CAD $4,500–$6,000 build + optional CAD $79–$149/mo
+improvement-run subscription. That path is real and defensible but is
+**Pivot A** in the eleven-pivot matrix (`09 §2`), with a fit score of
+**7.0 / 10**. Six pivots score higher. The new sub-sections:
+
+- **§7.5 (new) — the recommended hedged three-leg stack.** See `09 §3`.
+  Combines senior freelance + AI-integration consulting (Leg A,
+  CAD $130–$220k/yr) with AODA / WCAG 2.1 AA audits-and-remediation
+  against the December 31 2026 statutory deadline (Leg B, CAD
+  $50–$130k/yr) plus a corporate-job interview loop run in parallel
+  as price discovery (Leg C, hedge only). Combined target CAD
+  $200–$370k. Utilises ~70% of platform investment vs. ~15% for §7.4.
+- **§7.6 (new) — the boilerplate-as-product trap, named.** Tailwind
+  Labs lost ~80% of revenue in 2025 and laid off 75% of engineering in
+  January 2026 because Claude / ChatGPT / Cursor began generating
+  Tailwind CSS directly. Any pivot that re-uses the platform code as
+  a developer-targeted product (`09 §2` Pivots F, G) sits on the same
+  labour-replacement curve that killed the original thesis. Avoid.
+- **§7.7 (new) — the corporate-hedge clause.** The comparable-pivots
+  agent's framing: *"a staff-engineer offer at a Canadian-or-remote-US
+  employer is the highest-floor lowest-variance option; the operator
+  should run that interview loop in parallel with any path above as
+  price discovery on their own market value."* Pivot I in the §2
+  matrix scores 9.0 — the second-highest single row. The hybrid Pivot
+  K (day-job + small Stage-1 side practice) scores 9.5 and is the
+  matrix winner.
+
+### §10.2 Additions to §8.4 (limits and what would change the read)
+
+The original §8.4 named four "what would change the read" levers. The
+stress-test pass surfaced six more, each with current-as-of-May-2026
+status:
+
+- **§8.4.5 — Anthropic enterprise repricing (April 2026)** moved
+  *against* the §5.6 ToS softening rather than toward it. Anthropic
+  ejected bundled tokens from the enterprise seat deal on April 16
+  2026 (per *The Register*); Claude Code seats now USD 20/seat with
+  mandatory consumption commitments. The trajectory is more, not less,
+  consumption metering. **Re-check Anthropic's pricing page on every
+  quarterly refresh, not just the legal-and-compliance page.**
+- **§8.4.6 — Google AIO regulatory pressure** is real but slow. UK
+  CMA opt-out announcement (January 28 2026), EU Commission
+  investigation (December 2025) raise plausibility of a partial
+  voluntary mitigation by Q4 2026 that *slows* but does not *reverse*
+  the §6.3 asset-depreciation read.
+- **§8.4.7 — AODA December 31 2026 deadline** is the single most
+  actionable read-changer surfaced. The operator's existing axe-core
+  + Lighthouse CI pipeline is the prebuilt delivery surface. Pivot E
+  in the §2 matrix (Improvement-as-a-Service, fit 7.5) is anchored
+  on this lever and forms Leg B of the recommended stack.
+- **§8.4.8 — OPC enforcement against an AI website builder** (12–24
+  month possibility per the agent) would convert the §2.4 PIPEDA
+  framing from "rhetorical" to "commercial." Not actionable today;
+  worth tracking quarterly.
+- **§8.4.9 — a major Wix or Squarespace outage during retail peak**
+  is statistically near-certain over a 12-month window (Wix had 4
+  major outages in the last 90 days at median 49-min duration); would
+  meaningfully soften §3.1's "horizontal builders own the wedge" read
+  **for the duration of the outage news cycle, not structurally**.
+- **§8.4.10 — an Anthropic / OpenAI / Google price war on inference**
+  (40–60% probability of 30–50% Sonnet / Haiku token-price drop in
+  2026) would convert §5.6's "forced API billing wipes out margin"
+  from a kill-shot to a manageable line item.
+
+The enhancements are recorded both here in §10 and in `09 §9` so that
+neither document goes stale relative to the other.
+
+### §10.3 The Pieter Levels comparable
+
+The comparable-pivots agent surfaced one cautionary precedent worth
+naming alongside `08 §9`'s pin-to-wall sentence: **Pieter Levels killed
+Avatar AI 60 days after Lensa shipped**, then rebuilt as Photo AI on
+the same infrastructure (now USD $132–138K MRR). The lesson: when a
+better-distributed competitor ships your wedge, the *speed of the
+kill* is the asset, not the engineering. The operator's analogous
+moment is Wix Harmony's January 21 2026 launch. The kill window has
+already opened; this document is the closer.
+
+---
+
 *Last updated: 2026-05-01. Sources current as of May 2026; quarterly
 re-check on the Anthropic / Vercel / GitHub ToS pages is the single
-highest-value maintenance cadence on this document.*
+highest-value maintenance cadence on this document. **§10
+cross-references `09-pivot-plan-and-archive-list.md`** — read both
+documents together; the prescriptive operational plan lives in `09`.*

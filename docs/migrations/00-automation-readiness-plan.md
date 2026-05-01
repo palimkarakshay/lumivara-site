@@ -2,11 +2,23 @@
 
 # Automation Readiness & Bot-Driven Migration Plan
 
+> **🚨 RESEQUENCING BANNER — 2026-05-01.** The phase ordering below is
+> **infrastructure-first, sales-last** and has been formally resequenced
+> per [`docs/decks/CRITICAL-REVIEW-MITIGATIONS.md §5`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#5--resequenced-project-plan)
+> after the harsh-critic review of the deck pack at
+> [`docs/decks/CRITICAL-REVIEW.md`](../decks/CRITICAL-REVIEW.md). The
+> short version: **Phases 2–6 are now `Blocked-on-revenue`** and a new
+> **Phase 1B (Sales Sprint S0)** runs in parallel with the (demoted)
+> Phase 1A streak. The §3.1 streak gate continues to gate **Phase 2
+> only**; it no longer gates downstream phases or sales work. Treat the
+> phase descriptions below as the technical north star, but consult the
+> mitigations doc for the **active sequencing** until client #2 closes.
+
 > **Goal.** Use this repo (`palimkarakshay/lumivara-site`) as the
 > **proof-of-concept** for the autopilot, then have the bot drive the
 > Dual-Lane Repo migration into the new platform repo + per-client repos.
 >
-> **Status:** Drafted 2026-04-29 (this PR). Pre-Run S1, pre-P5 bootstrap.
+> **Status:** Drafted 2026-04-29; resequenced 2026-05-01. Pre-Run S1, pre-P5 bootstrap.
 > Operator-blocking rows are flagged ☐ **OPERATOR**; bot-runnable rows
 > are flagged ▶ **BOT** with the exact Claude Code prompt to paste.
 >

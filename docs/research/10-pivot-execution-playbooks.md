@@ -807,4 +807,390 @@ Listing produces inbound at the operator's experience level.
 
 ---
 
-*Playbooks I, J, K + cross-pivot impact matrix fill in over the next commit.*
+## §10 — Playbook I: Full pause — senior platform / staff engineering role
+
+**Match score:** 9.0 / 10. Take a senior IC / staff engineering role
+at a Canadian or remote-friendly US company. Restart side-project
+ambition in 12–24 months. Highest floor, lowest variance.
+
+### §10.I.1 Prerequisites
+
+- Pre-flight §1 complete (yes — even for a job hunt, the §5.6 ToS
+  exposure must be closed before the operator's name is on a public
+  job-search profile).
+- A 1-page resume (NOT a 4-page CV) ranking the most recent role first.
+- A LinkedIn profile aligned with the §1.6 positioning.
+- The operator is psychologically ready to take a corporate role —
+  this is not a fallback for someone who is genuinely allergic to
+  meetings, since staff IC roles ship with weekly architecture review,
+  on-call, and incident response.
+
+### §10.I.2 Week-by-week
+
+| Wk | Goal | Specific actions |
+|---|---|---|
+| 1 | Resume + LinkedIn refresh | Update résumé and LinkedIn. Tag `lumivara-forge.com` as a 2-year solo platform engagement on the résumé and the LinkedIn header. |
+| 2 | Apply broad | Apply to 30 senior IC / staff roles: Shopify, Cohere, Wealthsimple, Coinbase Canada, Postman, Vercel (if posting), Anthropic (if posting), Hugging Face Canada, AI-native Canadian startups (Cohere Labs, Tenstorrent, Borealis AI, Vector Institute spinouts). Plus 10 remote-US (Stripe, GitHub, GitLab, HashiCorp, Vercel, Linear, Anthropic). |
+| 3–4 | Phone screens | First 5–10 phone screens. Decline non-senior offers immediately. |
+| 5–6 | Technical interviews | 2–4 technical loops. Bring the platform repo as the take-home. |
+| 7–10 | Final rounds | 1–3 onsite / final loops. |
+| 11 | Offer evaluation | Compare offers; negotiate. Toronto staff IC band: CAD $185–$236k base; remote US staff: CAD $220–$320k. |
+| 12 | Decision | Accept best offer OR continue to month 4 with the freelance pipeline as the bridge. |
+
+### §10.I.3 Success metrics
+
+- **Week 4:** ≥ 5 phone screens active.
+- **Week 8:** ≥ 1 final-round in flight.
+- **Week 12:** ≥ 1 offer in hand.
+- **Soft target:** offer ≥ CAD $200k base.
+
+### §10.I.4 Failure detection
+
+- **Week 4:** < 2 phone screens — résumé / LinkedIn positioning not
+  reaching staff-level recruiters. Sharpen the §1.6 positioning to one
+  staff-IC specialty (AI infrastructure, distributed systems, dev
+  platform).
+- **Week 8:** phone screens but no technical loops — performance on
+  the screens is below bar. Practice with a peer or a paid coach
+  (Pramp, IGotAnOffer).
+- **Week 12:** technical loops but no final-rounds — buy a 4-week
+  Leetcode subscription and grind. Re-apply in 6 weeks.
+
+### §10.I.5 Costs
+
+| Item | Cost |
+|---|---|
+| LinkedIn Premium | USD $39.99/mo (recommended for Recruiter messaging visibility) |
+| Coaching (optional) | USD $300–$1,500/coach |
+| Operator time | ~ 10–20 hr/wk during search |
+
+### §10.I.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $180–$320k base + equity |
+| **Time-to-first-invoice (paycheque)** | 8–14 weeks |
+| **Opportunity cost** | High — full-time commitment displaces side-project work for 12+ months |
+| **Reversibility** | High — quit at any time, but employer's notice clause may bind |
+
+### §10.I.7 Day 1 action
+
+Open `levels.fyi` and read the Toronto staff-engineer comp data for
+five named companies. The first 30-minute action is information,
+not application. The application step lives in week 2.
+
+---
+
+## §11 — Playbook J: HR-services-for-Canadian-SMB partnership
+
+**Match score:** 6.5 / 10 (demoted in `09 §3.3` to month 9+ optionality).
+Partner with a complementary services practitioner (HR consultant,
+employment lawyer, or compliance specialist) who already serves the
+same SMB segment. The operator delivers the digital surface (compliant
+employee handbooks as microsites, pay-transparency-aware careers
+pages, AODA-compliant policy portals); the partner delivers the
+regulatory product and the client relationship.
+
+### §11.J.1 Prerequisites
+
+- Pre-flight §1 complete.
+- A primary income leg already producing (the partnership path is
+  high-leverage but slow to ramp).
+- An identified candidate partner — a real practitioner the operator
+  knows or can introduce themselves to. **Do not start J without a
+  concrete candidate.**
+- A 1-page partnership proposal: *"You bring the HR / legal /
+  compliance product and the client relationship. I bring the
+  engineering for the digital artefact. 60/40 revenue split favouring
+  the partner who owns the relationship."*
+
+### §11.J.2 Week-by-week
+
+| Wk | Goal | Specific actions |
+|---|---|---|
+| 1–2 | Partner conversations | 3 coffee calls with candidate partners. |
+| 3–4 | First pilot | Pick the strongest candidate. Run a CAD $0 pilot for one of the partner's existing clients — typically an employee-handbook-as-microsite project. |
+| 5–6 | Pilot delivery | Ship the pilot. Capture before/after artefacts. |
+| 7–8 | Formalise the partnership | Written agreement: revenue split, IP ownership, termination clauses, conflict-of-interest rules. |
+| 9–12 | First paid engagement | Partner sells to their first paying client; operator delivers. |
+| 13–24 | Steady cadence | 1–2 engagements/month. CAD $7–$15k per engagement; ~CAD $4–$9k to operator after split. |
+
+### §11.J.3 Success metrics
+
+- **Week 8:** pilot delivered + partnership agreement signed.
+- **Week 16:** ≥ 1 paid engagement delivered.
+- **Month 12:** 8–15 engagements delivered; CAD $40–$120k to the
+  operator.
+
+### §11.J.4 Failure detection
+
+- **Week 4:** no candidate partner has agreed to a pilot — partnership
+  thesis is wrong; do not pivot to a different candidate within 4
+  weeks. Park the playbook and revisit at month 9+.
+- **Week 16:** pilot delivered but partner cannot sell — the partner's
+  own demand is the bottleneck, not the engineering. Operator should
+  re-evaluate whether the partner has the SMB relationships claimed.
+
+### §11.J.5 Costs
+
+| Item | Cost |
+|---|---|
+| Pilot engagement | $0 to operator (operator absorbs the labour) |
+| Operator time | ~ 30 hr pilot + ~ 15–25 hr per paid engagement |
+| Anthropic API per engagement | ≤ USD $30 (passed through) |
+
+### §11.J.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $30–$120k yr 1 |
+| **Time-to-first-invoice** | 12–16 weeks |
+| **Opportunity cost** | High — 16-week ramp; dependent on partner's sales capacity |
+| **Reversibility** | Medium — partnership agreements have notice clauses |
+
+### §11.J.7 Day 1 action
+
+Do not start before pre-flight is complete and a primary income leg
+is producing. The Day 1 action is to identify a single named
+candidate partner the operator can credibly approach, not to start
+delivering.
+
+---
+
+## §12 — Playbook K: Hybrid (day-job + small Stage-1 side practice)
+
+**Match score:** 9.5 / 10 — the matrix winner. Run Pivot I (day-job)
+as the primary income, with Pivot A (Stage-1 freelance build practice)
+deliberately rate-limited to 1 build per quarter as a side practice.
+
+### §12.K.1 Prerequisites
+
+- Pre-flight §1 complete.
+- The operator is willing to take a corporate role (see Pivot I
+  prerequisites — the psychological readiness condition matters).
+- The day-job employer's policy on side projects has been read —
+  Shopify allows it with a written disclosure; Canadian banks allow
+  with disclosure; some US firms require explicit pre-approval.
+
+### §12.K.2 Week-by-week (parallel tracks)
+
+| Wk | Day-job track (Pivot I) | Side practice track (Pivot A) |
+|---|---|---|
+| 1–4 | Apply, screen, interview per §10.I.2. | Pre-flight §1 complete. Personal landing page live (§1.5). |
+| 5–8 | Final rounds. | Take **zero** new clients during the interview period — the operator's attention is on the loop. |
+| 9–12 | Offer + start date negotiation. Negotiate side-project disclosure clause with the new employer. | Begin a single low-stakes pilot client at sub-rate (CAD $2,000) to keep the craft warm. |
+| 13–24 | Day-job onboarding (typically 8–12 weeks at staff IC). | Pause the side practice during onboarding. |
+| 25+ | Steady state. | One build per quarter at full rate. CAD $4,500 setup × 4/yr = CAD $18,000. |
+
+### §12.K.3 Success metrics
+
+- **Month 3:** day-job offer accepted + side-practice pilot client
+  delivered.
+- **Month 6:** day-job onboarding complete; first paid side-practice
+  build delivered.
+- **Month 12:** day-job at full productivity; side practice at 1 build
+  per quarter steady cadence.
+
+### §12.K.4 Failure detection
+
+- **Month 3:** no day-job offer + no side-practice client — the
+  hybrid is failing on both legs. The operator has likely diluted
+  attention; commit fully to one track for the next 4 weeks.
+- **Month 9:** day-job onboarding consuming all evenings/weekends —
+  the hybrid is structurally broken. Drop the side practice for 6
+  months and revisit.
+- **Month 12:** side practice consuming day-job performance — the
+  side practice is exceeding the rate-limit. Either return to single-
+  track Pivot B (full freelance) or reduce side-practice further.
+
+### §12.K.5 Costs
+
+| Item | Cost |
+|---|---|
+| All Pivot I costs | Per §10.I.5 |
+| All Pivot A costs (rate-limited) | Per §2.A.5 |
+| Operator time | Day-job 40 hr/wk + side practice 5–10 hr/wk during quarters with active builds |
+
+### §12.K.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $200–$370k combined |
+| **Time-to-first-invoice (paycheque)** | 8–14 weeks (day-job); 4–6 weeks (side practice) |
+| **Opportunity cost** | Low — both legs draw from existing platform investment + experience |
+| **Reversibility** | Very high — quit either leg independently |
+
+### §12.K.7 Day 1 action
+
+Open the Pivot I day-1 action (`levels.fyi` Toronto staff-engineer
+data) AND the Pivot A day-1 action (`<operator-name>.dev/build`
+storefront page). Allocate 30 minutes to the first, 30 minutes to the
+second. The hybrid begins as both tracks running concurrently with
+explicit time boxes.
+
+---
+
+## §13 — Cross-pivot impact matrix (one-glance)
+
+For each pivot A–K, summarised on six axes for one-glance comparison.
+
+| # | Pivot | Fit | 12-mo CAD | TTFI (wk) | Op time / wk steady | Reversibility | Platform leverage |
+|---|---|---:|---|---:|---|---|---|
+| **A** | Stage-1 freelance build practice | 7.0 | $40–90k | 4–6 | ~30 hr | High | Low (~15%) |
+| **B** | Senior freelance via Toptal/A.Team/direct | 8.5 | $130–220k | 3–8 | ~30 billable + 5 pipeline | Very high | Medium (~30%) |
+| **C** | AI-integration consulting for agencies | 8.5 | $90–220k | 6–10 | ~25 hr | High | High (~70%) |
+| **D** | Niche-vertical productized service | 6.0 | $30–80k | 8–12 | ~25 hr | Medium | Medium (~30%) |
+| **E** | AODA / WCAG audits-and-remediation | 7.5 | $50–130k | 3–4 | ~25 hr | Very high | Medium (~40%) |
+| **F** | Developer boilerplate / OSS+support | 5.5 | $20–80k | 4–6 | ~10 hr | Very high | Medium (~50%) |
+| **G** | Micro-SaaS spin-offs | 4.5 | $0–30k yr 1 | 4–6 | ~5–10 hr per spin-off | Very high | High (~70%) |
+| **H** | Fractional principal / staff engineer | 8.0 | $80–180k | 6–10 | ~12–20 hr per retainer | Medium | Low (~20%) |
+| **I** | Full pause / senior IC role | 9.0 | $180–320k | 8–14 | ~40 hr | High | Low (~10%) |
+| **J** | HR-services partnership | 6.5 | $30–120k | 12–16 | ~15–25 hr per engagement | Medium | Medium (~40%) |
+| **K** | Hybrid: I + A (matrix winner) | 9.5 | $200–370k | 4–14 | 40 + 5–10 hr | Very high | Medium (~25%) |
+
+**TTFI** = time-to-first-invoice. **Platform leverage** = approximate
+% of the existing K-PLATFORM-MINIMAL + K-SITE-CORE code paths the
+pivot reuses.
+
+The matrix winner (K) leverages only ~25% of the platform — confirming
+`09 §2`'s warning that pivots maximising platform reuse (F at 50%, G at
+70%, C at 70%) score worst-to-middle on the fit axis. **Platform
+leverage is not value; demand for what the platform produces is value,
+and most of what the platform produces does not have demand.**
+
+---
+
+## §14 — Common failure modes across pivots
+
+Five generic patterns the operator should self-monitor regardless of
+which pivot is chosen.
+
+### §14.1 Reversion to the documentation hobby
+
+**Detection:** the operator opens a markdown file in the archive folder,
+or starts drafting a new deck "to clarify positioning," or refactors the
+platform "while we're here." Per `09 §4.2` this is forbidden for 90
+days. The reversion typically appears 14–30 days into a pivot when the
+first sales cycle has not yet produced an invoice and dopamine returns
+to writing.
+
+**Correction:** a 24-hour writing freeze. The operator's day looks like
+*"open prospects.csv → make 5 outreach contacts → close laptop"* until
+the first invoice lands.
+
+### §14.2 Hidden over-discounting
+
+**Detection:** the operator quotes a discounted rate to "close the
+first one." The first paying client at half-rate sets the ceiling for
+every subsequent client because referrals price-anchor.
+
+**Correction:** never discount price; substitute scope. *"I can do the
+full audit at the listed CAD $4,000, or a focused 5-page-only audit
+at CAD $2,000 — same per-page rate."*
+
+### §14.3 Single-channel dependence
+
+**Detection:** the operator has all proposals coming from one source
+(LinkedIn alone, Toptal alone, a single referrer). When that source
+softens, revenue collapses.
+
+**Correction:** by month 3, every active pivot must have ≥ 2 distinct
+inbound channels producing ≥ 1 proposal each per month. If one
+channel produces 4× the volume of the next, the operator is
+single-channel-dependent regardless of how many channels are listed.
+
+### §14.4 Sub-rate engagement creep
+
+**Detection:** the operator's average effective hourly rate has
+declined for 3 consecutive months without a deliberate decision to
+reduce it.
+
+**Correction:** quarterly rate review. If the average has declined
+without a written decision behind it, the operator is taking sub-rate
+work to feel productive. Refuse the next sub-rate engagement.
+
+### §14.5 The "while-I'm-here" platform refactor
+
+**Detection:** the operator pushes a commit to the active repo that
+does not directly serve a paying client's deliverable. **Any commit.**
+The cleanest archive in the world is undone by the operator's reflex
+to "tidy" the platform when they are between active engagements.
+
+**Correction:** a one-line gitignore-style rule for the operator's
+own behaviour: *"This week, no commits to anything in this repo
+unless they ship to a client by EoW."* Re-read on Monday.
+
+---
+
+## §15 — Bibliography and methodology
+
+The execution-detail research agent commissioned for this document
+returned named sources for each playbook's specific URLs, prices,
+and timelines. The agent ran in parallel with the writing of this
+document; its findings landed in the §10–§12 ranges and are folded
+into §16 below.
+
+### §15.1 Top-level sources by playbook
+
+- **Playbook A** — sourced from `08 §7`, `09 §3` and the operator's
+  own Stage-1 cost model in `docs/_archive/.../storefront/03-cost-analysis.md`.
+- **Playbook B** — Toptal application flow + acceptance band: see
+  `09 §10.1`. A.Team profile flow: same.
+- **Playbook C** — Anthropic Claude Partner Network: see `09 §10.1`.
+- **Playbook D** — vertical SaaS comparable (Auxpanel): see `09 §10.1`.
+- **Playbook E** — AODA December 31 2026 deadline: AODA Ontario
+  reference at `aoda.ca/about-the-aoda/`. Audit pricing band: see
+  `09 §10.3`.
+- **Playbook F** — Tailwind Labs precedent + Marc Lou / ShipFa.st
+  decay: `09 §10.1`.
+- **Playbook G** — micro-SaaS revenue distribution: `09 §10.1`.
+- **Playbook H** — Pangea + Toptal Fractional + Canadian fractional-
+  CTO rates: `09 §10.3`.
+- **Playbook I** — Levels.fyi Shopify staff-IC bands + Canadian tech
+  hiring market: `09 §10.1`.
+- **Playbook J** — HR compliance Canadian regulatory tailwinds:
+  `09 §10.3`.
+- **Playbook K** — combined sources from I + A.
+
+### §15.2 Limits
+
+- **Marketplace acceptance rates fluctuate.** Toptal and A.Team
+  acceptance is more anecdotal than data-driven. The operator should
+  treat marketplace listings as one of multiple parallel paths, not
+  the path.
+- **AODA December 31 2026 deadline assumes no statutory amendment.**
+  Ontario has historically extended deadlines once; a six-month
+  extension would soften Pivot E's revenue band but not eliminate it.
+- **The Canadian tech hiring market in May 2026 is hostile** but
+  Toronto and remote-friendly US firms remain tractable for the
+  operator's seniority. The Pivot I revenue band assumes one offer
+  inside 14 weeks; reality may be 8 or 24.
+
+---
+
+## §16 — Appendix: the 7-day kickoff for the recommended stack (Legs A + B + C in parallel)
+
+If the operator picks the recommended `09 §3` stack, the next 7
+calendar days look like this. Day 1 is the day this doc commits.
+
+| Day | Action |
+|---|---|
+| **Mon** | Pre-flight §1.1 (Anthropic API console, per-engagement key, SoW pass-through clause). 4 hours. |
+| **Tue** | Pre-flight §1.2 (resolve `lumivara-infotech` contamination — delete or relocate). 2 hours. |
+| **Wed** | Pre-flight §1.3 (comment out `schedule:` blocks on cron-driven workflows). 30 minutes. Then §1.4 (Wave + Stripe accounts). 2 hours. |
+| **Thu** | Pre-flight §1.5 (personal-domain landing page; deploy on Vercel Hobby). 4 hours. |
+| **Fri** | Pre-flight §1.6 (lock the positioning sentence). 30 minutes. Then submit Toptal + A.Team applications (Pivot B, §3.B.7). 1 hour. |
+| **Sat** | Submit Anthropic Claude Partner Network application (Pivot C, §4.C.7). 20 minutes. Build the AODA-audit storefront page (Pivot E, §6.E.1). 3 hours. |
+| **Sun** | Off. Or build the resume + LinkedIn refresh for Pivot I (§10.I.7). 2 hours. |
+
+By end of week 1, the operator has: ToS-clean billing setup, all four
+inbound surfaces live (Toptal, A.Team, Claude Partner Network,
+AODA-audit storefront), no cron-driven workflows firing, and a
+hard-decision date scheduled for Sunday week 2 on whether to engage
+Pivot I in earnest (the Leg C hedge).
+
+---
+
+*Last updated: 2026-05-01. Companion to `09-pivot-plan-and-archive-list.md`.
+Read both. The strategic decision lives in `09`; the tactical execution
+lives here.*

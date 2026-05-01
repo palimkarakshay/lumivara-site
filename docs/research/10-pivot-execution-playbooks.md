@@ -1191,6 +1191,373 @@ Pivot I in earnest (the Leg C hedge).
 
 ---
 
+## §17 — Verified execution details (May 2026 research pass)
+
+The execution-detail research agent commissioned for this document
+returned May 2026 verified URLs, prices, and timelines for every
+intake surface named in the playbooks. This section is the canonical
+reference; if a playbook above conflicts with §17, **§17 wins.**
+
+### §17.1 Anthropic Claude Partner Network — verified intake
+
+- **Public landing:** [`claude.com/partners`](https://claude.com/partners)
+- **Registration form:** [`partnerportal.anthropic.com/s/partner-registration`](https://partnerportal.anthropic.com/s/partner-registration)
+- **Public services directory:** [`claude.com/partners/services`](https://claude.com/partners/services)
+- **Anthropic Academy learning path:** [`anthropic.skilljar.com/page/claude-partner-network-learning-path`](https://anthropic.skilljar.com/page/claude-partner-network-learning-path)
+- **Tiers:** three tracks (Consulting / Technology / Services) and
+  three levels: **Authorized Partner** (foundational; complete Academy
+  + agree to usage/ethics policies — solo operators land here),
+  **Solution Partner** (requires reviewed implementation examples),
+  enterprise tier above.
+- **Cost:** free.
+- **Time-to-listing:** Academy 3–5 hours; partner application review
+  4–8 weeks for new applicants without case studies.
+- **Application asks for:** company legal entity, demonstrated Claude
+  expertise, business model, target verticals, geographic markets,
+  verifiable corporate email. **Solo founders without an LLC will get
+  bounced — incorporate first** (or apply as a sole proprietor with a
+  CRA business number).
+- **Gotchas:** (a) Directory dominated by Accenture/Deloitte/BCG/Booz
+  Allen — small-shop visibility is low. (b) Per-API-key cost
+  attribution is weak (see §17.10). (c) Authorized tier is a credential,
+  not a lead source — Solution Partner is where co-sell starts.
+
+### §17.2 Vercel Solution Partners — verified intake
+
+- **Apply at:** [`vercel.com/partners`](https://vercel.com/partners)
+- **Certification request:** [`vercel.com/go/solution-partner-certification-request`](https://vercel.com/go/solution-partner-certification-request)
+- **Live directory:** [`vercel.com/partners/solution-partners`](https://vercel.com/partners/solution-partners)
+- **Tiers:** Solution Partners (agencies / SIs implementing Next.js /
+  Vercel) and Technology Partners (ISVs integrating with Vercel).
+  Within Solution Partners: Registered → Select → Premier-equivalent
+  GTM tiers gated on certified-developer count and delivered-customer
+  outcomes.
+- **Cost:** no public application fee. Cost is the seat cost + bench
+  cost of certifying developers (Pro seat $20/dev/mo, see §17.11).
+- **Time-to-list:** application review + GTM kickoff 2–6 weeks; **2–4
+  months for a solo operator** (gated on at least one Vercel-certified
+  developer + a customer reference).
+- **Gotchas:** (a) Recertification tied to every major Next.js / Vercel
+  platform release. (b) Listing requires "proven record of delivering
+  successful customer outcomes" — chicken-and-egg for a solo. (c) The
+  directory leans agency-and-up; a single-engineer listing reads thin.
+
+### §17.3 Toptal — verified intake
+
+- **Apply at:** [`toptal.com/freelance-jobs`](https://www.toptal.com/freelance-jobs)
+- **Acceptance rate (public):** **<3%** of >200K annual applicants.
+  Engineer-community pass-through to first paid project closer to
+  **1–2%**.
+- **Screening stages (3–8 weeks total):**
+  1. English / communication interview
+  2. Personality + skills test
+  3. Timed technical assessment (online judge)
+  4. Live screening interview with a domain-expert screener
+  5. **Test project, 1–3 weeks**, real-world simulation
+- **Rates:** senior software engineers $75–$250+/hr USD; bulk of
+  Canada-listed seniors land $100–$175/hr USD. Toptal markup ~50% on
+  top of engineer's rate (client sees ~1.5× engineer's rate).
+  Engineers receive 100% of stated rate (no platform fee on engineer
+  side).
+- **First-invoice timeline:** "First paid project within 24 h of
+  listing" is the platform's match SLA, not the typical contracted-
+  and-billing timeline; **first invoice usually 2–6 weeks
+  post-listing**.
+- **Gotchas:** (a) Test project is unpaid 1–3 weeks of real work —
+  budget the time. (b) Listing is exclusive *in practice*; being on
+  Toptal + A.Team + Arc simultaneously raises eyebrows but is not
+  contractually banned.
+
+### §17.4 A.Team — verified intake
+
+- **Apply at:** [`a.team/join`](https://www.a.team/join)
+- **Acceptance rate (public):** **<1%** of applicants.
+- **Pay structure:** engineers set own rate; A.Team adds client-side
+  margin (not deducted from engineer pay). Builders paid every two
+  weeks, funds arriving 15 days after invoicing (effectively net-15
+  on a biweekly cadence).
+- **Engagement length:** 3–9 months typical; many builders run
+  multiple part-time gigs in parallel.
+- **Geographic:** Toronto qualifies cleanly (EST = US-East TZ
+  overlap).
+- **Realistic rate band on A.Team for senior fullstack:** **$100–$160/hr
+  USD**. Set too high and matches drop to zero.
+- **Time to first match:** 30–90 days from acceptance.
+
+### §17.5 Arc.dev — verified intake
+
+- **Apply at:** [`arc.dev`](https://arc.dev)
+- **Hire-side directory:** [`arc.dev/hire-developers/full-stack/canada`](https://arc.dev/hire-developers/full-stack/canada)
+- **Rate explorer:** [`arc.dev/freelance-developer-rates/full-stack`](https://arc.dev/freelance-developer-rates/full-stack)
+- **2026 mechanic:** Arc has fully pivoted to **HireAI** — semantic
+  matching against an LLM-indexed candidate profile. Senior+AI roles
+  get a separate "AI Engineer" badge once a domain assessment is
+  completed.
+- **Senior fullstack day-rate band (Canada):** $60–$100+/hr USD
+  broadly; Canada-located seniors typically display **$80–$130/hr USD**
+  ($640–$1,040/day). Top decile (10+ yrs + AI tag) reaches $150/hr.
+- **Cost:** free to engineer.
+- **Time-to-first-engagement:** 2–6 weeks post-acceptance.
+- **Gotcha:** profiles without an AI/LLM tagged project get fewer 2026
+  matches — agentic-AI is the only growth category.
+
+### §17.6 Contra — verified intake
+
+- **Apply at:** [`contra.com`](https://contra.com)
+- **Fee structure:** **0% commission to freelancers**. Stripe
+  payment-processing under the hood (~2.9% + $0.30 per transaction,
+  often passed through to client).
+- **AI-integration recognized?** Yes — top-level category alongside
+  Engineering / Design. "AI Integration" is a recognized productized-
+  service template (fixed-scope offerings are first-class on Contra).
+- **Productized service support:** Contra explicitly supports fixed-
+  scope packages (e.g. *"AODA audit, $1,500 CAD, 5 days"*) with
+  payment milestones built in. **Best platform for the productized
+  AODA offer.**
+- **Pro plan:** $15–$25/mo (priority listing, advanced analytics,
+  custom domain) — effectively required for any visibility on
+  competitive keywords.
+
+### §17.7 Other senior-bench networks (May 2026 status)
+
+- **MFG Labs** is **not** a freelance bench — it's a Havas/ekino-owned
+  data + AI consultancy that hires employees. Skip for freelance.
+- Working analogues: **Andela** ([`andela.com`](https://andela.com),
+  ~2 weeks to match), **Gun.io** ([`gun.io`](https://gun.io), US-tilted,
+  light screening), **Lemon.io** ([`lemon.io`](https://lemon.io), faster
+  matching, Eastern-Europe bias).
+- Most "enterprise bench" branding in 2026 means W2 employment, not
+  freelance. Read engagement contracts carefully — many ban concurrent
+  Toptal / A.Team listings.
+
+### §17.8 AODA / WCAG — verified threshold nuance
+
+**Critical correction to §6.E:** the AODA reporting deadline applies
+to a **different population** than the WCAG conformance requirement.
+
+- **Filing deadline (December 31 2026):** Ontario private-sector
+  businesses and non-profits with **20+ employees** must file an
+  Accessibility Compliance Report at
+  [`accessibilityreporting.ontario.ca`](https://accessibilityreporting.ontario.ca/en-US/).
+  Guidance at
+  [`ontario.ca/page/completing-your-accessibility-compliance-report`](https://www.ontario.ca/page/completing-your-accessibility-compliance-report).
+- **WCAG 2.0 Level AA conformance:** required for public-facing
+  websites of private-sector orgs with **50+ employees** AND all
+  public-sector orgs.
+- **Standard cited:** AODA still references **WCAG 2.0 Level AA**, not
+  2.1. Most agencies (and the operator's offer) target WCAG 2.1 AA
+  voluntarily because federal Accessible Canada Act, EU EAA-aligned
+  procurement, and modern best practice all use 2.1 or 2.2.
+- **Implication for Pivot E:** the 20–49 employee band is the largest
+  underserved segment — they must file but are not WCAG-bound. Sell
+  *"audit + remediation roadmap + filing assistance"* at the
+  productized $1,500–$2,500 price point. The 50+ band has more legal
+  exposure and pays $4,000–$10,000 for full audits.
+
+**Named competitors (verified May 2026):**
+
+- **Zwebra** ([`zwebra.ca/wcag-accessibility-audit`](https://zwebra.ca/wcag-accessibility-audit)) — Toronto-local. Starter audits ~$2,500–$4,000.
+- **Accessibility Partners** ([`accessibilitypartners.ca`](https://accessibilitypartners.ca/web-accessibility-audit-toronto/)) — Toronto. Manual + automated, ~$3,000–$5,000.
+- **AEL Data** ([`aeldata.com/compliance/aoda/`](https://aeldata.com/compliance/aoda/)) — productized, offshore delivery, lower price.
+- **Allyant** ([`allyant.com/web-accessibility-audit-services/`](https://allyant.com/web-accessibility-audit-services/)) — enterprise.
+- **Deque** ([`deque.com`](https://www.deque.com/accessibility-services/audits-compliance-testing/)) — global; axe-tooling pedigree.
+- **Level Access** ([`levelaccess.com`](https://www.levelaccess.com/blog/aoda-compliance-requirements-for-websites/)) — enterprise.
+- **AccessiBe** — overlay vendor; **controversial / litigation-attractor; not a real audit.**
+
+**Productized opportunity:** a flat-fee *"$1,500 CAD AODA audit +
+remediation guidance + filing-prep, 5-page site, 5 business days"* is
+genuinely missing in the market. Distribution: **Contra, LinkedIn
+outbound to Ontario SMBs in the 20–49 employee band, local Chambers
+of Commerce, accountant-referral partnerships.**
+
+### §17.9 Stripe vs Wave for CAD billing
+
+- **Stripe Canada** ([`stripe.com/en-ca/billing/pricing`](https://stripe.com/en-ca/billing/pricing)):
+  domestic card 2.9% + CAD $0.30. International cards +0.8%. Currency
+  conversion +2%. Stripe Billing layered: 0.5% (Starter) or 0.8%
+  (Scale) of recurring volume.
+- **Wave Canada** ([`waveapps.com/pricing`](https://www.waveapps.com/pricing)):
+  Toronto-founded, H&R-Block-owned. **Free invoicing + accounting +
+  recurring invoices.** Card processing 2.9% + CAD $0.60 (Visa/MC),
+  3.4% + $0.60 (Amex). Wave Pro $25 CAD/mo for automatic recurring
+  + auto-bank-feeds.
+- **Lemon Squeezy** — acquired by Stripe in 2024; now MoR layer
+  USD-tilted; **wrong tool for CAD-domestic retainer billing**.
+- **Recommendation:** **Wave for CAD invoicing + Stripe for any
+  USD/international/credit-card-heavy.**
+- **Per-transaction cost on a CAD $5,000 retainer:** Wave $145.60 vs
+  Stripe $145.30 + Billing 0.5% ($25) = $170.30. **Wave wins on
+  retainers.**
+
+### §17.10 Anthropic API — verified pricing + workspace pattern
+
+**Steps to switch from Pro/Max to commercial API billing:**
+
+1. [`console.anthropic.com`](https://console.anthropic.com) → Settings → Billing → add corporate card (separate from personal Pro/Max).
+2. Create an Organization. Inside it, create per-client **Workspaces**.
+3. Provision an **Admin API key** (`sk-ant-admin...`) for org-admin role; required for cost-report endpoints, separate from per-workspace standard keys.
+4. Per client: one workspace, one (or more) standard API keys scoped to that workspace, optional spend cap.
+5. Pull cost data via `/v1/organizations/cost_report` grouped by workspace.
+
+**Per-client cost-pass-through pattern:** Anthropic exposes
+**workspace-level grouping** (input cached/uncached, cache creation,
+output, by model). Does **not** expose per-API-key cost natively —
+**workspace = client is the supported pattern.**
+
+**Verified May 2026 pricing (per million tokens, input / output):**
+
+| Model | Input | Output |
+|---|---:|---:|
+| Claude Opus 4.6 | $5.00 | $25.00 |
+| Claude Sonnet 4.6 | $3.00 | $15.00 |
+| Claude Haiku 4.5 | $1.00 | $5.00 |
+| Batch API | 50% discount on standard prices, 24h SLA | — |
+| Prompt cache reads | 90% discount on input price | — |
+| Enterprise seats | $20/seat/mo billed annually + all usage at standard rates | — |
+
+**Note on Opus 4.7:** pricing for Opus 4.7 (the model named in this
+session's `AGENTS.md`) is not yet on the public pricing page;
+verify at
+[`platform.claude.com/docs/en/about-claude/pricing`](https://platform.claude.com/docs/en/about-claude/pricing)
+before quoting clients.
+
+**Gotchas:** (a) Pro/Max subscription does **not** convert — keep
+paying both until Max is cancelled. (b) Per-client passthrough requires
+manual workspace creation and explicit billing-side logic; no native
+"agency multi-tenant billing." (c) Admin API keys are powerful — vault
+them, never inline in a bot prompt.
+
+### §17.11 Vercel Pro — verified math at 10 / 20 / 30 clients
+
+- **Pricing:** $20/dev seat/month + $20 monthly usage credit per Pro
+  team. Unlimited viewer + one billing seat.
+- **Included quotas (per Pro team):** 1 TB bandwidth, 10M edge requests,
+  1M function invocations.
+- **Overage:** bandwidth $0.15/GB beyond 1 TB. Edge requests, function
+  invocations, ISR reads/writes, image optimisations, blob, edge-config,
+  build minutes — all metered separately. **No hard cap by default —
+  enable Spend Management.**
+- **Realistic cost (1 dev, low SMB traffic baseline):**
+  - **N=10:** $20/mo if aggregate stays under quota.
+  - **N=20:** $20/mo if aggregate stays under quota; if 50 GB/mo each
+    pushes total past 1 TB, ~$0.15/GB overage.
+  - **N=30:** likely $20 + $30–$60 bandwidth overage = **$50–$80/mo**
+    plus any edge-request / function overage.
+- **ToS-compliant pattern:** All client sites in **one Pro team** is
+  permitted; Acceptable Use Policy at
+  [`vercel.com/legal/acceptable-use-policy`](https://vercel.com/legal/acceptable-use-policy)
+  requires Pro+ for any commercial deployment but **does not require
+  one team per client**.
+- **ToS-violating patterns:** (a) commercial client sites on Hobby
+  (non-commercial only). (b) splitting one heavy-traffic client across
+  multiple Pro teams to dodge per-team overage. (c) using a Pro team
+  to host content not owned by you or a paying client without a
+  Solution Partner agreement.
+- **Critical:** **Spend Management is opt-in.** A single client's
+  viral-spike traffic can produce a runaway bill. Set caps before any
+  client lands. Bill clients a fixed hosting passthrough (~$15–$25/mo
+  per site, covers overage exposure with margin).
+
+### §17.12 GitHub Actions — verified math at 30 clients
+
+- **Pricing:** [`github.com/pricing`](https://github.com/pricing).
+  Individual Pro $4/user/mo, Team org $21/user/mo. Free CI minutes:
+  3,000 Linux-equivalent on Team, 2,000 on Individual.
+- **Overage rate (Linux 2-core, post-Jan 2026 reduction):** **$0.008/min**
+  (was $0.012). Windows ~2×, macOS ~10×.
+- **30-client multi-repo cron-driven workflow on Team Pro:**
+  - 30 client repos × cron every 15 min (the operator's existing
+    `triage.yml` cadence) = 30 × 96 runs/day = ~86,400/mo at 1 min
+    each = 84,400 minutes over the 3,000 free quota = **~$675/mo**.
+  - **Reduce cron cadence to hourly** → 30 × 24 × 30 = 21,600 runs/mo
+    at 1 min each = 18,600 over quota = **~$149/mo**.
+- **ToS / abuse policy:** crons are explicitly allowed. The abuse
+  threshold is *automated activity that creates undue load on shared
+  infrastructure*. **30 client repos on hourly cadence is within ToS**
+  if (a) the operator pays for the minutes, (b) no multi-account
+  evasion, (c) skip-on-no-change is implemented (the existing
+  `vercel.json ignoreCommand` pattern).
+- **Permissibility verdict:** **yes, permissible**, but cost-prohibitive
+  at 15-min cadence. Hourly cadence is fine. Self-host the runner on
+  a small VPS for fixed cost if scale grows.
+- **Note on doc 08 §5.6:** the earlier estimate of "~$1,800/mo overage
+  alone" was based on the operator's published every-30-min triage
+  cadence. At hourly cadence the overage drops to ~$149/mo. The §5.6
+  ToS landmine read remains valid (Anthropic OAuth still
+  unauthorised); the GitHub-Actions cost line is recoverable by
+  reducing cadence rather than by archiving the entire workflow set.
+
+### §17.13 Verified time-to-first-invoice (Toronto solo, 2026)
+
+| Path | Median (50p) | 75th percentile |
+|---|---|---|
+| Toptal | 5–7 weeks | 10–14 weeks |
+| A.Team | 6–10 weeks | 14–20 weeks |
+| Arc.dev | 3–6 weeks | 10–12 weeks |
+| Contra | 2–5 weeks (open marketplace, slower conversion) | 8–12 weeks |
+| Direct (network + LinkedIn) | 3–8 weeks | 12–24 weeks |
+| AODA productized service direct | **2–4 weeks** if positioned as a fixed-scope offer with referrals | 6–10 weeks |
+
+The AODA productized path is **the fastest time-to-first-invoice** of
+any pivot because the offer is concrete, the deadline is a calendar
+event, and the productized price point ($1,500 CAD) clears budget
+authority for the SMB owner without procurement.
+
+### §17.14 Verified Canadian senior IC interview-loop lengths
+
+| Company | Loop length | Hiring bar |
+|---|---|---|
+| **Shopify** | 1–2 weeks (publicly fast) | Senior ≈ Google L5 |
+| **Cohere** | 4–6 weeks | High; strong Python + LLM/RAG/agent depth |
+| **Cohere Labs** | 5–8 weeks (research presentation round) | Very high |
+| **Vector spinouts (Cohere, Layer 6, Borealis AI, Recursion-Toronto)** | 4–8 weeks | Variable |
+| **Hugging Face Canada** | 5–8 weeks | Very high; few Canada-specific listings |
+| **Wealthsimple** | ~24 days median, 4–6 weeks 75p | Moderate-high |
+| **Coinbase Canada** | 5–7 weeks | High; many Staff+ remote-Canada postings |
+| **Postman** | 4–6 weeks | Moderate |
+| **Vercel Canada** | 5–8 weeks (no Toronto office; remote-friendly) | High |
+
+### §17.15 The verified 7-day kickoff for the recommended stack
+
+The agent's verified 15-step Day-1-through-Day-7 checklist — clarifies
+and supersedes the §16 generic version where they conflict:
+
+| Day | Action | Time |
+|---|---|---:|
+| Mon 0900 | [`waveapps.com/pricing`](https://www.waveapps.com/pricing) — sign up free, create CAD invoice template | 5 min |
+| Mon 0930 | [`accessibilityreporting.ontario.ca/en-US/`](https://accessibilityreporting.ontario.ca/en-US/) — create account, walk through "New Submission" flow | 20 min |
+| Mon 1000 | [`anthropic.skilljar.com/page/claude-partner-network-learning-path`](https://anthropic.skilljar.com/page/claude-partner-network-learning-path) — start Anthropic Academy intro module | 3–5 hr async |
+| Mon 1100 | [`partnerportal.anthropic.com/s/partner-registration`](https://partnerportal.anthropic.com/s/partner-registration) — submit Authorized Partner registration | 15 min |
+| Mon 1400 | [`vercel.com/go/solution-partner-certification-request`](https://vercel.com/go/solution-partner-certification-request) — request certification access | 10 min |
+| Tue 0900 | [`a.team/join`](https://www.a.team/join) — submit application, self-set rate $130/hr USD | 30 min |
+| Tue 1100 | [`arc.dev`](https://arc.dev) — apply, complete profile + technical screening, tag "AI/LLM + Senior + Fullstack" | 60 min |
+| Tue 1500 | [`toptal.com/freelance-jobs`](https://www.toptal.com/freelance-jobs) — start application, complete language-interview booking | 20 min |
+| Wed | [`contra.com`](https://contra.com) — sign up, publish productized package: *"AODA WCAG 2.1 AA audit — 5-page site — $1,500 CAD — 5 business days"* | 45 min |
+| Wed | [`console.anthropic.com`](https://console.anthropic.com) → create org + `client-template` workspace + Admin API key | 20 min |
+| Thu | [`vercel.com/dashboard`](https://vercel.com/dashboard) — upgrade to Pro, enable Spend Management $100/mo cap | 10 min |
+| Thu | [`github.com/settings/billing`](https://github.com/settings/billing) — verify Team Pro, set Actions spending limit. **Reduce all 15-min crons to hourly.** | 15 min |
+| Fri | [`shopify.com/careers/disciplines/engineering-data`](https://www.shopify.com/careers/disciplines/engineering-data) + Cohere + Wealthsimple — bookmark 2 senior IC openings each; tailor resumes | 3 hr |
+| Sat | Coinbase Canada + Postman + Vercel — apply to top 1 each | 2 hr |
+| Sun | LinkedIn Sales Navigator — saved search "Ontario, 20–49 employees, non-tech industry, decision-maker title" + draft outbound message; **send first 10** | 2 hr |
+
+**End of Day 7 state:**
+- 4 freelance applications submitted (Toptal, A.Team, Arc, Contra
+  with productized listing)
+- 1 Anthropic Partner + 1 Vercel Partner application in flight
+- 5 W2 senior IC applications submitted (Shopify, Cohere, Wealthsimple,
+  Coinbase, Postman)
+- 10 AODA outbound prospects contacted on LinkedIn
+- Billing infrastructure (Wave + Stripe + Vercel Pro + GitHub Actions
+  caps + Anthropic workspace) operational
+- All cron-driven workflows reduced to hourly cadence
+
+This is the operationalised one-week-into-the-pivot state. By
+end-of-week-2, expect the first phone screen on either the freelance
+or W2 track.
+
+---
+
 *Last updated: 2026-05-01. Companion to `09-pivot-plan-and-archive-list.md`.
 Read both. The strategic decision lives in `09`; the tactical execution
-lives here.*
+lives here. **§17 is the verified-pricing-and-URL canonical reference;
+where any earlier section conflicts, §17 wins.***

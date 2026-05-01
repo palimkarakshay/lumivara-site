@@ -423,8 +423,358 @@ operator's pre-archive review:
 
 ---
 
-*Sections §3 (recommended pivot), §4 (90-day plan), §7 (risks of the
-pivot), §8 (un-archive criteria), §9 (§7 / §8.4 enhancements back to
-`08`), and §10 (bibliography) fill in over the next commits as the
-remaining two agent passes (comparable-pivots and §7/§8.4 stress-test)
-return.*
+## §3 — The recommended pivot — a hedged three-leg stack
+
+The matrix in §2 names **K** (hybrid: day-job + side practice, 9.5)
+and **I** (full pause, 9.0) as the highest-fit single rows, but a
+hybrid is, by definition, two or more rows run in parallel. The
+comparable-pivots agent (`§10.1`) and the §7/§8.4 stress-test agent
+(`§10.3`) converged independently on the same recommendation: stop
+selling SMB retainers, sell senior expertise on multiple complementary
+surfaces. The recommended pivot is therefore a **three-leg hedged
+stack** that takes the strongest pieces of B / C / E / H from §2 and
+adds a corporate-job hedge (I) running in parallel.
+
+### §3.1 The stack
+
+| Leg | What | Source pivot in §2 | % of revenue (target) | 12-mo CAD band |
+|---|---|---|---:|---|
+| **A. Senior freelance + AI-integration consulting**, anchored to a free Claude Partner Network credential and the operator's existing live multi-LLM pipeline as the portfolio piece | Sell hours at CAD $175–$250/hr to mid-market companies that want to ship AI features themselves but lack the engineering. Direct outreach + selective Toptal / A.Team inbound. | **B + C** | **50%** | $130–$220k |
+| **B. AODA / WCAG 2.1 AA audits-and-remediation** as a productized service against the **December 31 2026 statutory deadline** for Ontario businesses with 20+ employees | CAD $3,000–$6,000 per audit × 15–25 audits/year + CAD $200–$400/mo monitoring retainers. The operator's existing axe-core + Lighthouse CI pipeline is the prebuilt delivery surface. **Wix and Squarespace builds fail WCAG out of the box** — that gap is the wedge. | **E** | **30%** | $50–$130k |
+| **C. Corporate-job interview loop run in parallel** as price discovery on the operator's own market value, **not because they want the job** | Two or three loops at remote-friendly US-headquartered or Canadian companies (Shopify L7/L8, Cohere, AI-agent firms). Floor: a Toronto staff-IC offer at CAD $200–$320k TC. The offer-in-hand is the only honest way to know whether legs A+B are paying market-or-better. | **I** | **0%** unless A+B fail | (hedge only — close on whichever lands first) |
+
+**Combined target:** CAD $200–$370k base case, async-dominant,
+regulatory-hedged against the §6 commoditization wave, and structurally
+buffered against operator illness via Leg C as a clean exit. The
+platform investment is utilised across A and B (~70% of code paths)
+rather than sunk on a §7.1-style single freelance build practice
+(~15%).
+
+### §3.2 Why this beats `08 §7.4`'s single-sentence recommendation
+
+The original `08 §7.4` repositioning sentence — *"I'm a senior engineer
+who builds modern, fast, accessible marketing sites for Canadian small
+businesses. CAD $4,500–$6,000, three weeks, you own everything"* —
+is defensible but **caps the operator at CAD $40–$90k/yr** (Pivot A in
+the §2 matrix, fit score 7.0). The comparable-pivots agent flagged this
+explicitly: *"Senior freelance saturation income for the operator's
+profile: $230k–$290k CAD/yr gross at $150–$200/hr — meaningfully above
+the deck pack's $118k–$128k headline."* The §7/§8.4 stress-test agent
+arrived at the same conclusion via a different path: *"the right answer
+is almost certainly a 3-leg stack, not a single offer; the platform's
+overhead is only justified if it powers more than one revenue line."*
+
+The Stage-1 freelance build practice in `08 §7` is **a defensible
+fallback**, not the chosen path. Rolled into Leg A as occasional
+build-engagements when an AI-integration prospect happens to want a
+marketing site too.
+
+### §3.3 The two pivots ranked next-best, and why they aren't the recommendation
+
+- **Vertical workflow tool for one Canadian regulated profession**
+  (Pivot D, fit 6.0; comparable-pivot agent's #2). Strong economics if
+  it lands (Auxpanel's $30–$50k MRR / 85% margin / no-marketing-budget
+  comparable in dental compliance), but **8–12 weeks to MVP with
+  8–15-week sales cycle = 6+ months to first dollar**. The operator
+  cannot afford 6 months of zero revenue. Demoted to a **§7.4-style
+  optionality** under the un-archive criteria in §8 — re-open if Leg A
+  of the recommended stack is producing >CAD $150k by month 9 and the
+  operator has bandwidth.
+- **HR-services-for-Canadian-SMBs partnership** (Pivot J, fit 6.5).
+  The §7/§8.4 stress-test agent steel-manned this as a CAD $180–$350k
+  ceiling pivot driven by the **2026 Canadian regulatory tailwinds**
+  (pay-transparency mandates, psychological-harassment policy mandates,
+  AI-disclosure mandates on job postings, AODA, expected federal
+  privacy statute) — *each of which has a website-or-portal artefact
+  attached to it*. Structurally valid; the operator builds the digital
+  surface, an HR-services partner brings the regulatory product and
+  the relationship into the SMB. But the path requires either (a)
+  partnership development with an external HR practitioner the
+  operator does not currently have a working relationship with, or (b)
+  the operator double-counting an existing personal-graph asset that
+  this document deliberately does not invoke. Demoted to **§8 un-archive
+  criteria** for the same reason.
+
+### §3.4 The boilerplate-as-product trap, named
+
+The comparable-pivots agent's most useful warning was **Tailwind
+Labs**: a structurally analogous business (Adam Wathan / Steve
+Schoger's component-pack productized business) that **lost ~80% of
+revenue in 2025 and laid off 75% of engineering in January 2026
+because Claude / ChatGPT / Cursor began generating Tailwind CSS
+directly**. Any pivot in §2's F (developer-targeted boilerplate) or G
+(micro-SaaS spin-offs of platform pieces) sits on the same labour-
+replacement curve that killed the original thesis (`08 §6.4`). They
+score 5.5 and 4.5 in the matrix for exactly this reason. Avoid.
+
+The single sentence the comparable-pivots agent suggested be pinned
+alongside `08 §9`: *"Pieter Levels killed Avatar AI 60 days after
+Lensa shipped; the speed of the kill is the asset."*
+
+---
+
+## §4 — The 90-day pivot plan
+
+Ninety days from the day this doc commits, the operator should have:
+**(1)** the platform overhead archived per §5; **(2)** Leg A producing
+CAD $10k+/month in invoiced freelance revenue; **(3)** Leg B's first
+two AODA-audit engagements signed against the December 31 2026 deadline;
+**(4)** Leg C's first three corporate interview loops in flight. Each
+of these has a hard 30 / 60 / 90-day milestone.
+
+### §4.1 Week-by-week
+
+| Wk | Leg A — freelance + AI consulting | Leg B — AODA / WCAG audits | Leg C — corporate hedge | Archive / cleanup |
+|---|---|---|---|---|
+| **1** | Apply to **Anthropic Claude Partner Network** (free, public directory). Set up a 1-page positioning site at a personal domain. Strip "Lumivara Forge" and all autopilot framing. | Draft a CAD $4,000 AODA-audit deliverable template. The deliverable: a PDF audit report + 1 PR fixing the top-10 violations. | Update LinkedIn + résumé. Tag the live `lumivara-forge.com` codebase as the portfolio artefact. | **Resolve §5.9 contamination** (delete or move `src/app/lumivara-infotech/`). Strip `schedule:` blocks from cron-driven workflows so they stop firing. |
+| **2** | Pass **Claude Certified Architect, Foundations** assessment. Get the directory listing live. Begin direct outreach: 30 LinkedIn DMs to mid-market AI-feature buyers (CTOs / heads of engineering at 50–500-person SaaS companies). | Build the `aoda-audit/` storefront page on the personal site. List on 3 Ontario business-services directories. | Apply to 5 senior IC roles (Shopify, Cohere, AI-agent shops, 2 remote-US). | Archive `docs/decks/`, `docs/research/01-07`, `docs/research/raw/` to `docs/_archive/2026-05-XX-decks/` and `_archive/.../research-pro/`. |
+| **3** | First 2 discovery calls. Quote Toptal-comparable rates ($175–$200/hr CAD). | Cold-email 50 Ontario businesses with 20+ employees and obviously-broken sites (filterable by Lighthouse + axe scans of public directories). | First 1–2 phone screens. | Archive `docs/storefront/` to `_archive/.../storefront/`. Stand up `docs/storefront-stage1/` (3 pages, ~300 lines). |
+| **4** | Send first proposal. Aim for one signed engagement by EoW. | First 3 audit replies. Book first audit call. | First technical interview. | Archive `docs/mothership/` to `_archive/.../mothership/`, except `15-terminology-and-brand` (trim) and `15c-brand-and-domain-decision`. |
+| **5** | First freelance engagement begins. | First audit signed; deliver in week 6. | Continue interview loops. | Archive `docs/migrations/` to `_archive/.../migrations/`. Delete `dual-lane-watcher.yml`, `forge-spinout-dry-run.sh`, `dual-lane-audit.sh`. |
+| **6** | First invoice (CAD $5–10k). Second engagement in flight. | First audit delivered. Begin second. | Continue. | Archive `dashboard/` to a separate repo or to `_archive/`. Disable + archive `.github/workflows/{triage,execute*,plan-issues,codex-review*,deep-research,ai-smoke-test,llm-monitor*,record-ingest-smoke,deploy-dashboard,render-decks}.yml`. |
+| **7** | 2–3 active engagements. | 3rd / 4th audit booked. | Possibly first offer-in-hand. | Archive `scripts/llm-monitor/`, `scripts/record-ingest/`, `scripts/codex-*.py`, `scripts/gemini-triage.py`, `scripts/plan-issue.py`, `scripts/lib/`, all triage/execute prompts. |
+| **8** | Steady-state hourly capacity reached (25–30 billable hrs/wk). | Audits at 1 / week pace; first monitoring retainer signed. | Final-round interviews. | Archive `docs/n8n-workflows/` and `docs/ops/`. Rewrite `operator-playbook.md` to a 1-page Stage-1 daily flow. |
+| **9** | First referral inbound (this is the leading indicator that Leg A is sticky). | First repeat customer (recall fixes from earlier audit). | Decide on offer if landed; otherwise continue. | All `docs/wiki/`, `docs/claude-design/`, `docs/_deprecated/` reviewed and either archived or deleted. |
+| **10** | Run a Loom-screen-recording case study from the first engagement (with permission). Publish on personal site. | Publish a case study on `aoda-audit/` page from the first delivered audit. | If no offer: pause Leg C and reinvest the time in Leg A. | Final sweep: confirm `tsconfig.json` + `package.json` no longer list any platform paths; lint clean; tests green. |
+| **11** | Steady-state: $10–$15k/mo invoiced. | Steady-state: 2–3 audits/mo + 4–6 monitoring retainers. | If offer-in-hand: decide whether to take it; the offer is **price discovery**, not destiny. | Confirm `docs/_archive/2026-05-XX-*/` folders each carry a top-level `README.md` summarising why archived. |
+| **12** | **30 / 60 / 90 review.** Honest accounting: which leg paid? Which leg paid less than expected? Which got more attention than it should have? | Same. | Same. | Final commit: `docs/research/09 §7-§9` final-review. |
+
+### §4.2 The forbidden activities for 90 days
+
+From the §7/§8.4 stress-test agent and `08 §7.3` combined: during the
+90-day pivot, the operator does **none** of the following:
+
+1. **Write a new deck.** Including a "rebuilt-for-the-pivot" deck.
+   Especially that.
+2. **Refactor the platform.** The platform is in archive. No new
+   features, no rewrites, no "while I'm here" cleanups.
+3. **Re-open `Lumivara Forge` brand discussion.** The `15c` ADR
+   stays as-is. If the recommended pivot lands, the brand work is
+   trivially redone in week 13.
+4. **Pursue a vertical-niche workflow tool.** §3.3 demoted this to
+   month 9+. Honour the demotion.
+5. **Open Pipeline-lane infrastructure work.** No new workflows, no
+   n8n re-imports, no GitHub-App scaffolding. The infrastructure is
+   archived; do not un-archive it for any reason short of a paying
+   client requiring it.
+
+### §4.3 The single 30-day reading
+
+If by day 30 (end of week 4 above) the operator has **not** sent at
+least one freelance proposal and **not** booked at least one AODA
+audit call, the pivot is failing not because the offer is wrong but
+because the operator has reverted to the documentation hobby.
+Behaviour, not strategy. Re-read `08 §3` ("the documentation hobby
+diagnosis"). The corrective action is to send the next 5 outreach
+messages **within the hour the failure is noticed**, no further
+deliberation.
+
+---
+
+## §7 — Risks of the pivot itself
+
+Pivots fail in known ways. The recommended stack in §3 has six named
+risks; each has a single named indicator and a corrective action.
+
+| Risk | Indicator (visible by day) | Correction |
+|---|---|---|
+| **R1.** Leg A produces no inbound; outreach reply rate <2% | day 30 | Re-anchor positioning to a single named vertical (FinTech, AI-startups, regulated industries). Stop selling "AI integration" generically. |
+| **R2.** Leg B fails because Ontario AODA buyers don't perceive the deadline as binding | day 45 | Pivot from "audit + remediation" to "AODA *attestation* package" (the regulator-required filing); price at CAD $1,500 flat. Lower revenue, faster sales cycle. |
+| **R3.** Leg C produces offers but none above the operator's freelance rate | day 60 | The information itself is the win — Leg C closes; reinvest fully into Legs A + B. |
+| **R4.** Operator discovers AI-consulting buyers want a *team*, not a solo (named comparable: every Anthropic Partner Network entry except Tribe AI is multi-person) | day 60–75 | Sub-contract a second engineer for capacity overflow on a 50/50 revenue split per engagement. Do not hire. |
+| **R5.** Anthropic enforces the §5.6 ToS landmine **mid-pivot** by suspending the operator's Pro/Max account | any day | Cut over to API-key billing on every active engagement (already structured in `08 §5.6` mitigation). Pass the cost through as a line item in every SoW. The §5.6 risk does not block the pivot if the operator is on API billing from day 1. |
+| **R6.** The operator, having archived the platform, cannot resist re-opening it | week 6+ | The archive is a one-way commit unless §8 criteria below are met. Visible signals: opening `_archive/...` paths in git, drafting a new deck, "while I'm here" platform refactors. **The corrective is to re-read `08 §3` and re-commit to the archive.** |
+
+---
+
+## §8 — Un-archive criteria
+
+The archive is reversible, but only against named conditions. Each
+archived bucket has a single rule for re-opening; if the rule does not
+fire, the archive holds.
+
+| Archived bucket | Un-archive trigger |
+|---|---|
+| **A-DECKS** | Never. Stakeholder decks for a 30-client cap product the operator is no longer selling. If a future product needs decks, write new ones. |
+| **A-PLATFORM-OVER** (multi-AI ladder, plan-then-execute, llm-monitor, recording pipeline) | Two conditions, both required: (a) the operator is at capacity in the pivot stack (>30 hrs/wk billable for 90+ consecutive days), AND (b) a paying client of Leg A or Leg B has explicitly requested a feature the archived platform code provides. Single-leg signal not enough. |
+| **A-DASHBOARD** | A second operator has joined the practice OR client count exceeds 5. Until then, GitHub Issues + Vercel UI are the dashboard. |
+| **A-OPS** (operator playbooks) | Never as-is. The pivot has its own daily flow; rewrite, don't un-archive. |
+| **A-RESEARCH-PRO** (research/01-07) | Never. They were superseded by `08`. |
+| **A-WORKFLOWS** (the 31 cron-driven workflows) | Never as-is. Archive includes deletion of `schedule:` blocks; even if a single workflow becomes useful again, write a fresh one. |
+| **A-N8N** | If the practice grows into a per-client automation tier (post-month-12, post-paying-client-#5) AND the operator chooses to ship automation as a paid feature. Until then, n8n stays archived. |
+| **A-MIGRATIONS** (00-automation-readiness, 01-poc-perfection, lumivara-people-advisory-spinout) | If the operator chooses to spin a Site repo out for a client, the spinout runbook is the only archived file worth re-reading. The phase plans (00, 01) stay archived. |
+| **K-PLATFORM-MINIMAL** items currently kept | Audit at month 6. If `auto-merge.yml` has produced one accidental merge that broke production, archive it then. |
+
+The **explicit non-trigger:** *"I miss the platform"* is not an
+un-archive condition. *"It would be cool to ship X"* is not an
+un-archive condition. *"A prospect mentioned Y on a call"* is not an
+un-archive condition. The trigger is **a paying customer requiring the
+exact code path** — and that is a deliberately high bar.
+
+---
+
+## §9 — `08 §7` and `§8.4` enhancements (cross-fed)
+
+The §7/§8.4 stress-test agent's findings expand both sections of the
+diagnostic doc. The enhancements have been folded back into `08` as
+**`08 §10`** (a new sub-section appended in the same commit batch). The
+specific additions:
+
+### §9.1 To `08 §7` (salvage paths) — additions to the original `§7.4`
+
+- **`§7.5` (new): the three-leg hedged stack** as the recommended
+  pivot, citing this doc's §3.
+- **`§7.6` (new): the boilerplate-as-product trap, named** — Tailwind
+  Labs' 80%-revenue-loss precedent (comparable-pivots agent §1).
+  Pivots F and G in §2 explicitly forbidden.
+- **`§7.7` (new): the corporate-hedge clause** — running interview
+  loops in parallel as price discovery (Leg C / Pivot I in §2).
+
+### §9.2 To `08 §8.4` (limits and what would change the read) — additions to the original four levers
+
+- **`§8.4.5`: Anthropic enterprise repricing (April 2026)** moved
+  *against* the §5.6 ToS softening rather than toward it. Any future
+  read should re-check Anthropic's pricing page on every quarterly
+  refresh, not just the legal-and-compliance page.
+- **`§8.4.6`: Google AIO regulatory pressure** is real but slow. UK
+  CMA opt-out announcement (January 28 2026), EU Commission
+  investigation (December 2025) raise plausibility of a partial
+  voluntary mitigation by Q4 2026 that *slows* but does not *reverse*
+  the §6.3 asset-depreciation read.
+- **`§8.4.7`: AODA December 31 2026 deadline** is the single most
+  actionable read-changer surfaced by the stress-test pass. The
+  operator's existing axe-core + Lighthouse CI pipeline is the
+  prebuilt delivery surface. Pivot E in §2 is anchored on this lever.
+- **`§8.4.8`: OPC enforcement against an AI website builder** (12–24
+  month possibility per the agent) would convert the §2.4 PIPEDA
+  framing from "rhetorical" to "commercial." Not actionable today;
+  worth tracking quarterly.
+- **`§8.4.9`: a major Wix or Squarespace outage during retail peak**
+  is statistically near-certain over a 12-month window (Wix had 4
+  major outages in the last 90 days at median 49-min duration); would
+  meaningfully soften §3.1's "horizontal builders own the wedge"
+  read **for the duration of the outage news cycle, not structurally**.
+- **`§8.4.10`: an Anthropic / OpenAI / Google price war on inference**
+  (40–60% probability of 30–50% Sonnet/Haiku token-price drop in
+  2026) would convert §5.6's "forced API billing wipes out margin"
+  from a kill-shot to a manageable line item.
+
+The enhancements are recorded both here in §9 and in `08 §10` so that
+neither document goes stale relative to the other.
+
+---
+
+## §10 — Bibliography and methodology
+
+Three independent agents informed the work in this document. Their
+findings converged on three independent points: **stop selling
+retainer-priced productized service to SMBs; sell senior expertise on
+multiple complementary surfaces instead; archive the platform overhead
+without re-opening it absent a paying-customer requirement**.
+
+### §10.1 Agent A — Comparable pivots case studies
+
+Investigated productized-service pivots, AI-implementation consulting,
+vertical-niche SaaS, developer-targeted templates, senior freelance
+day-rates, build-in-public + content + course models, and corporate-
+job pivots in the 2025–2026 window.
+
+Top three findings ranked: senior freelance with AI-integration
+positioning anchored to the Anthropic Claude Partner Network credential
+(launched March 12 2026, free, $100M fund); vertical workflow tool for
+one Canadian regulated profession (dental compliance comparable:
+Auxpanel at $30–$50k MRR / 85% margin / no marketing); hedged
+corporate bridge run *concurrently* with freelance.
+
+Key citations:
+- [Anthropic Claude Partner Network](https://www.anthropic.com/news/claude-partner-network)
+- [Brett Williams / DesignJoy $1.14M ARR solo](https://www.news.aakashg.com/p/brett-designjoy-podcast)
+- [Pieter Levels Photo AI $132K MRR / 60-day kill of Avatar AI](https://www.indiehackers.com/post/photo-ai-by-pieter-levels-complete-deep-dive-case-study-0-to-132k-mrr-in-18-months-3a9a2b1579)
+- [Tailwind Labs 75% layoff / 80% revenue loss to AI codegen](https://devclass.com/2026/01/08/tailwind-labs-lays-off-75-percent-of-its-engineers-thanks-to-brutal-impact-of-ai/)
+- [Marc Lou ShipFa.st $8.8K MRR — boilerplate decay](https://x.com/marc_louvion/status/1984327198774616533)
+- [Toptal pricing model — fatcatremote](https://fatcatremote.com/blog/toptal-pricing-model)
+- [A.Team senior engineer rates](https://www.a.team/join)
+- [Auxpanel dental compliance vertical SaaS — Extruct](https://www.extruct.ai/data-room/dental-clinic-vertical-saas-companies/)
+- [Senior software engineer salary Canada — whatisthesalary.com](https://whatisthesalary.com/it-salaries/senior-swe-salary-canada/)
+- [Shopify L8 compensation — Levels.fyi](https://www.levels.fyi/companies/shopify/salaries/software-engineer/levels/l8)
+- [Canadian tech "bloodbath" — Yahoo Finance Canada](https://ca.finance.yahoo.com/news/bloodbath-tech-workers-forced-survival-171342732.html)
+- [Vercel Solution Partners](https://vercel.com/partners/solution-partners)
+- [Indie Hackers — pivot from product to productized service](https://www.indiehackers.com/post/services/pivoting-from-product-to-tech-enabled-productized-service-and-growing-to-50k-mo-CNrdPsCe6FC0ikuDAK1g)
+
+### §10.2 Agent B — Repo inventory for archive vs keep
+
+Read-only enumeration of `/home/user/lumivara-site` against the
+twelve-bucket classifier. Output drove §5 (archive list) and §6 (keep
+list) verbatim. ~70,000 lines archived; ~18,000 lines kept; 15–20%
+salvage ratio. Single contamination row surfaced (`src/app/lumivara-infotech/`)
+that requires immediate operator action regardless of pivot direction.
+
+### §10.3 Agent C — `08 §7` / `§8.4` stress-test
+
+Investigated eight additional salvage paths beyond `08 §7.4`'s single
+sentence; eight additional read-changing levers beyond `08 §8.4`'s
+original four; and a "grow the offer" pivot (HR-services-for-Canadian-
+SMBs partnership) that the deck pack never seriously considered.
+
+Top three highest-value enhancements: replace `§7.4` with a three-leg
+hybrid stack; close the `§5.6` ToS landmine *before* shipping any leg;
+run a staff-engineer interview loop in parallel as price discovery.
+
+Key citations:
+- [Toptal Pricing 2026 — South](https://www.hireinsouth.com/post/how-much-does-toptal-cost)
+- [Full Stack Developer Hourly Rate 2026 — Arc.dev](https://arc.dev/freelance-developer-rates/full-stack)
+- [Fractional CTO Cost Canada 2026 — reyem.tech](https://www.reyem.tech/article/fractional-cto-cost-in-canada-2026-the-complete-pricing-guide)
+- [White Label AI Marketing for Agencies 2026 — ALM Corp](https://almcorp.com/blog/white-label-ai-marketing-services-agencies-2026-guide/)
+- [AODA Compliance Checklist 2026 — SmartSMSSolutions](https://smartsmssolutions.com/resources/blog/ca/aoda-compliance-checklist-2026)
+- [Accessibility Audit Costs in Canada — accessibilitypartners.ca](https://accessibilitypartners.ca/accessibility-audit-cost-in-canada/)
+- [AODA Ontario 2026 deadlines — zwebra.com](https://zwebra.com/aoda-ontario.html)
+- [Vertical SaaS 2026 — qubit.capital](https://qubit.capital/blog/rise-vertical-saas-sector-specific-opportunities)
+- [Anthropic ejects bundled tokens from enterprise seat deal — The Register, Apr 16 2026](https://www.theregister.com/2026/04/16/anthropic_ejects_bundled_tokens_enterprise/)
+- [UK CMA Google AI Overview ruling — Adweek Jan 28 2026](https://www.adweek.com/media/uk-regulator-google-publishers-ai-control/)
+- [EU Commission Google AI investigation — Dec 2025](https://ec.europa.eu/commission/presscorner/detail/da/ip_25_2964)
+- [Canada 2026 privacy priorities — Osler](https://www.osler.com/en/insights/reports/2025-legal-outlook/canadas-2026-privacy-priorities-data-sovereignty-open-banking-and-ai/)
+- [HR Compliance Checklist Canada 2026 — RisePeople](https://risepeople.com/blog/hr-compliance-checklist/)
+- [HR Compliance Canada 2026 — Citation Canada](https://www.citationcanada.com/guide/the-ultimate-guide-to-hr-compliance-in-canada/)
+- [Squarespace outage history — StatusGator](https://statusgator.com/services/squarespace/outage-history)
+- [Wix incident history](https://status.wix.com/history)
+
+### §10.4 Limits
+
+The recommendation in §3 assumes:
+
+- **Anthropic does not enforce the §5.6 ToS landmine inside the pivot
+  window.** Mitigated by moving Leg A to API-key billing on day 1 of
+  every engagement.
+- **AODA enforcement holds its trajectory toward December 31 2026.**
+  An accelerated regulatory rollback is unlikely; a deadline extension
+  is the most plausible negative move and would soften but not kill
+  Leg B.
+- **Canadian tech labour market does not collapse further.** The
+  current contraction (Vancouver postings -43%, Toronto -10%) is
+  hostile but the Leg C interview loop is **price discovery**, not
+  the primary path; a six-month closed window on Canadian roles still
+  permits remote-friendly US loops.
+- **The operator does not revert to the documentation hobby.** This
+  is the single largest residual risk. The §4.3 30-day reading is the
+  earliest point at which reversion becomes detectable.
+
+A future review of this plan would be most useful at **day 90**, with
+real numbers from each leg attached. The conversation moves from "is
+the pivot right" (settled here) to "which leg is performing and
+where to reinvest" (the question worth asking with data).
+
+---
+
+## §11 — The single sentence the operator should pin to the wall (alongside `08 §9`)
+
+> **"Pieter Levels killed Avatar AI 60 days after Lensa shipped; the
+> speed of the kill is the asset. The platform is archived; the
+> pivot is the work; the customer the operator wants is named in
+> §3, not in the deck pack."**
+
+---
+
+*Last updated: 2026-05-01. Author: operator-instance Claude Code agent
+on branch `claude/review-self-maintaining-website-28Fvp`. Three
+parallel research agents informed the work; convergence between them
+on the recommended pivot is taken as signal, not noise.*

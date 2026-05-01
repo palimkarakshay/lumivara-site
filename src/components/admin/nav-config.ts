@@ -12,6 +12,7 @@ export const MOTHERSHIP_NAV: readonly NavItem[] = [
   { href: "/admin/tests", label: "Tests", glyph: "✓", desktopOnly: true },
   { href: "/admin/brain", label: "Brain", glyph: "✦", desktopOnly: true },
   { href: "/admin/clients", label: "Clients", glyph: "◇", desktopOnly: true },
+  { href: "/admin/editor", label: "Editor", glyph: "✎", desktopOnly: true },
 ];
 
 /**

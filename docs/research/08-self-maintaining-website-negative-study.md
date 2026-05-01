@@ -416,4 +416,166 @@ and the proof point that would close the gap does not yet exist.
 
 ---
 
-*Sections §5–§7 pending; external-research findings land in §8.*
+## §5 — Operator economics and sustainability
+
+### §5.1 — The "$0 infra per client" claim depends on a vendor ToS reading nobody has done
+
+`storefront/03-cost-analysis.md` Part A asserts *"What you pay per client/month
+for infra: $0. That's the leverage."* The leverage works on three things
+remaining true simultaneously:
+
+1. **Anthropic Pro/Max stays a flat $20–$200/mo** while a fully automated
+   bot pipeline runs against it 24×7 on a human-tier subscription. Anthropic's
+   acceptable-use policy and the Pro/Max plan terms describe the subscriptions
+   as *"intended for individual use"* and reserve the right to throttle,
+   suspend, or migrate accounts found running unattended automation. The
+   GitHub-Actions × `CLAUDE_CODE_OAUTH_TOKEN` pattern this repo uses has
+   not been blessed in writing for commercial multi-tenant production
+   service delivery — the operator is **using a personal subscription as a
+   business backbone for paying customers**, which sits at minimum in a
+   grey area and at worst is a structural bet that Anthropic does not
+   tighten its enforcement during the build-out window.
+2. **GitHub Actions free-tier minutes** stay sufficient. Free-tier orgs get
+   2,000 Actions minutes/month; Pro 3,000; Team 50,000. The repo's tier
+   cadence (triage every 30 min, execute every 2h, plan-then-execute on
+   every routine issue, plus codex-review and auto-merge legs) consumes,
+   conservatively, **300–600 Action-minutes per active client per month at
+   T2**. At 30 active clients that is **9,000–18,000 minutes/month** —
+   well past Pro tier, requiring Team ($4/user/month plus $0.008/minute
+   over the included pool) or higher. The "$0 infra" framing silently
+   assumes the operator either eats the overage out of monthly take-home
+   or upgrades to Team and absorbs the seat costs without disclosing
+   either to the deck pack's per-client margin model.
+3. **Vercel free / hobby tier** is sufficient for 30 production small-business
+   sites. Vercel's hobby tier is **explicitly non-commercial** in the Terms
+   of Service. Running paying-client production sites on hobby is a ToS
+   violation that Vercel can enforce by suspension at any time. The Pro
+   tier ($20/user/month + bandwidth + edge function overages) is the
+   correct tier for commercial production; the operator's per-client
+   margin model does not include this.
+
+Item 1 is the load-bearing one. **If Anthropic enforces its Pro/Max
+"individual use" framing against the multi-tenant bot pattern this repo
+runs, the unit economics inverts.** A real commercial setup is the
+Anthropic API on usage billing — and the per-client AI cost on usage
+billing for a triage-every-30-min × execute-every-2h × plan-then-execute
+× codex-review pipeline is plausibly **$50–$200/month per active client**
+in marginal API spend. That number is not in the deck pack. At 30 clients
+it is $1,500–$6,000/month additional cost — large enough to reduce the
+"95% pre-comp gross margin" to **40–60% pre-comp**, putting the practice
+in the same margin band as the WP-care analogue (§3.2), which the deck
+pack already implicitly outperforms by 2–4×.
+
+### §5.2 — Operator hours per client are estimated from zero data points
+
+`storefront/03-cost-analysis.md` Part A — *"~2–3 hours per client per
+month"* at saturation. The sources behind this estimate: the operator's
+introspection. There is no time-tracking instrumentation in the repo
+that has measured a real client month for a non-operator client. The
+estimate is *what the operator would like the number to be*, not what
+the number is.
+
+Three structural reasons the real number will be higher:
+
+1. **PR review is not a 30-minute task at scale.** A PR-per-issue
+   pipeline at the cadence the deck describes generates 10–25 PRs per
+   client per month at T2. At 5 minutes per PR that is 50–125 minutes
+   per client just for review. Add design-judgement PRs (excluded from
+   auto-merge by policy in `01 §4`) at 10–15 minutes each and the
+   review burden alone is 90–180 minutes — already at or past the
+   stated total.
+2. **Client communication absorbs the rest.** Onboarding calls, change
+   conversations, monthly improvement-run discussions, occasional
+   support escalations — empirically these run **1–3 hours per client
+   per month** in the analogous WP-care segment, not the 15–30 minutes
+   the operator estimates.
+3. **Non-billable platform work taxes every hour.** Multi-AI fallback
+   tuning, n8n credential rotations, secret rotations, Vercel
+   migrations, dashboard maintenance, `llm-monitor` triage, recording
+   pipeline ingest, brand work, deck refreshes — none of these are
+   billable to a specific client and all of them sit on the operator's
+   single calendar.
+
+A defensible per-client month at saturation is plausibly **5–8 hours,
+not 2–3.** At 30 clients that is **150–240 hours/month**, which is
+0.9–1.5× a full-time job *before* sales activity. The 30-client cap
+is therefore not a discipline; it is the tightest the math can possibly
+get assuming the operator works full-time and runs zero new sales
+campaigns. There is no slack for vacation, illness, or — relevantly —
+for any of the prospecting activity Sales Sprint S0 requires.
+
+### §5.3 — The single point of failure is the operator's body
+
+The 30-client roster runs on one human's nervous system. There is no
+backup operator, no on-call rotation, no documented playbook a stranger
+can execute in 24 hours, no SLA the operator can credibly meet through
+a two-week vacation. The failure modes:
+
+- **Illness / injury (likelihood: high over 24 months).** A single
+  10-day flu produces 30 clients × 10 days of unattended pipeline. The
+  multi-LLM fallback ladder protects against vendor outages; nothing
+  protects against operator outages.
+- **Burnout (likelihood: medium-high).** The repo's own
+  `06-drawbacks-and-honest-risks.md` D3 cites "73% of tech founders
+  hide burnout; 65% of startup failures attributed to it." The
+  proposed mitigation — a planned 2-week break before client #25 — is
+  an aspiration, not a mitigation. Burnout does not RSVP.
+- **Family emergency / life event.** No contractually-assured
+  fallback. Clients are presumed patient. Empirically they are not.
+- **Operator desire to take a job, take a sabbatical, change cities.**
+  The 30-client roster is a 24-month commitment to *not* take any of
+  these actions without simultaneously offboarding a portfolio. The
+  cost of exiting is structurally higher than the cost of staying,
+  which is a definition of a trap.
+
+### §5.4 — The hire ladder is a deferred problem, not a solution
+
+The deck pack's hire ladder is *VA at 25 clients, engineer at 35*.
+Two structural problems:
+
+1. **The VA hire absorbs ~25% of T2 marginal margin** at typical
+   Ontario rates ($20–$35/hr × 30–50 hours/month for client-facing
+   admin), so the per-client net economics worsen at the moment the
+   roster gets hardest to manage. The deck pack does not show this.
+2. **The engineer hire requires the operator to write the playbook
+   the engineer will execute** — and the playbook has never been
+   externalised because the operator is the only person who has ever
+   run the pipeline end to end. Onboarding an engineer to a system
+   that has only ever existed in one head is **a 3–6 month project**,
+   during which the operator is doing the engineer's onboarding
+   instead of selling. The hire is supposed to relieve operator load;
+   it adds to it for the first half-year.
+
+### §5.5 — The 24-month sustainability question has not been asked
+
+The deck pack reasons forward from "month 12 ramp" and stops. The
+question that is not asked anywhere in the repo: *"In month 24, what
+does the operator's life look like?"* Plausible answers:
+
+- **24 months at 30 clients × 5–8 hours each, plus sales pipeline
+  maintenance, plus practice-wide platform work** = a **150–200
+  hour/month** operating tempo, on a single nervous system, with no
+  vacation and no peer to escalate to. This is the analytic
+  description of a private-practice-doctor's career, except those
+  doctors charge $300/hour and have a college backstop.
+- **The operator hires the VA and the engineer on schedule** — and
+  spends months 18–24 managing two reports for the first time, on a
+  budget that has not made room for either of them, while still doing
+  client review.
+- **The operator burns out at month 14, takes 6 weeks, returns to
+  find 6 clients have churned to Wix AI**, recovers to a 22-client
+  roster, and questions the entire enterprise.
+
+None of these scenarios are bad outcomes for the **person**. All of
+them are bad outcomes for the **business plan as written**. The
+business plan does not survive the operator being human.
+
+**§5 liability score: 8.5 / 10** — the cost model rests on three
+vendor ToS readings nobody has confirmed in writing; the operator-hours
+estimate is an aspiration; the SPOF is the operator's own body; the
+hire ladder pushes load forward not backward; and the 24-month
+sustainability question has not been asked.
+
+---
+
+*Sections §6–§7 pending; external-research findings land in §8.*

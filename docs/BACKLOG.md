@@ -10,11 +10,33 @@ The backlog lives in GitHub Issues, grouped in a Project v2 board called **Lumiv
 
 ### Step 1 — Phase 1A\* — Demo-readiness gate (2–4 week time-box, hard cap 4)
 
-- [ ] **G1 — Wire n8n orchestration hub end-to-end on the demo PoC.** Confirm hosting target (Railway vs. Oracle Cloud free-tier), wire the four credentials (Twilio inbound webhook, GitHub App PAT, Anthropic OAuth, Gemini API key), demo workflow runs from phone-edit → AI → preview link.
-- [ ] **G2 — Embed Vercel preview link inline in the client `/admin` page.** React component on `/admin/changes/[id]` showing preview URL as both clickable button and (ideally) `<iframe>`. Vercel deploy-hook payload already carries `preview_url` — surface it in the Server Action.
-- [ ] **G3 — Implement the publish-button auto-deploy Server Action.** Verify HMAC + Auth.js session → Octokit `pulls.merge` → audit log → wait for `deployment.succeeded` webhook → render production URL.
-- [ ] **G4 — Commit to Path B for the ownership claim.** Update `04-prospective-client-deck.md` and the dentist vertical pitch to say *"day-90 ownership transfer"* not *"day-1 ownership"*; align with §10.3 of the mitigations doc.
-- [ ] Run §8.2 checklist (1–6): borrowed-phone loop 5×, 90-second screen capture, four breakage-recovery scripts, what-can't-yet-do enumeration, axe-CI proves a real WCAG failure live, before/after Lighthouse case study live on `lumivara-forge.com`.
+> _Per [`CRITICAL-REVIEW-MITIGATIONS.md §12`](./decks/CRITICAL-REVIEW-MITIGATIONS.md#12--detailed-task-list-operator-blocking-vs-automation-blocking) the work splits into two parallel lanes — operator-blocking (humans/DNS/paperwork/money) and automation-blocking (bot-runnable via auto-routine). Both lanes' P0 items below MUST close before Sales Sprint S0 starts, OR the §9.1 honest-pitch stack is committed in writing._
+
+**Operator lane (P0 — this week):**
+
+- [ ] **G5 — Set Vercel production env vars.** `N8N_INTAKE_WEBHOOK_URL`, `N8N_DECISION_WEBHOOK_URL`, `N8N_DEPLOY_WEBHOOK_URL`, `N8N_HMAC_SECRET`. Without these, every dispatch helper in `src/lib/admin/webhooks.ts` returns *"…not wired up yet"*. **30 min. This is the cheapest single unlock in the whole plan.**
+- [ ] **G6 — Provision n8n + import the 6 workflows from `docs/n8n-workflows/admin-portal/`.** Pick host (Railway $5/mo OR Oracle Cloud free-tier — see [`mitigations §13.1 S2`](./decks/CRITICAL-REVIEW-MITIGATIONS.md#131--the-high-leverage-swaps-recommended-this-quarter) for the Inngest alternative that eliminates this entirely). Wire 5 credentials per workflow per the workflows README. 1–2 days first time.
+- [ ] **G9 — Resend domain authentication for `lumivara-forge.com`** (DKIM/SPF/DMARC at registrar). 30 min. **Affects Sales Sprint S0 reply rates directly** — without this, cold emails go to spam.
+- [ ] **G4 — Commit to Path B for the ownership claim.** Update `04-prospective-client-deck.md` + `vertical-pitches/dentists.md` for day-90 transfer language + collapsed negative list + §9.1 honest-pitch stack. 2 hours.
+- [ ] **Buy `lumivara-forge.com` + `.ca`**, set up `outreach@…` mailbox. Day 0A unblock per [§5.4](./decks/CRITICAL-REVIEW-MITIGATIONS.md#54--phase-0-branddomain-decision). 30 min.
+- [ ] Build `prospects.csv` (50 named Ontario dentists). 4 hours.
+- [ ] Record 90-second phone-edit loop screen capture (§8.2.2). 2 hours.
+- [ ] Run §8.2.1 borrowed-phone test, 5×. Fix any breakage. 1 day.
+- [ ] Publish one before/after Lighthouse case study on `lumivara-forge.com`. 4 hours.
+- [ ] Draft `docs/ops/demo-recovery-playbook.md` (§8.2.3). 2 hours.
+
+**Automation lane (P0 — this week, bot via `auto-routine`):**
+
+- [ ] **G2 — Inline preview embed on `/admin/client/[slug]/request/[number]/page.tsx`.** (The aggregate `/preview` page already surfaces preview URLs via `findPreviewByCommit`; gap is the per-request inline view.) 1 day.
+- [ ] **G3 — Verify publish-button auto-deploy Server Action runs end-to-end** in production. Code is implemented in `src/app/admin/client/[slug]/request/[number]/actions.ts confirmDeploy`; gap is configuration + e2e validation. Tied to G5+G6 above. 1 day testing once env vars set.
+- [ ] **G23 — Auto-merge label visible badge** on the request page. 2 hours.
+- [ ] **G20 / H7 — Playwright e2e test of intake → preview → publish loop** with stubbed n8n. 2 days.
+
+**Operator lane (P1 — within 4 weeks):** MSA + SOW templates (G8); E&O / cyber liability insurance (G16); 1Password Business + recovery envelope drill (G15); Pre-arrange Ontario freelance fallback dev (§9.1 option 6); Publish `/subprocessors` page (G22); Domain-transfer-at-end-of-engagement runbook (G21).
+
+**Automation lane (P1 — within 4 weeks):** Per-client rate limiting (G12); Sentry integration (G11); Engagement evidence log auto-population (G17); Web Push notification for preview-ready (G19); Intake form self-serve flow (G18); Migrate admin allowlist to Upstash Redis (G25).
+
+**Deferred per [`mitigations §13.1`](./decks/CRITICAL-REVIEW-MITIGATIONS.md#131--the-high-leverage-swaps-recommended-this-quarter) tech-stack swaps:** S1 drop Twilio for first 5 clients (G13); S4 manual Stripe Invoicing instead of Stripe automation (G7); S5 manual onboarding checklist instead of `forge provision` CLI (G24); S6 brand rename deferred 90 days.
 
 ### Step 2 — Phase 1B — Sales Sprint S0 (90-day time-box; starts only after Step 1 OR §9.1 commitment)
 

@@ -2,6 +2,18 @@
 
 # POC Perfection Plan — finish before migration starts
 
+> **🚨 SCOPE NARROWING — 2026-05-01.** Per
+> [`docs/decks/CRITICAL-REVIEW-MITIGATIONS.md §5.3`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#53--the-11-streak-gate-narrowed),
+> the §1.1 streak gate (*"10 consecutive auto-routine issues land green
+> with zero operator intervention"*) now gates **Phase 2 (Run S1
+> mechanical rename) only.** It is no longer load-bearing for Phases
+> 3–6, the demo-readiness gate, or sales work. The streak is an
+> internal quality bar; it is not a customer-impact bar, and a
+> prospect does not buy *"10 consecutive green issues."* Continue
+> running the streak as background telemetry; do not let it block the
+> Sales Sprint S0 design in the mitigations doc. The PoC is "good
+> enough" — see [`CRITICAL-REVIEW.md §7`](../decks/CRITICAL-REVIEW.md).
+
 > **Purpose.** Convert the abstract Phase 1 exit criterion in
 > [`00-automation-readiness-plan.md §3.1`](./00-automation-readiness-plan.md#31--exit-criterion-the-only-thing-that-matters)
 > into a **dated, day-by-day** plan with concrete tasks, owners, evidence

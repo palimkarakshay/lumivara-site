@@ -15,13 +15,19 @@ export const MOTHERSHIP_NAV: readonly NavItem[] = [
 ];
 
 /**
- * Client subset nav. Stays minimal — three tabs the operator's customer
- * needs and nothing else. No "Brain" or "Runs" leaks the autopilot.
+ * Client subset nav. Four state-aligned tabs (Existing, Draft, Preview,
+ * Deployed) match the engagement lifecycle the customer thinks in. The
+ * legacy Requests + New tabs stay reachable on desktop so power users
+ * keep the listing view; on mobile they collapse out so the bar shows
+ * only the four state-aligned tabs.
  */
 export const CLIENT_NAV_BASE: readonly NavItem[] = [
-  { href: "{base}", label: "Requests", glyph: "◐" },
-  { href: "{base}/new", label: "New", glyph: "+" },
+  { href: "{base}/existing", label: "Existing", glyph: "◐" },
+  { href: "{base}/draft", label: "Draft", glyph: "✎" },
   { href: "{base}/preview", label: "Preview", glyph: "▢" },
+  { href: "{base}/deployed", label: "Deployed", glyph: "▲" },
+  { href: "{base}", label: "Requests", glyph: "≡", desktopOnly: true },
+  { href: "{base}/new", label: "New", glyph: "+", desktopOnly: true },
 ];
 
 /** Resolve `{base}` placeholders in CLIENT_NAV_BASE for a slug. */

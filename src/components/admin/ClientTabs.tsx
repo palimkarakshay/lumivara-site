@@ -10,12 +10,19 @@ type Props = {
   items: readonly NavItem[];
 };
 
+/**
+ * The Requests tab is the index route ({base}). Every other tab lives at
+ * a named sub-segment, so we treat sibling-segment matching as the rule
+ * and the index as the exception.
+ */
+const SIBLING_SUFFIXES = ["/existing", "/draft", "/preview", "/deployed", "/new"] as const;
+
 function isActive(pathname: string, href: string): boolean {
   if (pathname === href) return true;
-  // Match nested routes for "Requests" (the index segment ends without
-  // /new or /preview), but never let it claim every child route.
-  if (href.endsWith("/preview") || href.endsWith("/new")) {
-    return pathname.startsWith(`${href}/`) || pathname === href;
+  for (const suffix of SIBLING_SUFFIXES) {
+    if (href.endsWith(suffix)) {
+      return pathname.startsWith(`${href}/`) || pathname === href;
+    }
   }
   return false;
 }
@@ -29,7 +36,10 @@ export function ClientTabs({ items }: Props) {
           pathname === item.href ||
           (item.href !== "/" && isActive(pathname, item.href));
         return (
-          <li key={item.href}>
+          <li
+            key={item.href}
+            className={cn(item.desktopOnly && "hidden md:list-item")}
+          >
             <Link
               href={item.href}
               aria-current={active ? "page" : undefined}

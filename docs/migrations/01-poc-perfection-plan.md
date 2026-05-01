@@ -7,12 +7,19 @@
 > the §1.1 streak gate (*"10 consecutive auto-routine issues land green
 > with zero operator intervention"*) now gates **Phase 2 (Run S1
 > mechanical rename) only.** It is no longer load-bearing for Phases
-> 3–6, the demo-readiness gate, or sales work. The streak is an
-> internal quality bar; it is not a customer-impact bar, and a
-> prospect does not buy *"10 consecutive green issues."* Continue
-> running the streak as background telemetry; do not let it block the
-> Sales Sprint S0 design in the mitigations doc. The PoC is "good
-> enough" — see [`CRITICAL-REVIEW.md §7`](../decks/CRITICAL-REVIEW.md).
+> 3–6 or sales work. The streak is an internal quality bar; it is not
+> a customer-impact bar.
+>
+> **The §6 demo-readiness gate, however, is the OPPOSITE — load-bearing
+> and tightened.** Operator surfaced four named integration gaps on
+> 2026-05-01 — G1 n8n orchestration not wired, G2 Vercel preview not
+> embedded in `/admin`, G3 publish-button doesn't trigger production
+> deploy, G4 Dual-Lane separation theoretical not implemented. These
+> sit at the §6 demo-readiness gate, not the §1.1 streak gate, and are
+> tracked in [`CRITICAL-REVIEW-MITIGATIONS.md §8.2.7`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#827--four-named-integration-gaps-surfaced-2026-05-01).
+> Phase 1A\* in the resequenced phase map ([§5.1](../decks/CRITICAL-REVIEW-MITIGATIONS.md#51--the-new-phase-map))
+> is exactly this gate, time-boxed to 2–4 weeks (hard cap 4), and is
+> the hard prerequisite to Sales Sprint S0.
 
 > **Purpose.** Convert the abstract Phase 1 exit criterion in
 > [`00-automation-readiness-plan.md §3.1`](./00-automation-readiness-plan.md#31--exit-criterion-the-only-thing-that-matters)

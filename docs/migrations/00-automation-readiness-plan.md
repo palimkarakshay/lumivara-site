@@ -4,15 +4,37 @@
 
 > **🚨 RESEQUENCING BANNER — 2026-05-01.** The phase ordering below is
 > **infrastructure-first, sales-last** and has been formally resequenced
-> per [`docs/decks/CRITICAL-REVIEW-MITIGATIONS.md §5`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#5--resequenced-project-plan)
+> per [`docs/decks/CRITICAL-REVIEW-MITIGATIONS.md`](../decks/CRITICAL-REVIEW-MITIGATIONS.md)
 > after the harsh-critic review of the deck pack at
 > [`docs/decks/CRITICAL-REVIEW.md`](../decks/CRITICAL-REVIEW.md). The
-> short version: **Phases 2–6 are now `Blocked-on-revenue`** and a new
-> **Phase 1B (Sales Sprint S0)** runs in parallel with the (demoted)
-> Phase 1A streak. The §3.1 streak gate continues to gate **Phase 2
-> only**; it no longer gates downstream phases or sales work. Treat the
-> phase descriptions below as the technical north star, but consult the
-> mitigations doc for the **active sequencing** until client #2 closes.
+> short version:
+>
+> - **Phase 1A\*** (demo-readiness gate, 2–4 week time-box) is **inserted
+>   before Phase 1B**. It addresses the four operator-named integration
+>   gaps (G1–G4) plus 20+ additional gaps catalogued in
+>   [`mitigations §11`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#11--additional-gaps-g5g24-surfaced-2026-05-01)
+>   from the independent codebase audit (delivery-readiness score 5.5/10).
+>   Cheapest unlocks: G5 (Vercel env vars, 30 min), G9 (Resend DNS, 30 min),
+>   G6 (n8n provisioning, 1–2 days).
+> - **Phase 1B (Sales Sprint S0)** runs after Phase 1A\* closes OR the
+>   §9.1 honest-pitch stack is committed. 90-day time-box.
+> - **Phases 2–6 are `Blocked-on-revenue`.** Phase 4 (Client #1 spinout)
+>   gains a post-revenue deadline tied to client #2's day 90 under
+>   [Path B](../decks/CRITICAL-REVIEW-MITIGATIONS.md#103--recommendation).
+> - The §3.1 streak gate continues to gate **Phase 2 only**; it no longer
+>   gates downstream phases or sales work.
+> - **Several stack components are recommended for swap or deferral** per
+>   [`mitigations §13.1`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#131--the-high-leverage-swaps-recommended-this-quarter):
+>   drop Twilio for first 5 clients (S1), Inngest as n8n alternative or
+>   commit fully (S2), 5-leg→2-leg LLM ladder (S3), defer Stripe automation
+>   (S4), defer `forge provision` CLI (S5), defer brand rename (S6).
+> - Detailed prioritised task list (operator-blocking vs automation-blocking
+>   lanes) lives at
+>   [`mitigations §12`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#12--detailed-task-list-operator-blocking-vs-automation-blocking).
+>
+> Treat the phase descriptions below as the technical north star, but
+> consult the mitigations doc for the **active sequencing** until client
+> #2 closes.
 
 > **Goal.** Use this repo (`palimkarakshay/lumivara-site`) as the
 > **proof-of-concept** for the autopilot, then have the bot drive the

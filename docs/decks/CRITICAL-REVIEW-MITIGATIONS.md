@@ -532,6 +532,60 @@ The operator and automation lanes run **in parallel**, not sequential. The opera
 
 ---
 
+## §13 — Tech-stack and automation-approach alternatives
+
+> _Per operator request 2026-05-01: evaluate whether better alternatives exist to the current stack and automation approach. Current stack has real production-grade pieces (HMAC handshake, deploy-promotion guard, admin portal) but several components are over-engineered for a solo operator with zero clients, and a few components are under-built for the use case. This section names the swaps that would reduce operational complexity without giving up the moat._
+
+### §13.1 — The high-leverage swaps (recommended this quarter)
+
+| # | Swap | Current | Recommended alternative | Why | Migration cost |
+|---|---|---|---|---|---|
+| **S1** | **Drop Twilio for first 5 clients (G13).** | Per-client SMS number ($1.15/mo USD per client + setup tax). | **Email-only intake + web form (`/admin` PWA on phone).** SMS deferred to client #5+ when demand justifies it. | Twilio adds setup tax (per-client number provisioning, n8n SMS workflow credentialing) for marginal value. The existing `/admin` web form on a phone is the canonical phone-edit path per G27 (the iOS Shortcut path was already deprecated). Cuts G6 wiring effort roughly in half. | 0 hours — it's a decision. Update `intake-sms.json` workflow status to "deferred"; remove SMS-related slides from prospective-client deck. |
+| **S2** | **Replace n8n with Inngest** (or commit fully to n8n). | n8n on Railway / Oracle Cloud free-tier — 6 workflow JSONs, 5 credentials per workflow, JSON replication for new clients via `sed` (per `docs/n8n-workflows/admin-portal/README.md`). | **Inngest** — serverless workflow engine; pay-as-you-go (free tier covers solo-operator volume); idiomatic TypeScript SDK; runs as Next.js routes; no credential UI to wire per workflow. **OR** commit fully to n8n and stop drifting. The half-built state (n8n-as-canonical-hub but Server Actions doing HMAC dispatch) is the worst of both. | Inngest eliminates G1 (n8n hub not wired) entirely — workflows live as TypeScript in the same Next.js codebase. Eliminates per-client JSON-replication. Eliminates the Railway/Oracle hosting decision. Trade-off: lose n8n's visual workflow builder (operator value-loss low: solo eng-operator doesn't need a no-code surface; the contractor in the §9.1 stack also reads code). | **2–3 days** to port the 6 workflows. Net win: subsequent gap-fixes (G7 Stripe, G17 evidence-log auto-pop, G19 push notifications) become Server Actions instead of new n8n workflows. |
+| **S3** | **Cut the 5-leg LLM fallback ladder to 2 legs.** | Claude Opus → Gemini 2.5 Pro → Gemini 2.5 Flash → GitHub Models (Llama 3.3-70B + GPT-4.1-mini) → OpenRouter (DeepSeek R1 + Qwen3-Coder). Five vendors, custom routing in `scripts/codex-review-fallback.py`. | **Claude primary + OpenRouter fallback** (or LiteLLM proxy as the single endpoint with vendor-side fallback). Two legs cover 99% of real outage cases. | The 5-leg ladder is genuine over-engineering — built because possible, not because demanded. Real Claude availability is ~99.9%; a single fallback gets you to ~99.99%. The further legs are vanity. The `llm-monitor` self-awareness pipeline that watches all five providers is similarly oversized. | **1 day** to simplify. Keep `codex-review` for the second-opinion code review (it's a different use-case). Reduces `llm-monitor` workload + per-provider credential management. |
+| **S4** | **Defer Stripe automation; use manual Stripe invoicing for clients #2–#5.** | `08-future-work §3` documents a full day-0/+7/+14/+30/+60 lockout ladder via n8n `payment-failed` workflow + Server Actions. Estimated 2–3 weeks per second-opinion audit. | **Stripe Invoicing UI** (manual, web app) for first 5 clients. Zero-code. Operator clicks "send invoice" once a month. Auto-charge isn't built; auto-pause isn't built; lockout ladder isn't built. | At <5 clients, manual invoicing is 30 min/month total. The lockout ladder is solving a problem the operator does not yet have. Defer to client #6 when load justifies the build. | 0 hours — it's a decision. Update `08-future-work §3` status to "deferred to client #6." |
+| **S5** | **Defer the `forge provision` CLI** (G24). | 13-step manual onboarding playbook (`06-operator-rebuild-prompt-v3.md`); CLI is Phase 5 deliverable, ~3–4 weeks per second-opinion estimate. | **Document + checklist** instead of CLI for clients #2–#5. The manual 13-step onboarding takes 2–4 hours per client; CLI development takes 3–4 weeks. At 3 clients × 4 hours = 12 hours of manual work vs 120 hours of CLI build = 10× ROI on staying manual. Build the CLI when manual onboarding hits ~10 clients × 4 hours = 40 hours/quarter and a 3-week build pays back in 1 quarter. | Reframes Phase 5 from a blocker into a milestone. Aligned with §5.1's Blocked-on-revenue posture. | 0 hours — also a decision. |
+| **S6** | **Defer the brand rename for 90 days** (already in §5.4). | Brand rename ADR (`15c §3`) re-opened, blocking Phase 0. | **Ship under `Lumivara Forge` working name; revisit only after client #2 closes if at all.** | A prospect who would have signed under `loom.com` and balks at `lumivara-forge.com` does not exist. | 0 hours. |
+
+**Aggregate effect of S1–S6:** ~3–4 days of swap work eliminates 4–6 weeks of "build the unfinished platform" work, and removes 4 of the 18-area implementation gaps from the critical path. The platform that remains is **smaller, more legible, and more honestly priced.**
+
+### §13.2 — The architectural questions worth asking once
+
+These are not swaps to make this quarter; they are decisions to commit to before scaling past client #5.
+
+| # | Question | Two-line answer | Re-decide when |
+|---|---|---|---|
+| **A1** | Auth.js v5 beta vs Clerk vs Supabase Auth? | Stay on Auth.js v5 beta until a real Auth.js bug bites in production. **Clerk migration path documented as fallback** ($25/mo, ~1 day to migrate). | First Auth.js beta-instability incident, OR client #5. |
+| **A2** | n8n vs Inngest vs Vercel-only? | If S2 isn't taken, lock down n8n: standardise hosting (Oracle Cloud free-tier wins on cost), document credential rotation, write the per-client replication script (`forge n8n-clone <slug>`). | If S2 is taken, this is settled. Otherwise, client #5. |
+| **A3** | Dual-Lane Repo (two-repo) vs single-repo + CODEOWNERS? | Dual-Lane is correct for the IP story but **defer the spinout** (§10 Path B). At the day-90 ownership transfer date for client #2, do the spinout for that one client; do not pre-build for hypothetical clients. | Client #2's day 90. |
+| **A4** | Marp decks vs Pitch / Beautiful.ai / no slides? | Stay on Marp. The decks are over-produced regardless of tool; the issue is volume and audience-mismatch (§5 freezes), not rendering. | Never; this isn't load-bearing. |
+| **A5** | Claude Code (OAuth) vs Cursor / Aider / Copilot Workspace? | Claude Code's OAuth integration with `CLAUDE_CODE_OAUTH_TOKEN` is a meaningful operational win — single seat, max-tier quota shared across cron paths and interactive sessions. **Stay.** | Anthropic deprecates the OAuth path or pricing model. |
+| **A6** | GitHub Actions vs self-hosted runner vs Vercel Cron? | GitHub Actions free tier is fine until cliff #2 (~16 active clients per `18-capacity-and-unit-economics.md §6`). Migrate to a $5/mo Hetzner self-hosted runner at that cliff. | Cliff #2 or first GitHub Actions free-tier overage bill. |
+| **A7** | The Plan-then-Execute pipeline — keep, simplify, drop? | **Keep for client-impacting issues** (the client reads the plan first — that's the value). **Drop for trivial copy edits** (the plan step adds latency for marginal value). Add a `skip-plan` label that triage can apply. | Once 50+ auto-routine PRs have shipped; measure plan-utility-per-PR. |
+| **A8** | The 4-tier client cadence (T0–T3) vs single tier? | Single tier ("the practice tier") for clients #2–#5. The 4-tier ladder is sales theatre when there are zero clients to differentiate. Re-introduce tiers when prospects ask for differentiation, not before. | First prospect explicitly asks "do you have a smaller / bigger plan?" |
+
+### §13.3 — The big "approach to automation" choice
+
+The deck pack describes a **platform-first** approach: build a multi-vendor AI orchestration apparatus, then sell it as a managed service. The honest §9.1 stack reframes it as a **service-with-AI-leverage** approach: the operator is the service; the AI is the leverage that lets the operator hold 30 clients on solo-operator economics.
+
+These are not subtle differences. They have different tech-stack implications.
+
+| Approach | What you need (tech) | What you defer | When right |
+|---|---|---|---|
+| **Platform-first** (current decks) | Full Dual-Lane Repo + `forge provision` CLI + Stripe lockout ladder + multi-vendor LLM ladder + n8n hub + per-client OAuth provisioning + cost-monitoring CLI before scaling. | Sales until the platform is "ready." | When you have a paying client base willing to wait while you finish. |
+| **Service-with-AI-leverage** (§9.1 + this section) | Working `/admin` portal + HMAC dispatch + 1 LLM provider with 1 fallback + email-only intake + manual Stripe Invoicing + manual onboarding checklist + the operator personally reviewing every PR before publish for first 90 days per client. | Almost everything in column 2 — until revenue justifies it. | When you have zero clients and need to find out if the offer sells. **This is you, today.** |
+| **Concierge/Service-as-Software** (alternative) | Cursor + Claude Code + the operator's laptop. **No platform at all.** Client texts the operator; operator implements via AI tools; ships. | Phone-edit demo, multi-vendor ladder, Dual-Lane spinout — all of it. | When the goal is "find product-market fit fast"; the AI is invisible to the client; operator can pivot the offer weekly. |
+
+The §9.1 stack already encodes the **Service-with-AI-leverage** column. The recommendation in §13.1 (S1–S6) collapses the tech-stack to roughly that level. **Concierge** is the radical alternative — drop the entire platform and run the offer from a laptop until product-market fit lands. It is a real option. Its tradeoff: operator gives up the 30-client cap math (no automation = no leverage = ~10-client cap) in exchange for moving 5× faster on offer iteration. Worth considering only if Sales Sprint S0 reply rate is <2% by week 3 of the dentist vertical, signalling that the offer is wrong, not the platform.
+
+### §13.4 — One-paragraph recommendation
+
+**Take S1, S2 (or S2-equivalent commitment to n8n), S3, S4, S5, S6 this quarter.** Total: ~3–4 days of swap work. **Result:** the platform shrinks to its actual load-bearing components (admin portal + HMAC + deploy guard + 2-leg LLM + 1 workflow tool + manual onboarding); 8 of the 18-area gaps drop off the critical path; Sales Sprint S0 starts on schedule with a smaller, more honest, more demonstrable product. Defer A1–A8 until they bite. Reserve **Concierge** as the fallback if Sprint S0 returns reply-rate signal that the offer itself is wrong.
+
+This is the path that keeps the operator selling without lying about the platform, and that doesn't spend the next 4–6 weeks finishing infrastructure for clients who haven't said yes yet.
+
+---
+
 
 
 A single GitHub issue should track Sales Sprint S0 at the operator level. Suggested title: *Sales Sprint S0 — first paying client #2 (90-day time-box, started YYYY-MM-DD)*. Labels: `meta/sales-sprint`, `priority/P1`, `human-only`. Body uses the §5.6 day-by-day plan as a checklist; updates happen in comments daily.

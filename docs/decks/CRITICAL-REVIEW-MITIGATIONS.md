@@ -348,6 +348,50 @@ That is enough to close a discovery call honestly. Everything else in the deck p
 
 ---
 
+## §10 — Architectural decision: Dual-Lane separation status
+
+> _Surfaced 2026-05-01 as G4 in §8.2.7. The Dual-Lane Repo design (`docs/mothership/02b-dual-lane-architecture.md`) promises a clean separation: client repo is "vanilla" (just the site), pipeline repo is "operator-side" (workflows, prompts, n8n, dashboard). The current implementation does not match the design. This section names the gap and proposes three resolution paths._
+
+### §10.1 — What the design promises vs. what's shipped
+
+| Concern | Design (`02b`) | Current state |
+|---|---|---|
+| Client repo contents | Site code, MDX content, design tokens, `/admin` portal, middleware | Site code AND `.github/workflows/` (triage, execute, plan, codex-review, auto-merge), `scripts/triage-prompt.md`, `scripts/execute-prompt.md`, `scripts/lib/`, `n8n-workflows/`, `docs/mothership/`, `docs/storefront/`, `docs/decks/`, `docs/migrations/` |
+| Pipeline repo contents | All operator-side: workflows, scripts, n8n exports, runbooks, prompts | Does not exist as a separate repo; lives commingled in this repo |
+| Client-handover state | Client gets ownership of vanilla site repo on day 1 | Operator would need to scrub a polluted repo at handover, OR the client receives operator IP they shouldn't have |
+
+The deck-pack pitch — *"You own the code from day one"* — is **structurally false** until the spinout completes. A prospect who reads it and asks *"so the GitHub repo is mine?"* gets a true answer only on the site-code subset; the pipeline subset, today, is in the same tree.
+
+### §10.2 — The three resolution paths
+
+| Path | What it costs | What it preserves | When to pick |
+|---|---|---|---|
+| **Path A — Bring Phase 4 (Client #1 spinout) forward.** Execute `docs/migrations/lumivara-people-advisory-spinout.md` end-to-end **before** Sales Sprint S0 starts. Cost: 2–3 weeks of operator time; delays sprint by same. | Day-1 ownership pitch stays true. The vanilla-site demo is real. | The full deck-pack pitch as written. | Operator has the appetite for 2–3 more weeks of platform work and believes the ownership pitch is the load-bearing differentiator. |
+| **Path B — Defer the ownership claim to 2026-Q3.** Adjust the prospect-facing deck (`04-prospective-client-deck.md`) to promise *"you own the code by month 3"* instead of *"day 1."* Sprint S0 starts on schedule. | Sprint timing. The platform-stays-where-it-is posture. | Most of the offer; weakens the "no lock-in" claim by 90 days. | Operator wants revenue first; willing to discount the moat by 90 days; trusts that prospects will accept "month 3 ownership" as honest. |
+| **Path C — Promise pipeline-only-licence with site-handover-on-cancellation.** Reframe: the operator **leases** the pipeline-running repo to the client; on contract end, operator extracts the site code + assets to a fresh client-owned repo and hands it over. Sprint S0 starts on schedule. | A bit of architectural narrative work; no Phase 4 work. | Honest framing throughout. Reads as "managed service" rather than "self-owned". | Operator wants to skip Phase 4 entirely until forced by client #5 economics. |
+
+### §10.3 — Recommendation
+
+**Pick Path B.** The reasoning:
+
+- **Path A** sounds principled but spends 2–3 weeks on Phase 4 work before any revenue. That contradicts the entire spirit of the resequencing — sales-first means the platform-spinout work waits behind revenue. Phase 4 was deliberately marked `Blocked-on-revenue` in §5.1 for this reason.
+- **Path C** is the most accurate description of the current platform reality, but it sells a different product than the deck pack describes. Switching mid-sprint to a "managed lease" pitch is a bigger rewrite than the §9.1 honest-pitch update.
+- **Path B** preserves the ownership claim (which is real, eventually) while being honest about the timing. The deck edit is a single sentence: *"At day 90, when the platform spinout completes, you take full ownership of the site repository — code, hosting account, domain, all of it. Until then, the operator hosts and runs the autopilot from a managed environment."*
+
+This pairs naturally with the §9.1 stack (manual-with-disclosure for the first 90 days). Both align on the same 90-day "transition to fully-owned" arc. Both are honest. Both close.
+
+### §10.4 — What this means for Phase 4
+
+Phase 4 (`Spin Client #1 out`) and Phase 3 (`Bootstrap platform repo`) are no longer just `Blocked-on-revenue` — they are the **gate to the day-90 ownership transfer** under Path B. They must complete before the first paying client's day 90, or the operator has to extend the managed-environment phase. Practically:
+
+- **If Sales Sprint S0 closes client #2 on day 30:** Phase 3 + 4 must complete by day 90 to make the ownership transfer date. ~2 months of platform work, parallel to running the new client's monthly cadence. Tight but doable.
+- **If Sales Sprint S0 closes client #2 on day 60:** Phase 3 + 4 has 30 days. Tighter; Path C (the managed-lease pitch) becomes the fallback if the spinout slips.
+- **If Sales Sprint S0 closes client #2 on day 90:** Phase 3 + 4 starts simultaneously with the new client's onboarding. Path C is effectively the active model.
+
+The discipline this encodes: **the operator's first revenue is also the alarm clock on the spinout.** The platform-spinout work that previously had no deadline now has a 90-day post-revenue deadline, attached to a real customer commitment. That is healthier than the current open-ended Phase 4 plan.
+
+---
+
 ## §7 — Tracking
 
 A single GitHub issue should track Sales Sprint S0 at the operator level. Suggested title: *Sales Sprint S0 — first paying client #2 (90-day time-box, started YYYY-MM-DD)*. Labels: `meta/sales-sprint`, `priority/P1`, `human-only`. Body uses the §5.6 day-by-day plan as a checklist; updates happen in comments daily.

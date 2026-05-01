@@ -351,7 +351,48 @@ That is enough to close a discovery call honestly. Everything else in the deck p
 
 ---
 
-## §10 — Architectural decision: Dual-Lane separation status
+## §11 — Additional gaps (G5–G24) surfaced 2026-05-01
+
+> _Inspection of `src/lib/admin/`, `src/app/admin/`, `docs/n8n-workflows/`, `package.json`, and `docs/mothership/08-future-work.md` revealed both more-built-than-claimed code and additional gaps the operator hasn't yet named._
+>
+> **Important nuance on G1–G4 from this inspection.** The HMAC handshake (`src/lib/admin/webhooks.ts` — full sign/verify with timing-safe-equal, 5-min replay window), the `confirmDeploy` Server Action with `assertSafePromotion` + idempotency keys, the `findPreviewByCommit` Vercel lookup, and all six n8n workflow JSON exports (`docs/n8n-workflows/admin-portal/{intake-web,intake-email,intake-sms,client-input-notify,client-input-record,deploy-confirmed}.json`) **are implemented in code**. The gap is not "code missing" — it is **configuration + runtime + import**: the n8n instance must be running, the JSON files must be imported into it, the credentials must be wired, and three Vercel env vars (`N8N_INTAKE_WEBHOOK_URL`, `N8N_DECISION_WEBHOOK_URL`, `N8N_DEPLOY_WEBHOOK_URL`) plus `N8N_HMAC_SECRET` must be set in production. Until those are set, every dispatch fails with the explicit error *"Intake/Decision/Deploy webhook is not wired up yet."* G1–G4 are real demo-blockers; the fix is hours of configuration, not weeks of coding.
+
+### §11.1 — Gap inventory
+
+| # | Gap | Class | Blocks | Effort | Owner |
+|---|---|---|---|---|---|
+| G5 | **Vercel env vars not set in production.** `N8N_INTAKE_WEBHOOK_URL`, `N8N_DECISION_WEBHOOK_URL`, `N8N_DEPLOY_WEBHOOK_URL`, `N8N_HMAC_SECRET` — without these, every dispatch in `src/lib/admin/webhooks.ts` fails with a clear error message. | Operator-blocking (config only) | Demo, all of G1–G3 | 30 min | Operator |
+| G6 | **n8n instance not provisioned + credentialed.** All six workflow JSONs exist; need a running n8n (Railway $5/mo or Oracle Cloud free-tier), import the bundle, wire 5 credentials per workflow (Twilio / GitHub PAT / Anthropic / IMAP / Resend), activate, copy webhook URLs into Vercel env. | Operator-blocking | G1, demo, all phone-edit flow | 1–2 days first time | Operator |
+| G7 | **Stripe / payment automation absent.** `08-future-work §3` schedules Stripe Subscriptions + day-0/+7/+14/+30/+60 lockout ladder. Not built. No Stripe SDK in `package.json`. | Automation-blocking | Take real money on a recurring basis without manual invoicing | 3–5 days | Automation |
+| G8 | **MSA / SOW templates absent.** `08-future-work §2` schedules these "before client #2." Not drafted. Operator cannot legally take money without a contract. | Operator-blocking (lawyer required) | Closing client #2 | $1,500–$2,500 lawyer fee + 1 week | Operator (with lawyer) |
+| G9 | **Resend domain authentication for `lumivara-forge.com` not set up.** No DKIM / SPF / DMARC for outbound. **This affects Sales Sprint S0 reply rates directly** — cold emails from an unauthenticated domain land in spam. | Operator-blocking (DNS config) | Cold-email reply rate; magic-link deliverability for client #1+ | 30 min | Operator |
+| G10 | **PIPEDA / privacy posture incomplete.** Site has a `/privacy` route (rendered) but no PIA template, no breach-notification runbook (only a research seed at `docs/research/07-pipeda-breach-notification.md`), no `/subprocessors` page, no Quebec Law 25 French-language fallback. Trigger threshold: client #3. | Mixed | Closing client #3 (and Quebec clients before) | 2–3 days drafting + 1 lawyer pass | Operator |
+| G11 | **No error monitoring / observability.** No Sentry, no OpenTelemetry. Silent failures in production go unnoticed until a client texts to complain. The HMAC dispatch returns errors that are logged to console.error only. | Automation-blocking | Sustainable delivery past client #3 | 4 hours (Sentry free tier) | Automation |
+| G12 | **Per-client rate-limiting not enforced at runtime.** Documented in `01-business-plan §8` and `04-tier-based-agent-cadence.md` as "per-client rate limit + tier cadence" but no rate-limit middleware in `src/middleware.ts` or `src/lib/admin/`. One client could flood the queue. | Automation-blocking | Multi-client load | 1 day (Upstash Redis already installed) | Automation |
+| G13 | **No Twilio SDK in `package.json`.** SMS intake workflow exists in n8n but Next.js side never sends or receives SMS directly. **Drop Twilio entirely for first 5 clients** — see §13 alternatives below. | Architectural choice | (Optional) | 0 hours (decision, not work) | Operator |
+| G14 | **iOS Shortcut / Android equivalent definition not checked into the repo.** The "tap a phone shortcut to submit an edit" mechanic depends on a Shortcuts file that the operator and clients install. No `.shortcut` file or import-link in the repo. | Operator-blocking | The headline phone-edit demo | 2–3 hours (build + record install video) | Operator |
+| G15 | **1Password Business + recovery envelope not yet drilled.** `docs/mothership/21-vault-strategy-adr.md` schedules this; no evidence it has been completed. | Operator-blocking | Sustainable delivery; insurance audit | 1 hour (operator) + 1 day quarterly drill | Operator |
+| G16 | **E&O / cyber liability insurance not in force.** `01-business-plan §8` says "insurance above $50k revenue." If the operator wants to honestly claim "covered" in any deck before $50k, this needs to be quoted. | Operator-blocking | Honesty in advertising; closing legal/health prospects | 2–4 hours (broker call + binding) | Operator |
+| G17 | **Per-client engagement evidence log not auto-populated.** `docs/mothership/19-engagement-evidence-log-template.md` exists as a template; no tooling auto-appends Lighthouse scores, axe-core results, content shipments, or audit-log entries to it. | Automation-blocking | Sales asset (the case-study artefact); regulator/insurer audits | 1–2 days (GitHub Action that appends) | Automation |
+| G18 | **No client onboarding self-serve flow.** The "5-min intake form → moodboard sign-off in 24h" promised in the prospective-client deck is operator-manual today. | Mixed | Bottleneck on operator hours during sales success | 2 days (Server Action + Resend confirmation) | Automation |
+| G19 | **Push notifications when preview ready.** Currently the loop closes via SMS or email (n8n workflows). No Web Push API or PWA notification when a preview link arrives. The 90-second loop relies on the client refreshing or noticing an SMS. | Automation-blocking | The wow factor of the demo | 1 day (Web Push + service worker) | Automation |
+| G20 | **Test coverage on the load-bearing paths.** 13 unit tests in `src/__tests__/` (admin-webhooks, admin-vercel-idempotency, admin-deployments-promote-selected, admin-clients, admin-status-map, admin-tiers, admin-main-history, admin-ask-parser, dashboard-cron, content-diagnostic, content-services, site-config, utils). **No e2e test of the full phone-edit loop** — only `e2e/a11y.spec.ts` and `e2e/smoke.spec.ts`. The single most demo-relevant test (intake → AI → PR → preview → publish → prod) is not covered end-to-end. | Automation-blocking | Confidence in 8.2.1 borrowed-phone test | 2 days (Playwright e2e w/ stubbed n8n) | Automation |
+| G21 | **No domain-transfer-at-end-of-engagement runbook.** *"You take the domain"* is in every deck; the operational steps to actually transfer registrar control aren't documented. | Operator-blocking | Honesty in handover claims | 4 hours (write runbook + dry-run on operator's own domain) | Operator |
+| G22 | **No `/subprocessors` page.** `08-future-work §1.5` flags this. Anthropic, Google, OpenAI, Vercel, Resend, Twilio, GitHub, Railway all process data on behalf of clients. PIPEDA/Law 25 require disclosure. | Operator-blocking | PIPEDA compliance for client #3+ | 2 hours (write content) + 1 day (page + sitemap) | Mixed |
+| G23 | **Auto-merge gate is "opt-in per label" but the labels aren't documented anywhere clients can see.** *"Auto-routine label = bot may merge."* Clients (and the operator on a Friday) don't know which changes will auto-merge. Surface in `/admin/changes/[id]` as a visible badge. | Automation-blocking | Trust during demo; disputes if a "wrong" change ships | 2 hours | Automation |
+| G24 | **The `forge provision` CLI promised in `00-automation-readiness-plan.md` Phase 3 doesn't exist.** Without it, onboarding client #2 is a manual operator job (re-running `06-operator-rebuild-prompt-v3.md`). The deck pack's *"first fully bot-driven onboarding"* (Phase 5) is blocked behind a CLI that hasn't been written. | Automation-blocking, Blocked-on-revenue | Phase 5 onboarding cleanup; client #3+ velocity | 1–2 weeks | Automation |
+
+### §11.2 — Counts
+
+- **Operator-blocking gaps (humans, paperwork, money):** G5, G6, G8, G9, G10, G14, G15, G16, G21, G22 — **10 gaps**.
+- **Automation-blocking gaps (code/configuration the bot or operator-with-bot can fix):** G7, G11, G12, G17, G18, G19, G20, G23, G24 — **9 gaps**.
+- **Architectural choice (no work, just commit to a direction):** G13 — **1 gap**.
+
+The operator-blocking gaps are **time-and-money**, not skill — domain DNS, lawyer fees, insurance, vault drill, SHA. The automation-blocking gaps are mostly **1–2-day chunks**, except G7 (Stripe, 3–5 days) and G24 (`forge provision` CLI, 1–2 weeks). **None are blockers on closing the first paying client** if the §9.1 manual-with-disclosure stack is committed.
+
+---
+
+
 
 > _Surfaced 2026-05-01 as G4 in §8.2.7. The Dual-Lane Repo design (`docs/mothership/02b-dual-lane-architecture.md`) promises a clean separation: client repo is "vanilla" (just the site), pipeline repo is "operator-side" (workflows, prompts, n8n, dashboard). The current implementation does not match the design. This section names the gap and proposes three resolution paths._
 

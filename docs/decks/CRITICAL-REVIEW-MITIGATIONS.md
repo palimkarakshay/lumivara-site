@@ -167,15 +167,18 @@ The resequenced map below pulls the first paying client to the **front**, demote
 
 ### §5.1 — The new phase map
 
+> _Updated 2026-05-01 to insert Phase 1A\* (demo-readiness) between 0A and 1B, per [§8 demo-readiness gate](#8--demo-readiness-gate-the-hard-prerequisite-to-sales-sprint-s0) and the four named integration gaps (G1–G4 in §8.2.7). Phase 4 also gains a 90-day post-revenue deadline per §10.4 (Path B)._
+
 | Phase | Name | Status | Trigger to start | Trigger to finish |
 |---|---|---|---|---|
 | **0A** | Brand+domain unblock (minimum viable identity) | **Active — this week** | Today | `lumivara-forge.com` + `.ca` registered, working name committed for 90 days, GitHub org created, `outreach@…` email sends and receives |
-| **1B** | **Sales Sprint S0 — close paying client #2** | **Active — runs alongside everything below** | Phase 0A finishes | One paid CAD invoice from a non-operator client |
+| **1A\*** | **Demo-readiness gate (G1–G4 + checklist 8.2.1–8.2.6)** — hard prerequisite to 1B | **Active immediately after 0A — 2-4 week time-box** | Phase 0A finishes | All four named gaps closed (G1 n8n wired, G2 admin preview embed, G3 publish-button auto-deploy, G4 Path-B ownership-claim language committed) AND 5/5 borrowed-phone loops succeed AND all six §8.2 rows pass |
+| **1B** | **Sales Sprint S0 — close paying client #2** | **Active when 1A\* passes OR §9.1 stack is committed in writing** | 1A\* passes OR §9.1 honest-pitch language adopted in `04-prospective-client-deck.md` | One paid CAD invoice from a non-operator client |
 | 1A | PoC streak (was Phase 1) | **Parallel-OK — demoted from gate to telemetry** | Already running | 10/10 streak completes whenever it completes; no calendar pressure |
 | 0B | Phase 0 §2.2 rows 3–12 (second Owner, Resend, Twilio, Railway, recovery envelope) | **Frozen until first prospect reply that books a discovery call** | First booked discovery call | Operator can run a clean Vercel deploy + send a Resend email under the brand |
 | 2 | Run S1 mechanical rename | **Blocked-on-revenue** | Client #2 invoice paid AND brand name still feels right | Audit-grep clean per existing §4.4 |
 | 3 | Bootstrap platform repo (P5.1–P5.5) | **Blocked-on-revenue** | Phase 2 done | `forge --help` runs; `forge provision --dry-run` prints the plan |
-| 4 | Spin Client #1 out | **Blocked-on-revenue** | Phase 3 done AND client #2 has run for 30 days without operator infrastructure failures | Existing §6.4 exit criterion |
+| 4 | Spin Client #1 out | **Blocked-on-revenue, deadlined post-revenue** — must complete by client #2's day 90 under Path B (§10.4) | Phase 3 done AND client #2 has run for 30 days without operator infrastructure failures | Existing §6.4 exit criterion; client takes ownership of vanilla site repo on day 90 |
 | 5 | Onboard Client #2 cleanly via `forge provision` | **Parallel-OK with Phase 4 if client #2 was provisioned manually first** | Phase 4 done | SMS-to-published cycle under 4h on smoke client |
 | 6 | Hardening + handover | **Parallel-OK** | Phase 5 done OR client #3 closes, whichever first | Recurring; never "completes" |
 | 6.5 | Capacity-policy review | **Deferred — see §5.5** | Client #5 invoice paid | Capacity-language committed to docs |

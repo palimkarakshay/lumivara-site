@@ -817,4 +817,124 @@ depreciating; and the operator is racing their own substitution.
 
 ---
 
-*Section §7 pending; external-research findings land in §8.*
+## §7 — What's salvageable
+
+The critique above is one-sided on purpose. The pack is not worthless;
+it contains real artefacts, real engineering, and a real operator who
+can do real work. This section is the honest "what should the operator
+keep doing on Monday." It is shorter than the critique because there is
+less to say — the salvageable core is genuinely small.
+
+### §7.1 — The site-build craft is real and sellable today, *without* the autopilot
+
+The operator can build a clean, fast, accessible Next.js marketing site
+for a small business. The portfolio piece on this craft is
+`lumivara-forge.com` itself. The market for *one-time custom marketing
+sites for solo professionals* — no retainer, no autopilot, no platform —
+is real, has clearing prices in the **CAD $3,500–$8,000 setup band**, and
+sells today on Fiverr, Upwork, Contra, and warm referrals. The mechanic
+the deck pack treats as Tier 0 (a "tire-kicker filter") is, in the honest
+read, **the actual product**. Sell it as the product and the rest of the
+business plan stops being load-bearing.
+
+A defensible Stage-1 offer:
+
+- **One-time CAD $4,500–$6,000 build.** 5-page custom Next.js site,
+  Lighthouse 90+, AODA / WCAG 2.1 AA, you own the domain + code +
+  Vercel account on day one.
+- **Optional CAD $79–$149/mo "improvement-run-only" subscription** for
+  the minority of clients who want monthly Lighthouse / axe / SEO
+  housekeeping. No phone-edit pipeline, no autopilot, no v0-killer
+  framing — just a senior engineer who looks at the site once a month
+  and ships one PR.
+- **Hourly CAD $150–$200 for additional changes** outside the
+  improvement run, billed per-PR with a fixed 5-business-day SLA.
+
+This is a perfectly respectable solo web-build practice. It is not
+glamorous. It does not justify a deck pack. It pays a mortgage in
+Toronto and lets the operator spend Friday afternoons on something
+else. **The deck pack's most damaging claim — that this offer is not
+ambitious enough — is the deck pack's biggest single error.**
+
+### §7.2 — Specific platform investments that survive into the smaller offer
+
+Most of the operator-side platform is overhead at the Stage-1 scale
+proposed in §7.1, but a few pieces survive intact:
+
+- **The Next.js + Tailwind + shadcn/ui starter kit.** Genuinely
+  reusable; the operator can spin up a per-client repo in 30 minutes
+  using the existing template. Keep.
+- **The axe-core + Lighthouse CI gates.** Even at one site, this is
+  the differentiator vs Wix / Squarespace builds that ship at
+  Lighthouse 50–70. Keep, advertise it modestly, do not lead with it.
+- **The Vercel Pro deployment recipe** (with the correct tier from day
+  one — see §5.6). Operationally clean. Keep.
+- **The MDX-based insights blog** in `src/app/insights/`. This is the
+  *operator's* content marketing surface for selling §7.1, not a
+  client deliverable. Treat it as the operator's own platform, not
+  the product.
+
+What does not survive into the smaller offer:
+
+- The multi-AI fallback ladder. Single-Anthropic-API on a *correctly
+  licensed* tier is sufficient; the fallback complexity adds zero
+  client value at one operator + one customer.
+- The plan-then-execute pipeline as a customer-facing feature. Useful
+  for the operator's own discipline; not a sellable promise.
+- The phone-edit shortcut + Auth.js admin portal + n8n hub. Beautiful
+  engineering. Defer until 5 paying clients have asked for it
+  unprompted; until then, the operator handles edits via email like
+  every other freelancer on the planet, at no cost to the offer's
+  credibility.
+- The Dual-Lane Repo split. Keep the single-repo until there is a
+  second client whose IP must be quarantined from the first. There
+  is currently one client, who is the operator. Repo isolation for
+  a population of one is overhead.
+- The four-tier cadence, the `llm-monitor`, the codex-review leg, the
+  recording pipeline, the dashboard SPA, the deck pack itself. All
+  defer until at least client #5 has sent an invoice payment and
+  asked for *something the existing platform does not yet do*.
+
+### §7.3 — The single content asset that should be built this week
+
+The verifiable proof point named in §4.6: **a 60-second screen
+recording of a real edit shipping end-to-end on a real client's site,
+narrated by the client, not the operator.** Until this exists, every
+sales conversation rebuilds trust from zero. The most efficient way to
+manufacture this content asset is not to build more platform; it is to
+**find one paying client at the §7.1 prices, build them a site, ship
+the first improvement-run change with their voice on the recording,
+and put the recording on `lumivara-forge.com` as the headline.**
+
+That is the entire next 90 days of work. Everything in the deck pack
+that does not contribute to that single video is, until further notice,
+overhead.
+
+### §7.4 — The honest re-positioning sentence
+
+> *"I'm a senior engineer who builds modern, fast, accessible
+> marketing sites for Canadian small businesses. CAD $4,500–$6,000,
+> three weeks, you own everything. If you want me to keep an eye on
+> it after launch, that's $99/month — but most clients don't, and
+> that's fine."*
+
+Two sentences. No platform language, no negative list, no autopilot,
+no 30-client cap. It survives every critique in §1–§6 simultaneously
+because **it does not make any of the load-bearing claims those
+sections attack**. It is also a closeable offer in 2026 to the
+prospects the deck pack already targets, at prices the deck pack
+already publishes, on a tech stack the operator already knows.
+
+The "self-maintaining website" thesis dies. The operator's craft, the
+operator's portfolio piece, and roughly **15%** of the platform
+investment survive into a smaller, sellable, defensible business that
+can grow under its own revenue without the structural risks the deck
+pack collected.
+
+**§7 liability score: n/a** — this section *is* the salvage. The
+liability scores in §1–§6 are what is being avoided by adopting it.
+
+---
+
+*Section §8 (research synthesis + bibliography + methodology) lands in
+the next commit.*

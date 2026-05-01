@@ -570,11 +570,120 @@ None of these scenarios are bad outcomes for the **person**. All of
 them are bad outcomes for the **business plan as written**. The
 business plan does not survive the operator being human.
 
-**§5 liability score: 8.5 / 10** — the cost model rests on three
-vendor ToS readings nobody has confirmed in writing; the operator-hours
-estimate is an aspiration; the SPOF is the operator's own body; the
-hire ladder pushes load forward not backward; and the 24-month
-sustainability question has not been asked.
+### §5.6 — Vendor ToS landmines, named (added 2026-05-01 from external research)
+
+The §5.1 critique anticipated the vendor-ToS exposure in the abstract.
+The independent harsh-critic research pass surfaced the specific
+contractual language. All three load-bearing vendors have, in the last
+12 months, **moved to explicitly forbid the exact billing arrangement
+the unit economics depend on**.
+
+#### Anthropic — Pro/Max OAuth is "ordinary individual usage" only
+
+Anthropic's Claude Code legal page (`code.claude.com/docs/en/legal-and-compliance`)
+now states verbatim:
+
+> *"Advertised usage limits for Pro and Max plans assume **ordinary,
+> individual usage** of Claude Code and the Agent SDK. … OAuth
+> authentication is intended exclusively for purchasers of Claude Free,
+> Pro, Max, Team, and Enterprise subscription plans and is **designed
+> to support ordinary use of Claude Code and other native Anthropic
+> applications**. Developers building products or services that interact
+> with Claude's capabilities, including those using the Agent SDK,
+> **should use API key authentication**. … Anthropic reserves the right
+> to take measures to enforce these restrictions and may do so without
+> prior notice."*
+
+A Claude Max 20x token budget amortised across 30 client repos with
+triage every 30 minutes, execute every 2 hours, plan-then-execute on
+every issue, plus codex-review and CI gates is — by any honest reading
+— **a B2B services pipeline running on a consumer subscription**, not
+"ordinary individual usage." The April 4 2026 ban Anthropic levied on
+third-party agentic tools (OpenClaw, NanoClaw) was Boris Cherny on the
+record about *"$200/month Claude Max subscriptions being used to run AI
+agent tasks worth $1,000 to $5,000."* The policy logic that nuked third
+parties applies a fortiori to a one-operator multi-tenant pipeline
+running native Claude Code on a heartbeat.
+
+If Anthropic enforces — and they reserved the right to without notice —
+the operator is forced onto API-key billing. Real-world Claude Code on
+the API runs **$150–$250 per developer per month average, $200–$500/mo
+typical heavy users, $800+ for power users**, with a documented case of
+one heavy user burning **10B tokens / 8 months ≈ $15,000 at API list,
+vs $100/mo on Max — a 93% subsidy from the subscription tier**. A
+30-client Forge pipeline forced onto pay-as-you-go is plausibly
+**CAD $1,500–$4,000/month in API cost alone** — wiping out the entire
+Tier 1 margin and cratering Tier 2 / Tier 3.
+
+Additional PIPEDA exposure: Anthropic's 5-year default conversation
+retention for Pro/Max (unless toggled off in account settings) means
+client copy, contact-form payloads, and any sensitive content the bot
+processes is sitting in Anthropic logs for half a decade — a structural
+problem for the dental and legal verticals the deck pack targets.
+
+#### Vercel — Hobby tier is "non-commercial personal use only"
+
+Vercel's Fair Use Guidelines page is unambiguous: *"Hobby teams are
+restricted to **non-commercial personal use only**."* "Commercial" is
+defined to include *"any deployment used for the purpose of financial
+gain of anyone involved in any part of the production of the project,
+**including a paid employee or consultant writing the code**."* Vercel
+*"reserves the right to disable or remove any Project or website
+deployment on the Hobby plan with or without notice at its sole
+discretion."*
+
+A consultant being paid CAD $99–$599/mo by a Canadian dentist for a
+Vercel-hosted site is, by Vercel's own definition, **commercial use of
+Vercel by both parties**. The correct tier is Pro at USD $20/seat/month
++ bandwidth and function-invocation overage. The deck pack's "$0/mo
+infra" framing does not include this.
+
+There are public Vercel community threads of Hobby-plan accounts being
+**suspended without notice and remaining blocked past the 30-day reset
+window**. With 30 client production sites on a single operator account,
+suspension is a single-button mass-extinction event for the entire
+client base — a worse failure mode than operator burnout, because at
+least operator burnout has visible warning signs.
+
+#### GitHub Actions — the free tier doesn't cover even one client
+
+Free-tier GitHub Actions: 2,000 Linux minutes/month per account. Pro:
+3,000. Linux overage rate (2026 simplified pricing): ~$0.006/min. A
+sober per-client-per-day burn estimate for the deck-pack cadence
+(triage every 30 min, execute every 2 h, plan-then-execute on every
+issue, codex-review, axe + Lighthouse CI) is **~250 min/client/day,
+~7,500 min/client/month**. **One client alone breaks the free tier.**
+At 30 clients: **~225,000 min/month**, or **~$1,330/mo (CAD ~$1,800)
+in CI minutes overage alone, before any LLM cost.** That is also
+within striking distance of GitHub's published abuse-policy benchmark
+(~250,000 min/week beyond which an org is considered over the line on
+resource consumption).
+
+#### The ToS landmine summary
+
+| Vendor | Stated restriction | Per-month real cost if enforced |
+|---|---|---|
+| Anthropic Claude Pro/Max OAuth | "Ordinary individual usage"; products/services "should use API key" | CAD $1,500–$4,000 (API list, 30 clients) |
+| Vercel Hobby | "Non-commercial personal use only"; suspension at sole discretion | USD $20/seat + $200–$600/mo overage |
+| GitHub Actions free / Pro | 2,000–3,000 min/mo per account; abuse-policy tripwires for cron-driven orgs | USD ~$1,330/mo at 30 clients |
+
+The combined per-month exposure if all three vendors enforce
+simultaneously is **CAD $3,500–$6,000 in vendor cost alone**, against
+a 30-client headline MRR of CAD $6,400 (per the deck pack's own §1.3
+table). **The 95% pre-comp gross margin reduces to ~5–45%, putting the
+practice in the same band as the WP-care analogue (§3.2) — and the
+WP-care analogue does this *legally*, with vendors who already accept
+their use case.** The operator's offer is therefore not just margin-
+risky in steady state, it is **margin-risky every single day the
+vendors are awake and watching**, which is every day.
+
+This is the single most damaging finding in the entire document.
+
+**§5 liability score: 9.5 / 10** — the cost model rests on three
+vendor ToS that have all moved against the use pattern in the last 12
+months; the operator-hours estimate is an aspiration; the SPOF is the
+operator's own body; the hire ladder pushes load forward not backward;
+and the 24-month sustainability question has not been asked.
 
 ---
 

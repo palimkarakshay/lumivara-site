@@ -216,4 +216,312 @@ behaviour, not strategy (`09 §4.3`).
 
 ---
 
-*Per-pivot playbooks A–K fill in over the next commits.*
+## §2 — Playbook A: Stage-1 freelance build practice
+
+**Match score:** 7.0 / 10 (the original `08 §7.4` recommendation, kept
+as a fallback). One-time custom Next.js builds for Canadian SMBs at
+CAD $4,500–$6,000 + optional CAD $79–$149/mo improvement-run
+subscription.
+
+### §2.A.1 Prerequisites
+
+- Pre-flight §1 complete (especially §1.5 personal landing page).
+- A 90-second screen recording of the *operator's own* live site +
+  three Lighthouse / axe scorecards as the proof point.
+- A two-page case-study PDF describing the operator's existing portfolio
+  site as if it were a paying client engagement.
+
+### §2.A.2 Week-by-week
+
+| Wk | Goal | Specific actions | Deliverable |
+|---|---|---|---|
+| 1 | Inbound surface | Stand up `<operator-name>.dev/build`. Three sample sites linked. Stripe checkout button (CAD $4,500 + CAD $99/mo). | Public storefront page. |
+| 2 | First batch of cold outreach | List 50 Toronto-area solo professionals with broken / slow / inaccessible sites (filter by Lighthouse < 60). Send 10 personalised emails per day Tuesday–Friday. | 40 cold emails sent; CSV with reply tracking. |
+| 3 | Discovery calls | First 2–3 discovery calls. Quote CAD $4,500 setup + CAD $99/mo from the SoW template. **No discounts**. | 1 signed proposal. |
+| 4 | First build kickoff | Standard intake form (`docs/storefront-stage1/intake.md`); domain + Vercel Pro on the client's account; design spike day 1; content draft day 2; first-pass build day 3–5. | First-pass live preview. |
+| 5–6 | Iteration | Two rounds of revisions. Lighthouse 90+ on all routes; axe-core zero violations; PageSpeed Insights green. | Production launch. |
+| 7 | Handover + improvement-run start | 30-minute walkthrough call recorded. First $99 monthly invoice. Add the engagement to the case-study queue. | Client live + on retainer. |
+| 8+ | Steady state | One build per 2–3 weeks; second cohort of 50 cold emails; first improvement-run PRs. | Steady cadence. |
+
+### §2.A.3 Success metrics
+
+- **Week 4:** ≥ 1 signed proposal at full price.
+- **Week 8:** ≥ 1 client live + on retainer.
+- **Week 12:** ≥ 2 clients live; CAD $9,000+ invoiced; ≥ 20% reply rate
+  on cold outreach (else the §1.6 positioning is wrong).
+- **Month 6:** 8–12 clients live; CAD $45,000+ invoiced + CAD
+  $1,000+/mo MRR.
+
+### §2.A.4 Failure detection
+
+- **Day 30:** zero proposals sent → operator has reverted to
+  documentation hobby; corrective per `09 §4.3`.
+- **Day 45:** no replies despite 60 cold emails → personalisation
+  insufficient or positioning wrong; rewrite the email template
+  using a single named pain point.
+- **Day 60:** replies but no closes → price objection; do not
+  discount. Re-qualify the prospect's budget upstream.
+
+### §2.A.5 Costs
+
+| Item | Cost |
+|---|---|
+| Personal domain | ~ CAD $20/yr |
+| Email tooling (Resend free tier) | $0 |
+| LinkedIn Sales Navigator (optional) | USD $99/mo (skip until month 3) |
+| Anthropic API for build automation | ≤ USD $50/build (passed through) |
+| Operator time | ~30–40 hr/build |
+
+### §2.A.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $40–$90k |
+| **Time-to-first-invoice** | 4–6 weeks |
+| **Opportunity cost** | High — ties operator hours to per-build labour; no leverage |
+| **Reversibility** | High — abandon at any time, keep the portfolio |
+
+### §2.A.7 Day 1 action
+
+Open `<operator-name>.dev/build` storefront page in a fresh repo. Three
+hours; ship by EoD. The storefront's URL is the asset that converts
+every other piece of outreach.
+
+---
+
+## §3 — Playbook B: Senior freelance via Toptal / A.Team / Arc / direct
+
+**Match score:** 8.5 / 10. Sell senior + AI-integration **hours** at
+CAD $175–$250/hr through talent marketplaces and direct outreach. No
+productized service framing.
+
+### §3.B.1 Prerequisites
+
+- Pre-flight §1 complete.
+- A LinkedIn page reflecting the §1.6 positioning — *Senior software
+  engineer, AI integration specialist, Toronto*.
+- The live `<operator-name>.dev` calling card with three case studies:
+  the existing site + two pieces of platform work (the multi-LLM
+  fallback ladder, the Plan-then-Execute pipeline) framed as *"shipped
+  in production for an HR-consulting client #1."* No platform-product
+  framing.
+- A 1-page resume that ranks the most recent role first; the
+  Lumivara-Forge platform appears as *"Engineer of record, Lumivara
+  client #1, 2024–2026"* on a single line.
+
+### §3.B.2 Week-by-week
+
+| Wk | Goal | Marketplace path | Direct path |
+|---|---|---|---|
+| 1 | Apply | Submit Toptal application. Submit A.Team application. List on Arc.dev. List on Contra. | Send 30 LinkedIn DMs to mid-market AI engineering leaders. |
+| 2 | Screening | Toptal Stage 1 screening (English + personality). A.Team profile review. | First 1–2 discovery calls from LinkedIn replies. |
+| 3 | Technical screens | Toptal Stage 2 (timed test). A.Team mission application. | First proposal at CAD $200/hr × ~80 hrs = CAD $16k. |
+| 4 | Final stages | Toptal Stage 3 (live coding). A.Team final mission interview. | First engagement starts; Stripe invoice on net-14. |
+| 5 | Listed | Toptal profile live (~25–35% pass rate per Stage 3). A.Team mission live. | Steady-state outreach: 10 DMs/wk. |
+| 6 | Active | First Toptal mission (often a 20–40 hr/wk engagement). | Second engagement signed. |
+| 7+ | Steady state | 25–30 billable hours/wk distributed across marketplace + direct. | — |
+
+### §3.B.3 Success metrics
+
+- **Week 4:** ≥ 1 marketplace application accepted to final round AND
+  ≥ 1 direct prospect at proposal stage.
+- **Week 8:** ≥ 1 engagement live; first invoice sent.
+- **Month 3:** ≥ 25 billable hours/wk averaged; CAD $20k+/mo gross.
+- **Month 6:** ≥ 30 billable hours/wk averaged; CAD $25–$35k/mo gross;
+  one referral inbound.
+
+### §3.B.4 Failure detection
+
+- **Day 21:** rejected by both Toptal and A.Team and zero direct
+  proposals — positioning is too generic. Re-anchor to a single
+  vertical (FinTech, regulated industries, AI-native startups) and
+  resubmit.
+- **Day 45:** marketplace listed but zero matches — rate is wrong
+  (too high or too low) or geographic filter is excluding Toronto.
+  Adjust rate by ±20%, re-apply geographic prefs.
+- **Day 60:** active engagements but rate < CAD $150/hr — capacity
+  problem, not pricing problem. Refuse the next sub-rate engagement.
+
+### §3.B.5 Costs
+
+| Item | Cost |
+|---|---|
+| Toptal | $0 to apply; Toptal takes ~50% margin on displayed rate |
+| A.Team | $0 to apply; engineer keeps 100% of negotiated rate; 15-day post-invoice payment |
+| Arc.dev | $0 to apply |
+| Contra | $0 listing; 0% take rate (free tier) |
+| LinkedIn Sales Navigator | USD $99/mo (recommended at month 2) |
+| Operator time | 30–40 hr/wk billable + 5 hr/wk pipeline |
+
+### §3.B.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $130–$220k |
+| **Time-to-first-invoice** | 3–6 weeks (direct path) or 4–8 weeks (marketplace) |
+| **Opportunity cost** | Medium — billable-hours model caps at one operator |
+| **Reversibility** | Very high — engagement contracts are short |
+
+### §3.B.7 Day 1 action
+
+Open the Toptal application form (`https://www.toptal.com/freelance-jobs`)
+and the A.Team application form (`https://www.a.team/join`). Submit
+both before lunch. They take ≤ 30 minutes each.
+
+---
+
+## §4 — Playbook C: AI-integration consulting for digital agencies
+
+**Match score:** 8.5 / 10. Sub-contractor model: digital agencies
+already selling to mid-market clients want to ship AI features but
+lack the engineering. The operator becomes the named engineer-of-record
+behind 3–5 agency relationships.
+
+### §4.C.1 Prerequisites
+
+- Pre-flight §1 complete.
+- Anthropic Claude Partner Network application submitted (free; see
+  §10.A.2 in the bibliography for URL). Foundations certification
+  scheduled.
+- A 1-page sub-contractor agreement template (CAD-denominated,
+  hourly + fixed milestones, 50/50 IP split, mutual NDA, named-engineer
+  clause).
+- A single page on `<operator-name>.dev/agencies` describing the
+  engagement model: *"I build the AI feature, you keep the client
+  relationship and the brand on the deliverable. Fixed-fee or hourly,
+  your call."*
+
+### §4.C.2 Week-by-week
+
+| Wk | Goal | Specific actions |
+|---|---|---|
+| 1 | Apply Claude Partner Network | Submit at the Anthropic partner page. Schedule the Foundations certification (free). |
+| 2 | Identify first 20 agency targets | Search LinkedIn for "AI consultant" / "AI implementation" / "digital agency" within Ontario + remote-friendly. Filter for 5–25 employee agencies that have posted "looking for AI engineer" within the last 6 months. |
+| 3 | First 10 introductions | Send 10 personalised messages: *"You're looking for someone to ship X. I'm Anthropic Partner Network certified, work as a sub-contractor, your brand on the deliverable. 30 min next week?"* |
+| 4 | First agency call | Discovery call with first 1–2 agencies. Discuss a specific project they need. Quote a 4–8-week fixed fee at CAD $20–$60k. |
+| 5 | First proposal | Send written proposal with milestones. Sub-contractor agreement attached. |
+| 6 | First engagement | First milestone delivered + invoiced. **The agency pays even if their end-client delays**, per the sub-contractor agreement. |
+| 7–10 | Engagement 1 + pipeline 2 | Deliver milestones 2–3 of engagement 1. Send next 10 agency intros. |
+| 11–12 | Engagement 1 closes; engagement 2 starts | First retainer-style relationship: *"Keep me on at CAD $4,000/mo for 20 hours, I take any AI work that comes in."* |
+
+### §4.C.3 Success metrics
+
+- **Week 6:** ≥ 1 agency engagement signed.
+- **Week 12:** ≥ 2 agencies in steady relationships; CAD $10k+/mo
+  invoiced.
+- **Month 6:** ≥ 3 agency retainers (CAD $10–$15k/mo combined) + 1–2
+  fixed-fee engagements/month.
+
+### §4.C.4 Failure detection
+
+- **Day 30:** no agency replies despite 30 messages — positioning
+  generic. Sharpen to one specific agency vertical (e.g., legal-tech
+  agencies, CPA-tech agencies, healthcare-marketing agencies).
+- **Day 60:** discovery calls but no signed engagements — pricing too
+  high for the agency's mark-up math. Move from fixed-fee to hourly
+  with a not-to-exceed cap.
+- **Day 90:** one engagement, no second — agency relationship not
+  scaling; re-evaluate channel mix.
+
+### §4.C.5 Costs
+
+| Item | Cost |
+|---|---|
+| Claude Partner Network membership | $0 |
+| Foundations certification | $0 |
+| LinkedIn Sales Navigator | USD $99/mo (recommended) |
+| Anthropic API per engagement | ≤ USD $200/mo per agency (passed through) |
+| Operator time | ~20–30 hr/wk per active engagement |
+
+### §4.C.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $90–$220k |
+| **Time-to-first-invoice** | 6–10 weeks |
+| **Opportunity cost** | Low — leverages platform expertise; agencies absorb sales cycle |
+| **Reversibility** | High — agency contracts are 4–12-week milestones |
+
+### §4.C.7 Day 1 action
+
+Submit the Claude Partner Network application at
+`anthropic.com/partners`. ≤ 20 minutes; the directory listing is the
+asset that drives every subsequent agency intro.
+
+---
+
+## §5 — Playbook D: Niche-vertical productized service (one vertical only)
+
+**Match score:** 6.0 / 10 (demoted in `09 §3.3` to month 9+ optionality).
+Pick **one** vertical (dental, legal, real-estate, accounting,
+recruiting). Build a vertical-specific landing page, sell at CAD
+$1,500–$3,000 setup + CAD $99–$199/mo, narrowed scope per vertical.
+
+### §5.D.1 Prerequisites
+
+- Pre-flight §1 complete.
+- One full month of Pivot A or B revenue first (rent paid for the
+  6-month build-out).
+- A real first reference customer in the chosen vertical (the operator
+  knows one, or has a warm intro to one). **Do not start D with no
+  reference customer in the vertical.**
+
+### §5.D.2 Week-by-week (12 weeks for the build, then 12 weeks for sales)
+
+| Wk | Phase | Specific actions |
+|---|---|---|
+| 1–2 | Vertical research | Read the regulator's website end-to-end (RCDSO for dental, LSO for legal, etc.). Build a one-page "what your site is missing" checklist specific to the vertical. |
+| 3–4 | Reference customer build | Build the vertical-specific marketing site for the reference customer at half the eventual list price (CAD $750–$1,500 setup). |
+| 5–6 | Vertical-specific landing page | `<operator-name>.dev/<vertical>` — case study from the reference customer + the regulator-specific checklist + a Stripe checkout button. |
+| 7–8 | First cold outreach batch | List 50 named practices in the vertical. Cold-email 10/day Tuesday–Friday with a personalised audit of their current site. |
+| 9–10 | First discovery calls | 2–3 calls. Sell at full price (CAD $1,500–$3,000 + $99–$199/mo). |
+| 11–12 | First non-reference customer | Build for the first paying customer in the vertical. |
+| 13–24 | Steady-state sales | 1 customer/month at the start; 2–3/month by month 6. |
+
+### §5.D.3 Success metrics
+
+- **Week 12:** ≥ 1 paying non-reference customer in the chosen vertical.
+- **Month 6:** ≥ 6 paying customers; CAD $20k setup + CAD $1,000+/mo
+  MRR.
+- **Month 12:** 12–25 paying customers; CAD $30–$60k MRR + ongoing
+  setup revenue.
+
+### §5.D.4 Failure detection
+
+- **Week 12:** no signed non-reference customer — vertical wrong, or
+  positioning wrong. **Do not pivot to a second vertical inside the
+  first 12 weeks.** Re-segment within the chosen vertical instead
+  (e.g., "general dentists" → "single-location independent dentists in
+  Ontario regional cities").
+- **Month 6:** < 4 customers — vertical demand is real but conversion
+  is broken. Audit: cold-email reply rate, discovery-call show rate,
+  proposal-to-close rate. The bottleneck is one of those three.
+
+### §5.D.5 Costs
+
+| Item | Cost |
+|---|---|
+| Vertical-specific landing page | Built from existing K-SITE-CORE; ~ 20 hr |
+| Cold-email tool (Instantly / Apollo) | USD $30–$80/mo |
+| Anthropic API per engagement | ≤ USD $30/build (passed through) |
+| Operator time | ~ 10–20 hr/wk during build; ~ 25–30 hr/wk during sales sprint |
+
+### §5.D.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $30–$80k |
+| **Time-to-first-invoice** | 8–12 weeks |
+| **Opportunity cost** | High — 6 months before steady state; vertical lock-in |
+| **Reversibility** | Medium — re-positioning to a second vertical resets the case-study work |
+
+### §5.D.7 Day 1 action
+
+Open the regulator website for the chosen vertical (RCDSO for dental,
+LSO for legal, CPA Ontario for accounting). Read the practice-marketing
+section in full. The first 30-minute action is information-gathering,
+not building.
+
+---
+
+*Playbooks E–K fill in over the next commits.*

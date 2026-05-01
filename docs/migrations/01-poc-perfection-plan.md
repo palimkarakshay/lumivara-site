@@ -12,14 +12,27 @@
 >
 > **The §6 demo-readiness gate, however, is the OPPOSITE — load-bearing
 > and tightened.** Operator surfaced four named integration gaps on
-> 2026-05-01 — G1 n8n orchestration not wired, G2 Vercel preview not
-> embedded in `/admin`, G3 publish-button doesn't trigger production
-> deploy, G4 Dual-Lane separation theoretical not implemented. These
-> sit at the §6 demo-readiness gate, not the §1.1 streak gate, and are
-> tracked in [`CRITICAL-REVIEW-MITIGATIONS.md §8.2.7`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#827--four-named-integration-gaps-surfaced-2026-05-01).
-> Phase 1A\* in the resequenced phase map ([§5.1](../decks/CRITICAL-REVIEW-MITIGATIONS.md#51--the-new-phase-map))
-> is exactly this gate, time-boxed to 2–4 weeks (hard cap 4), and is
-> the hard prerequisite to Sales Sprint S0.
+> 2026-05-01 — **mitigations-G1** n8n orchestration not wired,
+> **mitigations-G2** Vercel preview not embedded inline on the request
+> page, **mitigations-G3** publish-button doesn't trigger production
+> deploy end-to-end, **mitigations-G4** Dual-Lane separation theoretical
+> not implemented. These sit at the §6 demo-readiness gate, not the §1.1
+> streak gate, and are tracked in
+> [`CRITICAL-REVIEW-MITIGATIONS.md §8.2.7`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#827--four-named-integration-gaps-surfaced-2026-05-01).
+> An independent codebase audit on 2026-05-01 added 20+ further gaps
+> (mitigations-G5 through G27 plus hidden-cliff H1–H8) — see
+> [`mitigations §11`](../decks/CRITICAL-REVIEW-MITIGATIONS.md#11--additional-gaps-g5g24-surfaced-2026-05-01)
+> for the inventory and 5.5/10 audit score. Phase 1A\* in the resequenced
+> phase map ([§5.1](../decks/CRITICAL-REVIEW-MITIGATIONS.md#51--the-new-phase-map))
+> is exactly this gate, time-boxed to 2–4 weeks (hard cap 4), and is the
+> hard prerequisite to Sales Sprint S0.
+>
+> **Naming clash note:** this file's §3 internal table uses its own
+> `G1–G10` row labels (rows 158–177 below) for the streak / integrity /
+> Dual-Lane checklist. Those are unrelated to the mitigations-doc
+> `G1–G27` series referenced above. Throughout this banner the
+> mitigations-doc series is prefixed `mitigations-G…` to avoid
+> confusion.
 
 > **Purpose.** Convert the abstract Phase 1 exit criterion in
 > [`00-automation-readiness-plan.md §3.1`](./00-automation-readiness-plan.md#31--exit-criterion-the-only-thing-that-matters)

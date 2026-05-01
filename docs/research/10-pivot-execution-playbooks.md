@@ -524,4 +524,287 @@ not building.
 
 ---
 
-*Playbooks E–K fill in over the next commits.*
+## §6 — Playbook E: AODA / WCAG 2.1 AA audits-and-remediation as a productized service
+
+**Match score:** 7.5 / 10 (Leg B of the recommended `09 §3` stack).
+Audit existing Ontario business sites against WCAG 2.1 Level AA, deliver
+a PDF report + a remediation PR, optionally retain the client at
+$200–$400/mo for monthly monitoring. Anchored on the **December 31
+2026 statutory compliance deadline** for Ontario private businesses
+with 50+ employees.
+
+### §6.E.1 Prerequisites
+
+- Pre-flight §1 complete.
+- A vendor list of 10 named Ontario business-services directories on
+  which to list the service (Yellow Pages Canada, Connect Ontario,
+  ProfessionalDirectory.ca, etc.).
+- A working axe-core + Lighthouse pipeline against any URL (the
+  operator already has this in CI; package it as a CLI tool that
+  outputs a styled PDF).
+- A 1-page audit deliverable template with: Lighthouse summary, axe
+  violations grouped by WCAG criterion, severity ranking, top-10
+  remediation list with code samples.
+
+### §6.E.2 Week-by-week
+
+| Wk | Goal | Specific actions |
+|---|---|---|
+| 1 | Productize the audit | Build `<operator-name>.dev/audit` storefront. Stripe checkout: CAD $4,000 audit-only / CAD $6,000 audit + remediation PR / CAD $300/mo monitoring retainer. |
+| 2 | List on directories | Submit to 10 directories. Send 30 personalised emails to Ontario businesses with obviously-broken Lighthouse scores. |
+| 3 | First sales | First 1–2 audit calls. Audit can be sold without the regulatory framing first; bring the December 31 2026 deadline up only on the second call as a closing nudge. |
+| 4 | First delivery | First audit signed and delivered. **48-hour SLA from kickoff.** PDF report + a single PR with the top-10 fixes. |
+| 5–6 | Steady cadence | 2–3 audits booked per week. Begin posting case-study snippets on LinkedIn (with client permission). |
+| 7–8 | First retainer | First monthly-monitoring retainer signed. Now the CI runs against the client's site weekly. |
+| 9–12 | Pipeline scale | 8–12 audits delivered cumulatively; 4–6 monitoring retainers; LinkedIn posts producing 1–2 inbound/wk. |
+
+### §6.E.3 Success metrics
+
+- **Week 4:** ≥ 1 audit delivered.
+- **Week 8:** ≥ 4 audits delivered + ≥ 1 monitoring retainer.
+- **Month 6:** ≥ 15 audits + ≥ 6 retainers; CAD $60k+ invoiced from
+  audits + CAD $1,500+/mo from retainers.
+- **Q4 2026 (deadline approach):** demand spike — 2–3 audits per week
+  realistic; raise prices by 25%.
+
+### §6.E.4 Failure detection
+
+- **Day 30:** no audit booked despite 60 outreach messages — buyers
+  do not perceive AODA December 2026 deadline as binding. Pivot the
+  framing from *"compliance audit"* to *"accessibility ROI report"*
+  with the ADA Title III lawsuit data (`08 §6.2`) as the wedge.
+- **Day 60:** audits delivered but no retainers — productization
+  shape is right but pricing on the retainer is wrong. Drop monthly
+  retainer to CAD $199 with a 6-month term to seed the case studies.
+- **Day 90 (after the deadline framing has saturated):** demand
+  flatlines — pivot the post-deadline offer to *"AODA attestation
+  package + maintenance"* at lower price, higher volume.
+
+### §6.E.5 Costs
+
+| Item | Cost |
+|---|---|
+| Personal-domain `/audit` storefront | $0 (incremental) |
+| Stripe billing | 2.9% + CAD $0.30 per transaction |
+| Cold-email tool | USD $30–$80/mo |
+| axe-core + Lighthouse infrastructure | $0 (already built) |
+| Operator time per audit | ~3–5 hr |
+| Operator time per audit + remediation PR | ~8–12 hr |
+
+### §6.E.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $50–$130k |
+| **Time-to-first-invoice** | 3–4 weeks |
+| **Opportunity cost** | Low — uses platform's strongest CI capability |
+| **Reversibility** | Very high — service is self-contained, contracts are per-engagement |
+
+**Calendar leverage:** December 31 2026 is a hard regulatory date. The
+revenue band tightens upward as the deadline approaches in Q3–Q4 2026
+and softens in Q1 2027. Plan the operator's vacation accordingly.
+
+### §6.E.7 Day 1 action
+
+Run `npx lighthouse <competitor-site>.com --output html` and
+`npx @axe-core/cli <competitor-site>.com` against three named Ontario
+business sites the operator can think of in 30 minutes. The output is
+the first audit deliverable's draft. The audit storefront page can be
+written around it.
+
+---
+
+## §7 — Playbook F: Developer-targeted Next.js + AI-pipeline boilerplate
+
+**Match score:** 5.5 / 10 (cautioned in `09 §3.4` — the Tailwind Labs
+trap). Sell a paid template at one-time USD $199–$499 to other
+developers + agencies; optional support contracts.
+
+### §7.F.1 Prerequisites
+
+- Pre-flight §1 complete.
+- A second domain (e.g., `<product-name>.dev`).
+- A working "starter kit" extracted from the Lumivara repo with the
+  multi-LLM pipeline removed (single Anthropic call, single API key
+  pattern).
+
+### §7.F.2 Week-by-week
+
+| Wk | Goal | Specific actions |
+|---|---|---|
+| 1–2 | Extract starter | Copy `K-SITE-CORE` + `K-PLATFORM-MINIMAL` to a new repo. Strip every Lumivara-specific reference. Write a 30-page "getting started" guide. |
+| 3 | Storefront | Build `<product-name>.dev` with Stripe checkout (USD $199 standard / $499 enterprise). |
+| 4 | First buyers | Launch on Hacker News, Indie Hackers, X. Time the launch for a Tuesday 9am ET. |
+| 5–8 | Iterate | Respond to support questions. Ship 2–3 weekly updates. Build a Discord. |
+| 9–12 | Steady state | Monthly revenue = launch peak ÷ 6 (typical). Approx USD $1–$3k/mo. |
+
+### §7.F.3 Success metrics
+
+- **Week 4:** ≥ USD $5k in launch-week sales (~ 20–25 unit sales).
+- **Month 3:** USD $1k+/mo recurring sales.
+- **Month 12:** USD $20–$80k cumulative revenue.
+
+### §7.F.4 Failure detection
+
+- **Week 4:** < USD $1k in launch sales — landing page or positioning
+  wrong. **Do not relaunch immediately**; write 6 case-study posts
+  first.
+- **Month 3:** sales decay to < USD $300/mo — the Tailwind Labs trap
+  has activated; AI codegen is replacing the value of the boilerplate.
+  Pivot the offer to *"the playbook (PDF + cohort)"* not *"the code."*
+
+### §7.F.5 Costs
+
+| Item | Cost |
+|---|---|
+| Second domain | ~ CAD $20/yr |
+| Stripe | 2.9% + CAD $0.30 per transaction |
+| Discord | $0 |
+| Marketing time | ~ 5–10 hr/wk for the first 2 months |
+| Operator time | ~ 60 hr extraction + 5 hr/wk maintenance |
+
+### §7.F.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $20–$80k |
+| **Time-to-first-invoice** | 4–6 weeks |
+| **Opportunity cost** | High — labour-replacement curve is against the offer |
+| **Reversibility** | Very high — abandon at any time |
+
+### §7.F.7 Day 1 action
+
+**Don't** start this without a primary income leg already producing.
+The Day 1 action is to re-read `09 §3.4` and decide whether the
+boilerplate trap is worth the lost focus on Pivot A / B / C / E.
+
+---
+
+## §8 — Playbook G: Micro-SaaS spin-offs from platform pieces
+
+**Match score:** 4.5 / 10 (lowest in the matrix). Micro-SaaS
+spin-offs of pieces that already work: admin-portal-as-a-service,
+llm-monitor as a tiny SaaS, deck-rendering as a service.
+
+### §8.G.1 Prerequisites
+
+- Pre-flight §1 complete.
+- A primary income leg already producing (see Pivot A/B/C/E/H).
+- An honest answer to: *"would I personally pay for this?"* — if no,
+  do not ship it.
+
+### §8.G.2 Week-by-week (per spin-off; runs in parallel with 5–10 hr/wk slot)
+
+| Wk | Goal | Specific actions |
+|---|---|---|
+| 1–2 | Extract one piece | Pick the smallest piece (e.g., `llm-monitor` digest as a Stripe-billed RSS subscription). Strip operator-specific config. |
+| 3 | Storefront | Single-page Stripe checkout. USD $9–$19/mo. |
+| 4 | Launch | Post on Indie Hackers + r/SideProject + X. |
+| 5–8 | Iterate | Respond to first 5 customer requests. |
+| 9–12 | Steady state | Either MRR > USD $300 (continue) or < USD $100 (kill). |
+
+### §8.G.3 Success metrics
+
+- **Week 4:** ≥ 5 paying signups (~ USD $50–$100 MRR).
+- **Month 3:** USD $300+ MRR (the threshold for "keep working on it").
+- **Month 12:** **most spin-offs go to zero**; one in three reaches
+  USD $1k+ MRR. Plan accordingly.
+
+### §8.G.4 Failure detection
+
+- **Week 6:** < 3 paying signups — kill within 30 days. Do not
+  iterate on a dead micro-SaaS.
+
+### §8.G.5 Costs
+
+| Item | Cost |
+|---|---|
+| Hosting (Vercel hobby tier — non-commercial allowed since *the operator pays for it*; flip to Pro at MRR > USD $300) | $0 to USD $20/mo |
+| Stripe | 2.9% + CAD $0.30 |
+| Operator time | ~ 5–10 hr/wk per active spin-off |
+
+### §8.G.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $0–$30k yr 1 (most go to zero) |
+| **Time-to-first-invoice** | 4–6 weeks per spin-off |
+| **Opportunity cost** | Medium — capped at 5–10 hr/wk per spin-off |
+| **Reversibility** | Very high — kill the project at any time |
+
+### §8.G.7 Day 1 action
+
+Do not start. Pick Pivot E (Leg B) instead. Revisit Pivot G as a
+month-9+ optionality once a primary income leg is producing.
+
+---
+
+## §9 — Playbook H: Fractional principal / staff engineer at SMBs
+
+**Match score:** 8.0 / 10. 1–2 days/week retainer with one or two
+SMBs at CAD $1,200–$2,500/day. Strategic engineering judgement, not
+hands-on shipping.
+
+### §9.H.1 Prerequisites
+
+- Pre-flight §1 complete.
+- 10+ years of senior engineering experience the operator can talk
+  about credibly in a 60-minute call (the operator does have this).
+- A 1-page "fractional CTO services" brief: *"I serve as part-time
+  principal engineer to one or two clients at a time — strategic
+  technology decisions, vendor selection, security review, AI
+  integration architecture. Engagements are 1–2 days/week, 6+ months."*
+
+### §9.H.2 Week-by-week
+
+| Wk | Goal | Specific actions |
+|---|---|---|
+| 1 | Positioning | Stand up `<operator-name>.dev/fractional-cto`. List on Toptal Fractional, Pangea, Toptal Senior Executive, and direct LinkedIn outreach. |
+| 2 | First 30 intros | Target: VP Engineering / CTO of 50–500-person Canadian companies that have posted "looking for senior engineering leadership" or have had AI initiatives stall. |
+| 3–4 | First discovery calls | First 3 prospects. **Do not discount the day-rate**; lead with the engagement structure (1–2 days/wk, 6-month minimum). |
+| 5–6 | First proposal | Send a 2-page proposal with named outcomes per quarter. |
+| 7–10 | First engagement | First retainer signed at CAD $8–$15k/mo. |
+| 11–12 | Second engagement | Second retainer signed; combined MRR CAD $20k+. |
+
+### §9.H.3 Success metrics
+
+- **Week 8:** ≥ 1 retainer signed.
+- **Month 4:** ≥ 2 retainers active; CAD $15k+/mo.
+- **Month 12:** ≥ 2 retainers + 1–2 fixed-fee strategic projects/yr.
+
+### §9.H.4 Failure detection
+
+- **Day 45:** zero discovery calls — positioning not reaching senior
+  buyers. Re-anchor with case studies of named technical decisions
+  (not products) the operator has made.
+- **Day 90:** discovery calls but no signed retainers — buyer does
+  not believe a solo-operator can sustain a 1–2 day/week commitment.
+  Bring a peer reference: a single named former colleague or client
+  who can validate the operator's reliability.
+
+### §9.H.5 Costs
+
+| Item | Cost |
+|---|---|
+| Personal landing page expansion | $0 |
+| LinkedIn Sales Navigator | USD $99/mo |
+| Pangea / Toptal Fractional listing | $0 |
+| Operator time | ~ 12–20 hr/wk per retainer |
+
+### §9.H.6 Impact summary
+
+| Axis | Value |
+|---|---|
+| **12-month revenue (base)** | CAD $80–$180k |
+| **Time-to-first-invoice** | 6–10 weeks |
+| **Opportunity cost** | Medium — 1 weekly synchronous call per retainer; otherwise async |
+| **Reversibility** | Medium — retainers have 30-day notice clauses |
+
+### §9.H.7 Day 1 action
+
+Apply to Pangea (`pangea.app`) and Toptal Fractional. Both ≤ 30 minutes.
+Listing produces inbound at the operator's experience level.
+
+---
+
+*Playbooks I, J, K + cross-pivot impact matrix fill in over the next commit.*

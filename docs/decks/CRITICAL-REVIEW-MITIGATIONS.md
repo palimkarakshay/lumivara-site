@@ -104,3 +104,57 @@ The review's prescription was *"50-prospect spreadsheet, 10 cold emails per day,
 The Friday-night journal entry has one forbidden phrase: *"I should write another deck."* If it appears, the operator deletes it and writes nothing for 48 hours.
 
 ---
+
+## §4 — Number-replacement plan (the load-bearing-and-broken numbers)
+
+The review identified two load-bearing numbers that don't survive the operator's actual ICP. The independent reviewer surfaced a third (the solopreneur-margin band) with the same defect. This section replaces all three with defensibly-segmented sources and proposes a fourth bibliography flag.
+
+### §4.1 — Law-firm web/SEO spend (replaces `§B-Law-Firm-Spend` for ICP context)
+
+**ICP this deck targets:** Ontario solo practitioners and 2–10-lawyer boutiques (immigration, family, real estate, wills, small-business). **Not:** AmLaw / personal-injury / mass-tort firms with national keyword campaigns.
+
+| Source | Cadence | Free? | What to extract | Status |
+|---|---|---|---|---|
+| **Clio — *Legal Trends Report*** (`clio.com/resources/legal-trends/`, year-stamped sub-paths) | Annual (Oct–Nov) | Free | Firm-size cross-tab on marketing-spend % of revenue + primary client-acquisition channels. Solo / 2–5 lawyer rows specifically. | Primary — most ICP-matched single source available |
+| **LSO — *Annual Report* and *Lawyer Statistical Snapshot*** (`lso.ca/about-lso/annual-report`) | Annual | Free | Distribution of Ontario lawyers by firm size — anchors SAM denominator | Candidate — operator to verify which year's report includes spend questions |
+| **Canadian Lawyer Magazine — *Legal Fees / Compensation Survey*** (`canadianlawyermag.com/surveys-reports/`) | Annual | Free summary | Gross revenue per lawyer in Canada × 2–5% marketing assumption → derived spend | Candidate — operator to verify which year segments marketing spend explicitly |
+
+**Honest replacement range (compute this from the chain, footnote it):**
+> *Solo / small-firm gross revenue per lawyer in Ontario typically sits in the $150k–$400k band; Clio segmented marketing % for solos is typically 2–6% of revenue. That yields **$3k–$24k/yr total marketing**, of which **web + SEO is typically 30–50%, so $1k–$12k/yr** for the deck's actual ICP. Sources: Clio Legal Trends Report [year], firm-size cross-tab; LSO Annual Report [year]; revenue band derived from Canadian Lawyer compensation survey [year]. Range reflects the segment matched to this deck's ICP. It is not comparable to industry-aggregate "law-firm SEO spend" figures — those aggregates are dominated by AmLaw and personal-injury firms with national keyword campaigns and overstate the line for the ICP this deck addresses.*
+
+This means the "Lumivara's slot: < 5% of their existing web/SEO line" claim **reverses**. The honest pitch is: T2 ($7,488 over 24 months) is *comparable to or above* what a solo lawyer spends today on web + SEO, but it includes the build, the maintenance, the accessibility CI, and the autopilot — and replaces the per-edit-invoice tax. Sell on **scope replacement**, not budget reallocation.
+
+### §4.2 — Dental marketing spend (replaces `§B-Dental-Spend`)
+
+**ICP this deck targets:** Ontario single-location, owner-operated general dentists with 1–2 dentists, $750k–$1.2M gross. **Not:** DSO-affiliated, multi-location, or US specialty practices.
+
+| Source | Cadence | Free? | What to extract | Status |
+|---|---|---|---|---|
+| **CDA — *Economic Realities of Practice* / practice-survey publications** (`cda-adc.ca`) | Periodic | Free summary | Practice-level expense ratios for general practitioners — marketing line as % of overhead | Candidate — operator to verify the most recent year and whether marketing is broken out as its own line |
+| **ODA — practice-management surveys + *ODA Suggested Fee Guide* support** (`oda.ca`) | Annual fee guide | Free summary; member-gated for full data | Marketing benchmarks segmented by practice size; Ontario-specific signal | Candidate — operator to verify what is publicly available |
+| **ADA Health Policy Institute — *Survey of Dental Practice* + HPI briefs** (`ada.org/resources/research/health-policy-institute`) | Multi-year SDP cycle; HPI briefs more frequent | Free | Solo-practice expense distribution; "professional advertising" line segmented by ownership type | Verified-likely; use as cross-check on CDA, not as primary citation in a Canadian deck |
+
+**Honest replacement range:**
+> *Independent solo dental practices in ADA HPI cuts typically show marketing/advertising at **1–4% of gross revenue** — substantially lower than the 5–10% aggregate. Applied to a $1M Ontario practice, that's **$10k–$40k/yr total marketing**, of which **web + SEO is conventionally one-third or less, so $3k–$13k/yr** for the actual ICP. Sources: ADA HPI Survey of Dental Practice [year], solo-owner cross-tab; CDA practice survey [year, where available]. Range matches single-location, owner-operated general practice; excludes DSO-affiliated and multi-location practices, where marketing intensity is structurally higher.*
+
+If even this is not sourceable cleanly within a week, the right call is to **drop the dollar number entirely** and lead the dental pitch with the verifiable phenomena (ADA Title III filings, WebAIM accessibility error counts, the prospect's actual Lighthouse score) instead of a contested spend figure. The deck does not need a spend number to close; it needs a *pain* number the prospect can verify themselves.
+
+### §4.3 — Solopreneur-margin band (the third broken number, hidden)
+
+`§B-Solopreneur-Margin` — the *"AI-enabled solo operators commonly report 65–75% gross margins; agencies compress to 40–50%"* comparison — is `[S]` and has the same defect: the 65–75% figure comes from US AI-tooling-vendor blogs surveying their own customer base (selection bias toward already-AI-leveraged operators), and the 40–50% agency figure compares post-payroll margin against the operator's pre-comp number. **Apples-to-oranges.** Drop the comparison from `01-investor-deck.md` and `02-partner-deck.md` until a like-for-like source exists.
+
+### §4.4 — Bibliography flag-system change
+
+**Add a fourth flag, `[E]`** — *"externally-published primary source whose sample is segment-matched to the deck's ICP."* The current `[V]` conflates *"the URL resolves and the figure is correctly transcribed"* with *"the figure describes the population this deck targets,"* and the First Page Sage row is the proof: it is correctly `[V]` for transcription and category-wrong for ICP simultaneously. Promoting segmentation to its own flag forces every author to answer the question explicitly before a row clears the pre-publication gate.
+
+The pre-publication gate in [`docs/decks/00-INDEX.md`](./00-INDEX.md) updates to require `[E]` (not just `[V]`) for any number used as a forecast input or load-bearing comparator. The `[V]` flag remains valid for macro phenomena that don't claim ICP fit (e.g. the 75% / 3,117 / 95.9% headline stats — see §4.5).
+
+### §4.5 — Numbers that are fine (do not over-correct)
+
+- **75% of consumers abandon outdated sites (HostingAdvice 2024).** Macro-phenomenon, not ICP-specific spend. Keep with one footnote noting this is US consumer behaviour.
+- **3,117 ADA Title III filings in 2025 (+27% YoY) (Seyfarth Shaw).** Macro-phenomenon, US-jurisdiction. Keep, but add a one-line footnote that this is US ADA Title III, not Canadian AODA, and that AODA is the regulatory floor an Ontario prospect actually faces.
+- **95.9% of WebAIM Million pages fail WCAG (WebAIM 2024).** Macro-phenomenon. Keep.
+
+The fix is targeted at ICP-specific spend numbers, not macro tailwind numbers.
+
+---

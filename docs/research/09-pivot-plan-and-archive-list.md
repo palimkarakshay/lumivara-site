@@ -778,3 +778,33 @@ where to reinvest" (the question worth asking with data).
 on branch `claude/review-self-maintaining-website-28Fvp`. Three
 parallel research agents informed the work; convergence between them
 on the recommended pivot is taken as signal, not noise.*
+
+---
+
+## §12 — Tactical companions (added 2026-05-01)
+
+This document is the **strategic** layer. Two tactical companions
+land alongside it on the same archive branch:
+
+- **[`10-pivot-execution-playbooks.md`](./10-pivot-execution-playbooks.md)**
+  — for each of the eleven pivots A–K in `§2`, a step-by-step
+  execution playbook with prerequisites, week-by-week actions,
+  success metrics, failure detection, costs, and a 4-row impact
+  summary. Includes a verified May 2026 pricing + URLs + 7-day
+  kickoff section (§17) sourced from a fourth research-agent pass.
+- **[`11-archive-execution-strategy.md`](./11-archive-execution-strategy.md)**
+  — for each archive bucket in `§5`, the mechanism (move + README,
+  disable-then-move, or hard delete), order of operations, exact
+  commands, verification gates, rollback paths, and impact analysis.
+  The §18 day-of master sequence is the operator's archive-day
+  checklist.
+
+The reading order — once the operator has decided to pivot — is:
+
+1. **`08`** — diagnosis (read once to commit)
+2. **`09`** (this document) — strategy (read once to pick the path)
+3. **`10`** — pivot tactics (read on Tuesday after picking)
+4. **`11`** — archive tactics (read on archive day before first move)
+
+The four-document set is the operator's complete reference for the
+pivot.

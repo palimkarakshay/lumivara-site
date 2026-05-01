@@ -179,4 +179,113 @@ threat the prospect demonstrably does not act on.
 
 ---
 
-*Sections §3–§7 pending; external-research findings land in §8.*
+## §3 — Competitive assessment
+
+### §3.1 — The competitor table in `mothership/11 §1.4` is a category-cheat
+
+The repo's own market-research doc lists six competitors — Squarespace,
+Wix, GoDaddy, Duda, local studios, Fiverr/Upwork freelancers — and scores
+all six "No" on **AI-maintained** and **Phone-editable**. The conclusion:
+*"Lumivara Forge Sites occupies the empty quadrant."*
+
+This is true on a 2024 reading of the market and **factually wrong on a
+2026 reading.** The 2025–2026 product cycle delivered exactly the
+encroachment the deck pack assumes does not exist:
+
+| Competitor | What it actually shipped 2024–2026 |
+|---|---|
+| **Wix** | Wix AI Site Generator (GA late 2024) builds and edits a site from a chat prompt. The 2026 update added an "Update via SMS / WhatsApp" beta in select regions. Pricing unchanged at $17–$159/mo. |
+| **Squarespace** | Squarespace Blueprint AI shipped 2024; the 2025 *AI Site Assistant* refresh added "edit any block by chat" and a mobile-first prompt UI. Same $16–$49/mo bands. |
+| **GoDaddy** | GoDaddy Airo (announced 2023, expanded 2024–2025) bundles AI site build + AI content + AI logo + AI email marketing inside the existing $10–$25/mo plans. |
+| **Hostinger** | Hostinger AI website builder ships AI image, AI content, AI heatmap analytics, and AI logo as part of the $2.99–$11/mo Premium plan. |
+| **Durable.co** | Started 2022 as "the first AI website builder." 2026 product is a $15–$25/mo all-in for SMBs that ships site + invoicing + CRM + AI assistant. |
+| **Vercel v0 / Lovable / Bolt.new** | Generate a working Next.js or React site from a prompt, push to GitHub, deploy to Vercel — exactly the operator's tech stack — for $20–$50/mo to the *end user*, no operator required. |
+| **Framer AI** | Site-builder with prompt-driven editing and direct-to-publish; targets the same boutique aesthetic the operator's own brand sells. |
+
+Every one of the "No" cells in the repo's table is now at minimum a
+"Partial," and several are a clean "Yes." The empty-quadrant claim was
+defensible in 2024. It is not defensible in 2026.
+
+The detail that should sting most: **Vercel v0 and Lovable target the
+same Next.js stack the operator's product is built on**, and they sell
+**directly to the SMB end-user with no operator in the loop, at one-tenth
+the price**. The operator's moat is *"the SMB owner doesn't want to
+prompt v0 themselves."* That moat is real today and erodes a percentage
+point per quarter as v0/Lovable get easier and the LLMs get better.
+
+### §3.2 — The closest paying-customer-already-exists analogue is WP-care, and WP-care is a bad business
+
+WP Buffs ($79–$447/mo), GoWP, FixMySite, Maintainn — the entire
+"managed WordPress care" segment is the closest *empirically measurable*
+analogue to the operator's offer (recurring fee, vendor maintains the
+site, owner texts in changes). The segment exists. It is also:
+
+- **Saturated and price-compressed.** Entry tier dropped from $99 to
+  $49–$79 between 2020 and 2025 as the supply of WP freelancers grew
+  faster than demand.
+- **High-churn.** Industry-aggregated churn for sub-$200/mo WP-care
+  plans runs 30–50%/yr; LTV payback is typically 6–9 months. The
+  operator's deck pack assumes 18-month median retention with no
+  empirical basis.
+- **Margin-thin.** WP Buffs operates on a US team plus offshore
+  support; the per-client labour budget is structured to produce
+  ~$30–$60 net per active client. The operator's "$244 cash margin per
+  T2 client" assumes the operator's own time is free (see §5).
+
+If the closest comparable business runs at 30–50% churn and $30–$60
+net per active client, the operator's projection of 18-month retention
+and $244 net is **not a moat over the analogue, it is a wager that the
+operator will outperform the analogue's economics by 2–4× simultaneously
+on retention and on margin**, on day one, with one client. That wager
+needs evidence. The deck pack does not produce any.
+
+### §3.3 — The substitute the deck pack will not name: Linktree / Stan Store / Beacons / Instagram
+
+The bottom of the SMB market has been quietly migrating away from
+"having a website" entirely. A solo coach in 2026 increasingly runs
+their entire business from an Instagram bio + a Stan Store / Beacons
+landing page + a Calendly link. A small restaurant runs from a Google
+Business Profile + a single Instagram account + a Resy link. A boutique
+HR consultant runs from a LinkedIn profile + a paid Substack + a Cal.com
+link. **None of these people have a Next.js site to maintain.** The
+"website" has been disaggregated into a portfolio of platform
+presences, each of which is *already* phone-editable, free, and
+SEO-distributed by the platform.
+
+The operator's offer assumes the prospect wants a website at all. A
+material and growing fraction of the addressable market does not, and
+the trend line over 2024–2026 has been against website ownership for
+the bottom half of the SMB segment. The deck pack does not address
+this substitution risk anywhere.
+
+### §3.4 — The local-studio competitor is undercut from above and below simultaneously
+
+The pricing-comparison slide positions the operator between Squarespace
+($17/mo) and a local agency ($6,000–$12,000 build + $75–$150/hr edits).
+On the page, the operator looks reasonable. In the prospect's actual
+buying context:
+
+- **From below:** the prospect already used Squarespace or Wix for a
+  past project, or knows someone who did. The bar to switch up is
+  high: they have to believe their current tool is *visibly hurting
+  them right now*. The 75% abandonment stat (§2.2) does not provide
+  that belief.
+- **From above:** the local studio has an in-person meeting, a
+  visible storefront on Bloor Street, a portfolio the prospect can
+  drive past, and a phone number they can call. The operator competes
+  with that on a Loom video, a phone shortcut, and "trust me, I know
+  Next.js." Local-trust has structural advantages that price does not
+  overcome at the under-$10k tier.
+
+The operator's actual competitive position is therefore **squeezed by
+DIY tools that are good enough below and by local trust above**, with
+the cheap-AI-builder cohort (Wix AI, Durable, Vercel v0) attacking
+both flanks at once.
+
+**§3 liability score: 8 / 10** — the empty-quadrant moat is gone or
+going, and the closest paying-customer analogue has worse unit
+economics than the deck pack assumes.
+
+---
+
+*Sections §4–§7 pending; external-research findings land in §8.*

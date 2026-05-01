@@ -560,7 +560,602 @@ playbook in the next 60.
 
 ---
 
-*Buckets A-RESEARCH-PRO, A-WORKFLOWS, A-N8N, A-MIGRATIONS, the
-contamination resolution, the dual-lane teardown, the cross-bucket
-impact summary, the verification gate, and the rollback paths fill in
-over the next commits.*
+## §7 — Bucket A-RESEARCH-PRO — archive plan
+
+**Volume:** 7 files + `raw/` subdirectory, ~2,100 lines
+(`docs/research/01-07` plus `docs/research/raw/`).
+
+**Mechanism:** P1 (move + README) for most; **§7-PIPEDA gets relocated,
+not archived** — the regulatory reference is still useful regardless of
+pivot.
+
+### §7.1 Order of operations
+
+1. **Move `docs/research/01-validated-market-and-technical-viability.md`**
+   to `_archive/.../research-pro/`.
+2. **Move `02-deck-validation-through-research.md`,
+   `03-source-bibliography.md`, `04-client-personas.md`,
+   `05-reasons-to-switch-to-lumivara-forge.md`,
+   `06-drawbacks-and-honest-risks.md`** to `_archive/.../research-pro/`.
+3. **Relocate `07-pipeda-breach-notification.md`** to a new
+   `docs/legal-reference/` folder. Per `09 §5.6`, this is regulatory
+   reference still relevant under any pivot.
+4. **Move `docs/research/raw/`** (the two Gemini deep-research raw
+   outputs) to `_archive/.../research-pro/raw/`.
+5. **Update `docs/research/00-INDEX.md`** to remove rows 01-07 and add
+   a single archive pointer; preserve rows 08, 09, 10, 11.
+
+### §7.2 Commands
+
+```bash
+mkdir -p docs/_archive/2026-05-XX-pivot/research-pro
+mkdir -p docs/legal-reference
+
+git mv docs/research/01-validated-market-and-technical-viability.md \
+       docs/research/02-deck-validation-through-research.md \
+       docs/research/03-source-bibliography.md \
+       docs/research/04-client-personas.md \
+       docs/research/05-reasons-to-switch-to-lumivara-forge.md \
+       docs/research/06-drawbacks-and-honest-risks.md \
+       docs/research/raw \
+       docs/_archive/2026-05-XX-pivot/research-pro/
+
+git mv docs/research/07-pipeda-breach-notification.md \
+       docs/legal-reference/pipeda-breach-notification.md
+
+# Update docs/research/00-INDEX.md (manually) to point at the archive
+$EDITOR docs/research/00-INDEX.md
+
+git add -A
+git commit -m "archive(research-pro): move 01-06 + raw/ to _archive/; relocate 07-pipeda to docs/legal-reference/"
+```
+
+### §7.3 Verification
+
+- `find docs/research -type f -name "*.md" | wc -l` returns 5 (00-INDEX
+  + 08 + 09 + 10 + 11).
+- `docs/legal-reference/pipeda-breach-notification.md` exists.
+- `docs/research/00-INDEX.md` references the archive folder.
+
+### §7.4 Impact
+
+| Axis | Value |
+|---|---|
+| **Lines removed from active tree** | ~2,100 |
+| **Cron load removed** | None |
+| **Vendor cost saved** | None |
+| **Risk introduced** | Low — research docs are non-load-bearing reference |
+
+### §7.5 Day-of action
+
+Read the bibliography in `03-source-bibliography.md` one last time —
+some of those URLs are reusable for §10 of the pivot's own research
+docs. Note any reusable rows for Pivot E (AODA audits) before moving.
+
+---
+
+## §8 — Bucket A-WORKFLOWS — archive plan
+
+**Volume:** 31 workflow files + supporting prompt files, ~5,900 lines
+(`.github/workflows/*.yml` plus `scripts/{triage,execute,forge-*}-prompt.md`).
+
+**Mechanism:** P2 (disable-then-move) for cron-driven; P3 (hard delete)
+for the dual-lane enforcement triad; P1 (move + README) for the rest.
+
+### §8.1 Order of operations (most surgical bucket)
+
+This is the most surgical archive bucket because workflows interact:
+disabling one without disabling its consumers leaves orphaned PRs.
+
+#### Step 1: comment out `schedule:` blocks
+
+In one commit on the archive branch, comment out the `schedule:` block
+in each cron-driven workflow:
+
+- `triage.yml`, `forge-triage.yml`
+- `execute.yml`, `execute-{single,multi,complex,fallback}.yml`,
+  `forge-execute.yml`
+- `plan-issues.yml`
+- `codex-review.yml`, `codex-review-{backlog,recheck}.yml`,
+  `codex-pr-fix.yml`
+- `deep-research.yml`
+- `ai-smoke-test.yml`, `forge-smoke-test.yml`, `seeder-smoke-test.yml`,
+  `record-ingest-smoke.yml`
+- `llm-monitor.yml`, `llm-monitor-watch.yml`
+- `backlog-{harvest,digest}.yml`, `bot-usage-monitor.yml`
+- `doc-task-seeder.yml`, `project-sync.yml`, `setup-cli.yml`,
+  `deploy-drift-watcher.yml`
+- `render-decks.yml`
+- `deploy-dashboard.yml`
+- `dual-lane-watcher.yml` (will be deleted in Step 4)
+
+Commit message: `archive(workflows): disable schedule blocks pre-archive`.
+**Merge to main. Wait 24 hours.** Verify zero scheduled runs fired in
+that window.
+
+#### Step 2: hard-delete the dual-lane enforcement triad
+
+Per `09 §5.8` and §11 below — the dual-lane architecture is being
+abandoned along with the platform. Files:
+
+- `.github/workflows/dual-lane-watcher.yml`
+- `scripts/dual-lane-audit.sh`
+- `scripts/forge-spinout-dry-run.sh`
+- `.dual-lane.yml`
+
+Commit:
+
+```bash
+git rm .github/workflows/dual-lane-watcher.yml \
+       scripts/dual-lane-audit.sh \
+       scripts/forge-spinout-dry-run.sh \
+       .dual-lane.yml
+git commit -m "archive(workflows): delete dual-lane enforcement triad — architecture abandoned per 09 §3"
+```
+
+#### Step 3: hard-delete forge-only workflows
+
+- `.github/workflows/forge-triage.yml`
+- `.github/workflows/forge-execute.yml`
+- `.github/workflows/forge-smoke-test.yml`
+- `scripts/forge-triage-prompt.md`
+- `scripts/forge-execute-prompt.md`
+- `scripts/test-forge-routing.py`
+
+These are forge-brand-specific artefacts that have no path forward
+under any of the eleven §2 pivots. Commit per §2.3.
+
+#### Step 4: P1 move the remaining workflows
+
+```bash
+mkdir -p docs/_archive/2026-05-XX-pivot/workflows
+
+# Rename .yml → .yml.disabled in the destination so they cannot be
+# accidentally re-registered if the move-back-to-.github happens.
+for f in .github/workflows/{triage,execute,execute-{single,multi,complex,fallback},plan-issues,codex-{review,review-backlog,review-recheck,pr-fix},deep-research,ai-smoke-test,seeder-smoke-test,record-ingest-smoke,llm-monitor,llm-monitor-watch,backlog-{harvest,digest},bot-usage-monitor,doc-task-seeder,project-sync,setup-cli,deploy-drift-watcher,render-decks,deploy-dashboard,auto-merge}.yml; do
+  if [ -f "$f" ]; then
+    base=$(basename "$f" .yml)
+    git mv "$f" "docs/_archive/2026-05-XX-pivot/workflows/${base}.yml.disabled"
+  fi
+done
+
+git mv scripts/triage-prompt.md \
+       scripts/execute-prompt.md \
+       docs/_archive/2026-05-XX-pivot/workflows/
+
+git mv scripts/codex-{triage,plan-review,review-fallback,fix-classify}.py \
+       scripts/gemini-triage.py \
+       scripts/plan-issue.py \
+       scripts/recheck-missed-reviews.py \
+       scripts/seed-codex-review-backlog.py \
+       scripts/test-{routing,doc-task-seeder}.py \
+       scripts/doc-task-seeder.py \
+       scripts/backlog-digest.py \
+       scripts/bot-usage-report.py \
+       scripts/lib \
+       scripts/issues \
+       scripts/bootstrap-{forge-project,kanban}.sh \
+       scripts/create-mothership-seed-issues.sh \
+       scripts/render-decks.sh \
+       docs/_archive/2026-05-XX-pivot/workflows/
+```
+
+#### Step 5: deep-link audit
+
+Search for any remaining references to archived workflows:
+
+```bash
+git grep -F ".github/workflows/triage" -- "*.md"
+git grep -F "scripts/triage-prompt" -- "*.md"
+# etc.
+```
+
+Update or archive any matches found (most will be in already-archived
+docs; cross-archive references are fine).
+
+### §8.2 Verification
+
+- `find .github/workflows -type f -name "*.yml" | wc -l` returns the
+  count of **kept** workflows. Per `09 §6.2` the only keep candidate
+  is `auto-merge.yml` (and only if the operator audits its rules
+  first). Realistic: **0–1 workflows remain in `.github/workflows/`
+  after archive day.**
+- `find scripts -type f | wc -l` returns ~5 (the small set of kept
+  scripts; in practice under any pivot in §10, **all of `scripts/`
+  archives**).
+
+### §8.3 Impact
+
+| Axis | Value |
+|---|---|
+| **Lines removed from active tree** | ~5,900 + ~7,000 (scripts/) = ~12,900 |
+| **Cron load removed** | All — scheduled runs go to zero |
+| **Vendor cost saved** | ~CAD $149/mo (GitHub Actions overage at hourly cadence per §17.12) + ~CAD $1,500–$4,000/mo (Anthropic API per §17.10) = ~CAD $1,650–$4,150/mo |
+| **Risk introduced** | Medium — `auto-merge.yml` decision has security implications; `dual-lane-watcher.yml` deletion is irreversible (per `09 §8`, never un-archive) |
+
+### §8.4 Day-of action
+
+Run `gh workflow list --all` to enumerate the 31 currently-active
+workflows. Save the output as the verification baseline; after archive
+day, the same command should return ≤ 1 workflow.
+
+---
+
+## §9 — Bucket A-N8N — archive plan
+
+**Volume:** 7 JSON files in `docs/n8n-workflows/admin-portal/`, ~643
+lines total.
+
+**Mechanism:** P1 (move + README).
+
+### §9.1 Steps
+
+```bash
+mkdir -p docs/_archive/2026-05-XX-pivot/n8n
+git mv docs/n8n-workflows docs/_archive/2026-05-XX-pivot/n8n/
+echo "<README per §1.3>" > docs/_archive/2026-05-XX-pivot/n8n/README.md
+git commit -m "archive(n8n): move admin-portal workflow JSONs to _archive/"
+```
+
+### §9.2 Vendor decommissioning
+
+The n8n instance running on Railway is **the operator's own platform
+investment**, not in this repo. Separate from the archive:
+
+1. **Export final state** of every n8n workflow as JSON and save to
+   the archive folder above (the JSONs in this repo may be stale).
+2. **Cancel the Railway plan** — Railway charges per usage; pause or
+   destroy the instance after the JSONs are exported.
+3. **Rotate any HMAC secrets** that the n8n workflows used to sign
+   requests to client repos. The secrets stay valid only for the
+   active legs of the pivot in §10 (likely none).
+4. **Update Vercel env vars** to remove `N8N_*` entries from each
+   client project.
+
+### §9.3 Impact
+
+| Axis | Value |
+|---|---|
+| **Lines removed from active tree** | ~643 |
+| **Cron load removed** | All n8n hub triggers (separate from GitHub Actions cron — n8n had its own scheduler) |
+| **Vendor cost saved** | ~USD $5–$20/mo Railway hosting |
+| **Risk introduced** | Low — n8n was not customer-facing |
+
+### §9.4 Day-of action
+
+Open the Railway dashboard, export each workflow's final-state JSON.
+~10 minutes. Then run §9.1 commands.
+
+---
+
+## §10 — Bucket A-MIGRATIONS — archive plan
+
+**Volume:** 5 files, ~2,315 lines (`docs/migrations/*`).
+
+**Mechanism:** P1 (move + README).
+
+### §10.1 Order of operations
+
+1. **Move `00-automation-readiness-plan.md`,
+   `01-poc-perfection-plan.md`, `_artifact-allow-deny.md`,
+   `README.md`** to `_archive/.../migrations/`.
+2. **Special handling — `lumivara-people-advisory-spinout.md`**: this
+   spinout runbook is **a useful template for any future client
+   handover** under any pivot. Per `09 §5.6`, keep this file as a
+   template — but rename it to remove the Client #1 brand reference
+   (`lumivara-people-advisory` is forbidden in operator-scope post-
+   pivot).
+   - Move to `docs/templates/client-handover-runbook.md` and strip
+     the brand-specific naming. Keep the structural skeleton.
+
+### §10.2 Commands
+
+```bash
+mkdir -p docs/_archive/2026-05-XX-pivot/migrations
+mkdir -p docs/templates
+
+git mv docs/migrations/00-automation-readiness-plan.md \
+       docs/migrations/01-poc-perfection-plan.md \
+       docs/migrations/_artifact-allow-deny.md \
+       docs/migrations/README.md \
+       docs/_archive/2026-05-XX-pivot/migrations/
+
+# Manual step: open lumivara-people-advisory-spinout.md, strip
+# Client-#1-specific names, rewrite as a generic client-handover
+# template, save as docs/templates/client-handover-runbook.md.
+$EDITOR docs/migrations/lumivara-people-advisory-spinout.md
+mv docs/migrations/lumivara-people-advisory-spinout.md \
+   docs/templates/client-handover-runbook.md
+
+# Optionally: rmdir docs/migrations/ if empty
+rmdir docs/migrations 2>/dev/null || true
+
+git add -A
+git commit -m "archive(migrations): move 4 phase plans; relocate spinout runbook as generic template"
+```
+
+### §10.3 Impact
+
+| Axis | Value |
+|---|---|
+| **Lines removed from active tree** | ~1,900 (4 files) |
+| **Lines transformed** | ~412 → ~250 (spinout runbook trimmed to template) |
+| **Cron load removed** | None |
+| **Vendor cost saved** | None |
+| **Risk introduced** | Very low — phase plans are not load-bearing |
+
+### §10.4 Day-of action
+
+Open `lumivara-people-advisory-spinout.md` and identify which sections
+are **structural** (engagement-shape, repo-split mechanic, handover
+checklist) versus **brand-specific** (Client #1 names, Lumivara People
+Advisory references). The structural sections are the template;
+brand-specific sections delete during the rename.
+
+---
+
+## §11 — Resolve the §5.9 contamination
+
+**Why this is its own section:** the contamination row is independent
+of pivot choice and **must resolve on archive day before any other
+move**. Per `AGENTS.md` § Dual-Lane, every dual-lane audit fails until
+this clears.
+
+### §11.1 The decision
+
+`09 §5.9` lays out three options:
+
+- **Default — delete** the route + content. The operator's Fiverr-
+  style pitch belongs on a separate domain.
+- **Alternative — relocate** to a separate Vercel project at a new
+  domain.
+- **Rename + relocate** to `/forge` path with a `infra-allowed` carve-
+  out (not recommended).
+
+**Recommendation: delete.** The personal-domain landing page (`10 §1.5`)
+replaces the storefront mechanic at much lower complexity.
+
+### §11.2 Commands (default — delete)
+
+```bash
+git rm -r src/app/lumivara-infotech
+git rm src/content/lumivara-infotech.ts
+# Search for any remaining references:
+git grep -F "lumivara-infotech" -- "*.ts" "*.tsx" "*.json" "*.md"
+# Edit out any matches found.
+git add -A
+git commit -m "archive(contamination): delete src/app/lumivara-infotech (per 09 §5.9 default)"
+```
+
+### §11.3 Verification
+
+- `npm run build` passes.
+- `npm run lint` passes.
+- `npm run type-check` passes.
+- The dual-lane audit (if not yet deleted per §8) passes §1
+  contamination check.
+
+### §11.4 Impact
+
+| Axis | Value |
+|---|---|
+| **Lines removed from active tree** | ~372 |
+| **Cron load removed** | None |
+| **Vendor cost saved** | None |
+| **Risk introduced** | Low — the route was not in the operator's actual sales path |
+
+### §11.5 Day-of action
+
+Run `git grep -F "lumivara-infotech"` to enumerate every reference in
+the repo. The list determines whether the deletion is fully scoped.
+Likely matches: the route page, the content file, and 1–2 references
+in operator docs (those archive separately).
+
+---
+
+## §12 — Cross-bucket impact summary
+
+Single-glance table comparing every archive bucket on the same axes.
+
+| Bucket | Lines removed | Cron load removed | Vendor $/mo saved | Mechanism | Risk |
+|---|---:|---|---|---|---|
+| A-DECKS | 5,600 | none | $0 (render workflow archives in §8) | P1 | Low |
+| A-PLATFORM-OVER | 9,000 | partial — see §8 for cron | $0 directly (saving lands when §8 archives) | P1 + P2 mix | Medium |
+| A-DASHBOARD | 1,482 | (deploy-dashboard.yml in §8) | $0 (Vercel free) | P1 or P2 (extract) | Low |
+| A-OPS | 2,750 | none | $0 | P1 (after rewrite) | Medium-low |
+| A-RESEARCH-PRO | 2,100 | none | $0 | P1 + relocate | Low |
+| A-WORKFLOWS | 12,900 (incl. scripts) | **all** | **$1,650–$4,150/mo** | P2 + P3 | Medium |
+| A-N8N | 643 | n8n triggers | USD $5–$20/mo Railway | P1 + decommission | Low |
+| A-MIGRATIONS | 1,900 (+ template extract) | none | $0 | P1 + transform | Very low |
+| **§11 Contamination** | 372 | none | $0 | P3 | Low |
+| **§13 Dual-lane teardown** | (in §8) | none | $0 | P3 | Low |
+| **Totals** | **~36,700** | — | **~CAD $1,650–$4,170/mo** | — | — |
+
+**Note:** the headline "70,000 lines archived" in `09 §5.1` includes
+everything moved-or-touched, not the line count of the actual git mv
+operations. ~36,700 is the cleaner number for "lines that leave the
+active tree."
+
+---
+
+## §13 — The dual-lane teardown (covered above; restated for clarity)
+
+The dual-lane architecture (`02b-dual-lane-architecture.md` + the
+manifest + the watcher + the audit script + the spinout dry-run +
+forge-prompt files) is being abandoned. Per §8.1 Step 2:
+
+1. Delete `.github/workflows/dual-lane-watcher.yml` (P3).
+2. Delete `scripts/dual-lane-audit.sh` (P3).
+3. Delete `scripts/forge-spinout-dry-run.sh` (P3).
+4. Delete `.dual-lane.yml` (P3).
+5. Move `docs/mothership/02b-dual-lane-architecture.md` and
+   `docs/mothership/dual-lane-enforcement-checklist.md` into
+   `_archive/.../mothership-most/` (P1, covered by the mothership
+   archive in a separate commit not detailed in this doc — left as a
+   straightforward extension of §6's pattern).
+
+**Why deletes, not moves:** these files are *enforcement* artefacts.
+Their value comes from running, not from being read. A future operator
+who reads them in `_archive/` will think they are guidance and act on
+them — exactly the opposite of the intent. Hard delete is the right
+mechanism.
+
+**Rollback:** `git revert <sha>` restores them. The deletion is on
+the archive branch, behind the `pre-archive-2026-05-XX-snapshot` tag.
+
+---
+
+## §14 — Verification gate (the 5-command audit)
+
+After every archive commit lands, run this 5-command check:
+
+```bash
+# 1. The active tree shrunk to expected size
+find . -type f -not -path './node_modules/*' -not -path './.git/*' -not -path './docs/_archive/*' | wc -l
+
+# 2. No archived path is imported from the keep list
+git grep -F -f <(echo -e "_archive/\nscripts/llm-monitor/\nscripts/codex-\nscripts/record-ingest/") -- "src/" "*.json"
+# (should return zero results)
+
+# 3. Site builds clean
+npm run build
+
+# 4. Tests pass
+npm test
+npm run test:e2e
+
+# 5. No broken markdown links in the kept docs
+git grep -F "(./" -- "docs/00-INDEX.md" "docs/research/" "README.md" | \
+  while IFS=: read -r f line; do
+    target=$(echo "$line" | grep -oP '\(\./[^)]+\)' | head -1 | tr -d '()')
+    if [ -n "$target" ] && [ ! -e "$(dirname "$f")/$target" ]; then
+      echo "Broken link in $f → $target"
+    fi
+  done
+```
+
+The third and fourth gates are non-negotiable. Gates 1 and 5 are
+informational. Gate 2 catches the most common archive failure
+(orphaned import).
+
+---
+
+## §15 — Rollback paths
+
+Every commit on the archive branch is reversible. The fastest
+recovery paths:
+
+| Failure | Rollback |
+|---|---|
+| **Single bucket archive turned out wrong** | `git revert <bucket-archive-sha>` |
+| **Workflow disable-then-archive breakage** | `git revert <workflow-disable-sha> <workflow-archive-sha>` (in that order) |
+| **Build broke after `git mv`** | `git revert HEAD` and re-investigate the keep list |
+| **Operator changed mind about pivot direction** | `git reset --hard pre-archive-2026-05-XX-snapshot` (the pre-archive tag); force-push branch back to that state |
+| **Months later, decision reversed under §8 un-archive criteria** | `git checkout <archive-day-sha> -- docs/_archive/<bucket>/...`, then `git mv` back into the active tree |
+
+The pre-archive tag (`§1.1`) is the single most important rollback
+asset. It is **the only state** that is genuinely "before any
+archive happened," and it should be pushed to origin and never
+deleted.
+
+---
+
+## §16 — Common pitfalls
+
+Six failure patterns operators trip on during archive operations.
+
+### §16.1 Moving cron-driven workflows in the same commit as their disable
+
+GitHub Actions reads workflows from the default branch on the
+schedule. If the move and the disable land in the same commit, there
+is no observable "disabled but still in `.github/workflows/`" state
+to verify against. **Always two-commit, with a 24-hour gap.**
+
+### §16.2 Forgetting to update `.dual-lane.yml` (or rather, to delete it)
+
+If `.dual-lane.yml` is left in place after the dual-lane teardown,
+the watcher might still pass on its references — *but* every dual-lane
+audit run by a future operator who happens to clone the repo before
+reading 09–11 will read the manifest as authoritative. **Delete it,
+do not just stop using it.**
+
+### §16.3 Half-archiving `src/lib/admin/`
+
+Per `09 §6.2`, `src/lib/admin/vercel.ts` stays; everything else under
+`src/lib/admin/` archives. The half-archive only works if the keep-
+list discipline is exact. Run `git grep -F "from \"@/lib/admin/"`
+**before and after** the move; the diff is the import surface that
+might break.
+
+### §16.4 Archiving without a fresh tag
+
+Without `pre-archive-2026-05-XX-snapshot`, the rollback path is "hope
+the archive branch's reflog still has the right SHA." Tag first,
+push the tag, then start archiving.
+
+### §16.5 The "while-I'm-here" archive mistake
+
+The operator opens `docs/_archive/.../decks/06-master-deck.md` to
+"just clean up one paragraph" before archiving. Within 30 minutes the
+operator has rewritten three slides. **The archive is a one-way move
+on archive day**: no edits to the moved content, ever. Edit the
+keep-side copies if needed (they're either rewritten or already
+trimmed in the §10 playbooks).
+
+### §16.6 Skipping the type-check + build gates between moves
+
+The §4.2 verification gate (`npm run lint`, `npm run type-check`,
+`npm test`, `npm run build`) is **per step**, not per bucket. The
+half-archived `src/lib/admin/` produces a type-check failure that
+the operator cannot easily diagnose if 12 commits stack up before
+running the gate. **Run after every step.**
+
+---
+
+## §17 — Bibliography
+
+Internal references (this document does not draw on external research):
+
+- [`08-self-maintaining-website-negative-study.md`](./08-self-maintaining-website-negative-study.md) — the diagnostic.
+- [`09-pivot-plan-and-archive-list.md`](./09-pivot-plan-and-archive-list.md) — the strategic archive list this doc operationalises.
+- [`10-pivot-execution-playbooks.md`](./10-pivot-execution-playbooks.md) — the pivot tactical layer; the new `stage-1-playbook.md` in §6 above draws from `10 §1` and `10 §16`.
+
+---
+
+## §18 — Day-of master sequence
+
+For the operator who reads only one section: the entire archive day,
+in execution order.
+
+| # | Action | Refs |
+|---|---|---|
+| 1 | Branch + tag (§1.1) | `pre-archive-2026-05-XX-snapshot` |
+| 2 | Resolve contamination (§11) | `git rm -r src/app/lumivara-infotech` |
+| 3 | Disable cron blocks (§8.1 Step 1) | comment out `schedule:` in 28 workflows |
+| 4 | Wait 24 hours, verify zero cron runs | GitHub Actions tab |
+| 5 | Delete dual-lane triad (§8.1 Step 2) | `git rm` 4 files |
+| 6 | Delete forge-only artefacts (§8.1 Step 3) | `git rm` 6 files |
+| 7 | Archive A-DECKS (§3) | 1 commit |
+| 8 | Archive A-RESEARCH-PRO + relocate PIPEDA (§7) | 1 commit |
+| 9 | Archive A-MIGRATIONS + extract spinout template (§10) | 1 commit |
+| 10 | Archive A-N8N + decommission Railway instance (§9) | 1 commit |
+| 11 | Archive A-OPS — **after** writing stage-1 playbook (§6) | 2 commits |
+| 12 | Archive A-DASHBOARD (Option A) (§5) | 1 commit |
+| 13 | Archive A-PLATFORM-OVER (§4) — 12 ordered steps | 12 commits |
+| 14 | Archive A-WORKFLOWS (§8.1 Step 4) | 1 commit |
+| 15 | Run §14 verification gate | 5 commands |
+| 16 | Push branch + open PR | `gh pr create` |
+| 17 | Operator's reflective pause (re-read `09 §11`) | mandatory |
+| 18 | Merge PR | fast-forward to main |
+
+**Estimated total time:** 6–10 hours of focused work. The 24-hour
+wait at step 4 is **calendar time, not work time** — the operator
+can start step 4 at end-of-day Friday and resume at Monday morning.
+
+---
+
+*Last updated: 2026-05-01. Companion to
+`09-pivot-plan-and-archive-list.md` and `10-pivot-execution-playbooks.md`.
+The strategic decision lives in `09`; the tactical pivot execution
+lives in `10`; the tactical archive execution lives here. Read all
+three.*

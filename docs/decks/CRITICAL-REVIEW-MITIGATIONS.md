@@ -243,6 +243,94 @@ The mitigations above translate to specific edits. This list is the operator's c
 
 ---
 
+## §8 — Demo-readiness gate (the hard prerequisite to Sales Sprint S0)
+
+> _Added 2026-05-01 in response to operator pushback: **"I don't know if I can produce this end product with existing technical knowledge and AI assistance. What happens when the first paying customer asks for a demo? What if I cannot automate the 'simple' phone/admin edits to the client's website?"** The pushback is correct. The previous §1 verdict ("PoC is good enough") was right about **operator-side platform polish** (the §1.1 streak gate) but ambiguous about **demo-readiness** (the §6 gate in `01-poc-perfection-plan.md`). This section closes the gap._
+
+### §8.1 — The two PoC-readiness questions, separated
+
+| Question | Gate | Verdict | Why |
+|---|---|---|---|
+| (A) *"Do 10 consecutive auto-routine issues land green with zero operator intervention?"* | `01-poc-perfection-plan.md §1.1` (streak) | **Not load-bearing for sales.** Background telemetry. | Internal quality bar. Prospects don't see it. A prospect does not buy "10 consecutive green issues." |
+| (B) *"Can the operator sit a prospect down today and run the phone-edit loop end-to-end without lying about anything?"* | `01-poc-perfection-plan.md §6` (demo-ready) | **Hard prerequisite to Sales Sprint S0.** | This is the customer-impact gate. If the demo fails, every cold email written is a check the platform can't cash. |
+
+The previous §1 verdict ("the PoC is good enough") referred to (A). It does not extend to (B). (B) is non-negotiable and time-boxed.
+
+### §8.2 — The 1-week demo-readiness checklist
+
+Six concrete things the operator must complete **before Thursday's first cold email goes out** in §3 / §5.6:
+
+| # | Test | Pass criterion | Failure response |
+|---|---|---|---|
+| 8.2.1 | **Run the loop on a borrowed phone, 5 times in a row.** Borrow a friend's iPhone or Android. Install the phone-edit shortcut from scratch (no operator-only configuration). Send a real edit. Get a real preview link. Tap publish. Repeat 5×. | All 5 succeed end-to-end in <4 minutes wall-clock per loop. | Identify the breaking step; fix or document it. Revisit 24 hours later. |
+| 8.2.2 | **Record the loop as a 90-second screen capture.** Becomes the proof asset that goes in every cold email AND the demo-fallback recording. | Single file, <2 min, MP4 or Loom share-link, hosted on `lumivara-forge.com` or Loom. | Re-record after each fix from 8.2.1. |
+| 8.2.3 | **Pre-rehearse the four breakage scenarios.** Vercel preview takes >30s; AI returns nonsense; HMAC fails; SMS doesn't arrive. Each gets a one-line operator response in writing. | One-page `docs/ops/demo-recovery-playbook.md` exists with four scripted lines. | Operator drafts the page; the act of writing it surfaces gaps. |
+| 8.2.4 | **Honestly enumerate what cannot yet be done live.** Multi-page content restructures, booking-system integrations, multi-language. | One-page `docs/ops/demo-cant-yet-do.md` exists. The discovery call says: *"working today: X, Y, Z. Tier 3 add-on, available in 60 days: A, B, C."* | Operator drafts; this is honesty discipline, not a fixable bug. |
+| 8.2.5 | **Verify accessibility CI catches a real WCAG failure live.** Push a div with an `<img>` missing `alt`. Watch axe-core fail the build. Recover. | One commit + one failing build URL + one recovery commit, captured in the case-study log. | If axe-core doesn't catch this, the gate is broken — fix the gate before any deck claims it. |
+| 8.2.6 | **One before/after Lighthouse case study live on `lumivara-forge.com`.** Number, date, audit log link. | Case-study page accessible at a stable URL; audit log linked. | This is the single most-asked artefact in discovery calls. Without it, every prospect call ends in *"send me an example."* |
+
+**Time-box: 7 calendar days from the start of Phase 0A.** If 8.2.1 fails after 7 days, the question is no longer *"how do I make this work?"* — it is *"do I run delivery on the manual-with-disclosure path in §9?"* Either answer is fine. Both unblock the sprint. The only forbidden answer is *"keep building, defer the sprint."*
+
+### §8.3 — How this changes the resequenced phase map
+
+| Phase | Before | After |
+|---|---|---|
+| 0A | Brand+domain unblock | Same |
+| **1A\*** | (did not exist) | **Demo-readiness gate (§8 — 1-week time-box) — the hard prerequisite to 1B** |
+| 1B | Sales Sprint S0 | Same — but cannot start until 1A* passes OR §9 fallback is committed |
+| 1A | PoC streak (telemetry) | Same |
+| 2–6 | Blocked-on-revenue | Same |
+
+A failure on 1A* does not block sales — it routes sales through §9 (delivery-risk options). Sales never blocks indefinitely on platform work; it routes through whichever delivery model the demo-test honestly supports.
+
+---
+
+## §9 — Delivery-risk options (if you cannot reliably deliver what the decks claim)
+
+> _The honest answer to the operator's pushback: the deck pack pretends the platform handles 100% of delivery. It probably handles 60–80%, and the gap is closed by the operator + a contractor who is paid out of the client's deposit. **That is still a real, profitable business** — it just isn't the fully-automated business the decks describe._
+
+Six options, ranked by how much of the existing offer they preserve. The honest read at the bottom: **options 1 + 4 + 6 stack** and let the operator take a paying client this quarter regardless of where the demo-readiness gate lands.
+
+| # | Option | What changes | What stays | Best when… |
+|---|---|---|---|---|
+| 1 | **Manual-with-disclosure** | *"For the first 90 days the operator personally reviews every PR before publish."* AI proposes, operator approves and ships. Loop wall-clock: 1–4 hours, not 90 seconds, on the operator-merge step. The phone-submit step still works as advertised. | T2 price, monthly improvement run, accessibility CI, ownership story, regulator framing. | 8.2.1 passes intermittently; the AI plan is solid but the auto-merge gate is shaky. |
+| 2 | **Sell only what reliably works.** | Scope the offer to "small content edits + accessibility fixes" — both of which the platform absolutely handles today. Drop multi-page restructures and complex integrations from the T2 default; quote them as add-ons. | Phone-edit loop, ownership, regulator framing, monthly cadence. | The AI is unreliable on complex changes but bullet-proof on simple ones. |
+| 3 | **Audit-first engagement.** | First $500–$1,000 is a paid Lighthouse + axe + advertising-policy audit, delivered as a 30-min Loom + 10-page PDF. Zero AI delivery risk; pure operator skill. Some prospects convert to T1/T2 after. | Lead-gen, rapport, vertical positioning, regulator framing. | The platform isn't ready and the operator wants revenue + signal in 30 days. |
+| 4 | **Hire-as-you-sell.** | First paying client's $4,500 deposit funds 50–80 hours of an Ontario freelance Next.js dev as the AI safety net. Disclosed in the contract: *"Lumivara Forge engages a junior contractor on engagements where the autopilot is in build-up phase."* | All deliverables; the cap question reframes from "burnout" to "subcontract budget." Net margin compresses by 30–50% on the first 2–3 clients; recovers by client #5 as the platform stabilises. | The platform handles 60–80% but the operator can't personally close the rest. |
+| 5 | **Niche further.** | Don't sell "managed website" — sell *"weekly content shipping for solo professionals on their existing site."* The phone-edit loop is the only deliverable. T1 only; no rebuilds. | Phone-edit loop, monthly cadence, ownership story (writes to the client's existing repo / CMS). | The full "managed website + autopilot" offer is too ambitious for the current platform; a smaller anchor offer closes faster. |
+| 6 | **Pre-arrange a freelance fallback dev.** | Identify one Ontario freelance Next.js dev willing to work hourly on 24-hour notice when the AI fails. Costs $0 until invoked. Build a relationship before you need it; not after. | Everything in the existing offer. | Always. This is cheap insurance regardless of which other options stack. |
+
+### §9.1 — The recommended stack
+
+**Options 1 + 4 + 6 stack.** Manual-with-disclosure (1) is the honest pricing posture. Hire-as-you-sell (4) makes the first 2–3 clients deliverable even if the AI is at 60%. Pre-arranged fallback dev (6) is free insurance.
+
+The combined offer reads, on the prospective-client deck, like this:
+> *"For the first 90 days, every change is reviewed by a human before publish — usually the operator, sometimes a contracted senior engineer when the queue is full. After 90 days, well-tested change types ship through automation; complex changes stay human-reviewed. You see exactly which lane each change took, in your monthly report."*
+
+This is **more honest than the current decks** and **more closeable than the current decks**. The current pitch promises end-to-end automation that the platform may not yet support; the §9.1 pitch promises end-to-end *speed* that the operator + contractor + AI absolutely can support.
+
+### §9.2 — What this does to the unit economics
+
+The current model (`docs/storefront/03-cost-analysis.md` Part D) assumes ~95% pre-comp gross margin, contingent on the operator absorbing all delivery hours alone. Under the §9.1 stack:
+
+- First 2–3 clients: contractor at $50–$80/hr × ~30 hrs/client/month = $1,500–$2,400/mo per client. Net margin on T2 ($249/mo) **goes negative** for the first 2–3 clients — the deposit subsidises the contractor for the first 6–12 months of each engagement.
+- Clients #4 onward: as the platform stabilises and the operator's documentation of common edit-types accumulates, contractor hours fall to ~10/client/month, then ~3/client/month. Margin recovers to ~70% pre-comp by client #5, ~85% by client #10.
+- The 30-client "cap" becomes irrelevant earlier — the operator can credibly take more clients with contractor support, but probably shouldn't, because the contractor is the bottleneck not the operator.
+
+This is a different business than the decks describe. **It is a business.** The decks-as-written promise a margin profile that depends on the platform working at 95%; §9.1 admits the platform works at 60–80% and prices accordingly. Both are honest at different platform-maturity levels. The operator's job over the next 90 days is to figure out which one is true.
+
+### §9.3 — What goes in front of a prospect on Day 1
+
+Three artefacts, no platform claims that aren't verifiable:
+
+1. **The 90-second loop recording** (from 8.2.2).
+2. **The Client #1 before/after Lighthouse case study** (from 8.2.6).
+3. **The §9.1 honest pitch language** (manual-with-disclosure, contractor-funded for first 90 days).
+
+That is enough to close a discovery call honestly. Everything else in the deck pack is supporting material that can be added when ready.
+
+---
+
 ## §7 — Tracking
 
 A single GitHub issue should track Sales Sprint S0 at the operator level. Suggested title: *Sales Sprint S0 — first paying client #2 (90-day time-box, started YYYY-MM-DD)*. Labels: `meta/sales-sprint`, `priority/P1`, `human-only`. Body uses the §5.6 day-by-day plan as a checklist; updates happen in comments daily.

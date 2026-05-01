@@ -158,3 +158,97 @@ The pre-publication gate in [`docs/decks/00-INDEX.md`](./00-INDEX.md) updates to
 The fix is targeted at ICP-specific spend numbers, not macro tailwind numbers.
 
 ---
+
+## §5 — Resequenced project plan
+
+The existing phase map at [`docs/migrations/00-automation-readiness-plan.md §1`](../migrations/00-automation-readiness-plan.md) is **infrastructure-first, sales-last**: Phase 0 (identity) → Phase 1 (PoC perfection) → Phase 2 (mechanical rename) → Phase 3 (platform repo) → Phase 4 (Client #1 spinout) → Phase 5 (Client #2 onboarding *from a clean slate*). Under that map, the first paying client is gated on three levels of platform work that each take days–weeks. This is the documentation hobby's project plan.
+
+The resequenced map below pulls the first paying client to the **front**, demotes the §1.1 streak from a hard gate to background telemetry, and freezes the platform-spinout work behind revenue.
+
+### §5.1 — The new phase map
+
+| Phase | Name | Status | Trigger to start | Trigger to finish |
+|---|---|---|---|---|
+| **0A** | Brand+domain unblock (minimum viable identity) | **Active — this week** | Today | `lumivara-forge.com` + `.ca` registered, working name committed for 90 days, GitHub org created, `outreach@…` email sends and receives |
+| **1B** | **Sales Sprint S0 — close paying client #2** | **Active — runs alongside everything below** | Phase 0A finishes | One paid CAD invoice from a non-operator client |
+| 1A | PoC streak (was Phase 1) | **Parallel-OK — demoted from gate to telemetry** | Already running | 10/10 streak completes whenever it completes; no calendar pressure |
+| 0B | Phase 0 §2.2 rows 3–12 (second Owner, Resend, Twilio, Railway, recovery envelope) | **Frozen until first prospect reply that books a discovery call** | First booked discovery call | Operator can run a clean Vercel deploy + send a Resend email under the brand |
+| 2 | Run S1 mechanical rename | **Blocked-on-revenue** | Client #2 invoice paid AND brand name still feels right | Audit-grep clean per existing §4.4 |
+| 3 | Bootstrap platform repo (P5.1–P5.5) | **Blocked-on-revenue** | Phase 2 done | `forge --help` runs; `forge provision --dry-run` prints the plan |
+| 4 | Spin Client #1 out | **Blocked-on-revenue** | Phase 3 done AND client #2 has run for 30 days without operator infrastructure failures | Existing §6.4 exit criterion |
+| 5 | Onboard Client #2 cleanly via `forge provision` | **Parallel-OK with Phase 4 if client #2 was provisioned manually first** | Phase 4 done | SMS-to-published cycle under 4h on smoke client |
+| 6 | Hardening + handover | **Parallel-OK** | Phase 5 done OR client #3 closes, whichever first | Recurring; never "completes" |
+| 6.5 | Capacity-policy review | **Deferred — see §5.5** | Client #5 invoice paid | Capacity-language committed to docs |
+
+**Frozen ≠ deleted.** The work in `00-automation-readiness-plan.md` and `01-poc-perfection-plan.md` is still the technical north star. It just stops being a dependency for the next dollar.
+
+### §5.2 — Phase 1B (Sales Sprint S0) in detail
+
+- **Entry criterion:** Phase 0A done — domain live, working email under the brand, `prospects.csv` populated to 50 named rows.
+- **Cadence:** Mon–Fri, 10 cold outreach actions before noon (mix of cold email, personalised Loom DM, vendor-coffee asks per §3 above). 30 minutes of LinkedIn / association-directory mining to keep the pipeline at 50+. End-of-day: log replies. Friday EOD: reply-rate review.
+- **Forbidden during the sprint:** writing new decks, refactoring existing decks, opening Phase 0 §2.2 rows 3–12, touching the platform repo, renaming the brand, editing the negative list.
+- **Exit criterion:** **one paid invoice in CAD** from a non-operator client, deposit cleared.
+- **Hard time-box: 90 days** from the day the first cold email goes out. If no paid invoice by day 90, the working hypothesis fails. The response is **not** *"more sprint"* or *"more deck."* The response is to step back and challenge one of: target persona, price, channel, or whether this is a business at all. Do not extend the sprint without changing one of those four variables.
+
+### §5.3 — The §1.1 streak gate, narrowed
+
+The streak (*"10 consecutive auto-routine issues land green with zero operator intervention"*) gates **one thing only: Phase 2 (Run S1 mechanical rename).** It is a perfectly reasonable internal confidence signal for *"the autopilot is stable enough that I can do a 150-reference find-replace across the docs and trust the bot to land it cleanly."* That is what the gate was designed for, narrowly, and that is what it should still do. Everything else the gate currently blocks — Phases 3, 4, 5, 6, and (implicitly) sales itself — is unhitched.
+
+### §5.4 — Phase 0 brand+domain decision
+
+**Recommendation: ship under the working name `Lumivara Forge` with the registered domain. Defer any rename for 90 days.** The brand-rename ADR (`15c §3`) is the documentation hobby in microcosm — re-opening a name decision that was locked 48 hours earlier, while having zero clients. The reviewer's catch on `Lighthouse` (the CI-tool name collision in the shortlist) is the tell: the operator is not actually ready to lock a name under sales pressure, because there is no sales pressure.
+
+A prospect who would have signed at `loom.com` and balks at `lumivara-forge.com` does not exist. Picking a new name now means: redo PR #200 drift sweep, redo trademark filing, redo `15 §4`/§5 lock, redo this ADR — three more weeks of writing, zero more sales calls. **Defer.** If the brand still feels wrong at day 90, decide then with real customer data instead of taste.
+
+### §5.5 — The 30-client cap
+
+**Replace with capacity-language; defer the cap policy until client #5 closes.** The cap is currently doing two jobs — (a) protecting operator burnout, which is real, and (b) signalling discipline to readers, which is performative when there are no clients. Until five paid clients exist, the cap has no empirical grounding and should not appear in any external artefact.
+
+Internally, replace every *"30-client cap"* reference with: *"Single-operator working capacity is approximately 30 active retainer clients; this is a forecast, not a limit, and will be re-validated after client #5."* This kills the *"velvet rope on an empty restaurant"* optics, preserves the burnout safeguard for honest internal planning, and defers the actual policy decision to the moment when the operator has data. After client #5, the operator will know whether 30 is too high (churn faster than expected), too low (each client takes less time than budgeted), or about right. **Decide then.**
+
+### §5.6 — The five things this week (Mon–Fri)
+
+1. **Mon — Domain + working email under the brand.** Buy `lumivara-forge.com` and `lumivara-forge.ca` (Cloudflare or Namecheap), point an A record at a 1-page Vercel placeholder, set up `outreach@lumivara-forge.com` via Resend or Google Workspace.
+2. **Tue — Build `prospects.csv`.** 50 named rows, **dentists** (the strongest existing vertical asset; the May–August recall-flush season fits the 90-day window).
+3. **Wed — Fix the one load-bearing factual error and ship the case study.** Per §4.2 above, replace the dental `[S]` figure with a defensible CDA/ADA-HPI range; add a one-page Client #1 before/after Lighthouse case study to `lumivara-forge.com`.
+4. **Thu — First 10 cold emails sent.** Use the dentist vertical pitch as the attachment, NOT the master deck. Track replies in `prospects.csv`.
+5. **Fri — Second 10 cold emails sent + week-1 retro.** 20 emails out by EOW. Friday-night journal entry: reply count, objection patterns, vertical-swap decision. Forbidden phrase: *"I should write another deck."*
+
+The 90-day clock starts the moment Thursday's first email lands in someone's inbox.
+
+---
+
+## §6 — File-by-file fix list
+
+The mitigations above translate to specific edits. This list is the operator's checklist for the unfreeze pass after client #2 closes.
+
+| File | Change | Mitigation refs |
+|---|---|---|
+| `docs/decks/01-investor-deck.md` | Freeze banner; on unfreeze: delete TAM slide, "What we are not" slide, $120k SEO, 95% margin headline, all "22.4×/22.3%" references, "Show us another retainer-services business…" sentence; rename to *Investor-evaluation framework — operator-internal*. | M5, M11, M14, M17, M18, M19, M10, M8 |
+| `docs/decks/02-partner-deck.md` | Freeze banner; on unfreeze: delete $120k SEO, 95% margin, solopreneur-margin comparison; replace cap language with capacity language. | M5, M2, M8, M10, §4.3 |
+| `docs/decks/03-employee-deck.md` | Freeze banner; revisit at client #25–#35. | M5 |
+| `docs/decks/04-prospective-client-deck.md` | **Active edit allowed during sprint.** Collapse negative list to 3 bullets. Remove DesignJoy comparator. Replace "$120k–$150k SEO" persona figure with §4.1 honest range. Replace `[S]` dental range with §4.2 honest range or remove the chart. Lead the deck with the four-checks-during-the-call slide; demote the why-now stats. | M3, M13, M8, M9 |
+| `docs/decks/05-advisor-deck.md` | Freeze banner; delete "What's settled" slide; rename to *Advisor open-questions briefing.* | M4, M5 |
+| `docs/decks/06-master-deck.md` + `06a-master-deck-shareable.md` | Freeze banner. | M5 |
+| `docs/decks/vertical-pitches/lawyers.md` | Replace $120k–$150k figure with §4.1 honest range; or drop the lawyer pitch from S0 outreach this week and use dentists only. | M8, §4.1 |
+| `docs/decks/vertical-pitches/dentists.md` | **Active edit during sprint.** Replace $11k–$30k figure with §4.2 honest range or remove the dollar comparison. Lead with axe-violation evidence on the prospect's own site. | M9, §4.2 |
+| `docs/research/03-source-bibliography.md` | Add `[E]` flag definition + retag rows: `§B-Law-Firm-Spend`, `§B-Dental-Spend`, `§B-Solopreneur-Margin` either re-sourced to `[E]` or removed from the externally-shareable rows list. Add US-jurisdiction footnote to `§B-ADA-Lawsuits` and `§B-Outdated-75`. | M7, §4.4, §4.5 |
+| `docs/decks/00-INDEX.md` | Pre-publication gate updates: require `[E]` for any number used as forecast input or load-bearing comparator. | §4.4 |
+| `docs/migrations/00-automation-readiness-plan.md` | Insert resequencing banner pointing here; add Phase 1B (Sales Sprint S0) as parallel to Phase 1A; mark Phases 2–6 *Blocked-on-revenue.* | §5.1 |
+| `docs/migrations/01-poc-perfection-plan.md` | Banner: *"§1.1 streak gates Phase 2 only; demoted from blanket gate as of 2026-05-01."* | §5.3 |
+| `docs/mothership/15c-brand-and-domain-decision.md` | Resolution stanza: *"Defer brand rename for 90 days; ship under `Lumivara Forge`; revisit after client #2 closes if at all."* Remove `Lighthouse` and `Helm` from the shortlist. | §5.4, M6 |
+| `docs/mothership/18-capacity-and-unit-economics.md` | Replace "30-client cap" language with capacity language; defer policy decision until client #5. | §5.5, M2 |
+| `docs/mothership/01-business-plan.md` | Replace "30-client cap" with capacity language. | §5.5, M2 |
+| `docs/BACKLOG.md` | Add Sales Sprint S0 as the new top recurring item; mark POC perfection paused; add 90-day clock. | §5.2 |
+
+---
+
+## §7 — Tracking
+
+A single GitHub issue should track Sales Sprint S0 at the operator level. Suggested title: *Sales Sprint S0 — first paying client #2 (90-day time-box, started YYYY-MM-DD)*. Labels: `meta/sales-sprint`, `priority/P1`, `human-only`. Body uses the §5.6 day-by-day plan as a checklist; updates happen in comments daily.
+
+When client #2 invoices and the deposit clears, that issue closes. The act of closing it is the trigger to unfreeze the deck pack and resume the platform-spinout work in the §5.1 order.
+
+---
+
+*Last updated: 2026-05-01. Operator-scope. Read [`CRITICAL-REVIEW.md`](./CRITICAL-REVIEW.md) first; this file is the counter-plan.*

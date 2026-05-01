@@ -50,3 +50,57 @@ The only PoC-side work that should continue in parallel with sales is **bug fixe
 | M20 | *"Pitch line:"* tic (`§4.5`) | Low | Strip the *Pitch line:* slot from the master deck and stakeholder decks during the unfreeze refresh. Pitch lines that survive a real prospect call earn their place; pitch lines authored for slides do not. | Operator | `git grep -c "Pitch line"` drops below 10 across `docs/decks/`. |
 
 ---
+
+## §3 — Sales-acquisition creative options (Sales Sprint S0)
+
+The review's prescription was *"50-prospect spreadsheet, 10 cold emails per day, one vertical, one week."* That is the floor. A second-opinion bot was asked for **alternative or complementary** tactics that leverage what the operator already built. Seven candidates returned; the bot's own ranking was *keep tactics 1, 2, 3 — kill 4, 5, 7 — defer 6 as a passive multiplier on tactic 2.* Recorded here in the bot's order; the operator picks the slate.
+
+### S0.T1 — Personalised "competitor audit" Loom
+
+- Pick **dentists** first (recall-flush season May–August, owner-decision-makers reading email).
+- Run the existing axe / Lighthouse CI against three named local Ontario dental sites; record a 4-minute Loom showing the top 3 regulator-relevant violations on the prospect's *own site.*
+- Send the personal Loom link, not a pitch deck. *"Your site fails RCDSO advertising-readability standards on these 3 items, here is the 90-second fix."*
+- Expected reply rate band: **15–25%** (vs. cold-email 1–3%). The proof is undeniable; the operator's face creates trust; the deliverable exists before any contract.
+- Cost: $0 (Loom free tier). 6 hours week 1.
+- Failure detection: by Friday, if 0 of 15 Looms produced a reply, the violation framing is wrong, not the channel — pivot to stricter RCDSO Standard-of-Practice clause-number framing.
+
+### S0.T2 — "Free rebuild, pay day 30" — risk-reversal offer
+
+- Offer 5 dental practices a complete T1 rebuild at zero upfront cost; they pay $2,400 + $99/mo only if they keep it past day 30. Operator owns the domain config until then; reversal is one DNS flip.
+- One-page offer terms in a Google Doc — **do not write a new deck for this.** Use existing playbook.
+- DM 20 owner-dentists on LinkedIn with the offer + one Loom from S0.T1.
+- The operator's marginal cost per build is near-zero because the AI pipeline is already built — *this is the entire point of having spent the time on the platform.* One conversion at $2,400 + 12×$99 = $3,588 LTV; 1-in-5 close rate is profitable.
+- Failure detection: if more than 3 say yes by Wednesday, **stop pitching** — operator can deliver 5 builds in 14 days, not more.
+- Cost: ~$50. 25–35 hours over 30 days.
+
+### S0.T3 — Adjacent-vendor referral pact (the "deliberately not us" list as credibility asset)
+
+- Sign mutual-referral terms with 2 Ontario bookkeepers serving lawyers + 1 dental EMR migration consultant (Dentrix / AbelDent). They send web work; operator sends back EMR / bookkeeping leads from intake forms.
+- Search LinkedIn for "Dentrix consultant Ontario" / "bookkeeper LSO trust accounting." Identify 6 humans, message 3 lines, three coffee calls by week-end.
+- The negative list the operator already wrote *is* the credibility artefact: *"here's what I refuse to do, so I'll never compete with you."*
+- One warm intro from a bookkeeper with 40 lawyer clients converts at 30–50% — vs. cold email's 1%.
+- Cost: $80 in coffees. 6 hours.
+- Failure detection: by Sunday, if no referral named, the relationship is theatre — set a 14-day "first intro or it's dead" deadline.
+
+### S0.T4–T7 — Deferred / ranked lower
+
+- **T4 — Post-tax-season accountant reactivation wave (May 5–15).** Real seasonal arbitrage; deferred only because splitting focus across a second vertical before the first one is proven is premature. Revisit if dentists fail at week 3.
+- **T5 — Sponsored lunch-and-learn at ODA / OAO / county-law-association.** Booking lead time is 4–12 weeks; mismatched to the 30-day window. Revisit June.
+- **T6 — Case-study-as-marketing on `lumivara-forge.com` from "Client Zero".** Passive multiplier on T2: prepare the case-study template page this week, populate the moment a T2 yes lands.
+- **T7 — LinkedIn DM keyed to regulator-of-record clauses.** Strictly weaker than T1 (a Loom on the same channel), and competes for LinkedIn rate-limits. Skip.
+
+### S0 — The 7-day plan (synthesised)
+
+| Day | Action | Outcome target |
+|---|---|---|
+| Mon | Domain `lumivara-forge.com` registered → A record → 1-page Vercel landing → `outreach@…` mailbox via Resend or Workspace; pick **dentists**; run axe vs. 3 named Ontario practices; record 3 Looms; send 3 personal Loom DMs by EOD; draft 1-page "Free Rebuild, Pay Day 30" terms; list 6 adjacent vendors. | Domain live; 3 Looms sent; 6 vendor-coffee-asks drafted. |
+| Tue | Send 6 vendor-coffee asks; record 3 more competitor Looms; send; prep case-study template page on `lumivara-forge.com`; finish populating `prospects.csv` to 50 rows. | 6 Looms sent; 50 named prospects in CSV. |
+| Wed | Two coffee calls; 3 more Looms sent; first replies start landing → book demos same-day; **fix the one load-bearing factual error** in the dentist pitch (replace dental `[S]` figure with a defensible range from CDA / ADA HPI per §4 below); ship the Client #1 before/after Lighthouse case study. | 9 Looms sent; ≥1 demo on calendar; one factual fix shipped; case study live. |
+| Thu | First 10 cold emails sent (dentist pitch attached, NOT the master deck); demo any booked calls live against the prospect's own site; send Free-Rebuild offer to anyone who reaches *"but I already have a site."* | 10 cold emails sent; ≥1 live demo. |
+| Fri | Second 10 cold emails sent; tally — Looms sent (target 15), replies (target 3), demos (target 1), partnership intros secured (target 1). If reply rate <10%, rewrite the violation framing over the weekend. | 20 cold emails sent EOW; one Friday retro entry in the operator journal. |
+| Sat | **Off**, or build the case-study template if it slipped. No deck-writing. | — |
+| Sun | Refill list to 50 dentists; pre-stage next week's 15 Looms by site selection only (record Mon). | Next week's pipeline pre-staged. |
+
+The Friday-night journal entry has one forbidden phrase: *"I should write another deck."* If it appears, the operator deletes it and writes nothing for 48 hours.
+
+---

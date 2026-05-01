@@ -2,6 +2,14 @@
 
 The backlog lives in GitHub Issues, grouped in a Project v2 board called **Lumivara Backlog**. This file is the map.
 
+> **🚨 PRIORITY OVERRIDE — 2026-05-01.** Per [`docs/decks/CRITICAL-REVIEW-MITIGATIONS.md`](./decks/CRITICAL-REVIEW-MITIGATIONS.md), the **single highest-priority operator activity** until client #2 closes is **Sales Sprint S0** (90-day time-box; see §5.2 / §5.6 of that file). Every infrastructure / platform / deck-refresh item in this backlog is **paused** until Sprint S0 produces a paid CAD invoice from a non-operator client OR the 90-day clock expires. The PoC perfection plan ([`docs/migrations/01-poc-perfection-plan.md`](./migrations/01-poc-perfection-plan.md)) is **demoted from blanket gate to background telemetry**; its §1.1 streak now gates Phase 2 (mechanical rename) only.
+
+## 🔥 Active sprint (single item, top of stack)
+
+- [ ] **Sales Sprint S0 — first paying client #2** — 90-day time-box. Daily cadence: 10 cold-outreach actions before noon, mix of personalised competitor-audit Looms (S0.T1), free-rebuild risk-reversal DMs (S0.T2), and adjacent-vendor referral asks (S0.T3) per [`CRITICAL-REVIEW-MITIGATIONS.md §3`](./decks/CRITICAL-REVIEW-MITIGATIONS.md#3--sales-acquisition-creative-options-sales-sprint-s0). Vertical: dentists (May–August recall-flush season). Exit: one paid CAD invoice cleared. Tracking: a single GitHub issue titled *"Sales Sprint S0 — first paying client #2 (90-day time-box, started YYYY-MM-DD)"*, labels `meta/sales-sprint priority/P1 human-only`. **Forbidden during sprint:** writing new decks, refactoring existing decks, opening Phase 0 §2.2 rows 3–12, touching the platform repo, renaming the brand, editing the negative list.
+
+
+
 > **Operator front-door:** [`docs/ops/operator-playbook.md`](ops/operator-playbook.md) — open every working session before any other tab. Tells you today's hero task, parallel options when you stall, and the drop-dead calendar.
 >
 > **Shareable status:** [`docs/ops/progress-tracker.md`](ops/progress-tracker.md) — safe to send to advisors / partners / Beas. The 60-second view of the three gates, phase progress, and this/last/next week.
@@ -113,5 +121,5 @@ If a future phase needs to dial usage back:
 
 ## One-shot operator runbooks
 
-- [ ] **POC perfection (Phase 1) — [`docs/migrations/01-poc-perfection-plan.md`](migrations/01-poc-perfection-plan.md)** — dated 14-day plan that satisfies the Phase 1 exit criterion in [`docs/migrations/00-automation-readiness-plan.md §3.1`](migrations/00-automation-readiness-plan.md#31--exit-criterion-the-only-thing-that-matters). **Migration cannot start until §1 of this plan is fully green.** Tracking issue: "Phase 1 green streak — counter at 0/10" (label `meta/automation-readiness`, pinned).
-- [ ] **Run [`docs/migrations/lumivara-people-advisory-spinout.md`](migrations/lumivara-people-advisory-spinout.md) end-to-end** — spin out Client #1 (Lumivara People Advisory) into `palimkarakshay/lumivara-people-advisory-site`. Target date: TBD by operator. **Blocked by:** Phase 1 POC perfection above. Pre-flight gates: #140 (Dual-Lane Repo checklist) ✅, #142 (variable registry) ✅. Issue #141 ships the *runbook*; running it is a separate operator action tracked here.
+- [ ] **POC perfection (Phase 1) — [`docs/migrations/01-poc-perfection-plan.md`](migrations/01-poc-perfection-plan.md)** — **DEMOTED 2026-05-01** from blanket gate to background telemetry per [`CRITICAL-REVIEW-MITIGATIONS.md §5.3`](decks/CRITICAL-REVIEW-MITIGATIONS.md#53--the-11-streak-gate-narrowed). The §1.1 streak now gates **Phase 2 (Run S1 mechanical rename) only**, not Phases 3–6 or sales work. Continue running as background telemetry — do not block Sales Sprint S0 on it. Tracking issue: "Phase 1 green streak — counter at 0/10" (label `meta/automation-readiness`, pinned).
+- [ ] **Run [`docs/migrations/lumivara-people-advisory-spinout.md`](migrations/lumivara-people-advisory-spinout.md) end-to-end** — spin out Client #1 (Lumivara People Advisory) into `palimkarakshay/lumivara-people-advisory-site`. Target date: TBD by operator. **Blocked-on-revenue (2026-05-01):** Per [`CRITICAL-REVIEW-MITIGATIONS.md §5.1`](decks/CRITICAL-REVIEW-MITIGATIONS.md#51--the-new-phase-map), this runs only after Sales Sprint S0 closes client #2. Pre-flight gates: #140 (Dual-Lane Repo checklist) ✅, #142 (variable registry) ✅. Issue #141 ships the *runbook*; running it is a separate operator action tracked here.

@@ -30,6 +30,7 @@ The rendered PDFs are the durable artefacts. Gemini share pages return 403 to pr
 | 05 | `05-reasons-to-switch-to-lumivara-forge.md` | The seven empirically grounded "why switch" arguments — each with a primary alternative and the dollar/time arbitrage | Sales, all client-facing decks |
 | 06 | `06-drawbacks-and-honest-risks.md` | The risks, choke points, and engineering realities — published so the operator can answer them straight | Operator, investor & partner decks |
 | 07 | `07-pipeda-breach-notification.md` | PIPEDA breach-notification trigger, "as soon as feasible" window, 24-month record-keeping floor, plus PHIPA (Ontario) + Law 25 (Quebec) overlays — sourced seed for the future compliance checklist | Operator, future PIPEDA-checklist authors |
+| 08 | `08-self-maintaining-website-negative-study.md` | Harsh-critic mirror to the rest of this folder. Pressure-tests the **idea itself** — should the "self-maintaining website" product exist? Companion to `decks/CRITICAL-REVIEW.md` (which critiques the deck pack) and `06` (which catalogues in-model risks). External research from two parallel harsh-critic agents (competition + operator-economics passes, May 2026). | Operator, on a bad-faith Tuesday morning |
 
 ---
 

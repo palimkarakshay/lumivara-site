@@ -324,4 +324,18 @@ A future review could be more useful than this one if the operator runs the §6 
 
 ---
 
-*— End of critical review. 2026-04-30. Operator-scope, do not share.*
+## §7 — Does the PoC need to be "perfected" first?
+
+**No.** The PoC is good enough. The review's central thesis is that the platform is *over-built*, not under-built. *"Perfecting"* the PoC further is the same avoidance behaviour the review identified — additional time spent on operator-side engineering at the expense of sales conversations.
+
+The §1.1 streak gate in [`docs/migrations/01-poc-perfection-plan.md`](../migrations/01-poc-perfection-plan.md) (*"10 consecutive auto-routine issues land green with zero operator intervention"*) is an internal quality bar, not a customer-impact bar. A prospect does not buy *"10 consecutive green issues."* A prospect buys *"my site is faster, my recall is working, I texted you a change yesterday and it shipped this morning."* The operator has those properties on `lumivara-forge.com` already.
+
+The full counter-plan — the resequenced phase map, the Sales Sprint S0 design, the number-replacement plan, and the per-file fix list — lives in [`CRITICAL-REVIEW-MITIGATIONS.md`](./CRITICAL-REVIEW-MITIGATIONS.md). Read this review for the diagnosis; read the mitigations doc for the prescription.
+
+The single sentence summarising the prescription:
+
+> **Freeze the platform-spinout work, ship under the working name, replace three load-bearing-and-broken numbers with segment-matched sources, and run an honest 90-day Sales Sprint S0 toward client #2. The platform is fine where it is.**
+
+---
+
+*— End of critical review. 2026-04-30, mitigations 2026-05-01. Operator-scope, do not share.*

@@ -326,16 +326,15 @@ A future review could be more useful than this one if the operator runs the §6 
 
 ## §7 — Does the PoC need to be "perfected" first?
 
-**No.** The PoC is good enough. The review's central thesis is that the platform is *over-built*, not under-built. *"Perfecting"* the PoC further is the same avoidance behaviour the review identified — additional time spent on operator-side engineering at the expense of sales conversations.
+**Mostly no — with one important exception.** The original review framed this as a flat "no" and was wrong to do so. The corrected verdict has two parts:
 
-The §1.1 streak gate in [`docs/migrations/01-poc-perfection-plan.md`](../migrations/01-poc-perfection-plan.md) (*"10 consecutive auto-routine issues land green with zero operator intervention"*) is an internal quality bar, not a customer-impact bar. A prospect does not buy *"10 consecutive green issues."* A prospect buys *"my site is faster, my recall is working, I texted you a change yesterday and it shipped this morning."* The operator has those properties on `lumivara-forge.com` already.
+- **(A) Operator-side platform polish** (the §1.1 streak gate in [`01-poc-perfection-plan.md`](../migrations/01-poc-perfection-plan.md)) — *"10 consecutive auto-routine issues land green."* **Not load-bearing for sales.** Internal quality bar. Demoted to background telemetry.
+- **(B) Demo-readiness** (the §6 gate in the same file) — *"can the operator sit a prospect down today and run the phone-edit loop end-to-end without lying about anything?"* **Hard prerequisite to Sales Sprint S0.** Includes four named integration gaps (G1–G4) plus G5 (Vercel env vars), G6 (n8n provisioning), G9 (Resend domain auth), and ~15 other gaps catalogued in [`CRITICAL-REVIEW-MITIGATIONS.md §11`](./CRITICAL-REVIEW-MITIGATIONS.md#11--additional-gaps-g5g24-surfaced-2026-05-01). Codebase audit gives the platform a delivery-readiness score of **5.5/10** — substantively higher than this review's "documentation hobby" framing implied, but with real demo-blocking work between today and a credible client #2 demo.
 
-The full counter-plan — the resequenced phase map, the Sales Sprint S0 design, the number-replacement plan, and the per-file fix list — lives in [`CRITICAL-REVIEW-MITIGATIONS.md`](./CRITICAL-REVIEW-MITIGATIONS.md). Read this review for the diagnosis; read the mitigations doc for the prescription.
+The full counter-plan — resequenced phase map, Sales Sprint S0 design, number-replacement plan, gap inventory, prioritised operator-vs-automation task list, and tech-stack alternatives — lives in [`CRITICAL-REVIEW-MITIGATIONS.md`](./CRITICAL-REVIEW-MITIGATIONS.md). Read this review for the diagnosis; read the mitigations doc for the prescription. The single most important sentence in the mitigations doc:
 
-The single sentence summarising the prescription:
-
-> **Freeze the platform-spinout work, ship under the working name, replace three load-bearing-and-broken numbers with segment-matched sources, and run an honest 90-day Sales Sprint S0 toward client #2. The platform is fine where it is.**
+> **Take the §13.1 swaps (drop Twilio, defer Stripe automation, defer the `forge provision` CLI, cut the LLM ladder to 2 legs, defer brand rename), close the four named integration gaps in 2–4 weeks (G1–G4 + G5 + G6 + G9), then run an honest 90-day Sales Sprint S0 toward client #2 under the §9.1 manual-with-disclosure stack. The platform shrinks to its actual load-bearing components and the offer is honestly priced.**
 
 ---
 
-*— End of critical review. 2026-04-30, mitigations 2026-05-01. Operator-scope, do not share.*
+*— End of critical review. 2026-04-30, mitigations + gap inventory + tech-stack alternatives 2026-05-01. Operator-scope, do not share.*

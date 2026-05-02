@@ -29,6 +29,16 @@ Five stakeholder decks, one master deck (with a shareable companion), plus this 
 | 06 | `06-master-deck.md` | **Master synthesis** — the nine product-positioning questions answered in one deck for operator self-review and as the canonical source the stakeholder decks read out from | Operator-honest, exhaustive | **Operator-scope; do not share without selecting a stakeholder deck first** | ~50 slides |
 | 06a | `06a-master-deck-shareable.md` | **Shareable companion to the master deck** — same nine questions, generalised for external readers (advisor / prospective partner / sophisticated investor / serious prospect doing diligence) | Externally-presentable, range-based | External, NDA-friendly; reader's pre-share checklist on the closing slide | ~50 slides |
 
+## Architecture decision records (operator-scope)
+
+ADRs governing operator-side platform decisions also live under this folder so the decision history sits next to the audience-aware narrative. They are not stakeholder decks — they are the source of truth for "why we picked X over Y" for parts of the operator pack that don't fit a `mothership/NN-*.md` slot.
+
+| ADR | File | Decision |
+|---|---|---|
+| 001 | [`adr-001-visual-editor.md`](./adr-001-visual-editor.md) | Build a thin in-house visual editor at `/admin/editor` (MDX insights only in v1; PR-via-Contents-API publish). Rejected Plate / Puck / Builder.io for now; Tiptap reserved as a Phase-2 drop-in. Companion to issue [#120](https://github.com/palimkarakshay/lumivara-site/issues/120). |
+
+---
+
 **Pre-rendered HTML.** Every deck in this folder ships with a self-contained HTML build sitting next to its source — drop-in shareable, no Markdown viewer required, arrow keys / space advance slides:
 
 - [`01-investor-deck.html`](01-investor-deck.html)

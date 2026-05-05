@@ -40,8 +40,8 @@ in a permanent doc, not this list.)_
 
 ## Auto-discovered (last 14 days)
 
-### vercel
+### general
 
-- **[sev 4 · bug]** [Vercel] Failures to load data across multiple services on the Vercel dashboard, API, and CLI ([source](https://stspg.io/w0b29c0hbblr))
+- **[sev 4 · bug]** [Cloudflare] Issues with Cloudflare Tunnel connections and Browser Isolation sessions ([source](https://stspg.io/4z73p51zp7bm))
 
 <!-- AUTO-END -->

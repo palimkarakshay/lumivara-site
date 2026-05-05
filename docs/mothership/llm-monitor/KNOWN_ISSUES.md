@@ -40,8 +40,6 @@ in a permanent doc, not this list.)_
 
 ## Auto-discovered (last 14 days)
 
-### general
-
-- **[sev 4 · bug]** [Cloudflare] Issues with Cloudflare Tunnel connections and Browser Isolation sessions ([source](https://stspg.io/4z73p51zp7bm))
+_No high-signal items in the rolling window._
 
 <!-- AUTO-END -->

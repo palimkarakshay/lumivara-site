@@ -40,8 +40,8 @@ in a permanent doc, not this list.)_
 
 ## Auto-discovered (last 14 days)
 
-### github-actions
+### vercel
 
-- **[sev 4 · bug]** [GitHub] Incident with Actions ([source](https://stspg.io/dbhtfmy83gg4))
+- **[sev 4 · bug]** [Vercel] Failures to load data across multiple services on the Vercel dashboard, API, and CLI ([source](https://stspg.io/w0b29c0hbblr))
 
 <!-- AUTO-END -->

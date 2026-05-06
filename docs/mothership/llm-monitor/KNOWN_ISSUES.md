@@ -40,8 +40,6 @@ in a permanent doc, not this list.)_
 
 ## Auto-discovered (last 14 days)
 
-### github-actions
-
-- **[sev 5 · bug]** [GitHub] Disruption with some GitHub services ([source](https://stspg.io/68zqk7hjbzm5))
+_No high-signal items in the rolling window._
 
 <!-- AUTO-END -->

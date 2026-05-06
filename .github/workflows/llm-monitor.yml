@@ -31,8 +31,6 @@ name: LLM monitor — sweep (every 2h, full content pipeline)
 #     non-colliding.
 
 on:
-  schedule:
-    - cron: "13 */2 * * *"
   workflow_dispatch:
     inputs:
       mode:

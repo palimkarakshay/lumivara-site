@@ -11,24 +11,6 @@ name: Forge smoke test
 # logic. The provider-level smoke is owned by ai-smoke-test.yml.
 
 on:
-  push:
-    paths:
-      - '.github/workflows/forge-triage.yml'
-      - '.github/workflows/forge-execute.yml'
-      - '.github/workflows/forge-smoke-test.yml'
-      - 'scripts/forge-triage-prompt.md'
-      - 'scripts/forge-execute-prompt.md'
-      - 'scripts/test-forge-routing.py'
-  pull_request:
-    paths:
-      - '.github/workflows/forge-triage.yml'
-      - '.github/workflows/forge-execute.yml'
-      - '.github/workflows/forge-smoke-test.yml'
-      - 'scripts/forge-triage-prompt.md'
-      - 'scripts/forge-execute-prompt.md'
-      - 'scripts/test-forge-routing.py'
-  schedule:
-    - cron: '30 12 * * 1'   # Mondays 12:30 UTC
   workflow_dispatch:
 
 permissions:

@@ -12,11 +12,6 @@ name: Execute backlog item — manual / complex
 # this run waits in the queue.
 
 on:
-  schedule:
-    # Every 4 hours at offset :47. Clear of every other watcher offset
-    # (:00 hour-cluster, :15/:45 plan, :17 codex-recheck, :23/:53 bot-usage,
-    # :30 deploy-drift, :37 backlog-digest). Six runs/day.
-    - cron: "47 */4 * * *"
   workflow_dispatch:
     inputs:
       issue:

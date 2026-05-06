@@ -44,8 +44,6 @@ name: LLM monitor — watch (every 15 min, outage detection)
 #   fired (that slot can wait 30s).
 
 on:
-  schedule:
-    - cron: "4,19,34,49 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:

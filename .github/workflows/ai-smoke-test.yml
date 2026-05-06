@@ -6,8 +6,6 @@ name: AI provider smoke test
 # so GitHub notifies the operator.
 
 on:
-  schedule:
-    - cron: '0 12 * * 1'   # Mondays 12:00 UTC
   workflow_dispatch:
 
 permissions:

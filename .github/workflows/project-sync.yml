@@ -17,11 +17,7 @@ name: Sync issues to Project Kanban
 #   3. Enable "Auto-add to project" in Project settings so new issues land in Inbox.
 
 on:
-  issues:
-    types: [labeled]
-  pull_request:
-    types: [opened, closed]
-  deployment_status: {}   # fires when Vercel posts deploy status
+  workflow_dispatch:
 
 permissions:
   contents: read

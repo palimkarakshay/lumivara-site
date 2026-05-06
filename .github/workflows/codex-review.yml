@@ -20,8 +20,6 @@ name: Codex review (OpenAI gpt-5.5)
 # also re-labels the issue back to the Claude path so the work isn't lost.
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
   workflow_dispatch:
     inputs:
       issue:

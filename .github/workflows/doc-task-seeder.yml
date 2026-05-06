@@ -22,12 +22,6 @@ name: Doc-task seeder
 # back to weekly (`0 2 * * 0`) once the cost-optimisation phase opens.
 
 on:
-  schedule:
-    # Daily 02:00 UTC. Cap of 3 candidates per run + the operator-
-    # attested approval gate make flooding the inbox a non-issue, and
-    # faster doc-discovery is worth the daily Gemini/Codex
-    # verification cost during the deploy push.
-    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       apply:

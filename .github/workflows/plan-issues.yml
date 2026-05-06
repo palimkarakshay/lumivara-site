@@ -20,12 +20,6 @@ on:
         description: "Specific issue number (blank = scan queue, plan up to 5)"
         required: false
         default: ""
-  schedule:
-    # Every 30 min, offsets :15 / :45 — interleaves with execute.yml's
-    # */30 cadence so a freshly-triaged issue picks up its plan within
-    # ~15 min and is executable on the next half-hour mark. Aggressive
-    # deploy-push phase; roll back to hourly post-cost-optimisation.
-    - cron: '15,45 * * * *'
 
 permissions:
   contents: read

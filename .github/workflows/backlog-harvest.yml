@@ -22,11 +22,6 @@ name: Backlog harvest (revive planless items)
 #   - docs/ops/automation-map.md        — Watcher tier (this is a backstop watcher).
 
 on:
-  schedule:
-    # Daily at 03:00 UTC = 22:00 EST / 23:00 EDT. Runs while the operator
-    # is asleep so the morning brief shows fresh plans on items that
-    # had been stuck.
-    - cron: "0 3 * * *"
   workflow_dispatch:
     inputs:
       max_items:

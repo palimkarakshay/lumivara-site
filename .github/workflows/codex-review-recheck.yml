@@ -22,12 +22,6 @@ name: Codex review recheck (catch missed reviews)
 # provider's quota has typically reset.
 
 on:
-  schedule:
-    # Every 2h, offset :17 — aggressive deploy-push backstop. Faster
-    # recheck means a PR that bypassed inline review is caught within
-    # hours, not the next day. The 5-hour rolling provider quota is
-    # still longer than 2h, so retries land on a refreshed quota.
-    - cron: '17 */2 * * *'
   workflow_dispatch:
     inputs:
       apply:

@@ -24,11 +24,6 @@ name: Bot usage monitor
 # spike shows up within one report).
 
 on:
-  schedule:
-    # Every 30 min during the deploy-push phase, offsets :23 / :53 —
-    # avoids on-the-hour clashes with execute / forge-execute. Doubled
-    # cadence so a quota spike surfaces within one report.
-    - cron: '23,53 * * * *'
   workflow_dispatch:
     inputs:
       window_hours:

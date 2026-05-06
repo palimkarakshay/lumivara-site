@@ -25,10 +25,6 @@ name: Render Marp decks
 #     workflow exits early if the trigger commit's author is github-actions[bot].
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'docs/**.md'
   workflow_dispatch:
     inputs:
       target:

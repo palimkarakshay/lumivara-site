@@ -1,11 +1,6 @@
 name: Deploy AI Ops dashboard
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "dashboard/**"
-      - ".github/workflows/deploy-dashboard.yml"
   workflow_dispatch:
 
 # Pages-native deploy: builds in one job, hands a static artifact to the

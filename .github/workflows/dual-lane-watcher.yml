@@ -25,22 +25,12 @@ name: Dual-Lane watcher
 #   - scripts/forge-spinout-dry-run.sh — the manifest validator.
 
 on:
-  schedule:
-    # Twice daily — 02:00 UTC (overnight catch) + 14:00 UTC (morning brief).
-    # Aggressive deploy-push phase: drift surfaces within 12h instead of 24h.
-    # Per `docs/ops/automation-future-work.md §2.4`.
-    - cron: "0 2,14 * * *"
   workflow_dispatch:
     inputs:
       strict:
         description: "Treat advisory drift as failure (default: only §1, §2, §6 fail)"
         required: false
         default: "false"
-  pull_request:
-    paths:
-      - ".dual-lane.yml"
-      - "scripts/dual-lane-audit.sh"
-      - "scripts/forge-spinout-dry-run.sh"
 
 permissions:
   contents: read

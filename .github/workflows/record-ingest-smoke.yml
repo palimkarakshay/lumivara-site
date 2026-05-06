@@ -23,17 +23,6 @@ name: Record-ingest smoke test
 #   recording and gets stub output. Cheap insurance.
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/record-ingest/**'
-      - 'recordings/**/README.md'
-      - '.github/workflows/record-ingest-smoke.yml'
-  pull_request:
-    paths:
-      - 'scripts/record-ingest/**'
-      - 'recordings/**/README.md'
-      - '.github/workflows/record-ingest-smoke.yml'
   workflow_dispatch:
 
 permissions:

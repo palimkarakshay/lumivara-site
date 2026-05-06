@@ -9,24 +9,6 @@ name: Doc-task seeder smoke test
 # the seeder, weekly cron for catch-the-rotten-fixture, dispatch.
 
 on:
-  push:
-    paths:
-      - 'scripts/doc-task-seeder.py'
-      - 'scripts/test-doc-task-seeder.py'
-      - '.github/workflows/doc-task-seeder.yml'
-      - '.github/workflows/seeder-smoke-test.yml'
-      - 'docs/ops/doc-task-seeder.md'
-  pull_request:
-    paths:
-      - 'scripts/doc-task-seeder.py'
-      - 'scripts/test-doc-task-seeder.py'
-      - '.github/workflows/doc-task-seeder.yml'
-      - '.github/workflows/seeder-smoke-test.yml'
-      - 'docs/ops/doc-task-seeder.md'
-  schedule:
-    # Mondays 12:45 UTC — 15 min after forge-smoke-test.yml; same
-    # weekly cluster, no on-the-hour collision.
-    - cron: '45 12 * * 1'
   workflow_dispatch:
 
 permissions:

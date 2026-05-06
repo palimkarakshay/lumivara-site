@@ -31,13 +31,6 @@ name: Backlog digest (rolling)
 #   - docs/ops/automation-future-work.md — partially addresses §3.1 narrative.
 
 on:
-  schedule:
-    # Every 2 hours at offset :37. Pairs with `codex-review-recheck.yml`'s
-    # `17 */2 * * *` (also every 2h, 20-min separated) but never
-    # collides on the minute. Clear of every other watcher offset
-    # (:00 hour-cluster, :15/:45 plan, :17 codex-recheck, :23/:53 bot-usage,
-    # :30 deploy-drift, :47 reserved for future execute-complex cron).
-    - cron: "37 */2 * * *"
   workflow_dispatch:
     inputs:
       lookback_days:

@@ -40,8 +40,6 @@ in a permanent doc, not this list.)_
 
 ## Auto-discovered (last 14 days)
 
-### github-actions
-
-- **[sev 4 · bug]** [GitHub] Incident with Actions, we are investigating reports of degraded availability ([source](https://stspg.io/j22b66h0j5xl))
+_No high-signal items in the rolling window._
 
 <!-- AUTO-END -->

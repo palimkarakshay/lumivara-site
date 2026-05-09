@@ -10,9 +10,9 @@ export const howWeWorkContent = {
   hero: {
     monoLabel: "Our Approach",
     headline:
-      "Most organizations don't have a talent problem. They have a clarity problem.",
+      "Most organizations don't have a talent challenge. They have a clarity gap.",
     subhead:
-      "Addressing real performance gaps requires more than applying standard frameworks. We identify root causes, understand the unique dynamics of the organization, and design targeted solutions specific to its needs.",
+      "Addressing real performance gaps requires more than applying standard frameworks. We identify root causes, understand the unique dynamics of the organization, and design targeted approaches specific to its needs.",
   },
 
   principles: [
@@ -28,7 +28,7 @@ export const howWeWorkContent = {
       number: "02",
       title: "Delivered through capability.",
       bodyFirst:
-        "Solutions are designed specifically for the organization — aligned to strategy, culture, and maturity — rather than applying standard or pre-defined models.",
+        "Approaches are designed specifically for the organization — aligned to strategy, culture, and maturity — rather than applying standard or pre-defined models.",
       bodySecond:
         "Good strategy without capability is just a document. We design the supporting systems — competency frameworks, manager enablement, talent architecture, policy foundations — that make the strategy real and repeatable after we leave.",
     },
@@ -97,7 +97,7 @@ export const howWeWorkContent = {
     {
       service: "HR Advisory",
       kpis: [
-        "Problem-to-solution clarity",
+        "Challenge-to-approach clarity",
         "Stakeholder alignment",
         "Execution velocity",
       ],
@@ -105,7 +105,7 @@ export const howWeWorkContent = {
   ],
 
   finalCta: {
-    headline: "Ready to find the real problem?",
+    headline: "Ready to find the real challenge?",
     subhead:
       "Every engagement starts with a 30-minute discovery conversation — complimentary and focused on you.",
     cta: { label: "Book a Discovery Call", href: "/contact" },

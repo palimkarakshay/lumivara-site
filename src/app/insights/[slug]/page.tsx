@@ -172,7 +172,7 @@ export default async function InsightPage({ params }: RouteParams) {
       )}
 
       <CTABlock
-        headline="Have a similar problem?"
+        headline="Have a similar challenge?"
         subhead="Every engagement starts with a 30-minute discovery conversation — complimentary and focused on you."
         ctaLabel="Book a Discovery Call"
         ctaHref="/contact"

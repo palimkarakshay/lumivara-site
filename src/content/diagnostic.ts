@@ -19,7 +19,7 @@ export type DiagnosticQuestion = {
 export const diagnosticQuestions: DiagnosticQuestion[] = [
   {
     id: "priority",
-    prompt: "What's the most pressing people problem right now?",
+    prompt: "What's the most pressing people challenge right now?",
     options: [
       {
         value: "hiring",
